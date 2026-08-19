@@ -225,6 +225,10 @@ python -c "import sys; sys.path.insert(0,'factory'); import harness; print(harne
 Data moves under your feet: Yahoo revises history, Databento re-cures degraded days. If your QC differs from
 the committed one, that difference is itself a finding — the reports are timestamped for exactly that reason.
 
+## License
+
+MIT. See [LICENSE](LICENSE). The data is not covered and is not redistributed here — download your own.
+
 ---
 
 *Phase 1 ran and closed on 19 August 2026. The families are dead; the method is not. If you continue from
