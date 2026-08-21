@@ -3,6 +3,8 @@
 **A six-week search for a tradable edge in S&P 500 futures, closed in one week with a negative verdict — and
 every step of it published, including the failures and the author's own design error.**
 
+Read the story: **[ARTICLE.md](ARTICLE.md)**.
+
 This repository is not a strategy. It is the *method*: the spec frozen before the first backtest, the data
 quality control that disqualified six years of data, the append-only ledger of all 59 experiments with a
 verifiable hash chain, the hold-out period that was never opened, and the verdict that says **no edge was
