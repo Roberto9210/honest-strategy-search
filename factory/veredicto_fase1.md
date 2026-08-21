@@ -40,6 +40,7 @@ Lo que este veredicto **no** dice: no dice que nadie pueda ganar en futuros; dic
 1. Estrategias de los amigos traders de Roberto (pendiente de sus respuestas al cuestionario de 5 preguntas) — entrarían a una **Fase 1b consciente**, con la vara endurecida por pruebas múltiples.
 2. Mercados menos eficientes que el S&P — solo como decisión escrita, con nueva spec.
 3. La señal de vuelta de mes (F4): real pero de baja frecuencia; incompatible con el objetivo prop. Anotada por si algún día el objetivo cambia.
+   **Addendum 21-ago-2026:** el objetivo cambió y F4 se volvió a examinar; muere igual, ahora por multiplicidad y potencia — [botc_potencia_f4.md](botc_potencia_f4.md).
 
 ## Destino de los recursos
 

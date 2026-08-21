@@ -128,7 +128,7 @@ everything" does not get to hide its own line items.
 | F1 Opening-range breakout | 20/20 | PF 1.07 (ORB30 + gap vs previous day; 308 trades) | **Dead** |
 | F2 Daily trend | 14/20 | active variants PF <= 1.02; the "winners" (PF 23.7 on 9 trades over 19 years) are index exposure, not strategy | **Dead** |
 | F3 VWAP reversion | 6/20 | PF 0.75; every variant between 0.53 and 0.75 | **Dead** (closed early, hopeless) |
-| F4 Calendar | 10/20 | turn-of-month: PF 1.51 net, 231 trades over 20 years, 18/20 years positive, confirmed on SPY | **Real signal, out of scope**: ~12 trades/year cannot reach the 200-trade bar, and it needs overnight positions |
+| F4 Calendar | 10/20 | turn-of-month: PF 1.51 net, 231 trades over 20 years, 18/20 years positive, confirmed on SPY | **Real signal, this search cannot decide it**: ~12 trades/year cannot reach the 200-trade bar, it needs overnight positions, and 57 searches over pure noise match or beat it 72% of the time — what survives that, and what does not, is in [the calculation](factory/botc_potencia_f4.md) |
 | F5 Volatility | 7/20 | NR7 daily with next-day exit: PF 1.17 | **Dead** (under the bar) |
 
 > **In these five families, with explicit rules and realistic retail costs, there is no exploitable edge for

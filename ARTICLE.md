@@ -62,7 +62,7 @@ found after a profitable backtest is a discovery nobody makes.
 | F1 Opening-range breakout | 20/20 | PF 1.07 (ORB30 + gap, 308 trades) | Dead |
 | F2 Daily trend | 14/20 | active variants PF ≤ 1.02 | Dead |
 | F3 VWAP reversion | 6/20 | PF 0.75; every variant 0.53–0.75 | Dead — closed early, hopeless |
-| F4 Calendar | 10/20 | turn-of-month PF 1.51, 231 trades / 20 years | Real signal, out of scope |
+| F4 Calendar | 10/20 | turn-of-month PF 1.51, 231 trades / 20 years | Real signal, this search cannot decide it |
 | F5 Volatility compression | 7/20 | NR7 with next-day exit, PF 1.17 | Dead — under the bar |
 
 Two rows deserve more than a verdict.
@@ -71,11 +71,63 @@ F2's headline "winners" show a profit factor of 23.7 — on nine trades over nin
 strategy, it is index exposure with extra steps, and a search that reports it as a result is lying to
 itself first and to you second.
 
-F4 is the honest awkward one. Turn-of-month is a **real signal**: profit factor 1.51 net of costs, 231
-trades over twenty years, positive in 18 of 20 years, and it survives being re-run on SPY. It still fails,
-because ~12 trades a year cannot reach a 200-trade bar in any reasonable time and it needs overnight
-positions the spec excluded. Finding something real that your own criteria disqualify is exactly the
-moment a search either holds its shape or quietly re-writes the bar. This one held.
+F4 is the awkward one, and the reason it is awkward is not the reason I first wrote down.
+
+Turn-of-month looks like a find: profit factor 1.51 net of costs, 231 trades over twenty years, positive
+in 18 of 20 years, still standing when re-run on SPY, and profitable across the whole 3×3 neighbourhood
+of its two parameters. The first verdict filed it as out of scope — ~12 trades a year cannot reach a
+200-trade bar in any reasonable time, and it needs overnight positions the spec excluded. That reasoning
+still holds. It is no longer the main one.
+
+The main one is what fifty-seven tries cost.
+
+The intuition first, before any statistics. Test enough rules against a market with no pattern in it at
+all and some of them will look good anyway — not because they work, but because randomness is lumpy. The
+more rules you try, the better the best one looks, and it looks better for free. So the question is never
+"does my best result look good". It is "does my best result look better than what luck alone produces
+after the same number of tries".
+
+That is measurable, so I measured it. Fifty-seven strategies, each drawing the same number of trades with
+the same variability as F4, run against 20,000 markets containing nothing but noise: the best of the
+fifty-seven comes back at **p = 0.0167** on average, which is what the closed form (1/58 = 0.0172)
+predicts. F4 scored **p = 0.0212**. In **71.7%** of those noise searches, the best of fifty-seven matches
+or beats the best thing this search found in twenty years of real market data.
+
+That does not make F4 noise. It makes F4 indistinguishable from noise *by this search* — which is a
+statement about the search, not about the market. The difference matters, and collapsing it would be the
+mirror image of the inflation this project exists to avoid: burying a finding is as dishonest as selling
+one.
+
+Two things about F4 survive the correction. It is positive in **18 of 20 years**, and the pooled p-value
+does not measure that at all — it asks only whether the average trade differs from zero, not whether the
+effect keeps turning up year after year. And it **replicates on SPY**, a different instrument with
+different mechanics and a different holder base. That replication is partial rather than independent: the
+data QC in this repository puts the ES/SPY daily return correlation at 0.976, so SPY is largely the same
+bet in another wrapper. But largely is not entirely, and a pattern that shows up in both is worth more
+than a pattern that shows up in one.
+
+So the verdict is narrower and less satisfying than "turn-of-month is noise", which is not what the
+arithmetic says. It is: **this search cannot tell turn-of-month apart from luck, and the data that could
+tell them apart do not exist.**
+
+That second clause is a count, not a figure of speech. Six years were sealed before the first backtest and
+never opened: 2020-2026. They contain **80 turn-of-month trades**. At the variability
+this signal actually has, 80 trades carry a **27.3% chance** of detecting the edge *even if the edge is
+entirely real* — the sealed years would report "nothing here" three times out of four regardless of the
+truth. Raising that to the conventional 80% needs **342 trades**. The entire series back to 2000 contains
+**311**.
+
+So the vault stayed shut, and that calculation is the reason. It opens once per candidate, and only once.
+Spending F4's single use would have bought a number — pass or fail — that meant close to nothing either
+way, on a question these data are not large enough to answer. Leaving it shut is not caution; it is the
+only reading of the arithmetic that was available.
+
+Finding something real that your own criteria disqualify is the moment a search either holds its shape or
+quietly re-writes the bar. This one had to hold twice: once against the scope rule, and once against the
+more comfortable option — a profit factor of 1.51, eighteen positive years and a replication on a second
+instrument are enough material to declare victory, provided nobody runs the second calculation. The full
+calculation, with a script that reproduces every number without touching the sealed years, is in
+[`factory/botc_potencia_f4.md`](factory/botc_potencia_f4.md).
 
 ## The error I paid for out of my own budget
 
