@@ -134,6 +134,16 @@ registrado hoy, ~12 operaciones al año, sin tocar la caja fuerte. Evidencia len
 misma disciplina de los bots A y B. Diez años para tener algo que valga — que es exactamente lo que
 cuesta la verdad en este tamaño de efecto.
 
+> **Aviso que hay que leer antes de montar eso (21-ago-2026).** `Sim101` sólo llena órdenes si recibe
+> precios en tiempo real, y el camino gratis para conseguirlos — el **Simulated Data Feed** de
+> NinjaTrader — genera, segun su propia documentación, *"un mercado aleatorio generado internamente,
+> **sin correlación con datos de mercado reales**"*. Un walk-forward de F4 sobre esos precios no vale
+> nada, **y se vería exactamente igual que uno real en todos los reportes**: mismas operaciones, mismo
+> ledger, mismo PF. Es la forma más barata que existe de fabricar evidencia sin querer.
+>
+> Si el forward test se hace, hay que hacerlo con datos de mercado reales y **el reporte tiene que
+> nombrar qué feed los produjo**. Sin esa línea, el resultado no es interpretable.
+
 ## 7. La caja fuerte sigue cerrada
 
 Ningún cálculo de este documento leyó precios de la parte B. Lo único que se usó de 2020-2026 es cuántos
