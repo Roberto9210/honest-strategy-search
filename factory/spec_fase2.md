@@ -677,10 +677,20 @@ Adoptar (4,2) habría sido gastar 9 cartuchos, no cero.
   Yahoo quedan excluidas, como en la Fase 1.
 - **Margen nocturno:** mantener MES fuera del horario de day-trading exige margen inicial, muy
   superior al margen intradía. **Ese número no se inventa acá.** Antes de correr la primera
-  configuración de G1 se copia a este documento el valor vigente de la tabla publicada del broker/CME,
-  con fecha y fuente, y se declara con qué tamaño de cuenta la familia sería operable. **Si el número
-  no está, G1 no corre.** (Regla de la casa: falta un dato de riesgo ⇒ bloqueo con motivo explícito,
-  nunca un default plausible.)
+  configuración de G1 se copia a este documento el requisito vigente, con **fecha y fuente**, y se
+  declara con qué tamaño de cuenta la familia sería operable. **Si el número no está, G1 no corre.**
+  (Regla de la casa: falta un dato de riesgo ⇒ bloqueo con motivo explícito, nunca un default
+  plausible.)
+  - **Cuál número.** El del **bróker**, no el de CME. El de la bolsa es el piso; el que te van a
+    exigir de verdad para sostener la posición de un día para el otro es el del bróker, y suele ser
+    más alto. Usar el de CME porque es el que se encuentra citado más fácil es subestimar el capital
+    necesario justo en la familia que abre esta fase.
+  - **Cómo se lee.** En NinjaTrader: `Tools → Instruments`, buscar **MES**, ahí figura el requisito.
+    Se anota el valor **y la fecha en que se leyó** — eso es lo que la spec pide como "fuente".
+  - **Lo que NO cuenta como fuente:** un número inferido de la base local de NT8, una cifra de CME
+    puesta "mientras tanto", o cualquier valor sin fecha. Un requisito de margen guardado en una
+    instalación local puede ser un default viejo y no lo que el bróker exige hoy; ponerlo igual sería
+    exactamente el modo de falla que esta regla existe para impedir.
 - Ningún resultado bruto se reporta en ningún documento. Si un número aparece sin costos, es un error
   de redacción, no una variante de presentación.
 
