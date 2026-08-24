@@ -267,8 +267,24 @@ Por lo tanto, la barra efectiva en A es:
 |t_A|  ≥  max( 3.726 ,  2.8016 × √(n_A / n_B) )
 ```
 
-⇒ **4.788 para familias diarias/overnight, 3.726 para familias intradía** (recalculado con el n_B real
-de cada candidata, no con el ratio de sesiones, cuando la frecuencia de operación difiera entre A y B).
+⇒ **4.788 para familias diarias/overnight, 3.726 para familias intradía**.
+
+**Cuidado con las unidades, porque la tabla de arriba usa SESIONES y la compuerta usa OPERACIONES.**
+Las dos formas de esta compuerta —la escrita en `t` y la escrita en potencia— son la **misma
+condición**, no dos filtros distintos:
+
+```
+t_A ≥ 2.8016·√(n_A/n_B)   ⟺   δ̂·√n_A ≥ 2.8016·√n_A/√n_B   ⟺   δ̂·√n_B ≥ 2.8016
+```
+
+así que no pueden aprobar cosas distintas **mientras se las llame con los mismos conteos**. El
+código las evalúa a las dos y revienta si difieren, justamente para que nadie confunda una con otra.
+
+La tabla de sesiones es un número de **planificación**: vale sólo si la tasa de operaciones por
+sesión es la misma en A y en B. Para una estrategia de calendario la tasa no sigue a las sesiones y
+el proxy miente — F4 es el caso exacto: con sus operaciones reales (231 en A, 80 en B) la exigencia
+es **4.761**, no 4.788. **La decisión se toma siempre con operaciones reales de A y operaciones
+proyectadas en B** (`project_n_b()`, que sale de la frecuencia medida en A y del calendario de B).
 
 **Si la potencia proyectada es < 80%, la candidata NO se rechaza y NO se aprueba: se ARCHIVA** como
 *"no decidible con los datos existentes"*, con su cálculo escrito, y **la caja fuerte no se abre.**
@@ -652,6 +668,33 @@ Fase 2 (§9):
 3. Un resultado sin pre-registro previo es una violación de spec: se registra como tal, con el
    resultado incluido, y **la configuración consume presupuesto igual**.
 
+#### Ningún pre-registro puede quedar colgando
+
+Un pre-registro sin resolver es, **desde afuera del repositorio, indistinguible de "lo corrí, salió
+feo y no escribí el resultado".** Para el operador honesto los dos casos son lo mismo; para quien
+audita, es el hueco entero por el que se cuela exactamente lo que este ledger existe para impedir.
+De poco sirve contar los intentos si uno de ellos puede quedar sin desenlace.
+
+Por eso, **todo pre-registro termina en exactamente una de tres entradas**, y ninguna otra cosa lo
+cierra:
+
+| Salida | Cuándo | Cobra |
+|---|---|---|
+| `RESULTADO` | la configuración corrió por `run_on` | ya cobrado al pre-registrar |
+| `ABANDONO` | no se va a correr — **motivo escrito obligatorio** (datos faltantes, error de diseño, lo que sea) | ya cobrado; **no se devuelve** |
+| `VIOLACION` | se corrió por fuera de `run_on` y se registra después | ya cobrado; no cobra dos veces |
+
+Y la regla que lo hace cumplir sin depender de nadie: **un pre-registro sin resolver BLOQUEA el
+siguiente.** `preregister()` se niega mientras haya alguno abierto, y el mensaje nombra cuál —
+familia, configuración exacta, hash y fecha— y cómo cerrarlo. Nunca puede haber más de uno abierto.
+
+Consecuencia práctica, y es deliberada: la sesión diaria pasa a ser **de a una** (§7.4). Una corrida
+que revienta a mitad de camino **no** resuelve su pre-registro: hay que cerrarlo a mano, con motivo,
+y hasta entonces no se puede pre-registrar otra cosa.
+
+Las celdas de vecindad cobradas por adopción no son pre-registros (van como `CARTUCHO`): se pagan,
+pero no esperan corrida y por lo tanto no cuelgan ni bloquean.
+
 **Los errores de diseño también consumen presupuesto.** La Fase 1 gastó 3 cartuchos en un filtro mal
 diseñado (la ventana nocturna hasta las 09:29, que producía 0–1 operaciones) y los cobró igual. Una
 configuración rota que se re-corre arreglada es **una configuración más**, no la misma otra vez. Una
@@ -698,13 +741,20 @@ Adoptar (4,2) habría sido gastar 9 cartuchos, no cero.
 
 Orden fijo, y nada se corre fuera de una sesión:
 
-1. Verificar la cadena del ledger (`harness.verify_ledger()` ⇒ `True`). Si da `False`, la sesión se
-   suspende y se investiga; no se corre nada.
-2. Escribir el **pre-registro** de las configuraciones del día, con su hipótesis en una línea.
-3. Recién entonces, correr.
-4. Anexar resultados y el diagnóstico obligatorio: `t`, `p_crudo`, `α/K_total`, línea de la suerte
-   `1/(K_total+1)`, y `K_usado / 200`.
-5. Cerrar la sesión anotando el contador.
+1. Verificar la cadena del ledger (`harness_f2.verify_ledger()` ⇒ `True`). Si da `False`, la sesión
+   se suspende y se investiga; no se corre nada.
+2. Comprobar que **no hay ningún pre-registro abierto** de la sesión anterior
+   (`open_preregistrations()` ⇒ vacío). Si quedó uno, cerrarlo es lo primero que se hace.
+3. Después, **de a una configuración por vez** (§7.2 — no en lote):
+   a. escribir el **pre-registro**, con su hipótesis en una línea;
+   b. correrla, o abandonarla con motivo escrito;
+   c. anexar el diagnóstico obligatorio: `t`, `p_crudo`, `α/K_total`, línea de la suerte
+      `1/(K_total+1)`, y `K_usado / 200`.
+4. Cerrar la sesión anotando el contador y con cero pre-registros abiertos.
+
+El lote está prohibido a propósito. Pre-registrar cinco de golpe deja cinco entradas sin desenlace al
+mismo tiempo, y en ese estado nadie de afuera puede decir cuáles se corrieron. De a una, el ledger
+siempre está en un estado que se lee sin ambigüedad.
 
 **Máximo 5 configuraciones por sesión.** Una sesión en la que no se registra nada es una sesión
 válida y no hay que compensarla al día siguiente. El presupuesto es un techo, no una cuota.

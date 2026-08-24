@@ -46,6 +46,26 @@ def check(cond, label):
         print(f"    FALLA {label}")
 
 
+def raises_msg(exc, fn, label, must_contain=()):
+    """Como raises(), pero además exige que el mensaje nombre lo que corresponde:
+    una excepción que salta por el motivo equivocado es un test que miente."""
+    try:
+        fn()
+    except exc as e:
+        msg = str(e)
+        missing = [m for m in must_contain if m not in msg]
+        if missing:
+            check(False, f"{label} -> mensaje no menciona {missing}: {msg[:160]}")
+        else:
+            check(True, f"{label} -> {type(e).__name__}, y el mensaje lo nombra")
+        return str(e)
+    except Exception as e:  # noqa: BLE001
+        check(False, f"{label} -> {type(e).__name__} en vez de {exc.__name__}: {e}")
+        return ""
+    check(False, f"{label} -> NO levantó {exc.__name__}")
+    return ""
+
+
 def raises(exc, fn, label):
     try:
         fn()
@@ -154,11 +174,43 @@ def s1_reproduce_f4():
     check(pc["n_b_necesario"] == 342, f"operaciones para 80% = {pc['n_b_necesario']} (publicado 342)")
     check(pc["aprueba"] is False, "F4 NO pasa la compuerta de potencia -> se archiva")
 
-    print("    -- y la barra efectiva por régimen que declara §3.2:")
+    print("    -- required_t_a con las OPERACIONES reales de F4, no con sesiones:")
+    check(abs(f2.required_t_a(231, 80) - 4.761) < 0.001,
+          f"t exigido con n_A=231, n_B=80: {f2.required_t_a(231, 80):.3f}")
+    check(st["t"] < f2.required_t_a(231, 80),
+          f"F4 t={st['t']:.3f} por debajo de 4.761 -> mismo veredicto que power_check")
+
+    print("    -- planificación con SESIONES: parecido, y NO es lo mismo")
     check(abs(f2.required_t_a(4875, 1669) - 4.788) < 0.001,
-          f"diario: t exigido {f2.required_t_a(4875, 1669):.3f} (spec 4.788)")
+          f"sesiones diarias 4875/1669 -> {f2.required_t_a(4875, 1669):.3f} (tabla de §3.2)")
+    check(abs(f2.required_t_a(4875, 1669) - f2.required_t_a(231, 80)) > 0.02,
+          "4.788 (sesiones) != 4.761 (operaciones): el proxy es para planificar, no para decidir")
     check(abs(f2.required_t_a(1004, 1669) - f2.DECISION_T) < 1e-9,
           "intradía: manda la línea de decisión (3.726), no la potencia")
+
+
+def s1b_compuertas_identicas():
+    print("\n[1b] §3.2 — required_t_a y power_check son la MISMA condición")
+    print("    t_A >= 2.8016*sqrt(n_A/n_B)  <=>  delta*sqrt(n_B) >= 2.8016")
+    disagreements = []
+    for n_a in (100, 231, 500, 1000, 4875):
+        for n_b in (40, 80, 300, 1669, 5000):
+            for delta in (0.02, 0.05, 0.0686, 0.1515, 0.3, 0.6):
+                t_a = delta * np.sqrt(n_a)
+                via_t = t_a >= f2.POWER_CONST * np.sqrt(n_a / n_b)
+                via_power = f2.power_check(delta, n_b)["aprueba"]
+                if via_t != via_power:
+                    disagreements.append((n_a, n_b, delta, via_t, via_power))
+    check(not disagreements,
+          f"150 combinaciones (n_A, n_B, delta): 0 discrepancias "
+          f"({len(disagreements)} encontradas)")
+
+    print("    -- y la guardia revienta si alguien las llama con unidades distintas")
+    raises(f2.SpecViolation,
+           lambda: f2._assert_gates_agree(t_a=3.0, n_a_trades=4875,
+                                          n_b_trades=1669, delta_hat=0.043,
+                                          power_ok=True),
+           "veredictos incompatibles (sesiones de un lado, operaciones del otro)")
 
 
 def s2_prerregistro(tmp):
@@ -209,7 +261,11 @@ def s3_presupuesto(tmp):
     fresh_ledger(tmp)
     for i in range(f2.FAMILY_BUDGET["G6-terceros"]):
         f2.preregister("G6-terceros", {"i": i}, "regla de un tercero")
+        f2.abandon("G6-terceros", {"i": i}, "prueba de presupuesto: no se corre")
     check(f2.budget_used("G6-terceros") == 20, "G6 agotó sus 20")
+    check(len(f2.open_preregistrations()) == 0, "ninguno quedó colgando")
+    check(f2.budget_used("G6-terceros") == 20,
+          "abandonar NO devuelve el cartucho (§7.2: los errores también cuestan)")
     raises(f2.BudgetExhausted,
            lambda: f2.preregister("G6-terceros", {"i": 999}, "una más"),
            "configuración 21 de G6")
@@ -228,18 +284,22 @@ def s4_vecindad(tmp):
                    robustness_cells=cells)
     check(f2.budget_used("G2-multidia") == 1,
           "la vecindad declarada NO gasta: 1 cartucho, no 10")
+    f2.abandon("G2-multidia", best, "cerrada para probar la adopción")
 
     print("    -- pero (4,2) daba PF 1.691 contra 1.507 de la publicada. Adoptarla:")
-    raises(f2.SpecViolation,
-           lambda: f2.preregister("G2-multidia", {"n_before": 4, "m_after": 2},
-                                  "me gusta más esta"),
-           "adoptar una celda de la vecindad sin declararlo")
+    raises_msg(f2.SpecViolation,
+               lambda: f2.preregister("G2-multidia", {"n_before": 4, "m_after": 2},
+                                      "me gusta más esta"),
+               "adoptar una celda de la vecindad sin declararlo",
+               must_contain=("celda de robustez", "SELECCIÓN"))
 
     f2.preregister("G2-multidia", {"n_before": 4, "m_after": 2},
                    "adopción consciente de la mejor celda",
                    adopcion_de_vecindad=True)
     check(f2.budget_used("G2-multidia") == 1 + 9 + 1,
           f"la adopción cobró las 9 celdas + la nueva: {f2.budget_used('G2-multidia')} cartuchos")
+    check(len(f2.open_preregistrations()) == 1,
+          "las 9 celdas cobradas son CARTUCHO, no cuelgan: solo queda abierta la adoptada")
 
 
 def s5_ventanas(tmp):
@@ -281,6 +341,9 @@ def s5_ventanas(tmp):
     raises(f2.WindowViolation,
            lambda: f2.run_on(df, "G4-bordes", {"z": 1}, strat_record),
            "G4 con el mapeo pendiente")
+    f2.abandon("G4-bordes", {"z": 1}, "régimen intradía bloqueado: mapeo de día CME pendiente")
+    check(len(f2.open_preregistrations()) == 0,
+          "y el intento bloqueado se cierra con motivo, no queda colgando")
 
 
 def s6_caja_fuerte(tmp):
@@ -404,6 +467,69 @@ def s8_ledger_y_apertura(tmp):
     check(f2.g1_enabled() is True, "G1 habilitada solo con valor + fuente + fecha")
 
 
+def s9_colgados(tmp):
+    print("\n[9] §7.2 — un pre-registro sin resolver bloquea el siguiente")
+    print("    Desde afuera del repo, 'pre-registrado y nunca corrido' es")
+    print("    indistinguible de 'corrido, salió feo y no escribí el resultado'.")
+    fresh_ledger(tmp)
+    df = synthetic_daily()
+    cfg_a = {"step": 5, "edge_points": 1.0}
+    cfg_b = {"step": 7, "edge_points": 1.0}
+
+    e = f2.preregister("G1-nocturna", cfg_a, "primera hipótesis")
+    check(len(f2.open_preregistrations()) == 1, "queda 1 pre-registro abierto")
+
+    print("    -- CONTROL DE MUTACIÓN: lo dejo colgando y pido el siguiente")
+    msg = raises_msg(f2.SpecViolation,
+                     lambda: f2.preregister("G1-nocturna", cfg_b, "segunda hipótesis"),
+                     "preregister() con uno sin resolver",
+                     must_contain=("sin resolver", "G1-nocturna", e["hash"]))
+    check('"step": 5' in msg, "el mensaje nombra la config exacta que quedó abierta")
+    check("abandon(" in msg, "y dice cómo cerrarla")
+    check(f2.budget_used() == 1, "el bloqueado no gastó cartucho")
+
+    print("    -- salida 1 de 3: el resultado lo resuelve")
+    f2.run_on(df, "G1-nocturna", cfg_a, strat_record)
+    check(len(f2.open_preregistrations()) == 0, "resuelto por RESULTADO")
+    f2.preregister("G1-nocturna", cfg_b, "segunda hipótesis")
+    check(len(f2.open_preregistrations()) == 1, "ahora sí deja abrir el siguiente")
+
+    print("    -- salida 2 de 3: el abandono, con motivo obligatorio")
+    raises(f2.SpecViolation,
+           lambda: f2.abandon("G1-nocturna", cfg_b, "  "),
+           "abandonar sin motivo escrito")
+    used = f2.budget_used()
+    ab = f2.abandon("G1-nocturna", cfg_b, "error de diseño: el filtro deja 0 operaciones")
+    check(len(f2.open_preregistrations()) == 0, "resuelto por ABANDONO")
+    check(ab["motivo"].startswith("error de diseño"), "el motivo queda escrito en el ledger")
+    check(f2.budget_used() == used, "y el cartucho no se devuelve")
+    raises(f2.SpecViolation,
+           lambda: f2.abandon("G1-nocturna", cfg_b, "otra vez"),
+           "abandonar algo que ya está resuelto")
+
+    print("    -- salida 3 de 3: la violación de spec también lo cierra, sin cobrar dos veces")
+    cfg_c = {"step": 9, "edge_points": 1.0}
+    f2.preregister("G2-multidia", cfg_c, "tercera hipótesis")
+    used = f2.budget_used()
+    v = f2.log_spec_violation("G2-multidia", cfg_c, None, "corrida por fuera de run_on")
+    check(v.get("prereg") is not None, "la violación enlaza al pre-registro que resuelve")
+    check(len(f2.open_preregistrations()) == 0, "resuelto por VIOLACION")
+    check(f2.budget_used() == used, "no cobra dos veces: el cartucho ya se había pagado")
+
+    print("    -- y una corrida que revienta NO deja el pre-registro resuelto")
+    f2.preregister("G4-bordes", {"z": 2}, "borde de sesión")
+    try:
+        f2.run_on(df, "G4-bordes", {"z": 2}, strat_record)
+    except f2.WindowViolation:
+        pass
+    check(len(f2.open_preregistrations()) == 1,
+          "la corrida falló y el pre-registro sigue abierto: hay que cerrarlo a mano")
+    raises(f2.SpecViolation,
+           lambda: f2.preregister("G1-nocturna", {"step": 11}, "otra"),
+           "y mientras tanto bloquea todo lo demás")
+    check(f2.verify_ledger() is True, "cadena válida con las tres salidas dentro")
+
+
 def main():
     print("=" * 78)
     print("FASE 2 — pruebas del trabajo de día 0 (spec_fase2.md §9)")
@@ -414,8 +540,10 @@ def main():
     try:
         for fn in (s0_constantes, s1_reproduce_f4):
             fn()
+        s1b_compuertas_identicas()
         for fn in (s2_prerregistro, s3_presupuesto, s4_vecindad, s5_ventanas,
-                   s6_caja_fuerte, s7_barra_y_anios, s8_ledger_y_apertura):
+                   s6_caja_fuerte, s7_barra_y_anios, s8_ledger_y_apertura,
+                   s9_colgados):
             fn(tmp)
     except Exception:  # noqa: BLE001
         traceback.print_exc()

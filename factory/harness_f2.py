@@ -269,6 +269,15 @@ def _cfg_key(family: str, config: dict) -> str:
 # §1 / §2 — contador de presupuesto
 # ---------------------------------------------------------------------------
 
+# Entradas que gastan cartucho.
+#   PREREGISTRO — una configuración anunciada antes de correrla.
+#   CARTUCHO    — celda de vecindad cobrada por adopción (§7.2). No espera
+#                 corrida: ya se pagó, no queda "abierta".
+#   VIOLACION   — corrida por fuera de run_on. Gasta SOLO si no venía de un
+#                 pre-registro que ya había pagado.
+BUDGET_KINDS = ("PREREGISTRO", "CARTUCHO", "VIOLACION")
+
+
 def budget_used(family: str | None = None) -> int:
     """Cartuchos gastados. Un pre-registro gasta en el momento de escribirse
     (no cuando se corre): reservar barato sería una forma de no contar. Las
@@ -277,8 +286,10 @@ def budget_used(family: str | None = None) -> int:
     for e in read_ledger():
         if e.get("phase") != 2:
             continue
-        if e.get("kind") not in ("PREREGISTRO", "VIOLACION"):
+        if e.get("kind") not in BUDGET_KINDS:
             continue
+        if e.get("kind") == "VIOLACION" and e.get("prereg"):
+            continue          # ya lo pagó su pre-registro
         if family is not None and e.get("family") != family:
             continue
         n += 1
@@ -424,12 +435,47 @@ PASS_BAR_F2 = {
 }
 
 
-def required_t_a(n_a: int, n_b_proyectado: int) -> float:
-    """§3.2: la barra efectiva en A es el máximo entre la línea de decisión y
-    lo que hace falta para que el examen final pueda responder."""
-    if n_b_proyectado <= 0:
+def required_t_a(n_a_trades: int, n_b_trades: int) -> float:
+    """§3.2: la barra efectiva en A = max(línea de decisión, lo que hace falta
+    para que el examen final pueda responder).
+
+    LOS DOS ARGUMENTOS SON **OPERACIONES**, NO DÍAS NI SESIONES.
+
+    Esto NO es un tamiz distinto de `power_check`: es la MISMA condición
+    reescrita. Con t_A = δ̂·√n_A,
+
+        t_A ≥ 2.8016·√(n_A/n_B)  ⟺  δ̂·√n_A ≥ 2.8016·√n_A/√n_B
+                                  ⟺  δ̂·√n_B ≥ 2.8016      (= power_check)
+
+    o sea que no pueden aprobar cosas distintas mientras se las llame con los
+    mismos conteos. `passes_bar_a` las evalúa a las dos y `_assert_gates_agree`
+    revienta si alguna vez difieren: dos compuertas que miden lo mismo y se
+    llaman parecido son un accidente esperando, así que acá se cruzan solas.
+
+    Pasar SESIONES en lugar de operaciones es un uso de PLANIFICACIÓN — el que
+    hace la tabla de §3.2 — y sólo vale si la tasa de operaciones por sesión es
+    la misma en A y en B. Para una estrategia de calendario (F4: ~12 operaciones
+    al año) la tasa no sigue a las sesiones y el proxy miente. La DECISIÓN se
+    toma siempre con operaciones reales de A y operaciones proyectadas en B.
+    """
+    if n_b_trades <= 0:
         return float("inf")
-    return max(DECISION_T, POWER_CONST * sqrt(n_a / n_b_proyectado))
+    return max(DECISION_T, POWER_CONST * sqrt(n_a_trades / n_b_trades))
+
+
+def _assert_gates_agree(t_a: float, n_a_trades: int, n_b_trades: int,
+                        delta_hat: float, power_ok: bool) -> None:
+    """Guardia: la compuerta expresada en t y la expresada en potencia tienen
+    que dar el mismo veredicto. Si no, alguien las llamó con unidades distintas
+    (el error clásico: sesiones de un lado, operaciones del otro)."""
+    t_ok = t_a >= POWER_CONST * sqrt(n_a_trades / max(n_b_trades, 1))
+    if t_ok != power_ok:
+        raise SpecViolation(
+            "las dos formas de la compuerta de potencia discrepan "
+            f"(t_A={t_a:.4f}, n_A={n_a_trades}, n_B={n_b_trades}, "
+            f"delta={delta_hat:.6f}): revisá que ambas reciban OPERACIONES, "
+            "no sesiones (§3.2)."
+        )
 
 
 def passes_bar_a(trades: pd.DataFrame, res: Result, n_b_proyectado: int,
@@ -459,6 +505,7 @@ def passes_bar_a(trades: pd.DataFrame, res: Result, n_b_proyectado: int,
             reasons.append(f"mediana de la vecindad {med:.3f} < {PASS_BAR_F2['robustness_median_pf']}")
     else:
         reasons.append("vecindad de robustez no evaluada")
+    _assert_gates_agree(st["t"], st["n"], n_b_proyectado, st["delta"], pc["aprueba"])
     if not pc["aprueba"]:
         reasons.append(f"potencia proyectada en B {pc['potencia']:.1%} < {MIN_POWER:.0%} "
                        f"(harian falta {pc['n_b_necesario']} operaciones, se proyectan {pc['n_b_proyectado']}) "
@@ -538,6 +585,23 @@ def preregister(family: str, config: dict, hypothesis: str,
     if not hypothesis or not hypothesis.strip():
         raise SpecViolation("pre-registro sin hipótesis: prohibido (§7.2)")
 
+    # Un pre-registro sin resolver BLOQUEA el siguiente. Desde afuera del repo,
+    # "pre-registrado y nunca corrido" es indistinguible de "corrido, salió feo
+    # y no escribí el resultado". Para el operador honesto da igual; para quien
+    # audita es el hueco entero. Así que no se puede abrir otro hasta cerrarlo:
+    # con un resultado, o con un abandono con motivo escrito.
+    abiertos = open_preregistrations()
+    if abiertos:
+        detalle = "; ".join(
+            f"{e['family']} {json.dumps(e['config'], sort_keys=True)} "
+            f"(hash {e['hash']}, {e['ts'][:19]})" for e in abiertos)
+        raise SpecViolation(
+            f"hay {len(abiertos)} pre-registro(s) sin resolver y bloquean el "
+            f"siguiente: {detalle}. Cerralo con run_on(...) o con "
+            "abandon(family, config, motivo) antes de pre-registrar otra cosa "
+            "(§7.2)."
+        )
+
     # ¿Es esta configuración una celda de la vecindad de otro pre-registro?
     claimed = _robustness_cells_claimed()
     owner = claimed.get(_cfg_key(family, config))
@@ -567,10 +631,11 @@ def preregister(family: str, config: dict, hypothesis: str,
     if charged_cells:
         # La adopción cobra la vecindad entera, celda por celda, visible.
         for cell in charged_cells:
+            # kind=CARTUCHO, no PREREGISTRO: se cobra pero no queda esperando
+            # una corrida, así que no cuelga ni bloquea al siguiente.
             entries.append(_append({
-                "phase": 2, "kind": "PREREGISTRO", "family": family,
+                "phase": 2, "kind": "CARTUCHO", "family": family,
                 "config": cell, "part": "A", "result": None,
-                "hypothesis": f"celda de vecindad cobrada por adopción de {config}",
                 "charged_by_adoption_of": config, "prereg_owner": owner,
                 "note": "ADOPCION DE VECINDAD: la celda deja de ser gratis (§7.2)",
             }))
@@ -589,32 +654,69 @@ def preregister(family: str, config: dict, hypothesis: str,
     return entry
 
 
+# Un pre-registro se RESUELVE con exactamente una de tres entradas. Cualquier
+# otra cosa lo deja colgando, y un pre-registro colgando es indistinguible desde
+# afuera de "lo corrí, salió feo y no escribí el resultado" — que es justo lo
+# que este ledger existe para impedir.
+RESOLVING_KINDS = ("RESULTADO", "ABANDONO", "VIOLACION")
+
+
+def open_preregistrations() -> list:
+    """Todos los pre-registros sin resolver, en orden. Debería haber 0 o 1."""
+    resolved = {e["prereg"] for e in read_ledger()
+                if e.get("kind") in RESOLVING_KINDS and e.get("prereg")}
+    return [e for e in read_ledger()
+            if e.get("phase") == 2 and e.get("kind") == "PREREGISTRO"
+            and e["hash"] not in resolved]
+
+
 def open_preregistration(family: str, config: dict) -> dict | None:
-    """Pre-registro sin resultado todavía. Uno por configuración."""
+    """El pre-registro sin resolver de esta configuración, si lo hay."""
     key = _cfg_key(family, config)
-    prereg, consumed = None, set()
-    for e in read_ledger():
-        if e.get("phase") != 2:
-            continue
-        if e.get("kind") == "PREREGISTRO" and _cfg_key(e["family"], e["config"]) == key:
-            prereg = e
-        if e.get("kind") == "RESULTADO" and e.get("prereg"):
-            consumed.add(e["prereg"])
-    if prereg is None or prereg["hash"] in consumed:
-        return None
-    return prereg
+    for e in open_preregistrations():
+        if _cfg_key(e["family"], e["config"]) == key:
+            return e
+    return None
+
+
+def abandon(family: str, config: dict, motivo: str) -> dict:
+    """Cierra un pre-registro que no se va a correr. El motivo es OBLIGATORIO:
+    'datos faltantes', 'error de diseño', lo que sea — pero escrito. El cartucho
+    ya se gastó y no se devuelve (§7.2: los errores de diseño también cuestan)."""
+    if not motivo or not motivo.strip():
+        raise SpecViolation("abandono sin motivo escrito: prohibido (§7.2)")
+    prereg = open_preregistration(family, config)
+    if prereg is None:
+        raise SpecViolation(
+            f"no hay pre-registro abierto para {family} {config} que abandonar")
+    return _append({
+        "phase": 2, "kind": "ABANDONO", "family": family, "config": config,
+        "part": "A", "result": None, "prereg": prereg["hash"],
+        "motivo": motivo.strip(),
+        "note": "ABANDONADA sin correr. El cartucho ya se gastó y no se devuelve.",
+    })
 
 
 def log_spec_violation(family: str, config: dict, result: Result | None,
                        motivo: str) -> dict:
     """Para lo que el código no puede impedir: alguien corrió una estrategia sin
-    pasar por `run_on`. Se registra CON su resultado y gasta cartucho igual."""
-    return _append({
+    pasar por `run_on`. Se registra CON su resultado y gasta cartucho igual.
+
+    Si existía un pre-registro abierto para esa configuración, esta entrada lo
+    RESUELVE (es la tercera de las tres salidas posibles) y no vuelve a cobrar:
+    el cartucho ya se pagó al pre-registrar."""
+    prereg = open_preregistration(family, config)
+    body = {
         "phase": 2, "kind": "VIOLACION", "family": family, "config": config,
         "part": "A", "result": result.to_dict() if result else None,
         "spec_violation": motivo,
         "note": "VIOLACION DE SPEC: consume presupuesto igual (§7.2)",
-    })
+    }
+    if prereg is not None:
+        body["prereg"] = prereg["hash"]
+        body["note"] = ("VIOLACION DE SPEC sobre una config ya pre-registrada: "
+                        "resuelve el pre-registro, no cobra dos veces (§7.2)")
+    return _append(body)
 
 
 # ---------------------------------------------------------------------------
