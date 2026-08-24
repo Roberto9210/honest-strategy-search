@@ -1,29 +1,30 @@
-# La frontera de factibilidad — cuánto tendría que ganar una operación para pasar la barra
+# La frontera de factibilidad — y por qué el veredicto no es "vacía" sino "prematura"
 
-**Fecha:** 24 de agosto de 2026 · **Cartuchos gastados: 0.** Esto es aritmética sobre lo ya medido.
-No corre un solo backtest nuevo, no toca la parte B más que su calendario, y de la parte A mira
-**sólo dispersión**: ninguna media, ningún signo, ningún P&L de ninguna regla nueva.
-Script: `scratchpad` de la sesión; los insumos son públicos (`experiments_ledger.jsonl`, `data/`).
+**Fecha:** 24 de agosto de 2026 · **Cartuchos gastados: 0.** Aritmética sobre lo ya medido: no corre
+un backtest nuevo, no toca la parte B más que su calendario, y de la parte A mira **sólo dispersión**
+— ninguna media, ningún signo, ningún P&L de ninguna regla nueva.
+
+> **Versión 2.** La v1 de este documento concluyó "la frontera está vacía". Cuatro correcciones de
+> Roberto la reordenaron y **el veredicto cambió de nombre**. Las cuatro están incorporadas abajo, y
+> la que manda es la §2: la fricción no decide si la frontera está vacía.
 
 ## 0. La pregunta
 
-El cartucho 2 dejó una frase que hay que llevar hasta el número:
+El cartucho 2 dejó una frase que había que llevar hasta el número:
 
 > La única palanca que vuelve alcanzable la potencia —operar más seguido— es la misma que le entrega
 > la ventaja a los costos.
 
-Y hay un mecanismo que lo agrava: **la fricción es un costo fijo en dólares** ($3.90 ida y vuelta),
-así que su peso *relativo* crece al acortar la tenencia, justo cuando la potencia mejora. Dos fuerzas
-en direcciones opuestas. Si su suma nunca baja de lo que una regla simple puede producir, la Fase 2
-no tiene dónde buscar — y eso se sabe **antes** de gastar los 198 cartuchos restantes.
+La fricción es un costo **fijo en dólares** ($3.90 ida y vuelta), así que su peso *relativo* crece al
+acortar la tenencia, justo cuando la potencia mejora. Dos fuerzas opuestas. ¿Su suma baja alguna vez
+de lo que una regla simple puede producir?
 
 ## 1. Las dos curvas
 
-Para cada tenencia *h* (en sesiones), sobre la parte A (2000-09-18 → 2019-12-31, 4.865 sesiones), con
-σ medido **incondicionalmente** —la dispersión del retorno de *h* sesiones, sin mirar su media— y
-n_B = máximo de operaciones no solapadas que caben en las 1.669 sesiones de la parte B:
+Con σ medido **incondicionalmente** sobre la parte A (4.865 sesiones) y n_B = máximo de operaciones no
+solapadas que caben en las 1.669 sesiones de la parte B:
 
-| Tenencia | σ por operación | n_B máx | Potencia exige | Fricción cuesta | **BRUTO exigido** | en dólares |
+| Tenencia | σ/op | n_B máx | Potencia exige | Fricción cuesta | **BRUTO exigido** | en $ |
 |---|---|---|---|---|---|---|
 | **1 d** | $81.06 | 1.669 | 0.0686 σ | 0.0481 σ | **0.1167 σ** | **$9.46** |
 | 2 d | $112.07 | 834 | 0.0970 σ | 0.0348 σ | 0.1318 σ | $14.77 |
@@ -33,133 +34,155 @@ n_B = máximo de operaciones no solapadas que caben en las 1.669 sesiones de la 
 | 10 d | $231.01 | 166 | 0.2174 σ | 0.0169 σ | 0.2343 σ | $54.13 |
 | 20 d | $317.85 | 83 | 0.3075 σ | 0.0123 σ | 0.3198 σ | $101.64 |
 
-La potencia manda en todas las filas: la línea de decisión por multiplicidad (|t| ≥ 3.726) nunca llega
-a ser la restricción activa, porque la parte B es un tercio de la parte A.
+Bajando de una sesión el mínimo se confirma por el otro lado: a ~30 minutos la fricción sola cuesta
+0.1766 σ y el total sube a 0.1956 σ. **El mínimo de la tenaza está en ~1 sesión: 0.1167 σ.**
 
-**La tenaza se ve entera acá:** la columna de potencia sube 4,5× de 1 d a 20 d; la de fricción baja
-3,9× en el mismo tramo. **Su suma tiene un mínimo en 1 sesión: 0.1167 σ, o $9.46 brutos por
-operación.** Ese es el punto más barato de toda la fase.
+## 2. La corrección que manda: la fricción no decide si la frontera está vacía
 
-### Y hacia el otro lado el mínimo también se confirma
+Reordenando la propia condición:
 
-Extendido al régimen intradía, con σ aproximado por raíz de *t* desde la pata diurna medida ($79.63):
+```
+c·√h  ≥  θ·√h + f/√h        (multiplicando por √h > 0)
+c·h   ≥  θ·h + f
+(c − θ)·h  ≥  f
+```
 
-| Tramo | σ | n_B | Potencia | Fricción | BRUTO exigido |
+con **θ = 2.8016/√S_B** y **f = fricción/σ₁**. De ahí:
+
+- **Si c > θ**, existe un h que cruza — `h ≥ f/(c−θ)` — **con cualquier fricción.**
+- **Si c ≤ θ**, no cruza para ningún h, **ni con fricción cero.**
+
+*(Verificado numéricamente con el control f = 0: con c = 0.0661 y θ = 0.0686 no cruza; con c = 0.0700
+cruza. La fricción no participa de la decisión.)*
+
+**La fricción decide DÓNDE cruza, no SI cruza.** Y θ sale **enteramente del largo de la parte B**:
+
+```
+θ = 2.8016 / √S_B = 2.8016 / √1669 = 0.068577
+```
+
+> **Entonces la frontera no está vacía por los costos. Está vacía —si lo está— porque la caja fuerte
+> es corta.** Es una afirmación sobre cuántos datos guardamos, no sobre cuánto cobra el bróker.
+
+## 3. La corrección al numerador: c está inflado por selección
+
+La v1 comparó θ contra c = 0.0661, de F4. **F4 es el mejor de 58 configuraciones: c = 0.0661 es un
+máximo de orden, sesgado hacia arriba.** Es la propia lógica de multiplicidad de la spec, aplicada a
+la frontera.
+
+**Cota grosera del sesgo.** Bajo la nula global, el mejor de 57 configuraciones da p ≈ 1/58 = 0.01724,
+o sea |t| ≈ **2.3815**. F4 midió **t = 2.304**. El exceso sobre lo que produce la selección sola es
+**−0.0775**: negativo. La corrección grosera por máximo de orden **deja el efecto de F4 en cero** — es
+la cuenta de `botc_potencia_f4.md` §3, ahora aplicada a c en vez de a δ.
+
+**Las únicas estimaciones de c libres de selección** son los dos cartuchos de la Fase 2, porque fueron
+**pre-registrados antes de conocer su resultado** — el diseño de la fase es, sin haberlo buscado, la
+única fuente insesgada que tenemos:
+
+| Ancla | h | c = δ_bruto/√h | error estándar |
+|---|---|---|---|
+| Cartucho 1 (k=3, hold=3) | 3 | 0.0618 | ± 0.0371 |
+| Cartucho 2 (k=1, hold=1) | 1 | 0.0440 | ± 0.0257 |
+| **Combinados por precisión** | — | **0.0498** | **± 0.0211** |
+| *IC 90 %* | | *[0.0150, 0.0846]* | |
+| F4 (seleccionado, inflado) | 7 | 0.0661 | — |
+
+**c − θ = −0.0188 ± 0.0211.** Está por debajo, **y no significativamente.** Roberto tiene razón en que
+la brecha real es más ancha que el 4 % que reportaba la v1 — pero también es mucho más incierta, y esa
+segunda mitad es la que cambia el veredicto.
+
+## 4. La corrección al modelo: `c·√h` es generoso con las tenencias largas
+
+`logrado = c·√h` supone **deriva constante por unidad de tiempo**: la ventaja en dólares crece lineal
+en h mientras σ crece con la raíz. Vale si el mecanismo es **persistente** (una prima que se devenga
+mientras estás en posición).
+
+Si el mecanismo es **transitorio** —una corrección que se completa y después se agota— la ventaja en
+dólares **se aplana** en algún h\*, y a partir de ahí en unidades de σ **decae como 1/√h**. El mejor
+punto pasa a ser h = h\* y alargar más **empeora**. La condición de cruce sigue siendo (c−θ)·h ≥ f,
+pero con **h ≤ h\***.
+
+Y esto importa: los mecanismos declarados de este proyecto son **todos transitorios**. Flujo de
+rebalanceo de fin de mes (F4), liquidez a vendedores forzados (G2): los dos se agotan en días.
+
+## 5. La pregunta que decide: ¿cuánta caja fuerte falta?
+
+Condición: `θ ≤ c − f/h` ⟹ **S_B ≥ (2.8016 / (c − f/h))²**. Con S_B = 1.669 hoy y 252 sesiones al año:
+
+| c | Modelo | h operable | S_B necesario | Faltan | **Años de espera** |
 |---|---|---|---|---|---|
-| sesión entera | $79.63 | 1.669 | 0.0686 σ | 0.0490 σ | 0.1176 σ |
-| ¼ de sesión | $39.81 | 6.676 | 0.0343 σ | 0.0980 σ | 0.1322 σ |
-| ~30 min | $22.08 | 21.697 | 0.0190 σ | 0.1766 σ | **0.1956 σ** |
+| 0.0661 *(F4, inflado)* | persistente | 10 | 2.090 | 421 | **1,7 a** |
+| 0.0661 *(F4, inflado)* | persistente | 20 | 1.935 | 266 | **1,1 a** |
+| 0.0661 *(F4, inflado)* | transitorio h\*=7 | 7 | 2.238 | 569 | **2,3 a** |
+| 0.0661 *(F4, inflado)* | transitorio h\*=3 | 3 | 3.132 | 1.463 | **5,8 a** |
+| **0.0498** *(insesgado)* | persistente | 10 | 3.880 | 2.211 | **8,8 a** |
+| **0.0498** *(insesgado)* | transitorio h\*=7 | 7 | 4.262 | 2.593 | **10,3 a** |
+| **0.0498** *(insesgado)* | transitorio h\*=3 | 3 | 6.891 | 5.222 | **20,7 a** |
+| 0.0846 *(IC 90 % alto)* | persistente | 10 | 1.234 | 0 | **ya alcanza** |
 
-Al bajar de una sesión la fricción se dispara más rápido de lo que mejora la potencia. **El mínimo de
-la tenaza está en ~1 sesión y es 0.1167 σ.** No hay un punto mejor en ninguna dirección.
+Y θ cae solo, porque la caja fuerte crece sola:
 
-## 2. Contra qué se juzga "plausible"
+| | Hoy | +2 a | +5 a | +10 a | +20 a |
+|---|---|---|---|---|---|
+| S_B | 1.669 | 2.173 | 2.929 | 4.189 | 6.709 |
+| θ | 0.0686 | 0.0601 | 0.0518 | 0.0433 | 0.0342 |
+| c necesario (h=10) | 0.0734 | 0.0649 | 0.0566 | 0.0481 | 0.0390 |
 
-No contra una intuición. Contra lo que las reglas de este proyecto **midieron de verdad**.
+## 6. Veredicto: **Fase 2 prematura**, no "frontera vacía"
 
-**Advertencia primero, porque la referencia obvia es falsa.** Ordenando las 58 configuraciones del
-registro por ganancia bruta por operación, las 6 primeras son variantes de F2 con **9, 18, 28, 63, 73
-y 56 operaciones** en veinte años (hasta $1.093 brutos por operación). El veredicto de la Fase 1 ya
-las nombró: *"las 'ganadoras' son exposición al alza del índice, no estrategia"*. Usarlas como vara de
-plausibilidad sería exactamente el error que la Fase 1 documentó. **La mediana del registro completo
-es $1.61 brutos por operación**, y ese número tampoco sirve: mezcla reglas de frecuencias distintas.
+Las dos cosas se publican muy distinto y sólo una es cierta:
 
-Las únicas anclas honestas son las tres configuraciones con **muchas operaciones y σ conocido**:
+- ❌ *"En este instrumento, a estos costos, la potencia y la fricción no tienen intersección."*
+  **Falso como está escrito.** La fricción no decide si hay intersección (§2), y el c contra el que se
+  midió estaba inflado por selección en una dirección y es estadísticamente indistinguible de θ en la
+  otra (§3).
+- ✅ **"La caja fuerte de 1.669 sesiones es demasiado corta para decidir si existe una ventaja
+  explotable en MES, y la incertidumbre sobre el tamaño de efecto alcanzable es tan grande que el
+  tiempo de espera va de cero a veinte años según cuál de dos números medidos sea el correcto."**
 
-| Ancla | Tenencia | Ops en A | Bruto/op | **Bruto en σ** |
-|---|---|---|---|---|
-| **F4 vuelta de mes** — lo mejor que el proyecto midió en 58 configuraciones | ~7 d | 231 | $29.20 | **0.1749 σ** |
-| **G2 cartucho 1** (k=3, hold=3) | 3 d | 244 | $17.91 | **0.1070 σ** |
-| **G2 cartucho 2** (k=1, hold=1) | 1 d | 1.510 | $3.73 | **0.0440 σ** |
+El rango honesto es **[ya alcanza, 20,7 años]** y su punto central está cerca de **9 años**. Ese rango
+es la salida, no un número. Estrecharlo requiere más estimaciones **insesgadas** de c — es decir, más
+cartuchos pre-registrados, que es exactamente para lo que existen los 198 restantes.
 
-## 3. El resultado: cada ancla contra la exigencia de SU tenencia
+**Corolario incómodo y honesto:** cada cartucho pre-registrado sirve para dos cosas a la vez —
+buscar una ventaja, y medir c sin sesgo. Lo segundo no depende de que la búsqueda encuentre nada.
 
-| Ancla | h | logrado | exigido a esa tenencia | **logrado / exigido** |
-|---|---|---|---|---|
-| G2 cartucho 2 | 1 d | 0.0440 σ | 0.1167 σ | **38 %** |
-| G2 cartucho 1 | 3 d | 0.1070 σ | 0.1479 σ | **72 %** |
-| F4 vuelta de mes | 7 d | 0.1749 σ | 0.2014 σ | **87 %** |
+## 7. La inconsistencia entre nuestros propios instrumentos, resuelta
 
-*(La columna "exigido" supone que la regla opera espalda con espalda a esa tenencia. Con la frecuencia
-que esas configuraciones realmente tuvieron —F4 opera 12 veces al año, no 34— los porcentajes caen a
-52 %, 33 % y 26 %. La tabla de arriba es la versión **generosa**.)*
+La criba decía **G4 "VALIDABLE, holgada"** (δ_min 0.0485, la mejor de las cinco). La frontera decía que
+las tenencias cortas son el peor lugar posible. **Las dos hablaban de la misma familia y apuntaban a
+lados opuestos, porque la criba medía potencia y no miraba fricción.** Es el mismo defecto que ya
+habíamos corregido entre `required_t_a` y `power_check`: dos compuertas con nombres parecidos midiendo
+cosas distintas.
 
-**Lo logrado crece con la tenencia y lo exigido también, pero el cociente mejora al alargar —
-y en ningún punto medido llega a 1.**
+**Corregido** (`CAMBIO_DE_REGLAS` `3d5887b8c7630728`, dirección **ENDURECE**): la criba ahora exige σ
+por operación —fail-closed sin él— y compara **bruto contra bruto**:
+`exigido = 2.8016/√n_B + fricción/σ` contra la referencia bruta de F4 (0.1749).
 
-El motivo estructural: la ventaja **se acumula** con el tiempo en posición (aproximadamente lineal en
-dólares) mientras σ crece sólo con la raíz, así que la ventaja en unidades de σ crece como √h. Lo
-exigido también crece como √h, más un término de fricción que decae. Escrito:
+| Familia | n_B máx | σ/op | Potencia | Fricción | **Exigido** | $/op | Manda | Veredicto |
+|---|---|---|---|---|---|---|---|---|
+| **G1** nocturna | 1.669 | $81.06 | 0.0686 | 0.0481 | **0.1167** | $9.46 | potencia | VALIDABLE |
+| **G3** régimen | 834 | $81.06 | 0.0970 | 0.0481 | 0.1451 | $11.76 | potencia | VALIDABLE |
+| **G5** cruzado | 834 | $81.06 | 0.0970 | 0.0481 | 0.1451 | $11.76 | potencia | VALIDABLE |
+| **G2** multi-día | 589 | $81.06 | 0.1154 | 0.0481 | 0.1636 | $13.26 | potencia | VALIDABLE |
+| **G4** bordes | 3.338 | $22.08 | 0.0485 | **0.1766** | **0.2251** | $4.97 | **fricción** | **NO VALIDABLE** |
 
-```
-logrado(h)  ≈  c · √h
-exigido(h)  =  0.0686 · √h  +  0.0481 / √h
-```
+**G4 pasa de la mejor a la peor.** Su fricción pesa **3,6 veces** su ventaja de potencia. Ya no puede
+gastar cartuchos: `preregister()` la rechaza. Sus 40 siguen sin gastarse y la decisión de darla
+formalmente fuera de alcance —con la pérdida de esos 40, sin retirarlos del denominador ni
+reasignarlos— queda pendiente, porque es irreversible.
 
-Las dos curvas se cruzarían en alguna tenencia **sólo si c > 0.0686.** Los tres valores medidos de c:
+Y nótese la respuesta a la pregunta *"¿G4 es factible o no?"*: **no**, y el motivo es exactamente el
+que la frontera predijo. Los dos instrumentos ahora coinciden porque miden lo mismo.
 
-| Ancla | c = logrado / √h |
-|---|---|
-| G2 cartucho 2 (h=1) | 0.0440 |
-| G2 cartucho 1 (h=3) | 0.0618 |
-| **F4 (h=7) — el mejor de todo el proyecto** | **0.0661** |
-| *umbral para que exista alguna tenencia factible* | *0.0686* |
+## 8. Qué queda sobre la mesa
 
-**Los tres están por debajo del umbral. El mejor —F4, lo mejor que este proyecto encontró en 58
-configuraciones— queda en el 96 % de lo que haría falta.** Es decir: la curva de lo logrado corre por
-debajo de la de lo exigido **para toda tenencia**, y por eso el cociente mejora al alargar pero tiende
-asintóticamente a 0.92, no a 1.
+La celda más barata de todo el espacio de diseño sigue siendo **G1** (0.1167 σ, $9.46 brutos por
+operación) — una operación por sesión, tenencia de ~1 sesión, sin filtro. Todo filtro reduce la
+frecuencia y **sube** la barra, por lo que G3 y G5 empeoran la aritmética por construcción.
 
-## 4. Veredicto de la frontera, con su límite dicho
+Y G1 es la única que **la serie diaria congelada no puede medir**: el tramo cierre→apertura de ES=F en
+Yahoo carga el 3,3 % de la varianza porque es la reapertura de las 18:00 ET.
 
-**Con el material medido, la frontera está vacía: no hay ninguna tenencia en la que una regla del tipo
-que sabemos construir alcance la barra de la Fase 2 sobre MES a costos minoristas.**
-
-Lo que esto **no** dice, y hay que decirlo con la misma claridad que en la Fase 1:
-
-- **No es una imposibilidad demostrada.** El coeficiente c está estimado con **tres puntos**, y el
-  mejor de ellos queda a un **4 %** del umbral. Un margen así no soporta el peso de la palabra
-  "imposible". Es una indicación fuerte, no un teorema.
-- **No dice que no exista ventaja.** Dice que la ventaja que sabemos producir, neta de $3.90 por
-  operación, no alcanza para que el examen final pueda *distinguirla del ruido* — que es el mismo
-  diagnóstico de F4, ahora generalizado a toda la fase en vez de a una candidata.
-- **No dice que otros no puedan.** Dice que con reglas explícitas de una página, sobre el índice más
-  arbitrado del planeta, a costos de minorista, la potencia y la fricción casi no tienen intersección.
-
-## 5. Si hay una ventana, es ésta
-
-Formalmente la frontera es más baja en **1–3 sesiones de tenencia, operando todas las sesiones, sin
-filtros**. Cualquier filtro reduce la frecuencia y por lo tanto **sube** la barra: un estado de
-cuartil sobre una regla de 1 día deja n_B = 417 y exige 0.1853 σ en vez de 0.1167 σ. Es decir: **G3 y
-G5, que condicionan por estado, empeoran la aritmética por construcción.**
-
-Y acá el hallazgo se cierra sobre sí mismo. La celda más barata de todo el espacio de diseño —una
-operación por sesión, tenencia de ~1 sesión, sin filtro— es **exactamente G1**, la prima nocturna. Es
-la primera del orden declarado, la que la criba de medibilidad marcó como la más holgada, y **la única
-que la serie diaria congelada no puede medir** (el tramo cierre→apertura de ES=F en Yahoo carga el
-3,3 % de la varianza: es la reapertura de las 18:00 ET, no un hueco nocturno).
-
-> **La única celda donde la aritmética deja lugar es la única que los datos no pueden contestar.**
-
-Eso convierte la decisión sobre G1 en la decisión sobre la fase. Las opciones, con su precio:
-
-1. **Desbloquear el régimen intradía** (implementar y probar el mapeo de día de negociación CME) y
-   medir G1 sobre la serie de 1 minuto, donde el hueco nocturno sí existe. Toca `ventanas`, que el
-   acta congeló — **exige una fase nueva o una enmienda declarada**, y en cualquier caso un
-   `CAMBIO_DE_REGLAS` con su dirección.
-2. **Declarar G1 fuera de alcance** con motivo escrito, perder sus 40 cartuchos (sin retirarlos del
-   denominador ni reasignarlos), y con eso aceptar que la celda más barata queda sin medir.
-3. **Cerrar la Fase 2 por frontera vacía**, publicar este documento como su veredicto estructural, y
-   no gastar los 198 cartuchos restantes de a uno para llegar al mismo lugar.
-
-## 6. Por qué la opción 3 no es un fracaso
-
-Si la frontera está vacía, eso **es** el veredicto de la Fase 2, y vale mucho más que 198 cartuchos
-gastados uno por uno. Sería la Fase 1 entendida de verdad: no *"estas cinco familias fallaron"* sino
-**"en este instrumento, a estos costos, la potencia y la fricción no tienen intersección"** — que es
-una afirmación sobre la estructura del problema, no sobre nuestra suerte, y que cualquier tercero
-puede recalcular con los tres números públicos de la §3.
-
-La Fase 1 costó una semana y $0 para aprender que cinco familias no tenían ventaja. La Fase 2 costó
-**dos cartuchos** para aprender por qué ninguna podía tenerla de forma demostrable. Ese es el
-progreso: la segunda vez el "no" viene con su mecanismo.
+> La celda más barata sigue siendo la que los datos no pueden contestar. Pero ahora sabemos que eso no
+> cierra la fase: la cierra —o no— el largo de la caja fuerte, y ese número crece solo.

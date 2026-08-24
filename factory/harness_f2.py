@@ -428,6 +428,11 @@ DELTA_REF_BEST = 0.1515      # F4 vuelta de mes: $25.30 / $166.95, 231 ops.
 DELTA_REF_TYPICAL = 0.0837   # G2 reversión k=3 h=3: $14.01 / $167.37, 244 ops.
                              # Cartucho 1 de la Fase 2.
 
+# Los de arriba son NETOS. La criba compara contra el requisito BRUTO (potencia +
+# fricción), así que necesita la referencia también en BRUTO:
+#   F4: ($25.30 + $3.90) / $166.95 = 0.1749
+DELTA_REF_BEST_GROSS = 0.1749
+
 # La criba MATA familias, así que se aplica con el δ más GENEROSO de los dos.
 # Con el pesimista mataríamos familias que un efecto real podría rescatar; con el
 # más grande que jamás medimos, un "no validable" es inapelable: ni suponiendo la
@@ -449,51 +454,83 @@ def count_trades_only(strategy_fn, data: pd.DataFrame, config: dict) -> int:
 
 
 def measurability_screen(family: str, n_b_max: int, fuente: str,
-                         delta: float | None = None) -> dict:
+                         sigma_por_operacion: float | None = None,
+                         delta_ref_gross: float | None = None) -> dict:
     """¿Puede la caja fuerte pronunciarse alguna vez sobre esta familia?
 
     `n_b_max`: máximo de operaciones que la ESTRUCTURA de la regla puede producir
-        en la parte B. Sale de contar frecuencia sobre A y proyectar con el
-        calendario de B, o de una cota estructural de la definición de la regla.
-    `fuente`: cómo se obtuvo ese número. Obligatorio: un techo sin procedencia es
-        un número inventado.
+        en la parte B.
+    `fuente`: cómo se obtuvo. Obligatorio: un techo sin procedencia es inventado.
+    `sigma_por_operacion`: desvío en DÓLARES del P&L de una operación a la
+        tenencia de la familia. OBLIGATORIO — ver abajo.
+
+    CORRECCIÓN (24-ago-2026). La primera versión de esta criba miraba SOLO la
+    potencia y no la fricción, y por eso aprobó a G4 como "la más holgada"
+    (δ_min 0.0485) cuando en realidad es la PEOR de las cinco: sus operaciones
+    tienen un σ chico (~$22 en un tramo de 30 min) y la fricción fija de $3.90
+    pesa 0.1766 σ, 3.6 veces más que su ventaja de potencia. Dos compuertas que
+    se llamaban parecido y medían distinto — el mismo defecto que ya corregimos
+    entre `required_t_a` y `power_check`.
+
+    Ahora se compara BRUTO contra BRUTO:
+
+        exigido_bruto = POWER_CONST/√n_B_max  +  fricción/σ
+        validable     ⟺  exigido_bruto ≤ δ_ref_bruto (0.1749, F4 en bruto)
+
+    Sin σ no hay criba: fail-closed, porque una criba que ignora la fricción es
+    exactamente el error que esta corrección arregla.
     """
     if family not in FAMILY_BUDGET:
         raise SpecViolation(f"familia no declarada: {family!r}")
     if not (fuente and fuente.strip()):
         raise SpecViolation("criba sin fuente del techo de operaciones (§3.5)")
-    d = float(delta if delta is not None else DELTA_REF_CRIBA)
-    need = n_b_needed(d)
-    validable = int(n_b_max) >= need
+    if not (sigma_por_operacion and float(sigma_por_operacion) > 0):
+        raise SpecViolation(
+            "criba sin σ por operación: una criba que ignora la fricción aprueba "
+            "familias que la frontera rechaza (§3.5, corrección del 24-ago-2026). "
+            "Pasá el desvío en dólares del P&L de una operación a la tenencia de "
+            "la familia."
+        )
+    sig = float(sigma_por_operacion)
+    ref = float(delta_ref_gross if delta_ref_gross is not None else DELTA_REF_BEST_GROSS)
+    potencia = POWER_CONST / sqrt(max(int(n_b_max), 1))
+    friccion = FRICTION_RT / sig
+    exigido = potencia + friccion
     return {
         "family": family,
         "n_b_max": int(n_b_max),
         "fuente": fuente.strip(),
-        "delta_ref": d,
-        # El numero que hace el trabajo: a su variante mas frecuente, esta familia
-        # solo puede VALIDAR efectos de al menos este tamano. Es una propiedad de
-        # la estructura de la regla, no de si gana. Derivable de n_b_max.
-        "delta_min_detectable": POWER_CONST / sqrt(max(int(n_b_max), 1)),
-        "n_b_necesario": need,
-        "n_b_necesario_delta_tipico": n_b_needed(DELTA_REF_TYPICAL),
-        "holgado": int(n_b_max) >= n_b_needed(DELTA_REF_TYPICAL),
-        "validable": bool(validable),
+        "sigma_por_operacion": sig,
+        "delta_ref_gross": ref,
+        "componente_potencia": potencia,
+        "componente_friccion": friccion,
+        # El numero que hace el trabajo: la ventaja BRUTA por operacion que esta
+        # familia necesitaria, en unidades de sigma, en su mejor celda.
+        "exigido_bruto_sigma": exigido,
+        "exigido_bruto_usd": exigido * sig,
+        "manda": "friccion" if friccion > potencia else "potencia",
+        "validable": bool(exigido <= ref),
     }
 
 
 def log_measurability_screen(family: str, n_b_max: int, fuente: str,
-                             delta: float | None = None, nota: str = "") -> dict:
+                             sigma_por_operacion: float | None = None,
+                             delta_ref_gross: float | None = None,
+                             nota: str = "") -> dict:
     """Deja la criba en el ledger. NO gasta cartucho: no hay rentabilidad adentro."""
-    sc = measurability_screen(family, n_b_max, fuente, delta)
+    sc = measurability_screen(family, n_b_max, fuente, sigma_por_operacion,
+                              delta_ref_gross)
     return _append({
         "phase": 2, "kind": "MEDIBILIDAD", "family": family,
         "config": {"evento": "CRIBA DE MEDIBILIDAD"}, "part": "meta",
         "result": None, "screen": sc, "nota": nota.strip() or None,
-        "note": (f"{family}: techo {sc['n_b_max']} operaciones en B contra "
-                 f"{sc['n_b_necesario']} necesarias a delta={sc['delta_ref']:.4f}. "
+        "note": (f"{family}: exige {sc['exigido_bruto_sigma']:.4f} sigma brutos por "
+                 f"operacion (potencia {sc['componente_potencia']:.4f} + friccion "
+                 f"{sc['componente_friccion']:.4f}, manda la {sc['manda']}) contra "
+                 f"la referencia {sc['delta_ref_gross']:.4f} de F4 en bruto. "
                  + ("VALIDABLE." if sc["validable"] else
-                    "NO VALIDABLE: la caja fuerte no podria pronunciarse ni con la "
-                    "mejor ventaja que el proyecto midio jamas.")
+                    "NO VALIDABLE: ni con la mejor ventaja que el proyecto midio "
+                    "jamas alcanzaria la barra en su mejor celda.")
                  + " No consume presupuesto (§3.5)."),
     })
 
@@ -740,13 +777,14 @@ def preregister(family: str, config: dict, hypothesis: str,
             "primero — contar frecuencia no gasta presupuesto (§3.5)."
         )
     if not sc["screen"]["validable"]:
+        sch = sc["screen"]
         raise SpecViolation(
-            f"{family} está declarada NO VALIDABLE: techo de "
-            f"{sc['screen']['n_b_max']} operaciones en B contra "
-            f"{sc['screen']['n_b_necesario']} necesarias a delta="
-            f"{sc['screen']['delta_ref']:.4f}. La caja fuerte no podría "
-            "pronunciarse ni con la mejor ventaja que el proyecto midió jamás "
-            "(§3.5)."
+            f"{family} está declarada NO VALIDABLE: en su mejor celda exige "
+            f"{sch['exigido_bruto_sigma']:.4f} sigma brutos por operación "
+            f"(potencia {sch['componente_potencia']:.4f} + fricción "
+            f"{sch['componente_friccion']:.4f}, manda la {sch['manda']}) contra la "
+            f"referencia {sch['delta_ref_gross']:.4f} — la mejor ventaja que el "
+            "proyecto midió jamás. Ni con esa alcanzaría la barra (§3.5)."
         )
     if not hypothesis or not hypothesis.strip():
         raise SpecViolation("pre-registro sin hipótesis: prohibido (§7.2)")

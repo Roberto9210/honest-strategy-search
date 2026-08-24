@@ -144,7 +144,8 @@ def fresh_ledger(tmp):
     # §3.5: sin criba de medibilidad no se puede gastar un cartucho. Las pruebas
     # que no son sobre la criba arrancan con todas las familias cribadas.
     for fam in f2.FAMILY_BUDGET:
-        f2.log_measurability_screen(fam, 5000, "fixture de prueba")
+        f2.log_measurability_screen(fam, 5000, "fixture de prueba",
+                                    sigma_por_operacion=200.0)
     return dst
 
 
@@ -748,6 +749,9 @@ def s13_criba_medibilidad(tmp):
     check(f2.n_b_needed(f2.DELTA_REF_BEST) == 342,
           f"a delta {f2.DELTA_REF_BEST} hacen falta {f2.n_b_needed(f2.DELTA_REF_BEST)} "
           "operaciones — el mismo 342 que BOT C publicó para F4")
+    check(abs(f2.DELTA_REF_BEST_GROSS - (25.30 + 3.90) / 166.95) < 1e-4,
+          f"referencia BRUTA {f2.DELTA_REF_BEST_GROSS} = (25.30+3.90)/166.95 — "
+          "la criba compara bruto contra bruto")
     check(f2.n_b_needed(f2.DELTA_REF_TYPICAL) == 1121,
           f"a delta {f2.DELTA_REF_TYPICAL} hacen falta {f2.n_b_needed(f2.DELTA_REF_TYPICAL)}")
 
@@ -776,16 +780,23 @@ def s13_criba_medibilidad(tmp):
     used = f2.budget_used()
     e = f2.log_measurability_screen(
         "G1-nocturna", 100,
-        "techo estructural de prueba: 100 operaciones en B")
-    check(e["screen"]["validable"] is False, "100 < 342: NO VALIDABLE")
+        "techo estructural de prueba: 100 operaciones en B",
+        sigma_por_operacion=200.0)
+    check(e["screen"]["validable"] is False,
+          "exige mas que la referencia bruta: NO VALIDABLE")
     check(f2.budget_used() == used, "y la criba NO consumió presupuesto")
-    check(abs(e["screen"]["delta_min_detectable"] - 2.8016 / 10) < 1e-3,
-          f"efecto mínimo detectable {e['screen']['delta_min_detectable']:.4f} "
-          "= 2.8016/sqrt(100)")
+    check(abs(e["screen"]["exigido_bruto_sigma"] - (2.8016 / 10 + 3.90 / 200)) < 1e-3,
+          f"exigido bruto {e['screen']['exigido_bruto_sigma']:.4f} = potencia + fricción")
+
+    print("    -- y una criba SIN sigma se niega: ignorar la fricción era el bug")
+    raises_msg(f2.SpecViolation,
+               lambda: f2.log_measurability_screen("G1-nocturna", 100, "sin sigma"),
+               "criba sin sigma por operación",
+               must_contain=("ignora la fricción",))
     raises_msg(f2.SpecViolation,
                lambda: pre("G1-nocturna", {"z": 1}, "hipótesis"),
                "pre-registrar en una familia NO VALIDABLE",
-               must_contain=("NO VALIDABLE", "342"))
+               must_contain=("NO VALIDABLE", "fricción"))
 
     print("    -- y sacarla de alcance pierde los cartuchos, sin mover el listón")
     oos = f2.declare_not_validable(
