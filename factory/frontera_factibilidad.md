@@ -893,7 +893,13 @@ operación y las posteriores aportan sólo las nuevas — el orden lo fija el le
 
 **Y el hallazgo dentro del hallazgo:** las **152 operaciones genuinamente nuevas** del cartucho 4 dan
 **c = −0.0746**. El +0.0395 que reportó era casi todo **heredado de las 1.069 duplicadas del cartucho
-2**. El cartucho 4 no confirmó el mecanismo: lo que agregó de nuevo apunta al otro lado.
+2**.
+
+> **CORREGIDO el 24-ago-2026 (adenda 8, §37).** Acá seguía *"el cartucho 4 no confirmó el mecanismo: lo
+> que agregó de nuevo apunta al otro lado"*. **Esa frase no está sostenida por los datos** y se retira:
+> el −0.0746 se publicó sin intervalo, y con intervalo (± 0.0812) **cubre el cero y cubre el propio c
+> de liquidez**. Lo correcto es *"el residuo no es distinguible ni del cero ni del propio mecanismo"*.
+> El hallazgo del 87,6 % se sostiene solo y no necesitaba que el residuo fuera negativo.
 
 | Estimador | Ingenuo (publicado) | **n efectivo (corregido)** |
 |---|---|---|
@@ -939,3 +945,110 @@ COTA B — el promedio de LOS 4 NUEVOS  ≤ (6·0.033848 − 2·0.018500)/4 = 0.
 
 Lo publicado (**0.0301**) estaba **rotulado como cota B** y su valor cae cerca de la **cota A**. **Dos
 errores, y los dos en contra nuestra**: el rótulo cambiado y la cota subestimada en un 27 %.
+
+---
+
+# Adenda 8 — la matriz completa, el intervalo que faltaba, y una premisa que no se sostiene
+
+## 36. La matriz de los seis pares (§3.10, identidad = fecha de entrada + tenencia)
+
+Medir un solo par era insuficiente y la matriz completa muestra por qué.
+
+| Par | Operaciones idénticas | % de A | % de B | Fechas de entrada compartidas | % de A | Sesiones co-operando | ρ (P&L) |
+|---|---|---|---|---|---|---|---|
+| **c1–c2** | **0** | 0,0 % | 0,0 % | **244** | **100,0 %** | 109 | **+0,6529** |
+| c1–c3 | 0 | 0,0 % | 0,0 % | 0 | 0,0 % | 64 | +0,7036 |
+| c1–c4 | 0 | 0,0 % | 0,0 % | 142 | 58,2 % | 79 | +0,4727 |
+| c2–c3 | 0 | 0,0 % | 0,0 % | 0 | 0,0 % | 0 | — |
+| **c2–c4** | **1.069** | 70,8 % | **87,6 %** | 1.069 | 70,8 % | 1.069 | **+1,0000** |
+| c3–c4 | 0 | 0,0 % | 0,0 % | 0 | 0,0 % | 0 | — |
+
+**Lo que la matriz muestra y el par no mostraba: el disparador de c1 es un SUBCONJUNTO ESTRICTO del de
+c2.** Las 244 fechas de entrada de c1 son, el **100 %**, fechas de entrada de c2 — obvio en retrospectiva,
+porque tres cierres consecutivos a la baja implican uno. Bajo §3.10 no son la misma operación (tenencias
+3 y 1, P&L distinto), y sólo 109 sesiones tienen las dos operando a la vez, con ρ = +0,65.
+
+**Pero eso obliga a publicar dos cotas en vez de un número**, porque "2,124 configs efectivas" es una
+**cota superior** de la independencia de liquidez:
+
+| Cota | Supuesto sobre c1 | liquidez | c global | τ | t (df=1) | p |
+|---|---|---|---|---|---|---|
+| **Optimista** *(la publicada)* | c1 aporta información propia | +0,04190 ± 0,02044 | **+0,020262 ± 0,023329** | 0,024385 | −2,0710 | **0,2864** |
+| **Conservadora** | c1 totalmente dependiente de c2 | +0,03315 ± 0,02453 | **+0,013876 ± 0,019020** | 0,011475 | −2,8759 | **0,2130** |
+
+**Las dos se publican; ninguna se promedia y ninguna se elige.** El veredicto no cambia: bajo t(df = 1)
+el intervalo contiene al cero en las dos.
+
+Y **c3 no comparte ninguna operación ni ninguna fecha con c1 ni con c2**: sus disparadores son
+complementarios. La partición en dos mecanismos se sostiene.
+
+## 37. El c del residuo no tenía intervalo, y con intervalo la afirmación se cae
+
+Publiqué que las 152 operaciones nuevas del cartucho 4 daban **c = −0,0746** y escribí que *"lo que
+agregó de nuevo apunta al otro lado"*. Con 152 operaciones contra 1.221, el error escala ×2,83:
+
+```
+c(152 nuevas) = −0,0746 ± 0,0812
+IC 90 %: [−0,2082 , +0,0590]        IC 95 %: [−0,2338 , +0,0846]
+```
+
+**El intervalo cubre el cero (sí) y cubre el propio c de liquidez, +0,0419 (sí).**
+
+> **CORREGIDO:** la frase *"lo que agregó de nuevo apunta al otro lado"* **no está sostenida por los
+> datos** y se retira. Lo correcto: **el residuo del cartucho 4 no es distinguible ni del cero ni del
+> propio mecanismo.**
+
+El hallazgo del 87,6 % **se sostiene solo** y no necesitaba que el residuo fuera negativo.
+
+## 38. Qué contabilidad rige el tope de concentración: la NOMINAL (§2d)
+
+El mismo objeto se contaba de dos maneras: para el estimador el cartucho 4 vale **0,1245 configs**
+(n efectivo); para el tope vale **1 config entera**.
+
+| Contabilidad | liquidez / total | ¿supera el 40 %? |
+|---|---|---|
+| Nominal | 3 / 4 = **75,0 %** | sí |
+| Efectiva | 2,124 / 3,124 = **68,0 %** | sí |
+
+**El bloqueo se sostiene con cualquiera de las dos y la decisión operativa no cambia** — pero cuál rige
+es una regla. **Rige la NOMINAL**, y el motivo no es comodidad: el n efectivo se calcula **después** de
+correr, comparando operaciones, así que un tope que dependiera de él se evaluaría con información que
+no existe al pre-registrar — y sería **manipulable**, porque bastaría elegir configs muy solapadas para
+que "cuenten menos" y esquivar el tope. La nominal está fija en el momento del pre-registro y no se
+puede fabricar. El n efectivo rige el **estimador**, donde su propósito es el opuesto: impedir que la
+duplicación se haga pasar por evidencia nueva.
+
+## 39. La premisa del "bug del contador costó un cartucho" no se sostiene
+
+La afirmación era: con el tope en 40 %, al pre-registrar el cartucho 4 liquidez ya iba 2 de 3 = 66,7 %
+y el tope debería haberlo rechazado; no disparó porque el bucket heredado escondía la cuenta.
+
+**Verificado contra el ledger, y es falso:**
+
+- al pre-registrar el cartucho 4 había **3 cartuchos gastados**;
+- `CONCENTRACION_DESDE = 5`, declarado en §2b — *"a partir del quinto, para no trabar el arranque"*;
+- el tope **sólo se evalúa si `gastado ≥ 5`**, y 3 ≥ 5 es falso.
+
+**El tope no habría disparado ni con las etiquetas correctas.** El defecto del contador era real y está
+corregido (§32), pero **no costó ese cartucho**: lo que lo dejó pasar fue la ventana de arranque
+declarada, no el bucket heredado.
+
+Y sobre *"un control que sólo mira hacia atrás no es un control"*: de acuerdo, y **ya mira hacia
+adelante**. El tope se evalúa **dentro de `preregister()`, antes de escribir la entrada** — verificado
+por posición en el código: el chequeo está en el carácter 4.867 y el primer `_append` en el 12.037. Un
+pre-registro rechazado por concentración **no gasta cartucho**.
+
+## 40. Las dos cotas de m = 6, explícitas y con su fórmula
+
+Para que la próxima verificación no tenga que derivarlas. Con τ² = 5,950948e-04, v̄ = 5,000252e-04:
+
+```
+SE(m) = √((τ² + v̄)/m)                SE(6) = 0,013510
+t_crit(df = 5, α = 0,05) = 2,5706     |media − θ| ≥ 2,5706 × 0,013510 = 0,034729
+
+COTA A — promedio de LOS SEIS mecanismos   ≤ θ − 0,034729 = **0,033848**
+COTA B — promedio de LOS CUATRO NUEVOS     ≤ (6 × 0,033848 − 2 × 0,018500)/4 = **0,041523**
+```
+
+El **0,0301** que publiqué quedaba **11,1 % por debajo de A** y **27,5 % por debajo de B**, y estaba
+rotulado como B. El 27 % que reporté es correcto **contra B**.

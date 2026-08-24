@@ -1224,6 +1224,61 @@ def s20_procedencia_y_n_efectivo(tmp):
     check(f2.verify_ledger() is True, "cadena v\u00e1lida")
 
 
+def s21_matriz_y_tope(tmp):
+    print("\n[21] \u00a73.10 corregido y \u00a72b: el punto ciego, la contabilidad y el off-by-one")
+    import datetime as _dt
+    d = [_dt.date(2020, 1, i) for i in range(1, 8)]
+
+    print("    -- el PUNTO CIEGO: identidad (fecha, tenencia) no ve configs de otra tenencia")
+    conf = [("largo", 3, [(d[0], 1.0), (d[1], 2.0)]),
+            ("corto", 1, [(d[0], 3.0), (d[1], 4.0), (d[2], 5.0)])]
+    r = f2.n_efectivo(conf)
+    check(r[1][3] == 3,
+          "por §3.10 la config corta aporta 3 'nuevas' aunque comparta 2 fechas")
+    w = f2.peso_mecanismo(conf)
+    check(w["W_nominal"] == 9 and w["W_identidad_310"] == 9,
+          f"nominal {w['W_nominal']} = identidad {w['W_identidad_310']}: §3.10 no vio nada")
+    check(w["W_entradas"] == 3,
+          f"pero fechas de entrada distintas son {w['W_entradas']}, no 5")
+    check(w["W_conservador"] == 3 and w["manda"] == "entradas",
+          "manda la medida mas conservadora")
+    check(w["se_conservador"] > w["se_identidad_310"],
+          f"y el SE conservador {w['se_conservador']:.4f} > "
+          f"{w['se_identidad_310']:.4f}: la correccion ENDURECE")
+
+    print("    -- \u00a72b: el tope se evalua AL ACEPTAR EL PRE-REGISTRO, no despues")
+    fresh_ledger(tmp)
+    corridas = {"n": 0}
+
+    def strat_marcador(data, cfg):
+        corridas["n"] += 1
+        return strat_record(data, cfg)
+
+    for i in range(4):
+        pre("G2-multidia", {"i": i}, "hip", mecanismo="repetido", h=1.0)
+        f2.abandon("G2-multidia", {"i": i}, "cierre")
+    check(f2.budget_used() == 4, "4 cartuchos, todos del mismo mecanismo")
+    check(corridas["n"] == 0, "y ninguna estrategia se corrio todavia")
+    msg = raises_msg(f2.SpecViolation,
+                     lambda: f2.preregister("G2-multidia", {"i": 99}, "hip",
+                                            mecanismo="repetido", h=1.0,
+                                            strategy_fn=strat_marcador,
+                                            df=synthetic_daily()),
+                     "el 5o cartucho del mismo mecanismo",
+                     must_contain=("tope de concentraci\u00f3n",))
+    check(corridas["n"] == 0,
+          "el rechazo ocurrio SIN correr la estrategia: es un control previo, no posterior")
+    check("40%" in msg, "y nombra el tope")
+
+    print("    -- OFF-BY-ONE: el tope empieza en el 5o cartucho, como declara la spec")
+    check(f2.CONCENTRACION_DESDE == 5, "CONCENTRACION_DESDE = 5")
+    check(f2.budget_used() + 1 == 5,
+          "el rechazo de arriba fue en el cartucho 5, no en el 6")
+    check("nominal" in f2.CONCENTRACION_CONTABILIDAD,
+          "y la contabilidad declarada es NOMINAL, evaluable antes de correr")
+    check(f2.verify_ledger() is True, "cadena v\u00e1lida")
+
+
 def main():
     print("=" * 78)
     print("FASE 2 — pruebas del trabajo de día 0 (spec_fase2.md §9)")
@@ -1242,7 +1297,7 @@ def main():
                    s14_criba_por_config, s15_direccion_de_los_cambios,
                    s16_politica_asignacion, s17_solo_medicion,
                    s18_vara_de_filtros, s19_estimador_y_formula,
-                   s20_procedencia_y_n_efectivo):
+                   s20_procedencia_y_n_efectivo, s21_matriz_y_tope):
             fn(tmp)
     except Exception:  # noqa: BLE001
         traceback.print_exc()

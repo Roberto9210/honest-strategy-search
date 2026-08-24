@@ -817,8 +817,33 @@ def _robustness_cells_claimed() -> dict:
 #
 # Declarada ANTES del cartucho 3. Elegirla después de ver resultados no sería
 # legítimo; declararla ahora sí.
+# §2d — QUE CONTABILIDAD RIGE EL TOPE: CONFIGS NOMINALES, NO EFECTIVAS.
+#
+# El mismo objeto se puede contar de dos maneras: para el estimador el cartucho 4
+# vale 0.1245 configs (n efectivo, §3.10); para el tope vale 1 config entera.
+# Con la contabilidad efectiva, liquidez da 2.124/3.124 = 68.0%; con la nominal,
+# 3/4 = 75%. Las dos superan el 40% y el bloqueo no cambia — pero cual rige es una
+# REGLA, no un detalle, y la proxima vez puede cambiar el resultado.
+#
+# RIGE LA NOMINAL. Motivo: el n efectivo se calcula DESPUES de correr, comparando
+# operaciones; un tope que dependiera de el se evaluaria con informacion que no
+# existe al pre-registrar, y ademas seria manipulable — bastaria elegir configs
+# muy solapadas para que "cuenten menos" y esquivar el tope. La contabilidad
+# nominal esta fija en el momento del pre-registro y no se puede fabricar.
+# El n efectivo rige el ESTIMADOR, donde su proposito es el opuesto: no dejar que
+# la duplicacion se haga pasar por evidencia nueva.
+CONTABILIDAD_TOPE = "configs nominales"
+
 MAX_CONCENTRACION = 0.40      # ningún mecanismo supera el 40% de lo gastado
 CONCENTRACION_DESDE = 5       # ...a partir del 5º cartucho, para no trabar el arranque
+#
+# CONTABILIDAD DEL TOPE, declarada (24-ago-2026): el tope se evalua sobre configs
+# NOMINALES, no efectivas. Motivo: tiene que ser evaluable AL ACEPTAR EL
+# PRE-REGISTRO, antes de que las operaciones existan — y el peso efectivo solo se
+# conoce despues de correr. Un tope que necesita el resultado para aplicarse no es
+# un tope previo. (Con contabilidad efectiva hoy daria 2.124/3.124 = 68.0%, tambien
+# por encima del 40%: la decision no cambia, pero la regla queda declarada.)
+CONCENTRACION_CONTABILIDAD = "nominal (configs pre-registradas), evaluada al aceptar el pre-registro"
 COBERTURA_ANTES_DE = 20       # antes del 20º hay que cubrir los estratos de tenencia
 
 ESTRATOS_H = (
@@ -910,6 +935,22 @@ def cartuchos_por_mecanismo() -> dict:
 # operacion = (fecha de entrada, tenencia). El orden es el CRONOLOGICO del ledger:
 # la config que llego primero se queda con la operacion y las posteriores aportan
 # solo las suyas nuevas. Asi el orden no depende de los resultados.
+#
+# PUNTO CIEGO CORREGIDO (24-ago-2026, tarde). Esa identidad NO detecta dependencia
+# entre configs de TENENCIA DISTINTA: por construccion (fecha, h=3) nunca colisiona
+# con (fecha, h=1). Medido en la matriz completa: el cartucho 1 comparte el **100%**
+# de sus 244 fechas de entrada con el cartucho 2 -tres cierres a la baja implican
+# uno- y la correlacion de P&L donde ambos operan es +0.6529; sin embargo §3.10
+# reportaba 0% de solapamiento entre ellos.
+#
+# Por eso el peso efectivo de un mecanismo se calcula con las TRES medidas y manda
+# la MAS CONSERVADORA:
+#   (a) nominal            : suma de n*h de sus configs
+#   (b) identidad §3.10    : operaciones distintas por (fecha, tenencia), por n*h
+#   (c) fechas de entrada  : |union de fechas de entrada|, sin ponderar por tenencia
+# Para el mecanismo 'liquidez' hoy: 3463 / 2394 / 1662, o sea SE 0.01699 / 0.02044
+# / 0.02453. Manda 0.02453.
+MECANISMO_PESO_CONSERVADOR = True
 def n_efectivo(trades_por_config: list) -> list:
     """trades_por_config: [(tag, hold, [(entrada, bruto), ...]), ...] en orden
     cronologico. Devuelve [(tag, hold, n_total, n_nuevas, brutos_nuevos)]."""
@@ -925,6 +966,28 @@ def n_efectivo(trades_por_config: list) -> list:
             nuevas.append(bruto)
         out.append((tag, hold, len(ops), len(nuevas), nuevas))
     return out
+
+
+def peso_mecanismo(trades_por_config: list) -> dict:
+    """Las TRES medidas de peso de un mecanismo. Manda la mas conservadora (§3.10).
+
+    trades_por_config: [(tag, hold, [(entrada, bruto), ...]), ...] cronologico."""
+    nominal = sum(len(ops) * h for _, h, ops in trades_por_config)
+    eff = sum(nn * h for _, h, _, nn, _ in n_efectivo(trades_por_config))
+    entradas = set()
+    for _, _, ops in trades_por_config:
+        entradas |= {e for e, _ in ops}
+    por_entradas = len(entradas)
+    W = min(nominal, eff, por_entradas)
+    return {
+        "W_nominal": nominal, "W_identidad_310": eff, "W_entradas": por_entradas,
+        "W_conservador": W, "manda": ("entradas" if W == por_entradas else
+                                      ("identidad_310" if W == eff else "nominal")),
+        "se_nominal": 1 / sqrt(nominal) if nominal else None,
+        "se_identidad_310": 1 / sqrt(eff) if eff else None,
+        "se_entradas": 1 / sqrt(por_entradas) if por_entradas else None,
+        "se_conservador": 1 / sqrt(W) if W else None,
+    }
 
 
 def estratos_cubiertos() -> dict:
@@ -1187,7 +1250,10 @@ def preregister(family: str, config: dict, hypothesis: str,
     # evade declarando cada configuración como un mecanismo nuevo; la familia es
     # una lista cerrada declarada en la spec y no se puede inventar.
     gastado = budget_used()
-    if gastado >= CONCENTRACION_DESDE:
+    # OFF-BY-ONE CORREGIDO (24-ago-2026): decia `gastado >= CONCENTRACION_DESDE`, lo
+    # que hacia que el tope empezara a aplicar en el SEXTO cartucho y no en el quinto
+    # como declara §2b. `gastado + 1` es el numero de ESTE cartucho.
+    if gastado + 1 >= CONCENTRACION_DESDE:
         por_mec = cartuchos_por_mecanismo()
         for etiqueta, usados in (("mecanismo " + repr(mecanismo.strip()),
                                   por_mec.get(mecanismo.strip(), 0)),
