@@ -123,6 +123,8 @@ def pre(family, config, hypothesis, **kw):
     Las pruebas que son SOBRE la criba llaman a pre() directo."""
     kw.setdefault("n_b_proyectado", 5000)
     kw.setdefault("n_b_fuente", "fixture de prueba")
+    kw.setdefault("mecanismo", "mecanismo-" + str(config))
+    kw.setdefault("h", 1.0)
     return f2.preregister(family, config, hypothesis, **kw)
 
 
@@ -282,6 +284,11 @@ def s2_prerregistro(tmp):
 def s3_presupuesto(tmp):
     print("\n[3] §2 — el presupuesto es un tope, y no se transfiere entre familias")
     fresh_ledger(tmp)
+    # Esta sección prueba el PRESUPUESTO POR FAMILIA, no la política de §2b:
+    # se suspenden el tope de concentración y la cobertura de tenencias, que
+    # tienen su propia sección.
+    max_c, cob = f2.MAX_CONCENTRACION, f2.COBERTURA_ANTES_DE
+    f2.MAX_CONCENTRACION, f2.COBERTURA_ANTES_DE = 1.0, 10 ** 9
     for i in range(f2.FAMILY_BUDGET["G6-terceros"]):
         pre("G6-terceros", {"i": i}, "regla de un tercero")
         f2.abandon("G6-terceros", {"i": i}, "prueba de presupuesto: no se corre")
@@ -296,6 +303,7 @@ def s3_presupuesto(tmp):
           "el sobrante de otras familias no rescata a G6 (ni al revés)")
     rep = f2.budget_report()
     check(rep["restante"] == 180, f"restante global {rep['restante']} de {f2.K2}")
+    f2.MAX_CONCENTRACION, f2.COBERTURA_ANTES_DE = max_c, cob
 
 
 def s4_vecindad(tmp):
@@ -819,6 +827,7 @@ def s14_criba_por_config(tmp):
     msg = raises_msg(
         f2.SpecViolation,
         lambda: f2.preregister("G2-multidia", {"step": 60}, "dispara poqu\u00edsimo",
+                               mecanismo="reversion-lenta", h=1.0,
                                strategy_fn=strat_record, df=df),
         "config con n_B por debajo de la potencia",
         must_contain=("RECHAZADA por medibilidad", "NO se cobr\u00f3 el cartucho"))
@@ -827,6 +836,7 @@ def s14_criba_por_config(tmp):
 
     print("    -- una config frecuente pasa, y su criba queda guardada")
     e = f2.preregister("G2-multidia", {"step": 2}, "dispara seguido",
+                       mecanismo="reversion-rapida", h=1.0,
                        strategy_fn=strat_record, df=df)
     cm = e["medibilidad_config"]
     check(cm["medible"] is True, f"medible: n_B {cm['n_b_proyectado']} >= {cm['n_b_necesario']}")
@@ -837,7 +847,8 @@ def s14_criba_por_config(tmp):
     print("    -- sin conteo ni techo declarado: fail-closed")
     f2.abandon("G2-multidia", {"step": 2}, "cierre de prueba")
     raises_msg(f2.SpecViolation,
-               lambda: f2.preregister("G2-multidia", {"step": 3}, "sin criba"),
+               lambda: f2.preregister("G2-multidia", {"step": 3}, "sin criba",
+                                      mecanismo="reversion-x", h=1.0),
                "pre-registrar sin criba de configuraci\u00f3n",
                must_contain=("sin criba de medibilidad de la configuraci\u00f3n",))
 
@@ -892,6 +903,81 @@ def s15_direccion_de_los_cambios(tmp):
     check(f2.verify_ledger() is True, "cadena v\u00e1lida")
 
 
+def s16_politica_asignacion(tmp):
+    print("\n[16] \u00a72b \u2014 buscar concentra, medir dispersa")
+    fresh_ledger(tmp)
+    df = synthetic_daily()
+
+    print("    -- mecanismo y tenencia son obligatorios en el pre-registro")
+    raises_msg(f2.SpecViolation,
+               lambda: f2.preregister("G1-nocturna", {"a": 1}, "hip",
+                                      n_b_proyectado=5000, n_b_fuente="fx"),
+               "pre-registro sin mecanismo",
+               must_contain=("sin `mecanismo`", "un voto por MECANISMO"))
+    raises_msg(f2.SpecViolation,
+               lambda: f2.preregister("G1-nocturna", {"a": 1}, "hip",
+                                      mecanismo="m", n_b_proyectado=5000,
+                                      n_b_fuente="fx"),
+               "pre-registro sin tenencia h",
+               must_contain=("sin `h`", "estratificar"))
+
+    print("    -- estratos de tenencia")
+    for h, esperado in ((0.08, "intradia"), (1, "corto"), (3, "medio"), (10, "largo")):
+        check(f2.estrato_de(h) == esperado, f"h={h} -> {f2.estrato_de(h)}")
+
+    print("    -- tope de concentracion por MECANISMO")
+    for i in range(4):
+        pre("G1-nocturna", {"i": i}, "hip", mecanismo=f"mec-{i}", h=1.0)
+        f2.abandon("G1-nocturna", {"i": i}, "cierre")
+    check(f2.budget_used() == 4, "4 cartuchos, cuatro mecanismos distintos")
+    for i in range(4, 6):
+        pre("G2-multidia", {"i": i}, "hip", mecanismo="mec-repetido", h=3.0)
+        f2.abandon("G2-multidia", {"i": i}, "cierre")
+    msg = raises_msg(f2.SpecViolation,
+                     lambda: pre("G2-multidia", {"i": 99}, "hip",
+                                 mecanismo="mec-repetido", h=3.0),
+                     "un mecanismo pasandose del 40%",
+                     must_contain=("tope de concentraci\u00f3n", "mec-repetido"))
+    check("40%" in msg, "y el mensaje dice cual es el tope")
+
+    print("    -- el agujero cerrado: inventar un mecanismo por config no evade el tope")
+    msg = raises_msg(f2.SpecViolation,
+                     lambda: pre("G2-multidia", {"i": 100}, "hip",
+                                 mecanismo="mecanismo-nuevo-inventado", h=3.0),
+                     "misma familia con mecanismo nuevo cada vez",
+                     must_contain=("tope de concentraci\u00f3n", "familia"))
+    check("G2-multidia" in msg, "el tope por FAMILIA lo atrapa igual")
+
+    print("    -- cobertura de tenencias antes del cartucho 20")
+    fresh_ledger(tmp)
+    f2.MAX_CONCENTRACION = 1.0
+    try:
+        for i in range(f2.COBERTURA_ANTES_DE - 1):
+            pre("G1-nocturna", {"i": i}, "hip", mecanismo=f"m{i}", h=1.0)
+            f2.abandon("G1-nocturna", {"i": i}, "cierre")
+        cub = f2.estratos_cubiertos()
+        check(set(cub) == {"corto"}, f"solo el estrato corto cubierto: {sorted(cub)}")
+        raises_msg(f2.SpecViolation,
+                   lambda: pre("G1-nocturna", {"i": 999}, "hip",
+                               mecanismo="m999", h=1.0),
+                   "cartucho 20 sin cubrir los estratos",
+                   must_contain=("cobertura de tenencias", "medio", "largo"))
+        check(True, "y solo se admiten los que COMPLETAN cobertura, no se traba sola")
+        print("    -- y cubriendolos, deja pasar")
+        pre("G1-nocturna", {"i": 900}, "hip", mecanismo="m900", h=3.0)
+        f2.abandon("G1-nocturna", {"i": 900}, "cierre")
+        pre("G1-nocturna", {"i": 901}, "hip", mecanismo="m901", h=8.0)
+        f2.abandon("G1-nocturna", {"i": 901}, "cierre")
+        cub = f2.estratos_cubiertos()
+        check({"corto", "medio", "largo"} <= set(cub),
+              f"tres estratos cubiertos: {sorted(cub)}")
+        e = pre("G1-nocturna", {"i": 902}, "hip", mecanismo="m902", h=1.0)
+        check(e["estrato_h"] == "corto", "y el cartucho 22 pasa, con su estrato anotado")
+    finally:
+        f2.MAX_CONCENTRACION = 0.40
+    check(f2.verify_ledger() is True, "cadena v\u00e1lida")
+
+
 def main():
     print("=" * 78)
     print("FASE 2 — pruebas del trabajo de día 0 (spec_fase2.md §9)")
@@ -907,7 +993,8 @@ def main():
                    s6_caja_fuerte, s7_barra_y_anios, s8_ledger_y_apertura,
                    s9_colgados, s10_reglas_congeladas, s11_margen_despliegue,
                    s12_bloqueantes, s13_criba_medibilidad,
-                   s14_criba_por_config, s15_direccion_de_los_cambios):
+                   s14_criba_por_config, s15_direccion_de_los_cambios,
+                   s16_politica_asignacion):
             fn(tmp)
     except Exception:  # noqa: BLE001
         traceback.print_exc()

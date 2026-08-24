@@ -726,6 +726,61 @@ def _robustness_cells_claimed() -> dict:
     return out
 
 
+# ---------------------------------------------------------------------------
+# §2b — POLITICA DE ASIGNACION: buscar concentra, medir dispersa
+#
+# Desde que medir c es objetivo declarado, la asignación de cartuchos ya no la
+# decide sólo la búsqueda. Los dos objetivos tiran para lados opuestos:
+#   BUSCAR  quiere concentrarse en la familia más prometedora.
+#   MEDIR   quiere dispersarse, porque para estimar la VARIANZA de c entre
+#           mecanismos hacen falta mecanismos distintos, no más configuraciones
+#           del mismo.
+#
+# La corrección que obliga a esto: **dos configuraciones de G2 no son dos
+# muestras independientes de "la calidad de nuestras hipótesis"** — son un
+# mecanismo a dos umbrales. Hoy tenemos 2 cartuchos y m_efectivo = 1.
+#
+# Declarada ANTES del cartucho 3. Elegirla después de ver resultados no sería
+# legítimo; declararla ahora sí.
+MAX_CONCENTRACION = 0.40      # ningún mecanismo supera el 40% de lo gastado
+CONCENTRACION_DESDE = 5       # ...a partir del 5º cartucho, para no trabar el arranque
+COBERTURA_ANTES_DE = 20       # antes del 20º hay que cubrir los estratos de tenencia
+
+ESTRATOS_H = (
+    ("intradia", 0.0, 0.999),  # h < 1 sesión (cota superior EXCLUSIVA: h=1 es "corto")
+    ("corto", 1.0, 1.0),      # h = 1 sesión
+    ("medio", 2.0, 5.0),      # 2 <= h <= 5
+    ("largo", 6.0, 9e9),      # h >= 6
+)
+
+
+def estrato_de(h: float) -> str:
+    for nombre, lo, hi in ESTRATOS_H:
+        if lo <= float(h) <= hi:
+            return nombre
+    return "intradia" if float(h) < 1.0 else "largo"
+
+
+def cartuchos_por_mecanismo() -> dict:
+    out = {}
+    for e in read_ledger():
+        if e.get("phase") == 2 and e.get("kind") in ("PREREGISTRO", "CARTUCHO", "VIOLACION"):
+            if e.get("kind") == "VIOLACION" and e.get("prereg"):
+                continue
+            m = e.get("mecanismo") or f"{e.get('family')}:sin-declarar"
+            out[m] = out.get(m, 0) + 1
+    return out
+
+
+def estratos_cubiertos() -> dict:
+    out = {}
+    for e in read_ledger():
+        if e.get("phase") == 2 and e.get("kind") == "PREREGISTRO" and e.get("h") is not None:
+            k = estrato_de(e["h"])
+            out[k] = out.get(k, 0) + 1
+    return out
+
+
 def config_measurability(config_n_b: int, delta: float | None = None) -> dict:
     """§3.5b — la criba al nivel de la CONFIGURACIÓN.
 
@@ -749,6 +804,7 @@ def config_measurability(config_n_b: int, delta: float | None = None) -> dict:
 
 
 def preregister(family: str, config: dict, hypothesis: str,
+                mecanismo: str = "", h: float | None = None,
                 strategy_fn=None, df: pd.DataFrame | None = None,
                 n_b_proyectado: int | None = None, n_b_fuente: str = "",
                 robustness_cells: list | None = None,
@@ -788,6 +844,56 @@ def preregister(family: str, config: dict, hypothesis: str,
         )
     if not hypothesis or not hypothesis.strip():
         raise SpecViolation("pre-registro sin hipótesis: prohibido (§7.2)")
+    if not (mecanismo and mecanismo.strip()):
+        raise SpecViolation(
+            "pre-registro sin `mecanismo` declarado (§2b): el estimador de c cuenta "
+            "un voto por MECANISMO, no por configuración — dos umbrales de la misma "
+            "regla no son dos muestras independientes de la calidad de nuestras "
+            "hipótesis."
+        )
+    if h is None or float(h) <= 0:
+        raise SpecViolation(
+            "pre-registro sin `h` (tenencia en sesiones, §2b): sin ella no se puede "
+            "estratificar el estimador de c ni verificar la cobertura de tenencias."
+        )
+
+    # §2b — tope de concentración, por MECANISMO y por FAMILIA.
+    # Por familia además de por mecanismo porque el tope por mecanismo solo se
+    # evade declarando cada configuración como un mecanismo nuevo; la familia es
+    # una lista cerrada declarada en la spec y no se puede inventar.
+    gastado = budget_used()
+    if gastado >= CONCENTRACION_DESDE:
+        por_mec = cartuchos_por_mecanismo()
+        for etiqueta, usados in (("mecanismo " + repr(mecanismo.strip()),
+                                  por_mec.get(mecanismo.strip(), 0)),
+                                 ("familia " + repr(family), budget_used(family))):
+            if (usados + 1) > MAX_CONCENTRACION * (gastado + 1):
+                raise SpecViolation(
+                    f"tope de concentración (§2b): el {etiqueta} tendría "
+                    f"{usados + 1} de {gastado + 1} cartuchos "
+                    f"({(usados+1)/(gastado+1):.0%}) y el máximo es "
+                    f"{MAX_CONCENTRACION:.0%}. Buscar quiere concentrar, medir "
+                    "quiere dispersar; la política se declaró antes de ver "
+                    "resultados."
+                )
+
+    # §2b — cobertura de tenencias antes del cartucho 20
+    if gastado + 1 >= COBERTURA_ANTES_DE:
+        cub = estratos_cubiertos()
+        obligatorios = {"corto", "medio", "largo"}
+        faltan = obligatorios - set(cub)
+        # Pasado el umbral solo se admiten cartuchos que COMPLETEN cobertura: si
+        # bloqueara tambien a los que la completan la regla se trabaria sola y
+        # nunca se podria salir del bloqueo.
+        if faltan and estrato_de(h) not in faltan:
+            raise SpecViolation(
+                f"cobertura de tenencias (§2b): a partir del cartucho "
+                f"{COBERTURA_ANTES_DE} solo se admiten pre-registros que completen "
+                f"cobertura, y faltan los estratos {sorted(faltan)} (este es "
+                f"{estrato_de(h)!r}). Sin cobertura no se puede saber si c depende "
+                "de la tenencia, y si depende, mezclar estratos sesga el estimador "
+                "hacia abajo."
+            )
 
     if family in out_of_scope_families():
         e = out_of_scope_families()[family]
@@ -904,6 +1010,9 @@ def preregister(family: str, config: dict, hypothesis: str,
         "robustness_cells": list(robustness_cells or []),
         "uses_volume": bool(uses_volume),
         "medibilidad_config": {**cm, "n_a_contado": n_a_c, "fuente": fuente_c},
+        "mecanismo": mecanismo.strip(),
+        "h": float(h),
+        "estrato_h": estrato_de(h),
         "budget_after": budget_used() + 1,
         "note": "PRE-REGISTRADA, sin correr",
     })

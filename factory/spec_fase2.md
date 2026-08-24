@@ -156,6 +156,57 @@ Reparto por familia, declarado ahora (§4 explica cada una):
 configuraciones, las 22 restantes se pierden — no se convierten en 22 intentos más de G1. (La Fase 1
 ya funcionó así: F3 cerró en 6/20 y F5 en 7/20, y nadie reclamó el resto.)
 
+### 2b. Política de asignación: buscar concentra, medir dispersa
+
+*Declarada antes del cartucho 3. Elegirla después de ver resultados no sería legítimo.*
+
+Desde que **medir c es un objetivo declarado** (`frontera_factibilidad.md` §6), la asignación de
+cartuchos ya no la decide sólo la búsqueda. Los dos objetivos tiran para lados opuestos:
+
+- **Buscar** quiere **concentrarse**: explotar la familia que parece más prometedora.
+- **Medir** quiere **dispersarse**: para estimar la **varianza** de c entre mecanismos hacen falta
+  mecanismos distintos, no más configuraciones del mismo.
+
+**La corrección que obliga a esto:** dos configuraciones de G2 **no son dos muestras independientes**
+de "la calidad de nuestras hipótesis" — son un mecanismo a dos umbrales. Hoy tenemos 2 cartuchos y
+**m efectivo = 1**. Todo el veredicto descansa sobre c, y c hoy mide **G2, no el espacio**.
+
+**Las tres reglas, cableadas en `preregister()`:**
+
+1. **`mecanismo` y `h` son campos obligatorios** del pre-registro. Sin `mecanismo` el estimador no
+   puede contar un voto por mecanismo; sin `h` no puede estratificar.
+2. **Tope de concentración: ningún mecanismo y ninguna familia supera el 40 % de los cartuchos
+   gastados**, a partir del quinto (para no trabar el arranque). El tope va **por familia además de
+   por mecanismo** porque el de mecanismo se evade solo declarando cada configuración como un
+   mecanismo nuevo; la familia es una lista cerrada y no se puede inventar.
+3. **Cobertura de tenencias:** a partir del cartucho 20 sólo se admiten pre-registros que
+   **completen** cobertura, hasta tener al menos uno en cada estrato — `corto` (h = 1), `medio`
+   (2 ≤ h ≤ 5), `largo` (h ≥ 6). *(La regla admite explícitamente al cartucho que completa el estrato
+   faltante; si bloqueara también a ése se trabaría sola y nunca se podría salir del bloqueo.)*
+
+**Por qué 40 % y no otro número.** Con 6 familias, un tope del 40 % garantiza al menos **3 mecanismos
+distintos** en cualquier momento del recorrido, que es el mínimo con el que τ (la dispersión de c
+entre mecanismos) empieza a ser estimable. Un tope más bajo asfixiaría a la búsqueda —que
+legítimamente quiere insistir donde algo asoma—; uno más alto dejaría que una sola familia defina c,
+que es exactamente el problema de hoy.
+
+**Cuántos cartuchos hasta poder decir "vacía" o "prematura" con evidencia.** El intervalo de c − θ
+deja de contener al cero cuando el error estándar baja de |c − θ| / z. Con la brecha actual de 0.0188:
+
+| Modelo | 90 % | 95 % |
+|---|---|---|
+| c es **un** número (efectos fijos) — sólo hace falta peso | 1,1 cartuchos | 1,8 cartuchos |
+| c **varía**, τ = 0.01 | 3 mecanismos | 4 mecanismos |
+| c **varía**, τ = 0.02 | 5 mecanismos | 7 mecanismos |
+| c **varía**, τ = 0.03 | 9 mecanismos | 13 mecanismos |
+| c **varía**, τ = 0.05 | 21 mecanismos | 30 mecanismos |
+
+Un cartucho a **máxima frecuencia** aporta peso `n·h ≈ S_A = 4.865` **cualquiera sea su tenencia** —
+por eso la política puede diversificar tenencias **sin pagar nada en precisión**. Y τ **no es
+estimable con dos puntos**: el recurso que limita deja de ser *operaciones* y pasa a ser **mecanismos
+distintos**. La respuesta honesta es **entre 3 y 30 cartuchos según cuánto varíe c**, y medir esa
+variación es el primer trabajo de la política.
+
 ### Por qué 200 y no 50 ni 1000
 
 El costo estadístico de un presupuesto grande es **sorprendentemente bajo**, y conviene verlo para

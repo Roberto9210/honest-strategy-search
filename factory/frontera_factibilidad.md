@@ -186,3 +186,113 @@ Yahoo carga el 3,3 % de la varianza porque es la reapertura de las 18:00 ET.
 
 > La celda más barata sigue siendo la que los datos no pueden contestar. Pero ahora sabemos que eso no
 > cierra la fase: la cierra —o no— el largo de la caja fuerte, y ese número crece solo.
+
+---
+
+# Adenda del 24-ago-2026 (tarde) — qué es c, y las tres consecuencias del corolario
+
+## 9. Qué es c, con precisión
+
+**c no es una propiedad del mercado. c es la calidad de las hipótesis que sabemos generar.**
+
+Formalmente: `c = δ_bruto / √h`, donde δ_bruto es la ventaja bruta por operación en unidades de σ que
+**una regla nuestra** consigue, medida sobre este instrumento con estos datos. No sale de la
+estructura del mercado: sale del cruce entre el mercado **y nuestro proceso de inventar reglas**.
+
+Eso cambia por completo cómo se lee todo lo anterior:
+
+| No estamos midiendo | Estamos midiendo |
+|---|---|
+| si el mercado tiene ventajas explotables | si **nosotros** sabemos encontrarlas |
+| la eficiencia del S&P 500 | la calidad de nuestro generador de hipótesis |
+| una constante de la naturaleza | una propiedad de este equipo, estas herramientas y esta serie |
+
+Un veredicto negativo, entonces, **no es una afirmación sobre eficiencia de mercado** — es una
+afirmación sobre nosotros. Y es la cantidad correcta para la pregunta que da origen a todo esto, que
+nunca fue "¿es eficiente el mercado?" sino **"¿podemos nosotros sacarle algo?"**.
+
+Consecuencia práctica: c puede **subir** si mejoramos el generador de hipótesis (mejores mecanismos,
+mejores datos, otro instrumento). No es un techo físico. Es nuestro techo de hoy.
+
+## 10. c está medido con dos configuraciones de una sola familia
+
+Todo el veredicto descansa en c, y c sale hoy de **dos cartuchos de G2**. Peor: **dos configuraciones
+de la misma regla a dos umbrales no son dos muestras independientes** de la calidad de nuestras
+hipótesis. **m efectivo = 1.** Estamos midiendo G2, no el espacio.
+
+La respuesta es la **política de asignación declarada** (`spec_fase2.md` §2b): tope de concentración
+del 40 % por mecanismo **y por familia**, cobertura obligatoria de estratos de tenencia, y `mecanismo`
+y `h` como campos obligatorios del pre-registro. Con la cuenta de cuántos cartuchos hacen falta —
+**entre 3 y 30 según cuánto varíe c**— y la observación de que un cartucho a máxima frecuencia aporta
+el mismo peso sea cual sea su tenencia, así que **diversificar tenencias no cuesta precisión**.
+
+## 11. ¿Puede el estimador mezclar tenencias sin sesgo?
+
+**Sólo bajo el modelo persistente.** Si `δ_bruto(h) = c·√h` con un único c, cada estimación es
+insesgada y mezclar es correcto ponderando por `n·h`.
+
+Si el mecanismo es **transitorio** (§4), `δ_bruto(h) = c·√h` vale sólo hasta h\*, y más allá decae. Una
+regla medida con h > h\* da un c **sesgado hacia abajo**. Mezclar tenencias entonces **sesga c hacia
+abajo**, y como un c bajo es lo que produce el veredicto "vacía", **el sesgo se autoconfirma**.
+
+**Por lo tanto el estimador se estratifica por tenencia, no se agrupa**, hasta poder mostrar que c no
+depende de h. Eso exige cobertura de los tres estratos, que es exactamente lo que la política §2b
+obliga. Y el estrato **h < 1 sesión no tiene ningún dato** — es la única región sin cubrir, y la única
+familia que puede cubrirla es G4.
+
+## 12. G4 como SÓLO-MEDICIÓN: evaluación
+
+**El argumento a favor es correcto y contradice mi propia recomendación anterior.** Una configuración
+de G4 no puede pasar la barra jamás (exige 0.2251 σ contra la referencia 0.1749), pero **sí produce
+una estimación insesgada de c a tenencias cortas** — la única región sin un solo dato. Retirarla tira
+40 mediciones de la zona sin cubrir.
+
+**¿Rompe algo de la spec?** Revisado punto por punto:
+
+- **§3.5** dice que el presupuesto de una familia NO VALIDABLE se pierde. Eso se escribió suponiendo
+  *"no validable = inútil"*, que es justamente lo que este argumento refuta. No es una contradicción
+  lógica sino un supuesto tácito que quedó falso.
+- **§1 (multiplicidad).** Acá está el punto delicado, y hay que decirlo derecho: **una corrida de
+  sólo-medición SÍ revela rentabilidad** — c se calcula de la ventaja media, que es exactamente la
+  respuesta. No es como el conteo de frecuencia. **Por lo tanto NO puede ser gratis: consume su
+  cartucho igual.** Lo que cambia no es el precio sino el destino.
+- **Fuga de información.** Aun sin poder reportarse como candidata, una corrida de sólo-medición
+  enseña qué regiones lucen bien y podría orientar la búsqueda. Eso se paga con el cartucho (queda
+  contado en K = 257) y se cierra prohibiendo permanentemente que esa configuración se re-registre
+  como búsqueda — la misma maquinaria que ya usan las celdas de vecindad.
+
+**Clasificación del cambio (§9.5c): AFLOJA.** Permite gastar cartuchos que las reglas de hoy
+prohíben. No afloja *la barra* —las configuraciones de G4 nunca podrán pasarla, es una restricción
+absoluta— pero permite un gasto hoy vedado, y ante la duda la spec manda clasificar como AFLOJA y
+**exigir aprobación explícita**, que además queda marcada para siempre en el veredicto. Es lo correcto
+para un cambio de este tipo, y no cuesta nada porque el que lo propone es quien aprueba.
+
+**Recomendación:** aprobarlo, con estas cuatro condiciones escritas:
+
+1. Estado `SOLO_MEDICION` distinto de `FUERA_DE_ALCANCE`, bloqueado en código: sus resultados **nunca**
+   pueden reportarse como candidatas ni abrir la caja fuerte.
+2. Consume cartucho normal. K_total sigue en 257.
+3. Toda configuración corrida en modo sólo-medición queda **permanentemente vedada** para la búsqueda.
+4. Su c entra al estimador **en su propio estrato de tenencia**, nunca agrupado.
+
+## 13. El mapeo de día CME: trabajo acotado, pero puede no rescatar a G1
+
+**¿Horas o investigación abierta? Horas.** Verificado sobre el archivo, no estimado:
+
+- `es_1min_databento.csv` trae `ts_event_utc` en ISO-8601 UTC (`2010-06-07T00:00:00Z`).
+- La transformación es determinista: convertir a `America/New_York` (DST resuelto por la librería) y
+  aplicar *si la hora ET ≥ 18:00, el día de negociación es el siguiente; si no, el mismo*.
+- **Hay blanco de verificación:** el QC publicado ya cuenta **4.183 días de negociación** con esa
+  convención, más los conteos de barras por año. Si el mapeo los reproduce, está bien.
+- El riesgo no es el algoritmo, es el volumen: 4,9 M de filas y 327 MB. Manejable.
+
+**Pero —y esto pesa más que el costo— arreglarlo puede no rescatar a G1 tal como está declarada.** El
+ES cotiza ~23 h por día: el mercado casi nunca está *cerrado*. El mecanismo declarado de G1
+—"compensación por mantener exposición con el mercado cerrado"— **apenas aplica a un futuro que casi
+no cierra**. Lo que la serie de 1 minuto sí daría es la partición **horario de contado (09:30–16:00
+ET) contra fuera de horario**, que es una descomposición real y estudiada, pero cuyo mecanismo es
+*"el flujo se concentra en horas de contado"*, no *"compensación por cierre"*.
+
+Bajo §7.2 eso es **una hipótesis distinta** y hay que re-declararla. Es legítimo, pero conviene
+decirlo antes de gastar las horas: el mapeo desbloquea **una variante de G1 con otro mecanismo**, no
+la G1 que está escrita.
