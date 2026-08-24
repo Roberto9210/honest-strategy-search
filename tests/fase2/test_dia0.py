@@ -363,7 +363,13 @@ def s6_caja_fuerte(tmp):
     check(len(f2.vault_uses()) == 0,
           "la línea part='B' de la Fase 1 es el autotest sintético y NO cuenta como uso")
 
+    print("    -- sin margen, el examen final de una familia overnight ni arranca")
     f2.preregister("G1-nocturna", cfg, "candidata de prueba")
+    raises(f2.OperabilityUnknown,
+           lambda: f2.run_on(df, "G1-nocturna", cfg, strat_record, examen_final=True),
+           "examen final overnight sin margen declarado")
+    f2.register_overnight_margin(1234.0, "PRUEBA Tools > Instruments > MES", "2026-08-24")
+    check(f2.can_declare_operable("G1-nocturna")[0] is True, "con margen, operable")
     raises(f2.PowerGateNotCleared,
            lambda: f2.run_on(df, "G1-nocturna", cfg, strat_record, examen_final=True),
            "examen final sin power_check aprobado")
@@ -557,6 +563,159 @@ def s9_colgados(tmp):
     check(f2.verify_ledger() is True, "cadena válida con las tres salidas dentro")
 
 
+def s10_reglas_congeladas(tmp):
+    print("\n[10] §9.5 — las REGLAS se congelan igual que los datos")
+    fresh_ledger(tmp)
+    e = f2.open_phase2(data_dir=os.path.join(REPO, "data"))
+    rh = e["rules_sha256"]
+    check(len(rh) == 3, f"el acta congela {len(rh)} archivos de reglas")
+    check(all("spec_fase2.md" in k or "harness" in k for k in rh),
+          f"y son los que definen las reglas: {sorted(k.split('/')[-1] for k in rh)}")
+    check(all(v["sha256"] for v in rh.values()), "los tres con SHA-256 real")
+    check(len(e["rules_digest"]) == 16, f"huella corta de las reglas: {e['rules_digest']}")
+    check(e.get("git_commit") is not None,
+          "y el commit del repo, que cubre lo que todavía no se escribió")
+
+    print("    -- cada entrada de Fase 2 queda sellada con esa huella")
+    f2.preregister("G2-multidia", {"a": 1}, "prueba de sellado")
+    ult = f2.read_ledger()[-1]
+    check(ult["rules_digest"] == e["rules_digest"],
+          "el pre-registro lleva la misma huella que el acta")
+
+    print("    -- si una constante congelada cambia, el harness se planta")
+    orig = f2.K2
+    try:
+        f2.K2 = 240
+        raises_msg(f2.SpecViolation,
+                   lambda: f2.run_on(synthetic_daily(), "G2-multidia", {"a": 1},
+                                     strat_record),
+                   "correr con K2 cambiado después de firmar",
+                   must_contain=("congeladas", "K2"))
+    finally:
+        f2.K2 = orig
+    check(f2.K2 == 200, "K2 restaurado para el resto de las pruebas")
+
+    print("    -- y una deriva de reglas queda a la vista (no bloquea, se publica)")
+    d = f2.rules_drift()
+    check(d["cambiados"] == {}, "sin deriva ahora mismo")
+    check(d["digest_acta"] == d["digest_ahora"], "huella del acta == huella de hoy")
+
+
+def s11_margen_despliegue(tmp):
+    print("\n[11] §7.3 — el margen es restricción de DESPLIEGUE, no de investigación")
+    fresh_ledger(tmp)
+    f2.open_phase2(data_dir=os.path.join(REPO, "data"))
+    df = synthetic_daily()
+    cfg = {"step": 5, "edge_points": 1.0}
+
+    print("    -- sin margen, la BÚSQUEDA de una familia overnight corre igual")
+    check(f2.overnight_margin() is None, "no hay margen registrado")
+    f2.preregister("G2-multidia", cfg, "el margen no cambia ningún número del backtest")
+    res = f2.run_on(df, "G2-multidia", cfg, strat_record)
+    check(res.trades > 0, f"G2 corrió sin margen ({res.trades} operaciones)")
+    ult = f2.read_ledger()[-1]
+    check(ult["operable"] is False,
+          "y el resultado queda sellado como NO operable-verificable")
+
+    print("    -- pero el examen final no: gastar el único uso en algo inoperable, no")
+    check(f2.can_declare_operable("G2-multidia")[0] is False, "G2 no declarable operable")
+    check(f2.can_declare_operable("G4-bordes")[0] is True, "G4 es intradía: no aplica")
+
+    print("    -- SALVAGUARDA: el margen se registra UNA vez y es inmutable")
+    f2.register_overnight_margin(2000.0, "PRUEBA > Instruments > MES", "2026-08-24")
+    check(f2.can_declare_operable("G2-multidia")[0] is True, "ahora sí es declarable")
+    raises_msg(f2.SpecViolation,
+               lambda: f2.register_overnight_margin(1500.0, "otro bróker", "2026-08-25"),
+               "segundo margen sin motivo de revisión",
+               must_contain=("INMUTABLE",))
+
+    print("    -- una revisión A LA BAJA con resultados en el ledger: RECHAZADA")
+    msg = raises_msg(f2.SpecViolation,
+                     lambda: f2.register_overnight_margin(
+                         1500.0, "bróker con menos margen", "2026-08-25",
+                         revision_motivo="conseguí uno más barato"),
+                     "bajar el margen después de tener resultados",
+                     must_contain=("A LA BAJA", "peeking"))
+    check("elegir el bróker en vez de la ventana" in msg,
+          "y el mensaje nombra exactamente qué trampa es")
+
+    print("    -- una revisión legítima al alza entra, y NO reemplaza a la anterior")
+    f2.register_overnight_margin(2600.0, "PRUEBA > Instruments > MES", "2026-09-01",
+                                 revision_motivo="el bróker subió el requisito")
+    hist = f2.overnight_margin_history()
+    check(len(hist) == 2, f"quedan las dos entradas: {[h['valor_usd'] for h in hist]}")
+    check(f2.overnight_margin()["valor_usd"] == 2600.0, "vigente = la última")
+    check(hist[0]["valor_usd"] == 2000.0, "la vieja sigue en el ledger, no se borró")
+    viejo = hist[0]["_hash"]
+    sellados = [e for e in f2.read_ledger() if e.get("margen_vigente") == viejo]
+    check(len(sellados) == 0,
+          "el resultado de G2 se corrió SIN margen, y así quedó sellado")
+    check(f2.verify_ledger() is True, "cadena válida")
+
+
+def s12_bloqueantes(tmp):
+    print("\n[12] §7.6 — un campo bloqueante sin fecha es un pendiente eterno")
+    fresh_ledger(tmp)
+    e = f2.open_phase2(data_dir=os.path.join(REPO, "data"))
+    bl = e["bloqueantes"]
+    check(set(bl) == {"margen_nocturno_mes", "mapeo_dia_cme"},
+          f"el acta declara los dos bloqueantes: {sorted(bl)}")
+    check(bl["margen_nocturno_mes"]["vence_el"] is not None,
+          f"el margen tiene fecha de vencimiento: {bl['margen_nocturno_mes']['vence_el']}")
+    check(bl["margen_nocturno_mes"]["plazo_dias"] == 14, "14 días")
+    check(bl["mapeo_dia_cme"]["vence_el"] is None
+          and bl["mapeo_dia_cme"]["clock"] == "cierre de G3-regimen",
+          "el mapeo CME no tiene reloj todavía: su turno no llegó")
+    check("al_vencer" in bl["margen_nocturno_mes"], "y cada uno dice qué pasa al vencer")
+
+    st = {b["bloqueante"]: b for b in f2.blocking_status()}
+    check(st["margen_nocturno_mes"]["estado"] == "VIGENTE", "margen: VIGENTE")
+    check(st["mapeo_dia_cme"]["estado"] == "SIN_RELOJ", "mapeo: SIN_RELOJ")
+    check(len(f2.overdue_blockers()) == 0, "nada vencido hoy")
+
+    print("    -- pasado el plazo sin resolver, se detiene TODA la búsqueda")
+    vence = bl["margen_nocturno_mes"]["vence_el"]
+    tarde = f2._plus_days(vence, 1)
+    check(len(f2.overdue_blockers(today=tarde)) == 1, f"al {tarde} hay 1 vencido")
+    real_today = f2._today
+    try:
+        f2._today = lambda: tarde
+        raises_msg(f2.SpecViolation,
+                   lambda: f2.preregister("G2-multidia", {"b": 1}, "hipótesis"),
+                   "pre-registrar con un bloqueante vencido",
+                   must_contain=("VENCIDO", "margen_nocturno_mes"))
+    finally:
+        f2._today = real_today
+
+    print("    -- resolverlo lo cierra")
+    f2.register_overnight_margin(2000.0, "PRUEBA", "2026-08-24")
+    st = {b["bloqueante"]: b for b in f2.blocking_status(today=tarde)}
+    check(st["margen_nocturno_mes"]["estado"] == "RESUELTO", "margen: RESUELTO")
+    check(len(f2.overdue_blockers(today=tarde)) == 0, "y ya no detiene nada")
+
+    print("    -- la otra salida: fuera de alcance, con los cartuchos PERDIDOS")
+    fresh_ledger(tmp)
+    f2.open_phase2(data_dir=os.path.join(REPO, "data"))
+    f2.preregister("G6-terceros", {"c": 1}, "una regla de un amigo")
+    f2.abandon("G6-terceros", {"c": 1}, "el amigo nunca mandó la regla")
+    oos = f2.declare_out_of_scope("G6-terceros",
+                                  "nadie respondió el cuestionario en el plazo")
+    check(oos["cartuchos_perdidos"] == 19, f"{oos['cartuchos_perdidos']} cartuchos perdidos")
+    check(oos["K_total_sigue_en"] == 257, "y K_total sigue en 257: el listón no se mueve")
+    rep_ = f2.budget_report()
+    check(rep_["K_total"] == 257 and rep_["perdidos_fuera_de_alcance"] == 19,
+          "el reporte los muestra como perdidos, no como devueltos")
+    check(rep_["restante"] == 200 - 1 - 19, f"restante {rep_['restante']}")
+    raises_msg(f2.SpecViolation,
+               lambda: f2.preregister("G6-terceros", {"c": 2}, "otra"),
+               "pre-registrar en una familia fuera de alcance",
+               must_contain=("FUERA DE ALCANCE",))
+    raises(f2.SpecViolation,
+           lambda: f2.declare_out_of_scope("G6-terceros", "  "),
+           "salir de alcance sin motivo escrito")
+    check(f2.verify_ledger() is True, "cadena válida")
+
+
 def main():
     print("=" * 78)
     print("FASE 2 — pruebas del trabajo de día 0 (spec_fase2.md §9)")
@@ -570,7 +729,8 @@ def main():
         s1b_compuertas_identicas()
         for fn in (s2_prerregistro, s3_presupuesto, s4_vecindad, s5_ventanas,
                    s6_caja_fuerte, s7_barra_y_anios, s8_ledger_y_apertura,
-                   s9_colgados):
+                   s9_colgados, s10_reglas_congeladas, s11_margen_despliegue,
+                   s12_bloqueantes):
             fn(tmp)
     except Exception:  # noqa: BLE001
         traceback.print_exc()

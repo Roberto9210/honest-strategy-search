@@ -695,6 +695,16 @@ y hasta entonces no se puede pre-registrar otra cosa.
 Las celdas de vecindad cobradas por adopción no son pre-registros (van como `CARTUCHO`): se pagan,
 pero no esperan corrida y por lo tanto no cuelgan ni bloquean.
 
+**Prohibido pre-contar sobre la parte A.** Contar cuántas veces dispara una regla antes de
+pre-registrarla **ya es un cribado**, aunque no calcule un solo dólar de P&L: usa los datos para
+elegir la hipótesis, y esa elección no queda contada en ningún lado. El orden es **pre-registro →
+corrida → n_A real → `project_n_b()` → compuerta de potencia**, y la frecuencia esperada se declara
+*a priori* (del calendario, o de la probabilidad del disparo), nunca midiéndola antes.
+
+Es la misma trampa que elegir la ventana después de ver el resultado, un paso más temprano: elegir
+la *hipótesis* después de ver los datos. La cadena del ledger deja la evidencia — el pre-registro
+está fechado antes que su corrida — pero la regla es de conducta, no de código, y por eso va escrita.
+
 **Los errores de diseño también consumen presupuesto.** La Fase 1 gastó 3 cartuchos en un filtro mal
 diseñado (la ventana nocturna hasta las 09:29, que producía 0–1 operaciones) y los cobró igual. Una
 configuración rota que se re-corre arreglada es **una configuración más**, no la misma otra vez. Una
@@ -718,22 +728,44 @@ Adoptar (4,2) habría sido gastar 9 cartuchos, no cero.
   adicional completa ($3.90)**. Se declara ahora, antes de que exista una candidata multi-día a la
   que le convenga la otra respuesta. Las 10 filas de artefacto de roll identificadas en el QC de
   Yahoo quedan excluidas, como en la Fase 1.
-- **Margen nocturno:** mantener MES fuera del horario de day-trading exige margen inicial, muy
-  superior al margen intradía. **Ese número no se inventa acá.** Antes de correr la primera
-  configuración de G1 se copia a este documento el requisito vigente, con **fecha y fuente**, y se
-  declara con qué tamaño de cuenta la familia sería operable. **Si el número no está, G1 no corre.**
-  (Regla de la casa: falta un dato de riesgo ⇒ bloqueo con motivo explícito, nunca un default
-  plausible.)
+- **Margen nocturno: es una restricción de DESPLIEGUE, no de investigación.** Mantener MES fuera
+  del horario de day-trading exige margen inicial, muy superior al intradía. Pero **el margen no
+  cambia ningún número del backtest**: la fricción de $3.90 por operación ya está adentro de cada
+  cifra, y que exista una ventaja no depende del capital que inmovilice. Lo que sí depende del margen
+  es **poder operarla**.
+  Por eso el bloqueo está donde corresponde, y **no se saca, se mueve**:
+  - **No bloquea la búsqueda.** Cualquier familia overnight puede medirse sin el número.
+  - **Sí bloquea la declaración de operabilidad y el examen final** de toda familia que cruce la
+    noche (G1, G2, G3, G5). Gastar el único uso de la caja fuerte en algo que no se sabe si se puede
+    operar es tirarlo.
+  - Cada resultado queda **sellado** con el margen vigente al correrlo y con `operable: true/false`,
+    así "esta candidata se midió sin saber si era operable" es un hecho del ledger, no un recuerdo.
   - **Cuál número.** El del **bróker**, no el de CME. El de la bolsa es el piso; el que te van a
     exigir de verdad para sostener la posición de un día para el otro es el del bróker, y suele ser
     más alto. Usar el de CME porque es el que se encuentra citado más fácil es subestimar el capital
-    necesario justo en la familia que abre esta fase.
+    necesario.
   - **Cómo se lee.** En NinjaTrader: `Tools → Instruments`, buscar **MES**, ahí figura el requisito.
-    Se anota el valor **y la fecha en que se leyó** — eso es lo que la spec pide como "fuente".
+    Se anota el valor **y la fecha en que se leyó**.
   - **Lo que NO cuenta como fuente:** un número inferido de la base local de NT8, una cifra de CME
-    puesta "mientras tanto", o cualquier valor sin fecha. Un requisito de margen guardado en una
-    instalación local puede ser un default viejo y no lo que el bróker exige hoy; ponerlo igual sería
-    exactamente el modo de falla que esta regla existe para impedir.
+    puesta "mientras tanto", o cualquier valor sin fecha. Un requisito guardado en una instalación
+    local puede ser un default viejo y no lo que el bróker exige hoy.
+
+  #### Salvaguarda: la entrada del margen es INMUTABLE
+
+  Mover el bloqueo abre una puerta chica, y hay que cerrarla en el mismo acto. Si buscamos sin el
+  número y aparece una candidata, ahí nace la presión de conseguir **un margen que le convenga**.
+  Eso es **el peeking transplantado**: en vez de elegir la ventana después de ver el resultado,
+  elegís el bróker. Entonces:
+
+  - La entrada `COSTO_MARGEN` se registra **una vez**, con valor, fuente y fecha, y **es inmutable**.
+  - **No se revisa porque una candidata necesite un número más chico.** Una revisión **a la baja**
+    con cualquier resultado de Fase 2 ya en el ledger se **RECHAZA**, en el código, no en la buena
+    voluntad. "Conseguí otro bróker con menos margen" después de tener candidata no se admite.
+  - Si el número cambia legítimamente (el bróker subió el requisito), entra como entrada **NUEVA y
+    fechada que NO reemplaza a la anterior**: las dos quedan en el ledger.
+  - Toda candidata evaluada bajo un margen anterior **se reevalúa, o se declara explícitamente
+    evaluada bajo el margen viejo**. El sello por resultado hace que eso sea consultable y no una
+    afirmación nuestra.
 - Ningún resultado bruto se reporta en ningún documento. Si un número aparece sin costos, es un error
   de redacción, no una variante de presentación.
 
@@ -765,6 +797,52 @@ Append-only, encadenado por hash, verificable por terceros (`harness.verify_ledg
 editado, nunca reordenado. Se verifica al abrir y al cerrar cada sesión. Es la misma pieza que hace
 que el veredicto de la Fase 1 signifique algo.
 
+### 7.6 Campos bloqueantes: fecha de vencimiento obligatoria
+
+**Un campo bloqueante sin fecha de resolución es un pendiente eterno, y un pendiente eterno es una
+decisión no tomada disfrazada de trámite.** Tiene exactamente la misma forma que el pre-registro sin
+desenlace (§7.2), un nivel más arriba: parece que se va a resolver, no se resuelve, y lo que bloquea
+vive en un limbo que se ve prolijo. Desde afuera, "pendiente" e "imposible" son indistinguibles.
+
+**No puede haber un tercer estado.** Todo campo que bloquee algo lleva, desde el día que se declara:
+
+1. **quién lo resuelve** (la llamada concreta, no una intención);
+2. **una fecha de vencimiento** — 14 días desde que su reloj arranca;
+3. **qué pasa exactamente al vencer**, escrito antes de que venza.
+
+Y la regla que lo hace cumplir: **un bloqueante vencido y sin resolver detiene TODA la búsqueda**,
+no sólo lo que bloquea. `preregister()` se niega y nombra cuál venció. No es un castigo: es que a
+esa altura hay una decisión pendiente, y seguir buscando sería posponerla.
+
+Un bloqueante cuyo disparador todavía no ocurrió está **SIN RELOJ**, no pendiente — algo a lo que no
+le llegó el turno no está demorado. Cuando el disparador ocurre, arranca el plazo y queda fechado.
+
+**Los cartuchos de lo que sale de alcance se PIERDEN.** No se retiran del denominador y no se
+reasignan, y las dos cosas ya estaban decididas antes de que hiciera falta:
+
+| Salida | Qué pasa con el listón | Regla que la prohíbe |
+|---|---|---|
+| **Retirarlos** del denominador (K_total 257 → 217) | \|t\| exigido baja de 3.726 a **3.683**: la vara se afloja un 1.15% por un accidente administrativo | §1.4 — el denominador es el presupuesto **declarado**, y el sobrante se pierde y se queda en él para siempre |
+| **Reasignarlos** a otra familia | el listón no se mueve, pero un accidente re-apunta el esfuerzo hacia donde no estaba declarado | §2 — el presupuesto no usado de una familia **no se transfiere a otra** |
+| **Perderlos** ✅ | el listón no se mueve **nada**: K_total sigue en 257 | ninguna: es la única salida que no exige enmendar una regla ya firmada |
+
+Perder 40 cartuchos cuesta 40 oportunidades de buscar y **cero** en severidad de la vara. Retirarlos
+regala un 1.15% de listón. La aritmética y las dos reglas firmadas apuntan al mismo lado.
+
+#### Los dos bloqueantes declarados hoy
+
+| Bloqueante | Bloquea | Reloj | Al vencer |
+|---|---|---|---|
+| `margen_nocturno_mes` | la **declaración de operabilidad** y el examen final de las familias overnight (§7.3) — **no** la búsqueda | apertura de la fase, **14 días** | Se declara con acta publicada que la Fase 2 **no puede pronunciarse sobre la operabilidad** de ninguna candidata overnight, y toda candidata se publica con esa limitación escrita. **El presupuesto no se toca**: la búsqueda nunca dependió del margen, así que sacrificar cartuchos sería pagar por un bloqueo que no existe. |
+| `mapeo_dia_cme` | G4 (§9, nota del régimen intradía) | **cierre de G3**, 14 días | G4 sale **FUERA DE ALCANCE** con motivo escrito y publicado; sus 40 cartuchos se **pierden**. |
+
+*Nota sobre el primero.* La consecuencia originalmente propuesta era "G1 sale fuera de alcance". Era
+la correcta **mientras el margen bloqueaba la búsqueda**. Reclasificado el margen a restricción de
+despliegue (§7.3), esa consecuencia dejó de seguirse: sacrificar 40 cartuchos por un bloqueante que
+ya no bloquea la búsqueda sería pagar dos veces. Lo que sale de alcance al vencer es **la afirmación
+de operabilidad**, no la familia — y eso también es una decisión tomada, fechada y publicada, que es
+lo único que la regla exige.
+
 ---
 
 ## 8. La línea de parada
@@ -794,6 +872,9 @@ que el veredicto de la Fase 1 signifique algo.
   no pase (§3.3). Si pasó con 5/7 y no con 7/7, esa frase va en el resumen, no en un apéndice.
 - Las ventanas de datos usadas por régimen y la confirmación de que no se movieron (§4.4), más el
   contraste de los SHA-256 de los archivos de datos contra los congelados el día 0 (§4.5).
+- **La deriva de reglas** (`rules_drift()`): qué archivo de reglas cambió respecto del acta, cuándo, y
+  qué entradas del ledger se corrieron bajo cada huella (§9.5b). Si no cambió nada, se dice eso.
+- El estado final de cada **bloqueante** (§7.6) y, si alguno venció, el acta de su consecuencia.
 - **Si la caja fuerte se abrió o no**, y si no, la afirmación explícita de que sigue sellada.
 - Los errores propios de la fase, cobrados al presupuesto, como hizo el veredicto de la Fase 1.
 
@@ -831,8 +912,10 @@ de la Fase 1 en el mismo caso), sobre una copia temporal del ledger.
 | 2 | `stat_test()`: `t`, `p_crudo`, `α/K_total` y `1/(K_total+1)` juntos, siempre | **hecho** |
 | 3 | `power_check()` + `run_on(examen_final=True)` negándose sin uno aprobado (§3.2) | **hecho** |
 | 4 | `PASS_BAR_F2` y `passes_bar_a()` devolviendo las razones de falla | **hecho** |
-| 5 | Entrada `meta` de apertura: K₁, K₂, K_total, α y los SHA-256 de los datos | `open_phase2()` escrito y probado; **falta la firma** |
-| 6 | Margen nocturno de MES en §7.3, con fecha y fuente | **pendiente — G1 no corre** |
+| 5 | Entrada `meta` de apertura: K₁, K₂, K_total, α, los SHA-256 de los **datos** y de las **reglas** | `open_phase2()` escrito y probado |
+| 5b | Hash de las reglas en el acta y sello por entrada (§9.5b) | **hecho** |
+| 5c | Bloqueantes con vencimiento y consecuencia (§7.6) | **hecho** |
+| 6 | Margen nocturno de MES, con fecha y fuente (§7.3) | **pendiente — no bloquea la búsqueda; bloquea operabilidad y examen final; vence a los 14 días** |
 | 7 | `WINDOWS` por régimen y `run_on` negándose fuera de ventana (§4.4) | **hecho** (ver nota) |
 | 8 | `report_per_year()` para el registro año por año de §3.3 | **hecho** |
 
@@ -846,6 +929,35 @@ Detalles que la implementación fijó y que valen como parte de la spec:
   3×3 de F4 —donde (4,2) daba PF 1.691 contra el 1.507 publicado— mecanizado.
 - **El autotest `part="B"` de la Fase 1 está exento por nombre** del conteo de usos de la caja fuerte:
   es la fila sintética que el README ya señala en voz alta, y no evaluó precios reales.
+
+### 9.5b — Congelar las REGLAS, no sólo los datos
+
+Congelar los tres archivos de datos y no las reglas deja el acta viéndose intacta mientras el
+significado de cada número cambia debajo: un tercero reproduciría los números leyendo reglas
+distintas de las que regían. El acta congela, con el mismo tratamiento que los datos:
+
+| Archivo | Por qué entra |
+|---|---|
+| `factory/spec_fase2.md` | las reglas escritas. Sus §1–§4 están congeladas por declaración; el hash lo vuelve **comprobable** en vez de prometido. |
+| `factory/harness_f2.py` | las reglas **como se aplican**. La spec dice qué se exige; este archivo es lo que efectivamente se niega a correr. Congelar sólo la spec dejaría aflojar la enforcement sin rastro. |
+| `factory/harness.py` | la fricción ($3.90 dentro de cada número), `evaluate_trades` y la cadena del ledger. Además prometimos dejarlo byte a byte idéntico: el hash convierte esa promesa en algo verificable. |
+
+**Qué NO entra, y por qué.** Los módulos de estrategia (`familias_4_5.py`, `intradia.py`,
+`familia2_tendencia.py`, `familia_g2.py`…) no son las reglas de la búsqueda: son **las hipótesis**, y
+se escriben a medida que a cada familia le llega el turno. Congelar al abrir algo que todavía no
+existe sería teatro. Lo que los protege es otra cosa y ya está: cada configuración queda en el ledger
+con su resultado, y el código que lo produjo, en el commit de git de ese momento — por eso el acta
+guarda además el **commit del repo**, que cubre todo lo versionado, incluido lo que aún no se escribió.
+
+Además:
+
+- **Cada entrada de Fase 2 lleva `rules_digest`**, la huella corta de los tres archivos. Si las
+  reglas cambian a mitad de fase, la deriva queda **fechada y atribuida** en cada línea, no invisible.
+- **`assert_frozen_constants()` es fail-closed**: si K₁, K₂, K_total, α, el reparto por familia o las
+  ventanas difieren de lo que congeló el acta, `preregister()` y `run_on()` **se niegan a correr**.
+  Los números de §1–§4 no se tocan hasta el veredicto, y ahora eso está en el código.
+- **`rules_drift()`** reporta cualquier cambio contra el acta. No bloquea —el harness y la spec pueden
+  crecer legítimamente— pero **el veredicto tiene que publicarla** (§8.2).
 
 ### Nota — el régimen intradía queda BLOQUEADO hasta tener el mapeo de día de negociación
 

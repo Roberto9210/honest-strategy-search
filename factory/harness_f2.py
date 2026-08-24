@@ -237,6 +237,11 @@ def _last_hash() -> str:
 
 def _append(body: dict) -> dict:
     entry = dict(body)
+    if entry.get("phase") == 2 and "rules_digest" not in entry:
+        try:
+            entry["rules_digest"] = rules_digest()
+        except Exception:      # noqa: BLE001
+            entry["rules_digest"] = None
     entry["ts"] = datetime.now(timezone.utc).isoformat()
     entry["prev"] = _last_hash()
     entry["hash"] = hashlib.sha256(
@@ -297,10 +302,14 @@ def budget_used(family: str | None = None) -> int:
 
 
 def budget_report() -> dict:
+    fuera = out_of_scope_families()
+    perdidos = sum(e.get("cartuchos_perdidos", 0) for e in fuera.values())
     return {
         "K1": K1, "K2": K2, "K_total": K_TOTAL,
         "usado": budget_used(),
-        "restante": K2 - budget_used(),
+        "perdidos_fuera_de_alcance": perdidos,
+        "fuera_de_alcance": sorted(fuera),
+        "restante": K2 - budget_used() - perdidos,
         "por_familia": {f: {"presupuesto": b, "usado": budget_used(f)}
                         for f, b in FAMILY_BUDGET.items()},
         "linea_decision_p": DECISION_P,
@@ -580,10 +589,31 @@ def preregister(family: str, config: dict, hypothesis: str,
     `robustness_cells`: vecindad declarada de antemano. Es gratis SOLO porque
     ninguna de sus celdas puede adoptarse como candidata.
     """
+    assert_frozen_constants()
     if family not in FAMILY_BUDGET:
         raise SpecViolation(f"familia no declarada en la spec: {family!r}")
     if not hypothesis or not hypothesis.strip():
         raise SpecViolation("pre-registro sin hipótesis: prohibido (§7.2)")
+
+    if family in out_of_scope_families():
+        e = out_of_scope_families()[family]
+        raise SpecViolation(
+            f"{family} está FUERA DE ALCANCE de la Fase 2 desde {e['ts'][:10]} "
+            f"({e['motivo']}). Sus cartuchos se perdieron y no vuelven (§7.6)."
+        )
+
+    # Un plazo vencido y sin resolver detiene TODA la búsqueda, no solo lo que
+    # bloquea: es una decisión que hay que tomar, no un trámite que espera.
+    vencidos = overdue_blockers()
+    if vencidos:
+        detalle = "; ".join(
+            f"{b['bloqueante']} venció el {b['vence_el']} y bloquea "
+            f"{b['todavia_bloquea']} — resolver con {b['resuelve_con']}, o "
+            f"declare_out_of_scope(...): {b['al_vencer']}" for b in vencidos)
+        raise SpecViolation(
+            f"hay {len(vencidos)} bloqueante(s) VENCIDO(s) sin resolver: {detalle} "
+            "(§7.6: no puede haber un tercer estado)."
+        )
 
     # Un pre-registro sin resolver BLOQUEA el siguiente. Desde afuera del repo,
     # "pre-registrado y nunca corrido" es indistinguible de "corrido, salió feo
@@ -744,6 +774,7 @@ def run_on(df: pd.DataFrame, family: str, config: dict, strategy_fn,
       · es examen final y la caja fuerte ya se usó                   §3.3
       · es examen final sin power_check APROBADO en el ledger        §3.2
     """
+    assert_frozen_constants()
     prereg = open_preregistration(family, config)
     if prereg is None:
         raise PreregistrationMissing(
@@ -766,6 +797,14 @@ def run_on(df: pd.DataFrame, family: str, config: dict, strategy_fn,
         )
 
     if examen_final:
+        ok, why = can_declare_operable(family)
+        if not ok:
+            raise OperabilityUnknown(
+                f"examen final de {family} bloqueado: {why}. El margen es una "
+                "restricción de despliegue, no de investigación — no impide medir, "
+                "pero sí gastar el único uso de la caja fuerte en algo que no se "
+                "podría operar (§7.3)."
+            )
         used = vault_uses()
         if used:
             raise VaultAlreadyUsed(
@@ -801,6 +840,8 @@ def run_on(df: pd.DataFrame, family: str, config: dict, strategy_fn,
         "regime": regime.name,
         "ventana": {"desde": lo, "hasta": hi},
         "stat": {k: v for k, v in stat_test(trades).items()},
+        "margen_vigente": (overnight_margin() or {}).get("_hash"),
+        "operable": can_declare_operable(family)[0],
         "note": "EXAMEN FINAL" if examen_final else "",
     }
     if part == "B" or n_b_proyectado is not None:
@@ -813,6 +854,120 @@ def run_on(df: pd.DataFrame, family: str, config: dict, strategy_fn,
 # §9.5 — apertura de la fase: la firma
 # ---------------------------------------------------------------------------
 DATA_FILES_TO_FREEZE = ("es_daily.csv", "es_1min_databento.csv", "spy_daily.csv")
+
+# Congelar los datos y no las REGLAS deja el acta viéndose intacta mientras el
+# significado de cada número cambia debajo. Un tercero reproduciría los números
+# leyendo reglas distintas de las que regían.
+#
+# EL CORTE, y por qué cae donde cae. Se congela lo que NO puede cambiar durante
+# la fase sin cambiar el significado de todo lo ya medido:
+#
+#   spec_fase2.md   las reglas escritas. Sus §1–§4 están congeladas por
+#                   declaración; el hash lo hace comprobable en vez de prometido.
+#   harness_f2.py   las reglas COMO SE APLICAN. La spec dice qué se exige; este
+#                   archivo es lo que efectivamente se niega a correr. Si sólo se
+#                   congelara la spec, la enforcement podría aflojarse sin rastro.
+#   harness.py      la fricción ($3.90 adentro de cada número), evaluate_trades y
+#                   la cadena del ledger. Además prometimos dejarlo byte a byte
+#                   idéntico: el hash convierte esa promesa en algo verificable.
+#
+# NO se congelan los módulos de estrategia (familias_4_5.py, intradia.py,
+# familia2_tendencia.py, familia_g2.py…). No son las reglas de la búsqueda: son
+# las HIPÓTESIS, y se escriben a medida que a cada familia le llega el turno.
+# Congelar al abrir algo que todavía no existe sería teatro. Lo que los protege
+# es otra cosa y ya está: cada configuración queda en el ledger con su resultado,
+# y el código que lo produjo, en el commit de git de ese momento — por eso el
+# acta también guarda el commit del repo.
+RULES_FILES = (
+    os.path.join("factory", "spec_fase2.md"),
+    os.path.join("factory", "harness_f2.py"),
+    os.path.join("factory", "harness.py"),
+)
+
+
+def rules_hashes() -> dict:
+    out = {}
+    for rel in RULES_FILES:
+        p = os.path.join(REPO, rel)
+        key = rel.replace("\\", "/")
+        out[key] = ({"sha256": sha256_file(p), "bytes": os.path.getsize(p)}
+                    if os.path.exists(p)
+                    else {"sha256": None, "bytes": None, "nota": "AUSENTE"})
+    return out
+
+
+def rules_digest(hashes: dict | None = None) -> str:
+    """Huella corta de las tres reglas juntas. Va en CADA entrada de Fase 2, así
+    cualquier deriva queda fechada y atribuida en vez de invisible."""
+    h = hashes or rules_hashes()
+    joined = "|".join(f"{k}:{v.get('sha256')}" for k, v in sorted(h.items()))
+    return hashlib.sha256(joined.encode()).hexdigest()[:16]
+
+
+def git_commit() -> str | None:
+    """Commit del repo al abrir: cubre TODO lo versionado, incluido lo que
+    todavía no se escribió. Complementa los hashes explícitos, no los reemplaza."""
+    import subprocess
+    try:
+        out = subprocess.run(["git", "rev-parse", "HEAD"], cwd=REPO,
+                             capture_output=True, text=True, timeout=15)
+        return out.stdout.strip() or None
+    except Exception:      # noqa: BLE001
+        return None
+
+
+# Constantes que el acta congela. Cambiar cualquiera de ellas después de firmar
+# es cambiar la vara, así que el harness se niega a seguir corriendo.
+FROZEN_KEYS = ("K1", "K2", "K_total", "alpha", "presupuesto_por_familia", "ventanas")
+
+
+def _acta() -> dict | None:
+    for e in read_ledger():
+        if e.get("kind") == "APERTURA_FASE2":
+            return e
+    return None
+
+
+def _live_frozen() -> dict:
+    return {
+        "K1": K1, "K2": K2, "K_total": K_TOTAL, "alpha": ALPHA,
+        "presupuesto_por_familia": FAMILY_BUDGET,
+        "ventanas": {k: {"a": [v.a_start, v.a_end], "b": [v.b_start, v.b_end],
+                         "serie": v.series, "excluidas": len(v.excluded)}
+                     for k, v in WINDOWS.items()},
+    }
+
+
+def assert_frozen_constants() -> None:
+    """Fail-closed: si una constante congelada por el acta cambió, no se corre."""
+    acta = _acta()
+    if acta is None:
+        return
+    live = _live_frozen()
+    difieren = [k for k in FROZEN_KEYS if acta.get(k) != live[k]]
+    if difieren:
+        raise SpecViolation(
+            f"constantes congeladas por el acta que cambiaron: {difieren}. "
+            "Los números de §1–§4 no se tocan hasta el veredicto; corregí el "
+            "código o abrí una fase nueva."
+        )
+
+
+def rules_drift() -> dict:
+    """Diferencia entre las reglas de HOY y las que congeló el acta. No bloquea
+    —el harness y la spec pueden crecer legítimamente— pero queda a la vista, y
+    el veredicto tiene que publicarla."""
+    acta = _acta()
+    if acta is None:
+        return {"acta": None}
+    antes = acta.get("rules_sha256") or {}
+    ahora = rules_hashes()
+    cambiados = {k: {"acta": antes.get(k, {}).get("sha256"),
+                     "ahora": ahora.get(k, {}).get("sha256")}
+                 for k in set(antes) | set(ahora)
+                 if antes.get(k, {}).get("sha256") != ahora.get(k, {}).get("sha256")}
+    return {"digest_acta": acta.get("rules_digest"),
+            "digest_ahora": rules_digest(ahora), "cambiados": cambiados}
 
 
 def sha256_file(path: str, chunk: int = 1 << 20) -> str:
@@ -834,6 +989,55 @@ def freeze_data_hashes(data_dir: str | None = None) -> dict:
     return out
 
 
+# ---------------------------------------------------------------------------
+# §7.6 — CAMPOS BLOQUEANTES CON FECHA DE VENCIMIENTO
+#
+# Un campo bloqueante sin fecha de resolución es un pendiente eterno, y un
+# pendiente eterno es una decisión no tomada disfrazada de trámite. Tiene la
+# misma forma que el pre-registro sin desenlace (§7.2), un nivel más arriba:
+# parece que se va a resolver, no se resuelve, y lo que bloquea vive en un limbo
+# que se ve prolijo.
+#
+# NO PUEDE HABER UN TERCER ESTADO. O el dato llega con su fecha, o lo que
+# bloquea sale de alcance con el motivo escrito y publicado.
+#
+# Los cartuchos de una familia que sale de alcance se PIERDEN: no se retiran del
+# denominador (§1.4 — retirarlos aflojaría el listón: con 217 en vez de 257 el
+# |t| exigido baja de 3.726 a 3.683) y tampoco se reasignan a otra familia (§2 —
+# el presupuesto no usado no se transfiere). Se pierden, el denominador queda en
+# 257, y el listón no se mueve ni un punto. Es la única salida que no exige
+# enmendar una regla ya firmada.
+# Familias que mantienen posicion fuera del horario de day-trading: son las
+# unicas cuya OPERABILIDAD depende del margen nocturno (G4 es intradia).
+OVERNIGHT_FAMILIES = ("G1-nocturna", "G2-multidia", "G3-regimen", "G5-cruzado")
+
+BLOQUEANTE_PLAZO_DIAS = 14
+
+BLOQUEANTES = {
+    "margen_nocturno_mes": {
+        "bloquea": OVERNIGHT_FAMILIES,
+        "resuelve_con": "register_overnight_margin(valor_usd, fuente, leido_el)",
+        "clock": "apertura",          # el reloj arranca al abrir la fase
+        "plazo_dias": BLOQUEANTE_PLAZO_DIAS,
+        "bloquea_que": "la declaración de operabilidad y el examen final de las "
+                       "familias overnight — NO la búsqueda (§7.3 reclasificado)",
+        "al_vencer": ("Se declara con acta publicada que la Fase 2 NO puede "
+                      "pronunciarse sobre la operabilidad de ninguna candidata "
+                      "overnight, y toda candidata se publica con esa limitación "
+                      "escrita. El presupuesto NO se toca: la búsqueda nunca "
+                      "dependió del margen, así que sacrificar cartuchos sería "
+                      "pagar por un bloqueo que no existe."),
+    },
+    "mapeo_dia_cme": {
+        "bloquea": ("G4-bordes",),
+        "resuelve_con": "INTRADAY_TRADING_DAY_MAPPING_READY = True, con su prueba",
+        "clock": "cierre de G3-regimen",   # no bloquea hasta que sea su turno
+        "plazo_dias": BLOQUEANTE_PLAZO_DIAS,
+        "al_vencer": ("G4-bordes sale FUERA DE ALCANCE con motivo escrito. Sus 40 "
+                      "cartuchos se PIERDEN, mismo criterio."),
+    },
+}
+
 # El margen nocturno es una entrada de COSTO, no una regla: no forma parte de lo
 # que el acta congela, y su ausencia no impide abrir la fase. Se registra AUSENTE
 # EXPLÍCITO — nunca en cero, nunca con un valor "mientras tanto", porque un número
@@ -850,15 +1054,49 @@ MARGEN_AUSENTE = {
 }
 
 
+def _today() -> str:
+    return datetime.now(timezone.utc).date().isoformat()
+
+
+def _plus_days(iso_date: str, days: int) -> str:
+    from datetime import date, timedelta
+    y, m, d = (int(x) for x in iso_date.split("-"))
+    return (date(y, m, d) + timedelta(days=days)).isoformat()
+
+
+# El margen es una restricción de DESPLIEGUE, no de investigación: que exista una
+# ventaja no depende del capital que inmovilice; poder operarla sí. Por eso NO
+# bloquea la búsqueda — bloquea la declaración de operabilidad y el examen final
+# de toda familia que cruce la noche.
+#
+# SALVAGUARDA (§7.3). Mover el bloqueo abre una puerta chica: si aparece una
+# candidata, nace la presión de conseguir un margen que le convenga. Es el peeking
+# transplantado — en vez de elegir la ventana después de ver el resultado, elegís
+# el bróker. Por eso la entrada COSTO_MARGEN se registra UNA vez y es inmutable:
+#   · no se revisa porque una candidata necesite un número más chico;
+#   · una revisión A LA BAJA se RECHAZA si ya existe cualquier resultado de Fase 2;
+#   · una revisión legítima (el bróker subió el requisito) entra como entrada
+#     NUEVA y fechada que NO reemplaza a la anterior;
+#   · cada resultado queda sellado con el margen vigente al correrlo, así "esta
+#     candidata se evaluó bajo el margen viejo" es un hecho del ledger y no un
+#     recuerdo.
+
+
+class OperabilityUnknown(SpecViolation):
+    """Se quiso declarar operable algo cuyo capital requerido no se conoce."""
+
+
 def register_overnight_margin(valor_usd: float, fuente: str, leido_el: str,
-                              nota: str = "") -> dict:
-    """El margen nocturno de MES, cuando llegue: entrada propia y fechada.
+                              nota: str = "", revision_motivo: str = "") -> dict:
+    """El margen nocturno de MES: entrada propia, fechada e INMUTABLE.
 
     `valor_usd`: el requisito del BRÓKER, no el de CME (§7.3).
     `fuente`: de dónde se leyó, textual (ej. "NinjaTrader Tools > Instruments > MES").
     `leido_el`: fecha de lectura, YYYY-MM-DD. Sin ella el dato no es citable.
+    `revision_motivo`: obligatorio para registrar un segundo valor. La entrada
+        nueva NO reemplaza a la anterior; ambas quedan.
 
-    Habilita G1 solo si los tres están. Fail-closed: falta uno ⇒ no habilita.
+    Fail-closed: falta uno de los tres ⇒ no se registra.
     """
     if not (valor_usd and float(valor_usd) > 0):
         raise SpecViolation("margen nocturno sin valor positivo: no se inventa (§7.3)")
@@ -866,6 +1104,25 @@ def register_overnight_margin(valor_usd: float, fuente: str, leido_el: str,
         raise SpecViolation("margen nocturno sin fuente escrita (§7.3)")
     if not (leido_el and leido_el.strip()):
         raise SpecViolation("margen nocturno sin fecha de lectura (§7.3)")
+
+    previo = overnight_margin()
+    if previo is not None:
+        if not (revision_motivo and revision_motivo.strip()):
+            raise SpecViolation(
+                f"ya hay un margen registrado (${previo['valor_usd']:,.2f}, "
+                f"{previo['fuente']}, {previo['leido_el']}) y es INMUTABLE. Una "
+                "revisión exige `revision_motivo` escrito, y no reemplaza a la "
+                "anterior (§7.3)."
+            )
+        hay_resultados = any(e.get("kind") == "RESULTADO" for e in read_ledger())
+        if float(valor_usd) < float(previo["valor_usd"]) and hay_resultados:
+            raise SpecViolation(
+                "revisión A LA BAJA del margen con resultados de Fase 2 ya en el "
+                f"ledger: RECHAZADA (${previo['valor_usd']:,.2f} → "
+                f"${float(valor_usd):,.2f}). Bajar el capital exigido después de "
+                "tener candidatas es elegir el bróker en vez de la ventana: el "
+                "mismo peeking, transplantado (§7.3)."
+            )
     return _append({
         "phase": 2, "kind": "COSTO_MARGEN", "family": "META",
         "config": {"evento": "MARGEN NOCTURNO MES"},
@@ -877,7 +1134,13 @@ def register_overnight_margin(valor_usd: float, fuente: str, leido_el: str,
             "leido_el": leido_el.strip(),
             "nota": nota.strip() or None,
         },
-        "note": "Margen nocturno de MES declarado con fuente y fecha. G1 habilitada (§7.3).",
+        "revisa_a": previo.get("_hash") if previo else None,
+        "revision_motivo": revision_motivo.strip() or None,
+        "note": ("Margen nocturno de MES declarado con fuente y fecha. Habilita la "
+                 "declaración de operabilidad y el examen final de las familias "
+                 "overnight (§7.3). Entrada INMUTABLE." if previo is None else
+                 "REVISION del margen nocturno. NO reemplaza a la anterior: las "
+                 "candidatas evaluadas bajo la vieja quedan evaluadas bajo la vieja."),
     })
 
 
@@ -894,8 +1157,30 @@ def open_phase2(margen_nocturno_mes: dict | None = None,
     """
     if margen_nocturno_mes is None:
         margen_nocturno_mes = dict(MARGEN_AUSENTE)
+    hoy = _today()
+    bloqueantes = {}
+    for name, spec in BLOQUEANTES.items():
+        vence = (_plus_days(hoy, spec["plazo_dias"])
+                 if spec["clock"] == "apertura" else None)
+        bloqueantes[name] = {
+            "bloquea": list(spec["bloquea"]),
+            "clock": spec["clock"],
+            "plazo_dias": spec["plazo_dias"],
+            "desde": hoy if vence else None,
+            "vence_el": vence,
+            "resuelve_con": spec["resuelve_con"],
+            "al_vencer": spec["al_vencer"],
+        }
+    if margen_nocturno_mes.get("estado") == "AUSENTE":
+        margen_nocturno_mes = dict(margen_nocturno_mes)
+        margen_nocturno_mes["vence_el"] = bloqueantes["margen_nocturno_mes"]["vence_el"]
+        margen_nocturno_mes["al_vencer"] = bloqueantes["margen_nocturno_mes"]["al_vencer"]
     hashes = freeze_data_hashes(data_dir)
-    body = _acta_body(margen_nocturno_mes, hashes)
+    rh = rules_hashes()
+    body = _acta_body(margen_nocturno_mes, hashes, bloqueantes)
+    body["rules_sha256"] = rh
+    body["rules_digest"] = rules_digest(rh)
+    body["git_commit"] = git_commit()
     if dry_run:
         preview = dict(body)
         preview["prev"] = _last_hash()
@@ -905,8 +1190,10 @@ def open_phase2(margen_nocturno_mes: dict | None = None,
     return _append(body)
 
 
-def _acta_body(margen_nocturno_mes: dict, hashes: dict) -> dict:
+def _acta_body(margen_nocturno_mes: dict, hashes: dict,
+               bloqueantes: dict | None = None) -> dict:
     return {
+        "bloqueantes": bloqueantes or {},
         "phase": 2, "kind": "APERTURA_FASE2", "family": "META", "config":
             {"evento": "APERTURA FASE 2"},
         "part": "meta", "result": None,
@@ -929,23 +1216,145 @@ def _acta_body(margen_nocturno_mes: dict, hashes: dict) -> dict:
     }
 
 
+def out_of_scope_families() -> dict:
+    """{familia: entrada} de las que salieron de alcance. Sus cartuchos están
+    perdidos: no se pueden gastar, y siguen contando en el denominador."""
+    out = {}
+    for e in read_ledger():
+        if e.get("kind") == "FUERA_DE_ALCANCE":
+            out[e["family"]] = e
+    return out
+
+
+def declare_out_of_scope(family: str, motivo: str, bloqueante: str | None = None) -> dict:
+    """Saca una familia de alcance de la Fase 2. El motivo es OBLIGATORIO y se
+    publica. Los cartuchos se pierden: el denominador sigue en K_total (§1.4) y
+    no se reasignan (§2)."""
+    if family not in FAMILY_BUDGET:
+        raise SpecViolation(f"familia no declarada: {family!r}")
+    if not motivo or not motivo.strip():
+        raise SpecViolation("salir de alcance sin motivo escrito: prohibido (§7.6)")
+    if family in out_of_scope_families():
+        raise SpecViolation(f"{family} ya está fuera de alcance")
+    perdidos = FAMILY_BUDGET[family] - budget_used(family)
+    return _append({
+        "phase": 2, "kind": "FUERA_DE_ALCANCE", "family": family,
+        "config": {"evento": "FUERA DE ALCANCE"}, "part": "meta", "result": None,
+        "motivo": motivo.strip(),
+        "bloqueante": bloqueante,
+        "cartuchos_perdidos": perdidos,
+        "K_total_sigue_en": K_TOTAL,
+        "note": (f"{family} FUERA DE ALCANCE de la Fase 2. {perdidos} cartuchos "
+                 f"PERDIDOS: no se retiran del denominador (sigue en {K_TOTAL}, "
+                 "§1.4) ni se reasignan a otra familia (§2). El listón no se mueve."),
+    })
+
+
+def _blocker_resolved(name: str) -> bool:
+    if name == "margen_nocturno_mes":
+        return overnight_margin() is not None
+    if name == "mapeo_dia_cme":
+        return bool(INTRADAY_TRADING_DAY_MAPPING_READY)
+    raise SpecViolation(f"bloqueante desconocido: {name!r}")
+
+
+def blocking_status(today: str | None = None) -> list:
+    """Estado de cada campo bloqueante: resuelto, vigente con plazo, vencido, o
+    todavía sin reloj (su disparador no ocurrió). Nunca hay un cuarto estado."""
+    today = today or _today()
+    plazos = {}
+    for e in read_ledger():
+        if e.get("kind") in ("APERTURA_FASE2", "PLAZO_BLOQUEANTE"):
+            for name, info in (e.get("bloqueantes") or {}).items():
+                if info.get("vence_el"):
+                    plazos[name] = info["vence_el"]
+    fuera = out_of_scope_families()
+    out = []
+    for name, spec in BLOQUEANTES.items():
+        resuelto = _blocker_resolved(name)
+        vence = plazos.get(name)
+        bloqueadas = [f for f in spec["bloquea"] if f not in fuera]
+        if resuelto:
+            estado = "RESUELTO"
+        elif not bloqueadas:
+            estado = "MOOT"          # ya salió de alcance lo que bloqueaba
+        elif vence is None:
+            estado = "SIN_RELOJ"     # su disparador todavía no ocurrió
+        elif today > vence:
+            estado = "VENCIDO"
+        else:
+            estado = "VIGENTE"
+        out.append({
+            "bloqueante": name, "estado": estado, "vence_el": vence,
+            "bloquea": list(spec["bloquea"]), "todavia_bloquea": bloqueadas,
+            "clock": spec["clock"], "resuelve_con": spec["resuelve_con"],
+            "al_vencer": spec["al_vencer"],
+        })
+    return out
+
+
+def overdue_blockers(today: str | None = None) -> list:
+    return [b for b in blocking_status(today) if b["estado"] == "VENCIDO"]
+
+
+def start_blocker_clock(name: str, desde: str | None = None) -> dict:
+    """Arranca el reloj de un bloqueante cuyo disparador es un evento (p. ej. el
+    mapeo de día CME, que no bloquea hasta que G4 sea su turno)."""
+    if name not in BLOQUEANTES:
+        raise SpecViolation(f"bloqueante desconocido: {name!r}")
+    desde = desde or _today()
+    vence = _plus_days(desde, BLOQUEANTES[name]["plazo_dias"])
+    return _append({
+        "phase": 2, "kind": "PLAZO_BLOQUEANTE", "family": "META",
+        "config": {"evento": "ARRANCA PLAZO", "bloqueante": name},
+        "part": "meta", "result": None,
+        "bloqueantes": {name: {"desde": desde, "vence_el": vence,
+                               "al_vencer": BLOQUEANTES[name]["al_vencer"]}},
+        "note": (f"Reloj del bloqueante {name} arrancado el {desde}; vence el "
+                 f"{vence}. {BLOQUEANTES[name]['al_vencer']}"),
+    })
+
+
 def phase2_is_open() -> bool:
     return any(e.get("kind") == "APERTURA_FASE2" for e in read_ledger())
 
 
-def overnight_margin() -> dict | None:
-    """El margen nocturno declarado, si existe. Busca la entrada COSTO_MARGEN
-    más reciente y, por compatibilidad, el valor inline del acta."""
-    found = None
+def overnight_margin_history() -> list:
+    """Todos los márgenes registrados, en orden. Ninguno reemplaza a otro."""
+    out = []
     for e in read_ledger():
         if e.get("kind") in ("COSTO_MARGEN", "APERTURA_FASE2"):
             m = e.get("margen_nocturno_mes")
             if m and m.get("valor_usd") and m.get("fuente") and m.get("leido_el"):
-                found = m
-    return found
+                m = dict(m)
+                m["_hash"] = e["hash"]
+                m["_ts"] = e["ts"]
+                out.append(m)
+    return out
+
+
+def overnight_margin() -> dict | None:
+    """El margen vigente (el último registrado), o None. Fail-closed: ausente,
+    cero o sin fecha ⇒ None."""
+    h = overnight_margin_history()
+    return h[-1] if h else None
+
+
+def can_declare_operable(family: str) -> tuple:
+    """¿Se puede afirmar que una candidata de esta familia es OPERABLE?
+
+    La búsqueda no depende de esto (el margen no cambia ningún número del
+    backtest: la fricción de $3.90 ya está adentro). La operabilidad sí."""
+    if family not in OVERNIGHT_FAMILIES:
+        return (True, "familia intradía: no inmoviliza margen nocturno")
+    m = overnight_margin()
+    if m is None:
+        return (False, "margen nocturno de MES AUSENTE: no se puede afirmar con "
+                       "qué tamaño de cuenta sería operable (§7.3)")
+    return (True, f"margen ${m['valor_usd']:,.2f} ({m['fuente']}, {m['leido_el']})")
 
 
 def g1_enabled() -> bool:
-    """G1 no corre sin el margen nocturno declarado con valor, fuente y fecha
-    (§7.3). Fail-closed: ausente, cero o sin fecha ⇒ False."""
+    """Retrocompatible: ¿hay margen declarado? Ojo — desde la reclasificación de
+    §7.3 esto NO condiciona la búsqueda de G1, sólo su operabilidad."""
     return overnight_margin() is not None
