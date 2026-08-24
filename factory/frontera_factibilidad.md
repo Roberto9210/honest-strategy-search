@@ -1401,3 +1401,131 @@ Reproducidas de la §45 **palabra por palabra**, con las tres columnas que falta
 producir un mecanismo **operable** nuevo, que es lo que el veredicto de búsqueda necesita (§51b). Y su
 dependencia crítica es Roberto: **sin reglas de terceros, la meta operable de la Fase 2 es
 inalcanzable por construcción, y el único final disponible es la opción 3.**
+
+---
+
+# Adenda 12 — de qué está hecha la vara
+
+*Cartuchos gastados: 0. Ninguna constante modificada — `FRICTION_RT = 3.90` y `POINT_VALUE = 5.0`
+siguen donde estaban, `assert_frozen_constants()` pasa. Todo lo de abajo es aritmética sobre números
+ya publicados.*
+
+## 53. θ no es descomponible: es **100 % estadística**
+
+La pregunta suponía que θ mezcla peaje y exigencia estadística. **No lo hace.**
+
+```
+θ = POWER_CONST / √S_B = 2,801585 / √1669 = 0,068577
+```
+
+| Factor | Valor | Fuente en la spec |
+|---|---|---|
+| Numerador | 2,801585 = z_{α/2} + z_{1−β} = 1,959964 + 0,841621 | **§3.2**, compuerta de potencia: α_B = 0,05 bilateral, potencia 0,80 |
+| Denominador | √1669 | **§4.4**, ventana del régimen diario, parte B 2020-01-01 → 2026-08-19 |
+
+**No hay friccion adentro de θ.** La fricción entra en el **otro** término de la vara:
+
+```
+c ≥ θ + f/h          con   f = FRICCIÓN/σ₁ = 3,90/81,06 = 0,048113
+```
+
+Y **la multiplicidad tampoco está en θ**: tiene su propio piso, `θ_mult = 3,7260/√4865 = 0,053420`,
+que hoy está **dominado** porque la potencia exige más (0,068577 > 0,053420, factor 1,284).
+
+**Lo que sí se descompone es la vara completa**, y ahí la pregunta tiene respuesta:
+
+| h | Potencia | Fricción f/h | **Vara total** | **% fricción** |
+|---|---|---|---|---|
+| **1** | 0,068577 | 0,048113 | **0,116689** | **41,2 %** |
+| 3 | 0,068577 | 0,016038 | 0,084614 | 19,0 % |
+| 7 | 0,068577 | 0,006873 | 0,075450 | 9,1 % |
+| 20 | 0,068577 | 0,002406 | 0,070982 | 3,4 % |
+
+## 54. Cuánto tendría que bajar la fricción: **ninguna reducción alcanza**
+
+**Nota que decide todo:** `c` es **bruto** por definición (`c = ventaja BRUTA/σ/√h`), así que bajar la
+fricción **no mueve c**. Sólo baja la vara — y la vara tiene piso en θ.
+
+```
+c ≥ θ + f*/h   ⟹   f* = h·(c − θ)      Si c < θ, f* sale NEGATIVO.
+```
+
+| Mecanismo | c | θ | f* necesario | Reducción |
+|---|---|---|---|---|
+| liquidez CONSERVADORA | +0,04190 | 0,068577 | −0,026677 | **IMPOSIBLE** |
+| liquidez GENEROSA | +0,03315 | 0,068577 | −0,035427 | **IMPOSIBLE** |
+| difusión | −0,00489 | 0,068577 | −0,073467 | **IMPOSIBLE** |
+| estimador global CONSERVADORA | +0,020262 | 0,068577 | −0,048315 | **IMPOSIBLE** |
+| estimador global GENEROSA | +0,013874 | 0,068577 | −0,054703 | **IMPOSIBLE** |
+| cartucho 1 solo — el mejor medido, h=3 | +0,0618 | 0,068577 | −0,020330 | **IMPOSIBLE** |
+
+> **Ninguno. Todos los c medidos están por debajo de θ, y θ es la vara con fricción CERO. No existe
+> reducción de peaje —ni del 100 %— que alcance. Haría falta que nos pagaran por operar.**
+
+### La premisa corregida: "neto positivo" y "detectable" son dos varas distintas
+
+| Objetivo para liquidez (c = 0,04190) | Umbral sobre c | Cuánto falta |
+|---|---|---|
+| Ser **neto positivo** a h=1 (pagar el peaje) | 0,048113 | **15 %** |
+| Superar la vara con **fricción cero** (= θ) | 0,068577 | **64 %** |
+| Superar la vara **real** a h=1 | 0,116689 | **178 %** |
+
+El **92,9 %** del cartucho 4 —$3,6231 brutos contra $3,90 de peaje— es cierto **de la primera fila**:
+bajando la fricción **7,1 %** esa regla empata. **Pero empatar no es la vara.** Para ser *detectable*
+le falta un 64 % de señal, y eso la fricción no lo toca.
+
+> **La premisa "el peaje está arriba de la señal" es cierta de la rentabilidad y falsa de la
+> detectabilidad.** Podríamos hacer estas reglas rentables y seguir sin poder demostrar que funcionan.
+
+## 55. Chequeo de realismo: ni el mejor escenario imaginable alcanza
+
+*Aritmética hipotética. Ninguna constante fue modificada.*
+
+| Escenario | Fricción | f | Vara a h=1 | ¿> c liquidez? |
+|---|---|---|---|---|
+| **Hoy**: MES, comisión $1,40 + 2 ticks | $3,90 | 0,048113 | 0,116689 | no |
+| Comisión por escala (~$0,50) + 2 ticks | $3,00 | 0,037010 | 0,105586 | no |
+| Órdenes límite, deslizamiento 0 | $1,40 | 0,017271 | 0,085848 | no |
+| Lo mejor imaginable en MES | $0,50 | 0,006168 | 0,074745 | no |
+| **ES en vez de MES** (10× nocional, fricción ≈ igual) | $4,00 | 0,004935 | 0,073511 | **no** |
+| **Fricción CERO** (cota inferior imposible) | $0,00 | 0,000000 | **0,068577** | **no** |
+
+**Órdenes de magnitud, con su incertidumbre dicha:** la comisión minorista de futuros escala con
+volumen y bajar de ~$1,40 a ~$0,50 por ida y vuelta es plausible (≈ 23 % del peaje total); pasar de
+órdenes a mercado a órdenes límite puede eliminar los 2 ticks de deslizamiento (≈ 64 % del peaje) a
+cambio de riesgo de no ejecución; y **el salto grande es cambiar MES por ES**, donde la fricción por
+contrato es parecida pero σ es 10× mayor, lo que baja `f` un **90 %**. *Los números concretos de
+comisión no están verificados contra la tabla publicada de ningún bróker — mismo criterio que el
+margen (§7.3): son órdenes de magnitud, no cifras citables.*
+
+**Y ninguno alcanza**, porque el piso de la vara no es la fricción: es θ, y liquidez está **64 % por
+debajo** de θ. Más aún: si la caja fuerte fuera **infinita** y la potencia dejara de exigir nada,
+quedaría el piso de multiplicidad **0,053420**, que **también** está por encima de 0,04190.
+
+## 56. Las tres palancas, y cuál puede cambiar la respuesta
+
+| Palanca | Qué mueve | ¿Cambia la respuesta? |
+|---|---|---|
+| **Más mecanismos** | angosta el IC de c | **No.** Dice si `c < θ` es real, no lo cambia |
+| **Menos fricción** | baja la vara a h finito | **No.** Nunca por debajo de θ = 0,068577 |
+| **Caja fuerte más larga** | **baja θ** | **Sí. La única.** |
+
+```
+θ = c  cuando  S_B = (2,8016/c)²
+  con c = 0,04190 (CONSERVADORA):  S_B = 4.471  →  faltan 2.802 sesiones = 11,1 años
+  con c = 0,03315 (GENEROSA):      S_B = 7.142  →  faltan 5.473 sesiones = 21,7 años
+```
+
+### Qué significa para la decisión
+
+El criterio propuesto era: *si la fricción tuviera que bajar 10–15 %, replantear la fase sobre costo de
+ejecución; si 60 % o más, opción 3.* **Ninguna de las dos ramas aplica**, porque **ninguna reducción
+alcanza**: el resultado no es "hay que bajar mucho el costo", es **"el costo no es la restricción"**.
+
+Y de ahí se sigue lo incómodo: **ninguna de las cuatro opciones de la §45 ataca la restricción real.**
+Las cuatro son sobre mecanismos; la fricción quedó descartada acá; y la restricción sigue siendo la que
+la §2 y la §6 ya habían identificado — **el largo de la caja fuerte**.
+
+Los mecanismos siguen importando, pero para otra cosa: **deciden con cuánta confianza afirmamos que
+`c < θ`**, no si es verdad. Y esa distinción es la que separa "cerrar la fase con un veredicto
+sostenido" de "cerrarla con una corazonada".
