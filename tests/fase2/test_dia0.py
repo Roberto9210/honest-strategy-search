@@ -11,6 +11,7 @@ Uso:  venv\\Scripts\\python.exe tests\\fase2\\test_dia0.py
 """
 from __future__ import annotations
 
+import io
 import json
 import os
 import shutil
@@ -121,8 +122,21 @@ def fresh_ledger(tmp):
     """Copia el ledger PUBLICADO al tempdir y apunta ahí. Así también se prueba
     que la cadena de la Fase 2 engancha con la real, no con una inventada."""
     dst = os.path.join(tmp, "ledger.jsonl")
-    shutil.copyfile(PUBLISHED_LEDGER, dst)
+    # Se copia el ledger publicado TRUNCADO al cierre de la Fase 1: así se prueba
+    # que la cadena de Fase 2 engancha con datos reales, y a la vez las pruebas no
+    # dependen de cuánto haya crecido la Fase 2 desde que se escribieron.
+    with io.open(PUBLISHED_LEDGER, encoding="utf-8") as src,             io.open(dst, "w", encoding="utf-8") as out:
+        for linea in src:
+            if not linea.strip():
+                continue
+            if json.loads(linea).get("phase") == 2:
+                break
+            out.write(linea)
     f2.set_ledger(dst)
+    # §3.5: sin criba de medibilidad no se puede gastar un cartucho. Las pruebas
+    # que no son sobre la criba arrancan con todas las familias cribadas.
+    for fam in f2.FAMILY_BUDGET:
+        f2.log_measurability_screen(fam, 5000, "fixture de prueba")
     return dst
 
 
@@ -437,8 +451,12 @@ def s8_ledger_y_apertura(tmp):
     print("    -- el ledger PUBLICADO verifica con el verificador nuevo")
     f2.set_ledger(PUBLISHED_LEDGER)
     check(f2.verify_ledger() is True, "verify_ledger() sobre el archivo publicado: True")
-    check(len(f2.read_ledger()) == 60, "60 líneas, como dice el README")
-    check(f2.phase2_is_open() is False, "la Fase 2 todavía NO está abierta en el ledger real")
+    filas = f2.read_ledger()
+    fase1 = [e for e in filas if e.get("phase") != 2]
+    check(len(fase1) == 60, f"las 60 líneas de la Fase 1 intactas (total hoy: {len(filas)})")
+    check(sum(1 for e in filas if e.get("kind") == "APERTURA_FASE2") == 1,
+          "exactamente un acta de apertura, nunca dos")
+    check(f2.phase2_is_open() is True, "la Fase 2 está abierta en el ledger real")
 
     fresh_ledger(tmp)
     f2.preregister("G3-regimen", {"q": 1}, "estado de volatilidad")
@@ -459,7 +477,7 @@ def s8_ledger_y_apertura(tmp):
     n_antes = len(f2.read_ledger())
     prev = f2.open_phase2(data_dir=os.path.join(REPO, "data"), dry_run=True)
     check(len(f2.read_ledger()) == n_antes, "dry_run no anexó ninguna línea")
-    check(f2.phase2_is_open() is False, "y la fase sigue cerrada")
+    check(f2.phase2_is_open() is False, "y la fase sigue cerrada en el ledger temporal")
     check(prev["prev"] == f2.read_ledger()[-1]["hash"],
           "el acta previsualizada engancha al último hash real del ledger")
 
@@ -716,6 +734,62 @@ def s12_bloqueantes(tmp):
     check(f2.verify_ledger() is True, "cadena válida")
 
 
+def s13_criba_medibilidad(tmp):
+    print("\n[13] §3.5 — cribar por MEDIBILIDAD es legítimo; por RENDIMIENTO no")
+    fresh_ledger(tmp)
+    check(f2.n_b_needed(f2.DELTA_REF_BEST) == 342,
+          f"a delta {f2.DELTA_REF_BEST} hacen falta {f2.n_b_needed(f2.DELTA_REF_BEST)} "
+          "operaciones — el mismo 342 que BOT C publicó para F4")
+    check(f2.n_b_needed(f2.DELTA_REF_TYPICAL) == 1121,
+          f"a delta {f2.DELTA_REF_TYPICAL} hacen falta {f2.n_b_needed(f2.DELTA_REF_TYPICAL)}")
+
+    print("    -- el contador de frecuencia devuelve un int: el P&L no sale de ahí")
+    df = synthetic_daily("2000-09-18", "2019-12-31")
+    n = f2.count_trades_only(strat_record, df, {"step": 5, "edge_points": 99.0})
+    check(isinstance(n, int) and n > 0, f"count_trades_only -> {n} (int)")
+    n2 = f2.count_trades_only(strat_record, df, {"step": 5, "edge_points": -99.0})
+    check(n == n2,
+          "la frecuencia NO cambia al invertir el signo del P&L: es una propiedad "
+          "del mercado, no de si la regla gana")
+
+    print("    -- sin criba, la familia no puede gastar un cartucho")
+    fresh_ledger(tmp)
+    ledger = f2.LEDGER_PATH
+    filas = [l for l in io.open(ledger, encoding="utf-8") if l.strip()
+             and json.loads(l).get("kind") != "MEDIBILIDAD"]
+    with io.open(ledger, "w", encoding="utf-8") as fh:
+        fh.writelines(filas)
+    raises_msg(f2.SpecViolation,
+               lambda: f2.preregister("G1-nocturna", {"z": 1}, "hipótesis"),
+               "pre-registrar sin criba de medibilidad",
+               must_contain=("criba de medibilidad", "no gasta presupuesto"))
+
+    print("    -- una familia NO VALIDABLE no puede gastar sus cartuchos")
+    used = f2.budget_used()
+    e = f2.log_measurability_screen(
+        "G1-nocturna", 100,
+        "techo estructural de prueba: 100 operaciones en B")
+    check(e["screen"]["validable"] is False, "100 < 342: NO VALIDABLE")
+    check(f2.budget_used() == used, "y la criba NO consumió presupuesto")
+    check(abs(e["screen"]["delta_min_detectable"] - 2.8016 / 10) < 1e-3,
+          f"efecto mínimo detectable {e['screen']['delta_min_detectable']:.4f} "
+          "= 2.8016/sqrt(100)")
+    raises_msg(f2.SpecViolation,
+               lambda: f2.preregister("G1-nocturna", {"z": 1}, "hipótesis"),
+               "pre-registrar en una familia NO VALIDABLE",
+               must_contain=("NO VALIDABLE", "342"))
+
+    print("    -- y sacarla de alcance pierde los cartuchos, sin mover el listón")
+    oos = f2.declare_not_validable(
+        "G1-nocturna", "techo de 100 operaciones contra 342 necesarias")
+    check(oos["cartuchos_perdidos"] == 40, "los 40 de G1 se pierden")
+    check(oos["K_total_sigue_en"] == 257, "K_total sigue en 257")
+    rep_ = f2.budget_report()
+    check(rep_["perdidos_fuera_de_alcance"] == 40 and rep_["K_total"] == 257,
+          "perdidos, no devueltos y no reasignados (§1.4 + §2)")
+    check(f2.verify_ledger() is True, "cadena válida")
+
+
 def main():
     print("=" * 78)
     print("FASE 2 — pruebas del trabajo de día 0 (spec_fase2.md §9)")
@@ -730,7 +804,7 @@ def main():
         for fn in (s2_prerregistro, s3_presupuesto, s4_vecindad, s5_ventanas,
                    s6_caja_fuerte, s7_barra_y_anios, s8_ledger_y_apertura,
                    s9_colgados, s10_reglas_congeladas, s11_margen_despliegue,
-                   s12_bloqueantes):
+                   s12_bloqueantes, s13_criba_medibilidad):
             fn(tmp)
     except Exception:  # noqa: BLE001
         traceback.print_exc()

@@ -358,6 +358,84 @@ gratuito porque **ninguna candidata llegó nunca al examen**; acá podría costa
 lo demás es estrictamente más duro, y las dos compuertas nuevas (significancia corregida y potencia)
 son las que la Fase 1 no tenía y las que efectivamente mataron a su mejor candidata.
 
+### 3.5 Criba de medibilidad: antes de gastar el presupuesto de una familia
+
+El cartucho 1 dejó un hallazgo que **no es sobre G2**. A la ventaja medida (δ = 0.0837), para que la
+caja fuerte pudiera pronunciarse harían falta **3.265 operaciones en la parte A — operar el 67 % de
+las sesiones**. F4 murió contra esa misma pared. Generalizado:
+
+> **Cualquier familia que opere poco es INVALIDABLE con los datos que existen, tenga ventaja o no.**
+
+Gastar cartuchos en una pregunta que la caja fuerte no puede contestar es tirarlos, así que antes del
+primer cartucho de cada familia va una criba.
+
+#### Cribar por MEDIBILIDAD es legítimo; cribar por RENDIMIENTO no
+
+La distinción, escrita con todas las letras porque es la que va a discutir el próximo:
+
+**Contar FRECUENCIA no es contar RENTABILIDAD.** Cuántas veces ocurren tres cierres seguidos a la baja
+es una propiedad del **mercado**, no de si la regla gana. **No informa la respuesta — sólo informa si
+la pregunta es contestable.** Elegir una hipótesis porque rindió bien en la parte A es cribado por
+rendimiento y está prohibido (§7.2); descartar una familia porque el examen final nunca podría
+pronunciarse sobre ella es otra cosa completamente.
+
+De ahí se sigue que **la criba NO consume presupuesto**: el presupuesto de multiplicidad existe porque
+cada prueba de **rentabilidad** es una chance de falso positivo, y un conteo de frecuencia no puede
+producir un falso positivo sobre rentabilidad — no tiene un solo dólar adentro. El aparato lo hace
+cumplir en vez de confiarlo: `count_trades_only()` devuelve un `int` y **el P&L no sale de esa función
+ni por accidente**.
+
+#### Cómo se aplica
+
+Antes del primer cartucho, se proyecta el **n_B alcanzable a partir de la ESTRUCTURA de la regla** —
+contando frecuencia sobre A y proyectando con el calendario de B, o desde una cota estructural de la
+definición, siempre con la fuente escrita. Con un tamaño de efecto **declarado de antemano**:
+
+| δ de referencia | Origen | n_B para 80 % de potencia |
+|---|---|---|
+| **0.1515** | F4 vuelta de mes ($25.30 / $166.95, 231 ops) — **lo mejor que el proyecto midió en 58 configuraciones** | **342** |
+| 0.0837 | G2 reversión k=3 h=3 ($14.01 / $167.37, 244 ops) — cartucho 1 | 1121 |
+
+**La criba mata familias, así que se aplica con el δ más GENEROSO de los dos.** Con el pesimista
+mataríamos familias que un efecto real podría rescatar; con el más grande que jamás medimos, un "no
+validable" es **inapelable**: ni suponiendo la mejor ventaja que este proyecto encontró nunca, la caja
+fuerte podría contestar. El δ típico se reporta igual, como advertencia.
+
+El número que hace el trabajo de verdad se deriva del techo, y se publica para cada familia:
+
+```
+δ_mín(familia) = 2.8016 / √(n_B_máx)
+```
+
+— *a su variante más frecuente, esta familia sólo puede VALIDAR efectos de al menos este tamaño.* Es
+una propiedad de la estructura de la regla, no de si gana.
+
+#### Qué pasa con el presupuesto de una familia NO VALIDABLE
+
+Lo mismo que con cualquier salida de alcance (§7.6), y por las mismas dos reglas ya firmadas: **se
+pierde**. No se retira del denominador (§1.4 — retirarlo aflojaría el listón) y no se reasigna a otra
+familia (§2 — el presupuesto no usado no se transfiere). K_total sigue en 257 y la vara no se mueve.
+
+#### Resultado de la criba, 2026-08-24
+
+| Familia | n_B máx | Fuente del techo | δ_mín | Veredicto |
+|---|---|---|---|---|
+| **G1** nocturna | 1.669 | definición: una posición por sesión; los filtros sólo reducen | **0.0686** | VALIDABLE, y **holgada** (aguanta el δ típico) |
+| **G2** multi-día | 589 | **contado**: la variante más frecuente que admite la definición (k=1, hold=1, corto) da 1.718 ops en 4.865 sesiones de A | **0.1154** | VALIDABLE **al filo** |
+| **G3** régimen | 834 | estado sobre regla base; el estado más ancho admisible es una mediana = 50 % de G1 | **0.0970** | VALIDABLE al filo |
+| **G4** bordes | 3.338 | apertura y cierre de sesión: hasta 2 ops por sesión | **0.0485** | VALIDABLE, y **holgada** |
+| **G5** cruzado | 834 | serie externa como estado; la frecuencia operada es la de ES | **0.0970** | VALIDABLE al filo |
+| **G6** terceros | — | no hay regla todavía | — | **SIN CRIBA**: `preregister()` se niega hasta que llegue una regla y se la criba |
+
+**Ninguna familia muere, y sin embargo la criba dice algo fuerte.** Al δ típico (0.0837) sólo G1 y G4
+llegan a 80 % de potencia: G2, G3 y G5 **sólo son validables si su efecto está cerca del mejor que el
+proyecto encontró jamás**. En particular **G2 necesita δ ≥ 0.1154 — un 38 % más grande que el que su
+propio cartucho 1 midió, y sostenido a 5,7 veces esa frecuencia.** Eso no la mata, pero dice
+exactamente qué hay que creer para seguir gastando en ella, y queda escrito antes de gastar.
+
+**Dos niveles, no uno.** La criba es por familia y es gruesa; la compuerta de potencia por candidata
+(§3.2) sigue aplicándose entera a cada configuración. Pasar la criba no exime de nada.
+
 ---
 
 ## 4. Qué entra, y en qué orden
@@ -843,6 +921,29 @@ ya no bloquea la búsqueda sería pagar dos veces. Lo que sale de alcance al ven
 de operabilidad**, no la familia — y eso también es una decisión tomada, fechada y publicada, que es
 lo único que la regla exige.
 
+### 7.7 Combinar estrategias es una búsqueda nueva
+
+Se escribe **ahora, que no hay ninguna candidata y por lo tanto no hay tentación.**
+
+Buscar qué combinación de reglas funciona es **elegir la mejor de un espacio astronómico**: con n
+reglas hay 2ⁿ subconjuntos, y eso antes de tocar pesos, umbrales o filtros cruzados. Cualquier prueba
+de significancia sobre la combinación ganadora de ese espacio no significa nada — **es el defecto de
+F4 elevado al cuadrado**, y con un denominador que ya nadie podría contar honestamente.
+
+Por lo tanto:
+
+1. **Sólo se pueden combinar candidatas que pasaron la barra por separado.** Combinar dos reglas que
+   individualmente no llegaron no es una estrategia nueva: es un barrido con otro nombre.
+2. **La combinación se declara ANTES de ver cómo rinde** — qué reglas, con qué pesos, con qué regla de
+   conflicto — igual que cualquier otra configuración pre-registrada.
+3. **Buscar la combinación está prohibido dentro de esta fase.** Probar combinaciones hasta que una
+   rinda es exactamente lo que esta spec existe para impedir.
+4. Si alguna vez se hace de verdad, **necesita su propia fase, su propio presupuesto contado y el
+   contador heredado** (§1.6). No sale del presupuesto de la Fase 2 ni de sobrantes de nadie.
+
+Y la consecuencia práctica hoy: **la Fase 2 no combina nada.** Sus seis familias se evalúan por
+separado, y el veredicto habla de cada una por separado.
+
 ---
 
 ## 8. La línea de parada
@@ -875,6 +976,8 @@ lo único que la regla exige.
 - **La deriva de reglas** (`rules_drift()`): qué archivo de reglas cambió respecto del acta, cuándo, y
   qué entradas del ledger se corrieron bajo cada huella (§9.5b). Si no cambió nada, se dice eso.
 - El estado final de cada **bloqueante** (§7.6) y, si alguno venció, el acta de su consecuencia.
+- La **criba de medibilidad** de cada familia (§3.5): techo de operaciones, fuente, δ mínimo
+  detectable y veredicto — incluidas las familias declaradas NO VALIDABLES y sus cartuchos perdidos.
 - **Si la caja fuerte se abrió o no**, y si no, la afirmación explícita de que sigue sellada.
 - Los errores propios de la fase, cobrados al presupuesto, como hizo el veredicto de la Fase 1.
 
@@ -915,6 +1018,7 @@ de la Fase 1 en el mismo caso), sobre una copia temporal del ledger.
 | 5 | Entrada `meta` de apertura: K₁, K₂, K_total, α, los SHA-256 de los **datos** y de las **reglas** | `open_phase2()` escrito y probado |
 | 5b | Hash de las reglas en el acta y sello por entrada (§9.5b) | **hecho** |
 | 5c | Bloqueantes con vencimiento y consecuencia (§7.6) | **hecho** |
+| 5d | Criba de medibilidad por familia, exigida antes del primer cartucho (§3.5) | **hecha y aplicada a las 6 familias** |
 | 6 | Margen nocturno de MES, con fecha y fuente (§7.3) | **pendiente — no bloquea la búsqueda; bloquea operabilidad y examen final; vence a los 14 días** |
 | 7 | `WINDOWS` por régimen y `run_on` negándose fuera de ventana (§4.4) | **hecho** (ver nota) |
 | 8 | `report_per_year()` para el registro año por año de §3.3 | **hecho** |

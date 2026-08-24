@@ -401,6 +401,118 @@ def power_check(delta_hat: float, n_b_proyectado: int) -> dict:
     }
 
 
+# ---------------------------------------------------------------------------
+# §3.5 — CRIBA DE MEDIBILIDAD POR FAMILIA
+#
+# CRIBAR POR MEDIBILIDAD ES LEGÍTIMO; CRIBAR POR RENDIMIENTO NO.
+#
+# La distinción, escrita con todas las letras porque es la que va a discutir el
+# próximo: **contar FRECUENCIA no es contar RENTABILIDAD.** Cuántas veces
+# ocurren tres cierres seguidos a la baja es una propiedad del MERCADO, no de si
+# la regla gana. No informa la respuesta — sólo informa si la pregunta es
+# contestable. Elegir una hipótesis porque rindió bien en la parte A es cribado
+# por rendimiento y está prohibido (§7.2); descartar una familia porque la caja
+# fuerte nunca podría pronunciarse sobre ella es otra cosa completamente.
+#
+# Por eso la criba NO consume presupuesto: el presupuesto de multiplicidad existe
+# porque cada prueba de RENTABILIDAD es una chance de falso positivo. Un conteo
+# de frecuencia no puede producir un falso positivo sobre rentabilidad — no tiene
+# un solo dólar adentro.
+#
+# El aparato lo hace cumplir: `count_trades_only` devuelve un `int` y nada más.
+# El P&L no sale de esa función ni por accidente.
+
+# Tamaños de efecto de referencia. Los dos MEDIDOS, ninguno inventado.
+DELTA_REF_BEST = 0.1515      # F4 vuelta de mes: $25.30 / $166.95, 231 ops.
+                             # Lo mejor que produjo el proyecto en 58 configs.
+DELTA_REF_TYPICAL = 0.0837   # G2 reversión k=3 h=3: $14.01 / $167.37, 244 ops.
+                             # Cartucho 1 de la Fase 2.
+
+# La criba MATA familias, así que se aplica con el δ más GENEROSO de los dos.
+# Con el pesimista mataríamos familias que un efecto real podría rescatar; con el
+# más grande que jamás medimos, un "no validable" es inapelable: ni suponiendo la
+# mejor ventaja que este proyecto encontró nunca, la caja fuerte podría contestar.
+DELTA_REF_CRIBA = DELTA_REF_BEST
+
+
+def n_b_needed(delta: float) -> int:
+    """Operaciones en B para 80% de potencia a ese tamaño de efecto."""
+    return int(np.ceil((POWER_CONST / abs(float(delta))) ** 2))
+
+
+def count_trades_only(strategy_fn, data: pd.DataFrame, config: dict) -> int:
+    """Cuenta operaciones y NADA MÁS. Devuelve un int a propósito: ni el P&L ni
+    los puntos salen de acá, así el cribado por rendimiento no es una tentación
+    sino una imposibilidad. Es una propiedad del mercado y del calendario."""
+    trades = strategy_fn(data, config)
+    return int(len(trades))
+
+
+def measurability_screen(family: str, n_b_max: int, fuente: str,
+                         delta: float | None = None) -> dict:
+    """¿Puede la caja fuerte pronunciarse alguna vez sobre esta familia?
+
+    `n_b_max`: máximo de operaciones que la ESTRUCTURA de la regla puede producir
+        en la parte B. Sale de contar frecuencia sobre A y proyectar con el
+        calendario de B, o de una cota estructural de la definición de la regla.
+    `fuente`: cómo se obtuvo ese número. Obligatorio: un techo sin procedencia es
+        un número inventado.
+    """
+    if family not in FAMILY_BUDGET:
+        raise SpecViolation(f"familia no declarada: {family!r}")
+    if not (fuente and fuente.strip()):
+        raise SpecViolation("criba sin fuente del techo de operaciones (§3.5)")
+    d = float(delta if delta is not None else DELTA_REF_CRIBA)
+    need = n_b_needed(d)
+    validable = int(n_b_max) >= need
+    return {
+        "family": family,
+        "n_b_max": int(n_b_max),
+        "fuente": fuente.strip(),
+        "delta_ref": d,
+        # El numero que hace el trabajo: a su variante mas frecuente, esta familia
+        # solo puede VALIDAR efectos de al menos este tamano. Es una propiedad de
+        # la estructura de la regla, no de si gana. Derivable de n_b_max.
+        "delta_min_detectable": POWER_CONST / sqrt(max(int(n_b_max), 1)),
+        "n_b_necesario": need,
+        "n_b_necesario_delta_tipico": n_b_needed(DELTA_REF_TYPICAL),
+        "holgado": int(n_b_max) >= n_b_needed(DELTA_REF_TYPICAL),
+        "validable": bool(validable),
+    }
+
+
+def log_measurability_screen(family: str, n_b_max: int, fuente: str,
+                             delta: float | None = None, nota: str = "") -> dict:
+    """Deja la criba en el ledger. NO gasta cartucho: no hay rentabilidad adentro."""
+    sc = measurability_screen(family, n_b_max, fuente, delta)
+    return _append({
+        "phase": 2, "kind": "MEDIBILIDAD", "family": family,
+        "config": {"evento": "CRIBA DE MEDIBILIDAD"}, "part": "meta",
+        "result": None, "screen": sc, "nota": nota.strip() or None,
+        "note": (f"{family}: techo {sc['n_b_max']} operaciones en B contra "
+                 f"{sc['n_b_necesario']} necesarias a delta={sc['delta_ref']:.4f}. "
+                 + ("VALIDABLE." if sc["validable"] else
+                    "NO VALIDABLE: la caja fuerte no podria pronunciarse ni con la "
+                    "mejor ventaja que el proyecto midio jamas.")
+                 + " No consume presupuesto (§3.5)."),
+    })
+
+
+def screened_families() -> dict:
+    out = {}
+    for e in read_ledger():
+        if e.get("kind") == "MEDIBILIDAD":
+            out[e["family"]] = e
+    return out
+
+
+def declare_not_validable(family: str, motivo: str) -> dict:
+    """La familia sale de la Fase 2 por NO VALIDABLE. Su presupuesto NO se gasta,
+    y —igual que con cualquier salida de alcance— NO se retira del denominador
+    (§1.4) ni se reasigna (§2). Se pierde."""
+    return declare_out_of_scope(family, motivo, bloqueante="medibilidad")
+
+
 def log_power_check(family: str, config: dict, delta_hat: float,
                     n_a: int, n_b_proyectado: int, note: str = "") -> dict:
     """Deja el cálculo de potencia en el ledger. `run_on(examen_final=True)`
@@ -592,6 +704,26 @@ def preregister(family: str, config: dict, hypothesis: str,
     assert_frozen_constants()
     if family not in FAMILY_BUDGET:
         raise SpecViolation(f"familia no declarada en la spec: {family!r}")
+
+    # §3.5 — antes del primer cartucho de una familia, la criba de medibilidad.
+    # Gastar presupuesto en una pregunta que la caja fuerte no puede contestar es
+    # tirar cartuchos, tenga la familia ventaja o no.
+    sc = screened_families().get(family)
+    if sc is None:
+        raise SpecViolation(
+            f"{family} no pasó la criba de medibilidad y no se le puede gastar un "
+            "cartucho. Corré log_measurability_screen(family, n_b_max, fuente) "
+            "primero — contar frecuencia no gasta presupuesto (§3.5)."
+        )
+    if not sc["screen"]["validable"]:
+        raise SpecViolation(
+            f"{family} está declarada NO VALIDABLE: techo de "
+            f"{sc['screen']['n_b_max']} operaciones en B contra "
+            f"{sc['screen']['n_b_necesario']} necesarias a delta="
+            f"{sc['screen']['delta_ref']:.4f}. La caja fuerte no podría "
+            "pronunciarse ni con la mejor ventaja que el proyecto midió jamás "
+            "(§3.5)."
+        )
     if not hypothesis or not hypothesis.strip():
         raise SpecViolation("pre-registro sin hipótesis: prohibido (§7.2)")
 
