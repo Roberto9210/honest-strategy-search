@@ -1529,3 +1529,117 @@ la §2 y la §6 ya habían identificado — **el largo de la caja fuerte**.
 Los mecanismos siguen importando, pero para otra cosa: **deciden con cuánta confianza afirmamos que
 `c < θ`**, no si es verdad. Y esa distinción es la que separa "cerrar la fase con un veredicto
 sostenido" de "cerrarla con una corazonada".
+
+---
+
+# Adenda 13 — el rango completo, el modelo contra los dólares, y el análisis que faltaba
+
+## 57. El horizonte no es un número: es un rango, y publiqué sólo el extremo pesimista
+
+Calculé el c del cartucho 1 y no lo llevé hasta el final. Una fila por cada c disponible:
+
+| c disponible | c | SE | S_B necesario | Faltan | **Años** |
+|---|---|---|---|---|---|
+| **cartucho 1 SOLO** (k=3, h=3) | +0,06180 | 0,03710 | 2.055 | 386 | **1,5 a** |
+| liquidez agrupada CONSERVADORA | +0,04190 | 0,02044 | 4.471 | 2.802 | 11,1 a |
+| liquidez agrupada GENEROSA | +0,03315 | 0,02453 | 7.142 | 5.473 | 21,7 a |
+| estimador global CONSERVADORA | +0,020262 | 0,023329 | 19.118 | 17.449 | 69,2 a |
+| estimador global GENEROSA | +0,013874 | 0,019018 | 40.776 | 39.107 | **155,2 a** |
+
+**El rango real es 1,5 a 155 años**, no "11,1 a 21,7". Publicar sólo dos filas del medio era elegir un
+tramo sin decir que había otros.
+
+### La advertencia que hace honesta la primera fila
+
+```
+c(cartucho 1) = 0,0618 ± 0,0371     IC 95 % = [−0,0109 , +0,1345]
+θ = 0,068577 está DENTRO de ese intervalo.
+```
+
+Y además **+0,0618 es el MÁXIMO de cuatro mediciones**. Usar el máximo de una muestra para una cuenta
+de potencia es **exactamente el sesgo de selección que mató a F4** y que todo este armazón existe para
+impedir. Su expectativa está sesgada hacia arriba.
+
+> **Los "1,5 años" descansan en un punto estimado cuyo intervalo contiene cómodamente a θ, y que es el
+> mejor de cuatro. No es el número optimista: es el número contaminado.** Va en la tabla porque el
+> rango completo es más honesto que un extremo, y va con esta advertencia pegada al lado.
+
+## 58. El modelo contra los dólares reales: **reproduce al centavo**
+
+Es la única prueba directa de que la escala de c significa lo que creemos.
+
+| | Predicho por el modelo (c = 0,0618, h = 3) | Medido en la corrida |
+|---|---|---|
+| δ_bruto | 0,0618 × √3 = 0,10704 σ | 0,107006 σ |
+| bruto/op | 0,10704 × $167,37 = **$17,92** | **$17,91** |
+| neto/op | $17,92 − $3,90 = **$14,02** | **$14,01** |
+| neto total (244 ops) | **$3.419,81** | **$3.418,40** |
+
+La diferencia de $1,41 es **el redondeo de c a cuatro decimales** (0,0618 contra 0,061780); con c sin
+redondear reproduce exacto. **El modelo no tiene defecto en su afirmación principal:** predice signo y
+magnitud, y las reglas con c ≈ 0 o negativo (cartuchos 3 y 4) dieron dólares negativos, como debe ser.
+
+### Pero aparece una discrepancia secundaria, y va escrita
+
+```
+σ que supone la frontera:  σ₁·√3 = 81,06 × 1,7321 = $140,40
+σ REAL del cartucho 1   :  $167,37          →  1,192× el del modelo
+```
+
+Las operaciones condicionadas a tres cierres a la baja son **más volátiles** que el escalado por raíz
+de t: caen en régimen de mayor volatilidad. **Dirección del efecto:** el modelo calcula la fricción en
+unidades de σ como `f/√h = 0,027778` cuando la real es `3,90/167,37 = 0,023301` — **sobreestima la
+fricción un 19 %** para esta regla, o sea que la vara publicada es, **en ese término, conservadora**. Y
+no toca θ, que es donde está toda la brecha.
+
+De ahí dos cocientes que **no hay que confundir**: `c/(f/h) = 3,85×` está en unidades del modelo, y
+`bruto/op ÷ peaje = $17,91/$3,90 = 4,59×` está en dólares reales. Difieren por ese mismo 19 %.
+
+## 59. Faltaba el análisis de potencia previo, y eso va en el veredicto
+
+**θ era computable el día que se escribió la spec**, sin un solo backtest, con §3.2 y §4.4:
+
+```
+θ = POWER_CONST/√S_B = 2,801585/√1669 = 0,068577
+```
+
+Y el **único prior disponible** ese día era F4 — lo mejor que el proyecto había medido en 58
+configuraciones:
+
+```
+δ_bruto(F4) = (25,30 + 3,90)/166,95 = 0,174903
+c(F4)       = 0,174903/√7          = 0,066107
+```
+
+> **La comparación que nunca se hizo: c(F4) = 0,066107 contra θ = 0,068577. El mejor efecto que el
+> proyecto había medido jamás ya estaba un 3,6 % POR DEBAJO del piso de detección, el día cero.**
+
+**La fase sólo podía terminar en "no detectado", y ahí terminó.** La ejecución fue impecable —cada
+compuerta hizo lo suyo, cada número se corrigió, el ledger no tiene un hueco— **y el agujero es de
+diseño**: se pre-registró una búsqueda sin preguntar antes si tenía poder para encontrar lo que
+buscaba.
+
+### Requisito obligatorio para cualquier fase futura
+
+> **Ninguna fase se pre-registra sin publicar antes: (a) su efecto mínimo detectable, y (b) el tamaño
+> de efecto que espera encontrar, con su fuente.** Si (b) < (a), la fase no se abre — o se abre
+> declarando explícitamente que su único resultado posible es "no detectado", que es una decisión
+> legítima pero tiene que tomarse con los ojos abiertos.
+
+Es la versión general de lo que §3.2 ya exige por candidata: la compuerta de potencia aplicada a la
+**fase entera** en vez de a cada configuración.
+
+## 60. "No detectado" no es "no existe" — y ahora hay un test que lo vigila
+
+Con el piso en **0,068577** y los efectos medidos entre **0,0139 y 0,0618**, esta fase **nunca tuvo
+forma de distinguir** *"no hay borde"* de *"hay un borde y la muestra no alcanza"*. Las dos hipótesis
+producen exactamente los mismos datos.
+
+**Todo el documento usa el lenguaje de la primera y nunca el de la segunda.** Verificado: no hay
+ninguna formulación de ausencia de efecto en `frontera_factibilidad.md` ni en `spec_fase2.md`.
+
+Y para que siga así, `tests/fase2/test_dia0.py` §25 **falla si aparece una**: escanea los dos
+documentos buscando *"no existe ventaja"*, *"no hay ventaja"*, *"no existe borde"*, *"no hay señal"*,
+*"las reglas no funcionan"*, *"sin ventaja explotable"*, *"queda demostrado que no"* y variantes —
+**salvo dentro de un tramo tachado `~~…~~`**, donde una cita vieja puede decir lo que dijo. El test se
+prueba a sí mismo: se le inyecta una frase prohibida y la detecta; se la tacha y deja de dispararse.

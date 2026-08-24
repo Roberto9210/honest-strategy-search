@@ -1426,6 +1426,53 @@ def s24_ambos_topes(tmp):
     check(f2.verify_ledger() is True, "cadena v\u00e1lida")
 
 
+# §8.5 — "no detectado" NO es "no existe". Formulaciones prohibidas en el
+# documento publicado, salvo dentro de una cita tachada (~~...~~).
+AUSENCIA_PROHIBIDA = (
+    "no existe ventaja", "no hay ventaja", "no existe borde", "no hay borde",
+    "no existe se\u00f1al", "no hay se\u00f1al", "las reglas no funcionan",
+    "sin ventaja explotable", "no tienen ventaja", "no tiene ventaja",
+    "queda demostrado que no", "probamos que no hay",
+)
+
+
+def _sin_tachados(texto):
+    """Quita los tramos ~~tachados~~: ahi una cita vieja puede decir lo que sea."""
+    import re
+    return re.sub(r"~~.*?~~", " ", texto, flags=re.S)
+
+
+def s25_lenguaje_de_ausencia(tmp):
+    print("\n[25] \u00a78.5 \u2014 'no detectado' no es 'no existe'")
+    docs = ["factory/frontera_factibilidad.md", "factory/spec_fase2.md"]
+    for rel in docs:
+        texto = io.open(os.path.join(REPO, rel), encoding="utf-8").read()
+        limpio = _sin_tachados(texto).lower()
+        hallados = [p for p in AUSENCIA_PROHIBIDA if p.lower() in limpio]
+        check(not hallados,
+              f"{rel}: sin formulaciones de ausencia de efecto "
+              f"({hallados if hallados else 'ninguna'})")
+
+    print("    -- y el test detecta de verdad: se le inyecta una y falla")
+    inyectado = "El resultado prueba que no hay ventaja en estas familias."
+    check(any(p.lower() in inyectado.lower() for p in AUSENCIA_PROHIBIDA),
+          "una frase de ausencia inyectada SI se detecta")
+
+    print("    -- pero dentro de una cita tachada esta permitida")
+    tachado = "~~El resultado prueba que no hay ventaja en estas familias.~~ Corregido."
+    limpio = _sin_tachados(tachado).lower()
+    check(not any(p.lower() in limpio for p in AUSENCIA_PROHIBIDA),
+          "la misma frase, tachada, NO dispara: las citas viejas se conservan")
+
+    print("    -- el numero que sostiene la regla")
+    theta = f2.POWER_CONST / (1669 ** 0.5)
+    medidos = [0.0618, 0.04190, 0.03315, 0.020262, 0.013874]
+    check(all(c < theta for c in medidos),
+          f"los cinco c medidos ({min(medidos):.4f}..{max(medidos):.4f}) estan por "
+          f"debajo del piso {theta:.6f}")
+    check(abs(theta - 0.068577) < 1e-6, f"piso de deteccion = {theta:.6f}")
+
+
 def main():
     print("=" * 78)
     print("FASE 2 — pruebas del trabajo de día 0 (spec_fase2.md §9)")
@@ -1445,7 +1492,8 @@ def main():
                    s16_politica_asignacion, s17_solo_medicion,
                    s18_vara_de_filtros, s19_estimador_y_formula,
                    s20_procedencia_y_n_efectivo, s21_matriz_y_tope,
-                   s22_meta_y_rotulos, s23_filo_del_tope, s24_ambos_topes):
+                   s22_meta_y_rotulos, s23_filo_del_tope, s24_ambos_topes,
+                   s25_lenguaje_de_ausencia):
             fn(tmp)
     except Exception:  # noqa: BLE001
         traceback.print_exc()
