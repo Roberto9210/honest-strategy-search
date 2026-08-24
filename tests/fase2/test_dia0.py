@@ -1326,14 +1326,59 @@ def s22_meta_y_rotulos(tmp):
     check("CONSERVADORA" in doc and "GENEROSA" in doc,
           "el documento usa los rotulos por efecto")
 
-    print("    -- el supuesto de independencia entre mecanismos esta declarado")
+    print("    -- el supuesto de independencia, medido sobre CALENDARIO COMUN")
     check(hasattr(f2, "ESTIMADOR_C_INDEPENDENCIA"), "hay constante declarada")
-    check("violado" in f2.ESTIMADOR_C_INDEPENDENCIA,
-          f"y dice que se viola: {f2.ESTIMADOR_C_INDEPENDENCIA}")
-    rho_par, n1, n3, nov = 0.7036, 244, 1718, 64
-    rho_est = rho_par * nov / (n1 * n3) ** 0.5
-    check(abs(rho_est - 0.0696) < 1e-3,
-          f"correlacion inducida entre estimadores = {rho_est:+.4f}, no +0.70")
+    check("despreciable" in f2.ESTIMADOR_C_INDEPENDENCIA,
+          f"y dice su magnitud real: {f2.ESTIMADOR_C_INDEPENDENCIA}")
+    check("0.00095" in f2.ESTIMADOR_C_INDEPENDENCIA,
+          "con el numero de calendario comun, no el de la submuestra")
+    rho_cal, n_liq, n_dif, nov = 0.0262, 1797, 1718, 64
+    rho_est = rho_cal * nov / (n_liq * n_dif) ** 0.5
+    check(abs(rho_est - 0.00095) < 1e-5,
+          f"Corr entre estimadores = {rho_est:+.5f}")
+    rho_sub = 0.7036 * 64 / (244 * 1718) ** 0.5
+    check(rho_sub / rho_est > 50,
+          f"la medicion vieja sobre salidas compartidas daba {rho_sub:+.4f}: "
+          f"{rho_sub/rho_est:.0f} veces mayor. Sobreestimaba la violacion.")
+
+
+def s23_filo_del_tope(tmp):
+    print("\n[23] \u00a72b \u2014 el tope es '>' y la igualdad exacta PASA")
+    import inspect
+    src = inspect.getsource(f2.preregister)
+    linea = [l.strip() for l in src.split("\n")
+             if "MAX_CONCENTRACION * (gastado" in l][0]
+    check(" > " in linea and " >= " not in linea,
+          f"el codigo usa '>': {linea}")
+    doc = io.open(os.path.join(REPO, "factory", "spec_fase2.md"),
+                  encoding="utf-8").read()
+    check("supera el 40" in doc, "y la spec dice 'supera', que es estrictamente mayor")
+
+    print("    -- el caso de IGUALDAD EXACTA: 2 de 5 = 40.0%")
+    check(not (2 > f2.MAX_CONCENTRACION * 5), "2 > 0.40*5 es falso: PASA")
+    check(3 > f2.MAX_CONCENTRACION * 5, "3 de 5 = 60% si bloquea")
+
+    print("    -- y probado de punta a punta sobre un ledger")
+    fresh_ledger(tmp)
+    f2.CONCENTRACION_DESDE = 4      # tope activo justo cuando se registra el 5o
+    FAMS = ["G2-multidia", "G3-regimen", "G5-cruzado", "G6-terceros"]
+    try:
+        for i, fam in enumerate(FAMS):   # una familia y un mecanismo por cartucho
+            pre(fam, {"e": i}, "hip", mecanismo=f"m{i}", h=1.0)
+            f2.abandon(fam, {"e": i}, "cierre")
+        check(f2.budget_used() == 4 and len(f2.cartuchos_por_mecanismo()) == 4,
+              "4 cartuchos, 4 mecanismos y 4 familias distintas")
+        pre("G2-multidia", {"e": 4}, "hip", mecanismo="m0", h=1.0)
+        f2.abandon("G2-multidia", {"e": 4}, "cierre")
+        check(f2.cartuchos_por_mecanismo()["m0"] == 2 and f2.budget_used() == 5,
+              "m0 y G2 llegan a 2 de 5 = 40.0% EXACTO y paso con el tope ACTIVO")
+        raises_msg(f2.SpecViolation,
+                   lambda: pre("G2-multidia", {"e": 5}, "hip", mecanismo="m0", h=1.0),
+                   "el siguiente de m0 (3 de 6 = 50%)",
+                   must_contain=("tope de concentraci\u00f3n",))
+    finally:
+        f2.CONCENTRACION_DESDE = 5
+    check(f2.verify_ledger() is True, "cadena v\u00e1lida")
 
 
 def main():
@@ -1355,7 +1400,7 @@ def main():
                    s16_politica_asignacion, s17_solo_medicion,
                    s18_vara_de_filtros, s19_estimador_y_formula,
                    s20_procedencia_y_n_efectivo, s21_matriz_y_tope,
-                   s22_meta_y_rotulos):
+                   s22_meta_y_rotulos, s23_filo_del_tope):
             fn(tmp)
     except Exception:  # noqa: BLE001
         traceback.print_exc()

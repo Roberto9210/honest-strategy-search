@@ -1106,14 +1106,19 @@ mecanismos se sostiene"*.
 > otra cosa.
 
 **Declarado ahora (§3.8, punto 3):** DerSimonian-Laird supone que los m estimadores de mecanismo son
-**sorteos independientes**. Medido, c1 y c3 correlacionan **+0,7036** en las 64 sesiones donde ambos
-cierran. Pero eso **no es** la correlación entre los estimadores; la inducida entre las medias es:
+**sorteos independientes**.
 
-```
-Corr(media₁, media₃) ≈ ρ_par · n_solap / √(n₁·n₃) = 0,7036 · 64/√(244·1718) = +0,070
-```
+> **CORREGIDO el 24-ago-2026 (adenda 10, §47).** Los números de abajo (**+0,7036** y **+0,070**) están
+> medidos sobre la submuestra de **salidas compartidas** — seleccionada por un evento, no la
+> distribución conjunta. Sobre **calendario común completo** la correlación entre mecanismos es
+> **+0,0262** y la inducida entre estimadores **+0,00095**: unas 70 veces menor. **Sobreestimé la
+> violación.** Los valores vigentes están en la §47.
 
-**Chico, pero no cero: el supuesto se viola levemente.** Se declara como **limitación conocida** en vez
+~~Medido, c1 y c3 correlacionan **+0,7036** en las 64 sesiones donde ambos cierran. Pero eso **no es**
+la correlación entre los estimadores; la inducida entre las medias es `0,7036 · 64/√(244·1718) =
++0,070`.~~
+
+**El supuesto se viola de forma despreciable (+0,00095), no "levemente".** Se declara como **limitación conocida** en vez
 de darse por cumplido, y **el veredicto tiene que publicarla**. Dirección del sesgo, dicha explícita:
 una correlación positiva entre estimadores hace que **τ se subestime**, o sea que el SE de la media
 salga más chico de lo debido y **la meta de mecanismos sea optimista**.
@@ -1161,3 +1166,110 @@ la derivada, que es mínima (con un mecanismo menos no alcanza) y que `SE(meta)`
 
 *Supuesto explícito de la proyección, que no cambia:* cada mecanismo nuevo cae **en la media actual** y
 τ se mantiene. Si cayeran por encima, la brecha se angosta y la meta sube.
+
+---
+
+# Adenda 10 — el plan no alcanza su propia meta, el filo del tope, y una dependencia mal medida
+
+## 45. ¿G3 y G5 producen mecanismos o configuraciones? **Configuraciones — lo dice la spec**
+
+**G3, §4.2, texto literal:**
+
+> *"No es una estrategia: es un **estado** aplicado sobre una regla base explícita ya declarada. […]
+> **Regla dura:** cada combinación regla-base × definición-de-estado × umbral es **una configuración**
+> y consume un cartucho."*
+
+**G5, §4.2, texto literal:**
+
+> *"Una serie externa como **estado** de una regla sobre ES."*
+
+**Respuesta (a): producen configuraciones de un mecanismo existente.** Un filtro sobre liquidez sigue
+siendo liquidez; un filtro sobre difusión sigue siendo difusión. La spec lo dice con esas palabras.
+
+### Pero la conclusión no es (b) tal cual: quedan dos fuentes de mecanismo nuevo
+
+**G4.** §4.2 le declara un mecanismo propio: *"concentración de órdenes en la apertura y en el cierre de
+subasta"* — distinto de liquidez y de difusión. Y §3.6, condición 4: *"Su c entra al estimador en su
+propio estrato de tenencia"*. **Una familia en `SOLO_MEDICION` sí aporta un mecanismo nuevo al
+estimador, aunque nunca pueda ser candidata.** Estado: **bloqueada por el mapeo de día CME**.
+
+**G6.** La única familia que muestrea otro generador (§19). Estado: **sin criba, sin ninguna regla
+recibida**.
+
+> **Las dos únicas fuentes de mecanismo nuevo están bloqueadas, por motivos distintos.** Con el plan
+> como está, la Fase 2 **no puede alcanzar su meta de 4–5 mecanismos** salvo que se desbloquee una de
+> las dos. Esto es un **hallazgo de plan**, no un detalle de ejecución.
+
+### Y esto revierte parcialmente la decisión sobre el mapeo CME
+
+En la §16 concluí que **"las horas del mapeo no valen"**, y era correcto **para el objetivo de
+búsqueda**: G4 no puede producir una candidata (exige 0,2251 σ contra la referencia 0,1749). Pero desde
+que **medir c es objetivo declarado**, G4 vale por otra cosa: es **el único mecanismo nuevo accesible**,
+y el mecanismo es exactamente el recurso que limita la fase.
+
+> **Mismo trabajo, dos objetivos, dos respuestas.** Para buscar, las horas no pagan. Para medir, compran
+> lo único que hoy no se puede comprar de otra forma. La §16 no se retracta — se le agrega el objetivo
+> que no existía cuando se escribió.
+
+**Las opciones, sin elegir por Roberto:**
+
+1. **Desbloquear G4** implementando y probando el mapeo de día CME (trabajo acotado de horas, §13, con
+   blanco de verificación de 4.183 días). Aporta el tercer mecanismo, en el estrato de tenencia que hoy
+   no tiene ningún dato.
+2. **Conseguir reglas para G6.** No depende de nosotros.
+3. **Declarar que la fase no alcanza su meta** y cerrarla con ese hallazgo escrito.
+4. **Redefinir qué cuenta como mecanismo** para que un filtro cuente como uno nuevo. **Eso sería un
+   `CAMBIO_DE_REGLAS` que AFLOJA** —aumentaría m sin aumentar la diversidad real— y tiene que pasar por
+   ahí, con aprobación explícita y marca permanente. **No puede colarse.**
+
+## 46. El filo del tope al cartucho 5: es `>`, y la igualdad exacta pasa
+
+| Fuente | Texto |
+|---|---|
+| Código | `if (usados + 1) > MAX_CONCENTRACION * (gastado + 1):` |
+| Spec §2b | *"ningún mecanismo y ninguna familia **supera** el 40 % de los cartuchos gastados"* |
+
+**"Supera" = estrictamente mayor. Código y spec coinciden: es `>`.**
+
+Estado hoy: liquidez 3, difusión 1, total 4.
+
+| Destino del cartucho 5 | Fracción | Resultado |
+|---|---|---|
+| difusión | 2/5 = **40,0 % exacto** | **PASA** (`2 > 2.0` es falso) |
+| liquidez | 4/5 = 80,0 % | BLOQUEADO |
+| mecanismo nuevo | 1/5 = 20,0 % | PASA |
+
+**Con `>=` el cartucho 5 tendría que ser mecanismo nuevo obligatoriamente.** Con `>` todavía puede ser
+una configuración de difusión. Queda declarado y cubierto por un test con el caso de igualdad exacta.
+
+## 47. La dependencia estaba medida sobre una submuestra seleccionada
+
+Renombré la columna a *"salidas compartidas"* pero **seguí usando el número que producía**. El +0,7036
+está condicionado a que ambos mecanismos **cierren el mismo día**: es una submuestra seleccionada por un
+evento, no la distribución conjunta, y no hay razón para que se parezca a la dependencia real.
+
+**Recomputado sobre calendario común completo** — serie de P&L por sesión en las 4.865 sesiones de la
+parte A, con cero donde el mecanismo está plano:
+
+| Medición | Valor | ¿Entra al veredicto? |
+|---|---|---|
+| ~~c1 vs c3 sobre salidas compartidas~~ | ~~+0,7036~~ | **No — sesgada por selección** |
+| c1 vs c3, calendario común | +0,0681 | no (es entre configs) |
+| **liquidez vs difusión, calendario común** | **+0,0262** | **Sí** |
+| **Corr inducida entre los estimadores** | **+0,00095** | **Sí** |
+
+```
+Corr(ĉ_liq, ĉ_dif) ≈ ρ_cal · n_solap/√(n_liq·n_dif) = 0,0262 · 64/√(1797·1718) = +0,00095
+```
+
+> **Y la corrección va en la dirección incómoda:** yo había declarado *"+0,070, supuesto violado
+> levemente"* y el número correcto es **+0,00095 — unas 70 veces menor**. **Sobreestimé el problema.**
+> Se corrige igual: un número publicado tiene que ser el correcto **aunque el error fuera en la
+> dirección segura**, porque una limitación inflada también desinforma.
+
+La dirección del sesgo no cambia —correlación positiva entre estimadores subestima τ y vuelve optimista
+la meta— pero **con +0,001 ese efecto es irrelevante**. La limitación se mantiene declarada, con su
+magnitud verdadera.
+
+**Y el número que faltaba en el reporte:** escribí *"eso no es la correlación entre estimadores:"* y
+dejé la frase sin número detrás. Es **+0,00095**.

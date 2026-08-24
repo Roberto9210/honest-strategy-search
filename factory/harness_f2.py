@@ -1026,17 +1026,28 @@ def estratos_cubiertos() -> dict:
 #
 # (3) SUPUESTO DE INDEPENDENCIA ENTRE MECANISMOS, declarado el 24-ago-2026 porque
 #     el modelo lo necesita y nadie lo habia escrito. DerSimonian-Laird supone que
-#     los m estimadores de mecanismo son sorteos INDEPENDIENTES. Medido: c1
-#     (liquidez) y c3 (difusion) correlacionan +0.7036 en las 64 sesiones donde
-#     ambos tienen SALIDA el mismo dia. Eso NO es la correlacion entre los
-#     estimadores; la inducida entre las medias es
-#         Corr ~ rho_par * n_solap / sqrt(n1*n2) = 0.7036*64/sqrt(244*1718) = +0.070
-#     Chico, pero NO cero: el supuesto se viola levemente. Se declara como
-#     LIMITACION CONOCIDA en vez de darse por cumplido, y el veredicto tiene que
-#     publicarla. Direccion del sesgo: una correlacion positiva entre estimadores
-#     hace que tau se SUBESTIME, o sea que el SE de la media salga mas chico de lo
-#     que corresponde y la meta de mecanismos sea OPTIMISTA.
-ESTIMADOR_C_INDEPENDENCIA = "+0.070 medido entre estimadores; supuesto violado levemente"
+#     los m estimadores de mecanismo son sorteos INDEPENDIENTES.
+#
+#     CORREGIDO el 24-ago-2026. La primera medicion uso +0.7036, que era la
+#     correlacion sobre las 64 sesiones donde ambos mecanismos CIERRAN el mismo
+#     dia: una submuestra SELECCIONADA POR UN EVENTO, no la distribucion conjunta.
+#     Renombrar la columna arreglo el rotulo, no la inferencia construida encima.
+#
+#     Medido de nuevo sobre CALENDARIO COMUN COMPLETO -serie de P&L por sesion
+#     en las 4.865 sesiones de la parte A, con cero donde el mecanismo esta plano-:
+#         corr(liquidez, difusion) = +0.0262        (no +0.7036)
+#     y la correlacion INDUCIDA entre los estimadores:
+#         Corr ~ rho_cal * n_solap / sqrt(n_liq*n_dif)
+#              = 0.0262 * 64 / sqrt(1797*1718) = +0.00095
+#
+#     O sea: el supuesto se viola de forma DESPRECIABLE, no "levemente". La
+#     declaracion anterior SOBREESTIMABA el problema por un factor ~70. Se corrige
+#     igual, porque un numero publicado tiene que ser el correcto aunque el error
+#     fuera en la direccion segura. Direccion del sesgo, que no cambia: una
+#     correlacion positiva entre estimadores SUBESTIMA tau y vuelve OPTIMISTA la
+#     meta de mecanismos; con +0.001 ese efecto es irrelevante.
+ESTIMADOR_C_INDEPENDENCIA = ("+0.00095 entre estimadores sobre calendario comun completo; "
+                             "supuesto violado de forma despreciable")
 ESTIMADOR_C_MODELO = "efectos aleatorios DerSimonian-Laird, punto por inversa de varianza"
 ESTIMADOR_C_DISTRIBUCION = "t con df = m - 1"
 
@@ -1299,12 +1310,12 @@ def preregister(family: str, config: dict, hypothesis: str,
     # como declara §2b. `gastado + 1` es el numero de ESTE cartucho.
     if gastado + 1 >= CONCENTRACION_DESDE:
         por_mec = cartuchos_por_mecanismo()
-        for etiqueta, usados in (("mecanismo " + repr(mecanismo.strip()),
+        for etiqueta, usados in (("el mecanismo " + repr(mecanismo.strip()),
                                   por_mec.get(mecanismo.strip(), 0)),
-                                 ("familia " + repr(family), budget_used(family))):
+                                 ("la familia " + repr(family), budget_used(family))):
             if (usados + 1) > MAX_CONCENTRACION * (gastado + 1):
                 raise SpecViolation(
-                    f"tope de concentración (§2b): el {etiqueta} tendría "
+                    f"tope de concentración (§2b): {etiqueta} tendría "
                     f"{usados + 1} de {gastado + 1} cartuchos "
                     f"({(usados+1)/(gastado+1):.0%}) y el máximo es "
                     f"{MAX_CONCENTRACION:.0%}. Buscar quiere concentrar, medir "
