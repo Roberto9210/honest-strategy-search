@@ -836,14 +836,94 @@ def estrato_de(h: float) -> str:
     return "intradia" if float(h) < 1.0 else "largo"
 
 
+# ---------------------------------------------------------------------------
+# §2c — MIGRACION DE ETIQUETA POR PROCEDENCIA
+#
+# Los cartuchos 1 y 2 se pre-registraron ANTES de que `mecanismo` fuera campo
+# obligatorio (§2b), pero SI declararon su mecanismo — en prosa, dentro de
+# `hypothesis`, antes de correr. El contador leia solo el campo y los mandaba a un
+# bucket heredado mientras el analisis los agrupaba como liquidez: el codigo y el
+# analisis discrepaban sobre el hecho que decide la fase.
+#
+# Se resuelve POR PROCEDENCIA y sin editar el pasado: una entrada MIGRACION_ETIQUETA
+# que apunta al pre-registro, trae la CITA TEXTUAL que lo prueba, y el contador la
+# honra. Si la cita no existiera, la etiqueta seria post-hoc y habria que declararlo
+# como defecto en vez de migrar.
+def log_mechanism_migration(prereg_hash: str, mecanismo: str, cita: str) -> dict:
+    """Migra la etiqueta de mecanismo de un pre-registro anterior a §2b.
+    `cita` debe ser texto LITERAL del `hypothesis` de esa entrada: es la prueba de
+    que el mecanismo se declaro antes de correr y no despues de ver el resultado."""
+    if not (mecanismo and mecanismo.strip()):
+        raise SpecViolation("migracion sin mecanismo")
+    if not (cita and cita.strip()):
+        raise SpecViolation("migracion sin cita textual del pre-registro (§2c)")
+    objetivo = next((e for e in read_ledger() if e.get("hash") == prereg_hash), None)
+    if objetivo is None or objetivo.get("kind") != "PREREGISTRO":
+        raise SpecViolation(f"{prereg_hash!r} no es un PREREGISTRO del ledger")
+    if objetivo.get("mecanismo"):
+        raise SpecViolation(
+            f"{prereg_hash} ya declaro mecanismo {objetivo['mecanismo']!r}: no se migra")
+    if cita.strip() not in (objetivo.get("hypothesis") or ""):
+        raise SpecViolation(
+            "la cita no aparece LITERAL en el `hypothesis` del pre-registro. Sin esa "
+            "prueba la etiqueta seria post-hoc y hay que declararla como defecto, no "
+            "migrarla (§2c).")
+    return _append({
+        "phase": 2, "kind": "MIGRACION_ETIQUETA", "family": objetivo["family"],
+        "config": objetivo["config"], "part": "meta", "result": None,
+        "sobre": prereg_hash, "mecanismo": mecanismo.strip(), "cita": cita.strip(),
+        "note": (f"Etiqueta de mecanismo {mecanismo.strip()!r} migrada al "
+                 f"pre-registro {prereg_hash}, que la declaro en prosa antes de "
+                 "correr. La entrada original NO se modifico; la cita textual es la "
+                 "prueba de procedencia (§2c)."),
+    })
+
+
+def migraciones_de_etiqueta() -> dict:
+    return {e["sobre"]: e["mecanismo"] for e in read_ledger()
+            if e.get("kind") == "MIGRACION_ETIQUETA"}
+
+
 def cartuchos_por_mecanismo() -> dict:
+    mig = migraciones_de_etiqueta()
     out = {}
     for e in read_ledger():
         if e.get("phase") == 2 and e.get("kind") in ("PREREGISTRO", "CARTUCHO", "VIOLACION"):
             if e.get("kind") == "VIOLACION" and e.get("prereg"):
                 continue
-            m = e.get("mecanismo") or f"{e.get('family')}:sin-declarar"
+            m = (e.get("mecanismo") or mig.get(e.get("hash"))
+                 or f"{e.get('family')}:sin-declarar")
             out[m] = out.get(m, 0) + 1
+    return out
+
+
+# ---------------------------------------------------------------------------
+# §3.10 — n EFECTIVO DENTRO DE UN MECANISMO
+#
+# Medido el 24-ago-2026: el 87.6% de las operaciones del cartucho 4 ya estaban en
+# el cartucho 2, y en las sesiones donde ambas operan la correlacion de P&L es
+# **+1.0000** — son literalmente las mismas operaciones. Combinar las configs de un
+# mecanismo como si fueran independientes contaba 1.069 operaciones dos veces y
+# subestimaba el SE en un factor 1.20.
+#
+# Regla: dentro de un mecanismo, una operacion se cuenta UNA vez. Identidad de la
+# operacion = (fecha de entrada, tenencia). El orden es el CRONOLOGICO del ledger:
+# la config que llego primero se queda con la operacion y las posteriores aportan
+# solo las suyas nuevas. Asi el orden no depende de los resultados.
+def n_efectivo(trades_por_config: list) -> list:
+    """trades_por_config: [(tag, hold, [(entrada, bruto), ...]), ...] en orden
+    cronologico. Devuelve [(tag, hold, n_total, n_nuevas, brutos_nuevos)]."""
+    vistas = set()
+    out = []
+    for tag, hold, ops in trades_por_config:
+        nuevas = []
+        for entrada, bruto in ops:
+            clave = (entrada, hold)
+            if clave in vistas:
+                continue
+            vistas.add(clave)
+            nuevas.append(bruto)
+        out.append((tag, hold, len(ops), len(nuevas), nuevas))
     return out
 
 

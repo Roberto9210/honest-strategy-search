@@ -1148,6 +1148,82 @@ def s19_estimador_y_formula(tmp):
           "y ese numero esta en el documento")
 
 
+def s20_procedencia_y_n_efectivo(tmp):
+    print("\n[20] \u00a72c/\u00a73.10 \u2014 procedencia de la etiqueta y n efectivo")
+    fresh_ledger(tmp)
+
+    print("    -- \u00a72c: migrar exige CITA TEXTUAL del pre-registro")
+    p = pre("G2-multidia", {"z": 1},
+            "quien compra provee liquidez a vendedores forzados y cobra el flujo",
+            mecanismo="", h=1.0) if False else None
+    # un pre-registro SIN mecanismo no se puede crear hoy; se simula el caso viejo
+    e = f2.preregister("G2-multidia", {"z": 1},
+                       "quien compra provee liquidez a vendedores forzados",
+                       mecanismo="temporal", h=1.0,
+                       n_b_proyectado=5000, n_b_fuente="fx")
+    raises_msg(f2.SpecViolation,
+               lambda: f2.log_mechanism_migration(e["hash"], "otro", "provee liquidez"),
+               "migrar un pre-registro que YA declaro mecanismo",
+               must_contain=("ya declaro mecanismo",))
+    f2.abandon("G2-multidia", {"z": 1}, "cierre")
+
+    # ahora uno sin el campo, escrito a mano como los cartuchos 1 y 2
+    viejo = f2._append({
+        "phase": 2, "kind": "PREREGISTRO", "family": "G2-multidia",
+        "config": {"z": 2}, "part": "A", "result": None,
+        "hypothesis": "quien compra provee liquidez a vendedores forzados",
+        "note": "simula un pre-registro anterior a 2b"})
+    raises_msg(f2.SpecViolation,
+               lambda: f2.log_mechanism_migration(viejo["hash"], "liquidez",
+                                                  "texto que no esta"),
+               "migrar con una cita que no aparece literal",
+               must_contain=("no aparece LITERAL", "post-hoc"))
+    m = f2.log_mechanism_migration(viejo["hash"], "liquidez",
+                                   "provee liquidez a vendedores forzados")
+    check(m["kind"] == "MIGRACION_ETIQUETA", "la migracion entra como entrada propia")
+    check(f2.cartuchos_por_mecanismo().get("liquidez") == 1,
+          "y el CONTADOR la honra: el codigo deja de discrepar con el analisis")
+    check(f2.read_ledger()[-2]["hash"] == viejo["hash"],
+          "la entrada original quedo intacta, la migracion se ANEXO")
+
+    print("    -- \u00a73.10: una operacion se cuenta una sola vez")
+    import datetime as _dt
+    d = [_dt.date(2020, 1, i) for i in range(1, 11)]
+    conf = [("a", 1, [(d[0], 10.0), (d[1], 20.0), (d[2], 30.0)]),
+            ("b", 1, [(d[1], 20.0), (d[2], 30.0), (d[3], 40.0)]),
+            ("c", 3, [(d[1], 99.0)])]
+    r = f2.n_efectivo(conf)
+    check(r[0][3] == 3, f"a aporta {r[0][3]} nuevas de {r[0][2]}")
+    check(r[1][3] == 1, f"b aporta {r[1][3]} nueva de {r[1][2]} (2 ya estaban)")
+    check(r[2][3] == 1,
+          "c comparte fecha con a/b pero OTRA tenencia: es otra operacion")
+    check(sum(x[3] for x in r) == 5, "5 operaciones distintas en total, no 7")
+
+    print("    -- \u00a73.5: el contador de frecuencia NO puede ver el P&L")
+    df = synthetic_daily()
+    llamadas = {"n": 0}
+
+    def strat_pnl_variable(data, cfg):
+        """Mismas fechas siempre, P&L distinto en CADA llamada."""
+        llamadas["n"] += 1
+        rows = data.index[::4]
+        rng = np.random.default_rng(llamadas["n"] * 977)
+        return pd.DataFrame({"points": rng.normal(llamadas["n"] * 100, 50, len(rows)),
+                             "contracts": 1.0}, index=rows)
+
+    conteos = [f2.count_trades_only(strat_pnl_variable, df, {}) for _ in range(5)]
+    check(len(set(conteos)) == 1,
+          f"5 llamadas con P&L completamente distinto: mismo conteo {conteos[0]}")
+    check(llamadas["n"] == 5, "y la estrategia se llamo 5 veces, no se cacheo")
+    check(all(isinstance(c, int) for c in conteos), "devuelve int, no un objeto con P&L")
+    cm = f2.config_measurability(conteos[0])
+    prohibidos = [k for k in cm
+                  if any(t in k.lower() for t in ("pnl", "neto", "media", "profit",
+                                                  "ganancia", "retorno"))]
+    check(not prohibidos, f"la criba no expone ningun campo de P&L: {prohibidos or 'ninguno'}")
+    check(f2.verify_ledger() is True, "cadena v\u00e1lida")
+
+
 def main():
     print("=" * 78)
     print("FASE 2 — pruebas del trabajo de día 0 (spec_fase2.md §9)")
@@ -1165,7 +1241,8 @@ def main():
                    s12_bloqueantes, s13_criba_medibilidad,
                    s14_criba_por_config, s15_direccion_de_los_cambios,
                    s16_politica_asignacion, s17_solo_medicion,
-                   s18_vara_de_filtros, s19_estimador_y_formula):
+                   s18_vara_de_filtros, s19_estimador_y_formula,
+                   s20_procedencia_y_n_efectivo):
             fn(tmp)
     except Exception:  # noqa: BLE001
         traceback.print_exc()

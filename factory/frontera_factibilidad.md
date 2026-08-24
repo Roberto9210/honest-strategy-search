@@ -843,3 +843,99 @@ SE = 0.015793, hace falta |media − θ| ≥ 0.040598, o sea **media ≤ 0.02797
 Los dos medidos promedian 0.0225, así que el supuesto es **plausible pero no está garantizado**. Si
 los nuevos mecanismos vinieran sistemáticamente por encima de 0.0301, la fase no se resolvería con
 seis: se resolvería en la otra dirección, que es un resultado igual de bueno y hoy no lo sabemos.
+
+---
+
+# Adenda 7 — procedencia de la etiqueta, n efectivo, y dos números que no reproducían
+
+## 32. La etiqueta de mecanismo NO era post-hoc: caso (b), resuelto por procedencia
+
+El contador (`cartuchos_por_mecanismo`) leía sólo el campo `mecanismo` y mandaba los cartuchos 1 y 2 a
+un bucket heredado, mientras el estimador los agrupaba como *liquidez*. **El código y el análisis
+discrepaban sobre el hecho que decide la fase.**
+
+Resuelto **por procedencia, buscando en el ledger**, no por conveniencia. Los dos declararon su
+mecanismo **en prosa, dentro de `hypothesis`, antes de correr** — el campo `mecanismo` todavía no
+existía:
+
+| Línea | Hash del pre-registro | Cita textual |
+|---|---|---|
+| **62** | `d38a1e04c6bfc0f8` | *"quien compra **provee liquidez a vendedores forzados** (límites de riesgo, llamadas de margen, rescates) y cobra por absorber ese flujo"* |
+| **74** | `1871af782763cf6b` | *"**Mismo mecanismo que el cartucho 1**… Quien compra **provee liquidez a vendedores forzados** y cobra por absorber ese flujo"* |
+
+Y el cartucho 3 (línea 89) declaró **antes de correr**: *"Mecanismo **DISTINTO** al de los cartuchos 1
+y 2: no provisión de liquidez a vendedores forzados sino difusión gradual de información"*. **La
+partición en dos mecanismos se declaró antes, no después de ver los resultados.**
+
+**Migración `MIGRACION_ETIQUETA` (`968e2bdbd5d6652e`, `cd2266dae7f3924d`), que exige la cita textual
+como prueba:** si la cita no aparece literal en el `hypothesis`, la migración se **rechaza** y la
+etiqueta habría que declararla como defecto post-hoc. Las entradas originales no se editan.
+
+**Y la unificación ENDURECE:** *liquidez* pasa a tener **3 de 4 cartuchos = 75 %**, por encima del tope
+de concentración del 40 % (§2b) — así que **desde el cartucho 5 ese mecanismo queda bloqueado**.
+`CAMBIO_DE_REGLAS 2b5307697e220f36`.
+
+## 33. Las configs de un mecanismo NO son independientes: medido, y es grave
+
+| | Solapamiento con las entradas del cartucho 4 |
+|---|---|
+| vs cartucho 1 (k=3, h=3) | 142 de 1.221 = 11,6 % |
+| **vs cartucho 2 (k=1, h=1)** | **1.069 de 1.221 = 87,6 %** |
+| vs 1 ∪ 2 | **87,6 %** |
+
+Y en las sesiones donde el cartucho 2 y el 4 operan a la vez, la **correlación de P&L es +1.0000**: no
+son parecidas, **son literalmente las mismas operaciones**.
+
+**Regla declarada (§3.10):** dentro de un mecanismo, una operación se cuenta **una sola vez**.
+Identidad = *(fecha de entrada, tenencia)*. La config **cronológicamente anterior** se queda con la
+operación y las posteriores aportan sólo las nuevas — el orden lo fija el ledger, no los resultados.
+`CAMBIO_DE_REGLAS b188649687532bcc`, **ENDURECE**.
+
+**Y el hallazgo dentro del hallazgo:** las **152 operaciones genuinamente nuevas** del cartucho 4 dan
+**c = −0.0746**. El +0.0395 que reportó era casi todo **heredado de las 1.069 duplicadas del cartucho
+2**. El cartucho 4 no confirmó el mecanismo: lo que agregó de nuevo apunta al otro lado.
+
+| Estimador | Ingenuo (publicado) | **n efectivo (corregido)** |
+|---|---|---|
+| liquidez | +0.04617 ± 0.01699 | **+0.04190 ± 0.02044** |
+| difusión | −0.00490 ± 0.02413 | −0.00490 ± 0.02413 |
+| c global | +0.023510 ± 0.025374 | **+0.020260 ± 0.023336** |
+| τ | 0.029474 | 0.024399 |
+| t (df=1) | −1.7761 | **−2.0705** |
+| p | 0.3265 | **0.2864** |
+
+El SE publicado **subestimaba en un factor 1.20** porque contaba 1.069 operaciones dos veces.
+
+## 34. La elección del umbral no accedió al P&L: ahora está garantizado, no supuesto
+
+`m = 0.25` se eligió contando frecuencias. Eso es defendible porque el conteo es propiedad de la regla
+y no de los retornos — pero **eso tenía que estar garantizado**. Test nuevo: se llama cinco veces a
+`count_trades_only` con una estrategia cuyo P&L es **completamente distinto en cada llamada** y se
+afirma que **el conteo no cambia**, que la estrategia se llamó las cinco veces (no hubo caché), que el
+retorno es `int`, y que la salida de la criba **no expone ningún campo de P&L**.
+
+Queda escrito: **la selección del umbral usó exclusivamente conteos de operaciones.**
+
+## 35. Los dos números que no reproducían
+
+**(a)** *"los dos medidos promedian 0.0225"* era un número **viejo**, anterior al cartucho 4. Con n
+efectivo hay dos candidatos y hay que nombrar cuál:
+
+- **media RE ponderada = 0.020257** — la que usa el estimador;
+- **promedio simple = 0.018500** — la que corresponde a la **proyección**, porque ésta supone
+  mecanismos **equiponderados**.
+
+Se publica el **promedio simple**, nombrado como tal.
+
+**(b)** Las cotas para m = 6, con τ² = 5.950948e-04 y v̄ = 5.000252e-04:
+
+```
+SE(m) = √((τ² + v̄)/m)          SE(6) = 0.013510      t_crit(df=5) = 2.5706
+|media − θ| ≥ 2.5706 × 0.013510 = 0.034729
+
+COTA A — la media de LOS SEIS         ≤ θ − 0.034729 = 0.033848
+COTA B — el promedio de LOS 4 NUEVOS  ≤ (6·0.033848 − 2·0.018500)/4 = 0.041522
+```
+
+Lo publicado (**0.0301**) estaba **rotulado como cota B** y su valor cae cerca de la **cota A**. **Dos
+errores, y los dos en contra nuestra**: el rótulo cambiado y la cota subestimada en un 27 %.
