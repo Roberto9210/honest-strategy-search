@@ -433,8 +433,34 @@ proyecto encontró jamás**. En particular **G2 necesita δ ≥ 0.1154 — un 38
 propio cartucho 1 midió, y sostenido a 5,7 veces esa frecuencia.** Eso no la mata, pero dice
 exactamente qué hay que creer para seguir gastando en ella, y queda escrito antes de gastar.
 
-**Dos niveles, no uno.** La criba es por familia y es gruesa; la compuerta de potencia por candidata
-(§3.2) sigue aplicándose entera a cada configuración. Pasar la criba no exime de nada.
+#### §3.5b — La criba corre por familia; el cartucho se gasta por CONFIGURACIÓN
+
+La criba de arriba tenía un desfasaje que costó un cartucho antes de que lo viéramos: **aprueba
+familias y el presupuesto se gasta en configuraciones.** G2 pasó con techo 589 — su variante más
+frecuente — y la configuración que efectivamente corrió proyectaba **84**. La criba de familia
+habilitó justo el desperdicio que venía a evitar.
+
+Por eso la criba está también **dentro de `preregister()`, antes de cobrar**:
+
+1. se cuenta la frecuencia de **esa** configuración sobre la parte A;
+2. se proyecta **su** n_B con el calendario de B;
+3. si no alcanza la potencia ni con el δ generoso (0.1515 ⇒ 342 operaciones), **el pre-registro se
+   RECHAZA y no cobra el cartucho.**
+
+Es legítimo por la misma distinción de §3.5: es la **frecuencia de esa regla**, no su rentabilidad. Y
+por eso no cobra: un conteo no puede producir un falso positivo. Fail-closed — sin conteo real
+(`strategy_fn` + datos) o sin un techo declarado **con su fuente escrita**, el pre-registro se niega.
+
+**El contrafactual del cartucho 1, para el registro.** Bajo esta regla, la configuración
+`reversion_k_dias k=3 hold=3` **habría sido rechazada antes de gastar nada**: proyectaba 84
+operaciones contra 342 necesarias, y sólo podía validar efectos de **δ ≥ 0.3057** — el doble del
+mejor que el proyecto midió jamás. La entrada original **no se edita** (el ledger es append-only y la
+cadena lo prueba): se le anexa una `NOTA_RETROSPECTIVA` que lo dice. **Un cartucho gastado en una
+pregunta incontestable es un dato sobre nuestro método, y el método es lo que publicamos.**
+
+**Dos niveles, no uno.** La criba de familia es gruesa, la de configuración es fina, y la compuerta de
+potencia por candidata (§3.2) sigue aplicándose entera después de correr. Pasar una no exime de las
+otras.
 
 ---
 
@@ -978,6 +1004,10 @@ separado, y el veredicto habla de cada una por separado.
 - El estado final de cada **bloqueante** (§7.6) y, si alguno venció, el acta de su consecuencia.
 - La **criba de medibilidad** de cada familia (§3.5): techo de operaciones, fuente, δ mínimo
   detectable y veredicto — incluidas las familias declaradas NO VALIDABLES y sus cartuchos perdidos.
+- **Todos los `CAMBIO_DE_REGLAS` con su dirección** (§9.5c), y **por separado y destacados, los que
+  AFLOJARON** con su aprobación y su argumento. Si no aflojó ninguno, se dice esa frase.
+- Las **configuraciones rechazadas por medibilidad** antes de cobrar (§3.5b): son preguntas que
+  decidimos no hacer, y ese es un dato sobre el método.
 - **Si la caja fuerte se abrió o no**, y si no, la afirmación explícita de que sigue sellada.
 - Los errores propios de la fase, cobrados al presupuesto, como hizo el veredicto de la Fase 1.
 
@@ -1019,6 +1049,8 @@ de la Fase 1 en el mismo caso), sobre una copia temporal del ledger.
 | 5b | Hash de las reglas en el acta y sello por entrada (§9.5b) | **hecho** |
 | 5c | Bloqueantes con vencimiento y consecuencia (§7.6) | **hecho** |
 | 5d | Criba de medibilidad por familia, exigida antes del primer cartucho (§3.5) | **hecha y aplicada a las 6 familias** |
+| 5e | Criba por **configuración** dentro de `preregister()`, que rechaza sin cobrar (§3.5b) | **hecho** |
+| 5f | Clasificación `ENDURECE`/`AFLOJA` de todo cambio de reglas (§9.5c) | **hecho, con los 3 cambios previos clasificados** |
 | 6 | Margen nocturno de MES, con fecha y fuente (§7.3) | **pendiente — no bloquea la búsqueda; bloquea operabilidad y examen final; vence a los 14 días** |
 | 7 | `WINDOWS` por régimen y `run_on` negándose fuera de ventana (§4.4) | **hecho** (ver nota) |
 | 8 | `report_per_year()` para el registro año por año de §3.3 | **hecho** |
@@ -1062,6 +1094,29 @@ Además:
   Los números de §1–§4 no se tocan hasta el veredicto, y ahora eso está en el código.
 - **`rules_drift()`** reporta cualquier cambio contra el acta. No bloquea —el harness y la spec pueden
   crecer legítimamente— pero **el veredicto tiene que publicarla** (§8.2).
+
+### 9.5c — Todo cambio de reglas se clasifica: ENDURECE o AFLOJA
+
+`assert_frozen_constants()` cuida K, α, el reparto y las ventanas. **No cuida la barra.** Agregar una
+criba **endurece** y nadie se opone; **aflojar** la vara a mitad de fase sería el pecado — y sin esta
+clasificación nada los distingue: los dos se ven exactamente igual desde afuera, como
+*"harness_f2.py cambió"*.
+
+Por eso **todo cambio de reglas dentro de la fase se clasifica en su propia entrada del ledger**
+(`CAMBIO_DE_REGLAS`), con:
+
+- **`direccion`**: `ENDURECE` o `AFLOJA`. No hay tercera.
+- **`resumen`** y **`argumento`**, ambos obligatorios.
+- **`aprobado_por`**: obligatorio si `AFLOJA`. Sin aprobación explícita, el cambio se rechaza en el código.
+
+Así **un tercero audita la DIRECCIÓN de cada cambio sin leer un solo diff.** Y todo `AFLOJA` queda
+listado aparte (`loosening_changes()`) y **marcado para siempre en el veredicto** (§8.2), aunque haya
+sido aprobado.
+
+Los cambios de la Fase 2 hasta hoy, clasificados —los tres retroactivamente, para que el rastro
+empiece el día uno—: la criba de medibilidad (§3.5), *combinar es una búsqueda nueva* (§7.7), y la
+criba por configuración junto con esta misma regla (§3.5b + §9.5c). **Los tres ENDURECEN. Ninguno
+aflojó nada.**
 
 ### Nota — el régimen intradía queda BLOQUEADO hasta tener el mapeo de día de negociación
 

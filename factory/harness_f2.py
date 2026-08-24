@@ -689,7 +689,31 @@ def _robustness_cells_claimed() -> dict:
     return out
 
 
+def config_measurability(config_n_b: int, delta: float | None = None) -> dict:
+    """§3.5b — la criba al nivel de la CONFIGURACIÓN.
+
+    La criba por familia (§3.5) mira el techo de la definición; el cartucho se
+    gasta por configuración. G2 pasó la criba con techo 589 y la configuración
+    que corrió proyectaba 84: la criba de familia habilitó justo el desperdicio
+    que venía a evitar. Esta cierra el desfasaje.
+
+    Sigue siendo frecuencia, no rentabilidad: es cuántas veces dispara ESA regla,
+    no si gana. Por eso rechaza sin cobrar — un conteo no puede producir un falso
+    positivo (§3.5)."""
+    d = float(delta if delta is not None else DELTA_REF_CRIBA)
+    need = n_b_needed(d)
+    return {
+        "n_b_proyectado": int(config_n_b),
+        "n_b_necesario": need,
+        "delta_ref": d,
+        "delta_min_detectable": POWER_CONST / sqrt(max(int(config_n_b), 1)),
+        "medible": int(config_n_b) >= need,
+    }
+
+
 def preregister(family: str, config: dict, hypothesis: str,
+                strategy_fn=None, df: pd.DataFrame | None = None,
+                n_b_proyectado: int | None = None, n_b_fuente: str = "",
                 robustness_cells: list | None = None,
                 uses_volume: bool = False,
                 adopcion_de_vecindad: bool = False) -> dict:
@@ -789,6 +813,38 @@ def preregister(family: str, config: dict, hypothesis: str,
             f"presupuesto de {family} agotado: usados {budget_used(family)} "
             f"de {FAMILY_BUDGET[family]} (no se transfiere de otra familia, §2)")
 
+    # §3.5b — criba de medibilidad de ESTA configuración, ANTES de cobrar.
+    # Se cuenta la frecuencia de la regla (no su rentabilidad) y se proyecta su
+    # n_B con el calendario. Si ni con el δ generoso alcanza la potencia, el
+    # pre-registro se RECHAZA y no cobra.
+    if strategy_fn is not None and df is not None:
+        reg_c = WINDOWS[FAMILY_REGIME[family]]
+        a_c = reg_c.slice(df, "A", uses_volume=bool(uses_volume))
+        b_c = reg_c.slice(df, "B", uses_volume=bool(uses_volume))
+        n_a_c = count_trades_only(strategy_fn, a_c, config)
+        n_b_c = project_n_b(n_a_c, len(a_c), len(b_c))
+        fuente_c = (f"contado sobre la parte A: {n_a_c} operaciones en {len(a_c)} "
+                    f"sesiones, proyectado al calendario de B ({len(b_c)} sesiones)")
+    elif n_b_proyectado is not None and n_b_fuente.strip():
+        n_a_c, n_b_c, fuente_c = None, int(n_b_proyectado), n_b_fuente.strip()
+    else:
+        raise SpecViolation(
+            "pre-registro sin criba de medibilidad de la configuración (§3.5b): "
+            "pasá (strategy_fn, df) para contar su frecuencia, o un "
+            "n_b_proyectado con su n_b_fuente escrita. Un techo sin procedencia "
+            "es un número inventado."
+        )
+    cm = config_measurability(n_b_c)
+    if not cm["medible"]:
+        raise SpecViolation(
+            f"configuración RECHAZADA por medibilidad (§3.5b): proyecta "
+            f"{cm['n_b_proyectado']} operaciones en B contra {cm['n_b_necesario']} "
+            f"necesarias a δ={cm['delta_ref']:.4f}. Sólo podría validar efectos de "
+            f"δ ≥ {cm['delta_min_detectable']:.4f}. NO se cobró el cartucho: un "
+            "conteo de frecuencia no puede producir un falso positivo. "
+            f"Fuente del conteo: {fuente_c}"
+        )
+
     entries = []
     if charged_cells:
         # La adopción cobra la vecindad entera, celda por celda, visible.
@@ -809,6 +865,7 @@ def preregister(family: str, config: dict, hypothesis: str,
         "regime": FAMILY_REGIME.get(family),
         "robustness_cells": list(robustness_cells or []),
         "uses_volume": bool(uses_volume),
+        "medibilidad_config": {**cm, "n_a_contado": n_a_c, "fuente": fuente_c},
         "budget_after": budget_used() + 1,
         "note": "PRE-REGISTRADA, sin correr",
     })
@@ -1083,6 +1140,82 @@ def assert_frozen_constants() -> None:
             "Los números de §1–§4 no se tocan hasta el veredicto; corregí el "
             "código o abrí una fase nueva."
         )
+
+
+# ---------------------------------------------------------------------------
+# §9.5c — DIRECCIÓN DE CADA CAMBIO DE REGLAS
+#
+# `assert_frozen_constants()` cuida K, α, el reparto y las ventanas. NO cuida la
+# barra. Agregar una criba ENDURECE y nadie se opone; aflojar la vara a mitad de
+# fase sería el pecado — y sin esta clasificación nada los distingue: los dos se
+# ven igual, como "harness_f2.py cambió".
+#
+# Por eso todo cambio de reglas dentro de la fase se clasifica en su PROPIA
+# entrada del ledger, con su argumento. Así un tercero audita la DIRECCIÓN de
+# cada cambio sin leer un solo diff. AFLOJA exige aprobación explícita y queda
+# marcado para siempre en el veredicto.
+DIRECCIONES = ("ENDURECE", "AFLOJA")
+
+
+def log_rules_change(direccion: str, resumen: str, argumento: str,
+                     seccion: str = "", aprobado_por: str = "",
+                     digest_antes: str = "", retroactivo: bool = False) -> dict:
+    """Clasifica un cambio de reglas. `AFLOJA` sin `aprobado_por` se rechaza."""
+    if direccion not in DIRECCIONES:
+        raise SpecViolation(f"dirección inválida: {direccion!r}. Sólo {DIRECCIONES}")
+    if not (resumen and resumen.strip() and argumento and argumento.strip()):
+        raise SpecViolation("cambio de reglas sin resumen y argumento escritos (§9.5c)")
+    if direccion == "AFLOJA" and not (aprobado_por and aprobado_por.strip()):
+        raise SpecViolation(
+            "un cambio que AFLOJA la vara exige aprobación explícita: pasá "
+            "`aprobado_por`. Queda marcado para siempre en el veredicto (§9.5c)."
+        )
+    return _append({
+        "phase": 2, "kind": "CAMBIO_DE_REGLAS", "family": "META",
+        "config": {"evento": "CAMBIO DE REGLAS", "seccion": seccion or None},
+        "part": "meta", "result": None,
+        "direccion": direccion,
+        "resumen": resumen.strip(),
+        "argumento": argumento.strip(),
+        "aprobado_por": aprobado_por.strip() or None,
+        "digest_antes": digest_antes or None,
+        "retroactivo": bool(retroactivo),
+        "note": (f"CAMBIO DE REGLAS [{direccion}] {seccion}: {resumen.strip()}"
+                 + (" (clasificado retroactivamente)" if retroactivo else "")),
+    })
+
+
+def rules_changes() -> list:
+    return [e for e in read_ledger() if e.get("kind") == "CAMBIO_DE_REGLAS"]
+
+
+def loosening_changes() -> list:
+    """Los que AFLOJARON. El veredicto los publica sí o sí."""
+    return [e for e in rules_changes() if e.get("direccion") == "AFLOJA"]
+
+
+# ---------------------------------------------------------------------------
+# El pasado no se edita: se le anexa.
+def log_retro_note(target_hash: str, nota: str, motivo: str = "") -> dict:
+    """Nota sobre una entrada ya escrita. NO la modifica —el ledger es
+    append-only y la cadena lo prueba— sino que agrega una línea que la
+    referencia. Un cartucho gastado en una pregunta incontestable es un dato
+    sobre nuestro método, y el método es lo que publicamos."""
+    if not (nota and nota.strip()):
+        raise SpecViolation("nota retrospectiva vacía")
+    objetivo = next((e for e in read_ledger() if e.get("hash") == target_hash), None)
+    if objetivo is None:
+        raise SpecViolation(f"no existe la entrada {target_hash!r} para anotar")
+    return _append({
+        "phase": 2, "kind": "NOTA_RETROSPECTIVA", "family": objetivo.get("family"),
+        "config": objetivo.get("config"), "part": "meta", "result": None,
+        "sobre": target_hash,
+        "sobre_kind": objetivo.get("kind"),
+        "nota": nota.strip(),
+        "motivo": motivo.strip() or None,
+        "note": (f"NOTA sobre {target_hash} ({objetivo.get('kind')}). La entrada "
+                 "original NO se modificó: el ledger es append-only."),
+    })
 
 
 def rules_drift() -> dict:
