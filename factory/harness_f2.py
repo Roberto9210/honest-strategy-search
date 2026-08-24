@@ -856,6 +856,54 @@ def estratos_cubiertos() -> dict:
     return out
 
 
+# ---------------------------------------------------------------------------
+# §3.7 — LA VARA DE LOS FILTROS ES UNA FUNCION, NO UNA TABLA
+#
+# Un filtro no solo recorta operaciones: CONCENTRA la ventaja en las que deja.
+# Conviene si esa concentracion supera un umbral. Pero el umbral NO es constante:
+# los dos terminos del requisito dependen de la tenencia,
+#
+#     A(h) = theta*sqrt(h)      (potencia)      theta = 2.8016/sqrt(S_B)
+#     F(h) = f/sqrt(h)          (friccion)      f     = friccion/sigma_1
+#
+# asi que la tabla que publicamos el 24-ago era el corte en h = 1 y a lo largo de
+# la propia cuenca la vara en phi=0.50 va de 1.144x (h=0.374) a 1.270x (h=1.317).
+# Un filtro cuyo residuo tenga h~1.3 necesita 1.27x y la tabla le pedia 1.24x:
+# dejaba pasar algo que no paga.
+#
+# Por eso la vara es una funcion evaluada en h_residuo, y las familias de filtro
+# declaran TRES numeros antes de correr, no dos:
+#     phi       fraccion de operaciones que sobrevive al filtro
+#     psi       fraccion de la ventaja total que sobrevive
+#     h_residuo tenencia media de lo que sobrevive
+# Si un filtro no puede declarar h_residuo por adelantado, no puede declarar su
+# hipotesis, y entonces no corre.
+FILTER_FAMILIES = ("G3-regimen", "G5-cruzado")
+
+
+def filter_bar(phi: float, h_residuo: float, s_b: int | None = None,
+               sigma1: float = 81.06) -> dict:
+    """Vara de concentracion exigida a un filtro, evaluada en su h_residuo."""
+    phi = float(phi)
+    h = float(h_residuo)
+    if not (0 < phi <= 1):
+        raise SpecViolation(f"phi fuera de (0,1]: {phi}")
+    if h <= 0:
+        raise SpecViolation(f"h_residuo debe ser positivo: {h}")
+    sb = int(s_b if s_b is not None else 1669)
+    theta = POWER_CONST / sqrt(sb)
+    f_ = FRICTION_RT / float(sigma1)
+    A = theta * sqrt(h)
+    F = f_ / sqrt(h)
+    psi_min = (A * sqrt(phi) + F * phi) / (A + F)
+    return {
+        "phi": phi, "h_residuo": h,
+        "componente_potencia": A, "componente_friccion": F,
+        "psi_min": psi_min,
+        "concentracion_min": psi_min / phi,
+    }
+
+
 def config_measurability(config_n_b: int, delta: float | None = None) -> dict:
     """§3.5b — la criba al nivel de la CONFIGURACIÓN.
 
@@ -880,6 +928,8 @@ def config_measurability(config_n_b: int, delta: float | None = None) -> dict:
 
 def preregister(family: str, config: dict, hypothesis: str,
                 mecanismo: str = "", h: float | None = None,
+                phi: float | None = None, psi: float | None = None,
+                h_residuo: float | None = None,
                 strategy_fn=None, df: pd.DataFrame | None = None,
                 n_b_proyectado: int | None = None, n_b_fuente: str = "",
                 robustness_cells: list | None = None,
@@ -937,6 +987,32 @@ def preregister(family: str, config: dict, hypothesis: str,
             "pre-registro sin `h` (tenencia en sesiones, §2b): sin ella no se puede "
             "estratificar el estimador de c ni verificar la cobertura de tenencias."
         )
+
+    # §3.7 — las familias de filtro declaran TRES numeros y superan la vara-funcion
+    filtro = None
+    if family in FILTER_FAMILIES:
+        if phi is None or psi is None or h_residuo is None:
+            raise SpecViolation(
+                f"{family} es una familia de FILTRO y tiene que declarar los tres "
+                "numeros antes de correr (§3.7): `phi` (fraccion de operaciones que "
+                "sobrevive), `psi` (fraccion de la ventaja que sobrevive) y "
+                "`h_residuo` (tenencia media de lo que sobrevive). Si un filtro no "
+                "puede declarar h_residuo por adelantado, no puede declarar su "
+                "hipotesis, y entonces no corre."
+            )
+        filtro = filter_bar(phi, h_residuo)
+        if float(psi) < filtro["psi_min"]:
+            raise SpecViolation(
+                f"el filtro declarado no paga su costo de frecuencia (§3.7): con "
+                f"phi={float(phi):.3f} y h_residuo={float(h_residuo):.3f} la vara es "
+                f"psi >= {filtro['psi_min']:.4f} (concentracion "
+                f"{filtro['concentracion_min']:.4f}x) y se declaro psi="
+                f"{float(psi):.4f} (concentracion {float(psi)/float(phi):.4f}x). "
+                "La vara se evalua en h_residuo, no en h=1: la tabla del 24-ago era "
+                "el corte en h=1 y dejaba pasar filtros de residuo mas largo."
+            )
+        filtro["psi_declarado"] = float(psi)
+        filtro["concentracion_declarada"] = float(psi) / float(phi)
 
     # §2b — tope de concentración, por MECANISMO y por FAMILIA.
     # Por familia además de por mecanismo porque el tope por mecanismo solo se
@@ -1096,6 +1172,7 @@ def preregister(family: str, config: dict, hypothesis: str,
         "estrato_h": estrato_de(h),
         "solo_medicion": bool(solo_med),
         "nunca_candidata": bool(solo_med),
+        "filtro": filtro,
         "budget_after": budget_used() + 1,
         "note": "PRE-REGISTRADA, sin correr",
     })

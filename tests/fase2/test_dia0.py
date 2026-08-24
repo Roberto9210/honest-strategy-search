@@ -125,6 +125,10 @@ def pre(family, config, hypothesis, **kw):
     kw.setdefault("n_b_fuente", "fixture de prueba")
     kw.setdefault("mecanismo", "mecanismo-" + str(config))
     kw.setdefault("h", 1.0)
+    if family in f2.FILTER_FAMILIES:      # §3.7: los filtros declaran tres numeros
+        kw.setdefault("phi", 0.5)
+        kw.setdefault("psi", 0.9)         # concentracion 1.8x, muy por encima de la vara
+        kw.setdefault("h_residuo", kw["h"])
     return f2.preregister(family, config, hypothesis, **kw)
 
 
@@ -1038,6 +1042,64 @@ def _cfg_en_vedadas(prereg):
     return clave in f2.measurement_only_configs()
 
 
+def s18_vara_de_filtros(tmp):
+    print("\n[18] \u00a73.7 \u2014 la vara de un filtro es una FUNCION de (phi, h_residuo)")
+    fresh_ledger(tmp)
+
+    print("    -- la vara varia a lo largo de la cuenca: la tabla en h=1 dejaba pasar")
+    b037 = f2.filter_bar(0.5, 0.3737)
+    b100 = f2.filter_bar(0.5, 1.0)
+    b131 = f2.filter_bar(0.5, 1.3171)
+    check(abs(b037["concentracion_min"] - 1.1440) < 1e-3,
+          f"h=0.3737 -> {b037['concentracion_min']:.4f}x")
+    check(abs(b100["concentracion_min"] - 1.2434) < 1e-3,
+          f"h=1.0000 -> {b100['concentracion_min']:.4f}x  (la tabla publicada)")
+    check(abs(b131["concentracion_min"] - 1.2703) < 1e-3,
+          f"h=1.3171 -> {b131['concentracion_min']:.4f}x")
+    check(b131["concentracion_min"] > b100["concentracion_min"],
+          "un residuo mas largo exige MAS concentracion: la tabla en h=1 subestimaba")
+
+    print("    -- un filtro que pasaba con la tabla vieja y NO paga con la funcion")
+    raises_msg(f2.SpecViolation,
+               lambda: pre("G3-regimen", {"q": 1}, "estado de mediana",
+                           mecanismo="regimen-vol", h=1.3171,
+                           phi=0.5, psi=0.63, h_residuo=1.3171),
+               "psi=0.63 (concentracion 1.26x) con h_residuo=1.3171",
+               must_contain=("no paga su costo de frecuencia", "h_residuo"))
+    check(0.63 / 0.5 > b100["concentracion_min"],
+          "1.26x superaba la vara vieja de h=1 (1.2434x) — por eso importa")
+    check(0.63 / 0.5 < b131["concentracion_min"],
+          f"y no llega a la vara real de h=1.3171 ({b131['concentracion_min']:.4f}x)")
+
+    print("    -- los tres numeros son obligatorios; sin h_residuo no hay hipotesis")
+    raises_msg(f2.SpecViolation,
+               lambda: f2.preregister("G3-regimen", {"q": 2}, "hip",
+                                      mecanismo="m", h=1.0, phi=0.5, psi=0.9,
+                                      n_b_proyectado=834, n_b_fuente="fx"),
+               "filtro sin h_residuo",
+               must_contain=("familia de FILTRO", "h_residuo"))
+    raises(f2.SpecViolation,
+           lambda: f2.filter_bar(0.5, 0),
+           "h_residuo no positivo")
+    raises(f2.SpecViolation,
+           lambda: f2.filter_bar(1.5, 1.0),
+           "phi fuera de (0,1]")
+
+    print("    -- un filtro que SI paga entra, y su vara queda guardada")
+    e = pre("G3-regimen", {"q": 3}, "estado de mediana que concentra 1.8x",
+            mecanismo="regimen-vol", h=1.0, phi=0.5, psi=0.9, h_residuo=1.0)
+    check(e["filtro"]["concentracion_declarada"] > e["filtro"]["concentracion_min"],
+          f"declarada {e['filtro']['concentracion_declarada']:.2f}x > vara "
+          f"{e['filtro']['concentracion_min']:.4f}x")
+    check(e["filtro"]["h_residuo"] == 1.0, "y h_residuo queda en el ledger")
+    f2.abandon("G3-regimen", {"q": 3}, "cierre de prueba")
+
+    print("    -- las familias que NO son filtro no tienen que declarar nada de esto")
+    e2 = pre("G2-multidia", {"q": 4}, "no es filtro", mecanismo="reversion", h=1.0)
+    check(e2["filtro"] is None, "G2 no lleva vara de filtro")
+    check(f2.verify_ledger() is True, "cadena v\u00e1lida")
+
+
 def main():
     print("=" * 78)
     print("FASE 2 — pruebas del trabajo de día 0 (spec_fase2.md §9)")
@@ -1054,7 +1116,8 @@ def main():
                    s9_colgados, s10_reglas_congeladas, s11_margen_despliegue,
                    s12_bloqueantes, s13_criba_medibilidad,
                    s14_criba_por_config, s15_direccion_de_los_cambios,
-                   s16_politica_asignacion, s17_solo_medicion):
+                   s16_politica_asignacion, s17_solo_medicion,
+                   s18_vara_de_filtros):
             fn(tmp)
     except Exception:  # noqa: BLE001
         traceback.print_exc()

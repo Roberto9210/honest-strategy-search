@@ -596,22 +596,25 @@ Conviene filtrar si `δ'/exigido' > δ/exigido`, lo que se reduce a:
 ψ  >  [ A·√φ + F·φ ] / (A + F)        con A = 2.8016/√n_B ,  F = fricción/σ
 ```
 
-En la celda óptima (n_B = 1.669, A = 0.06858, F = 0.04811):
+> **CORREGIDO el 24-ago-2026 (adenda 5, §26).** La tabla que estaba acá era el corte en **h = 1** y se
+> publicó como si fuera una constante. **No lo es:** `A = θ√h` y `F = f/√h` dependen de la tenencia, y
+> a lo largo de la propia cuenca la vara en φ = 0,50 va de **1,144×** (h = 0,374) a **1,270×**
+> (h = 1,317). Un filtro con residuo h ≈ 1,3 necesita 1,270× y la tabla le pedía 1,243×: **dejaba pasar
+> algo que no paga.** La vara correcta es una **función**, en la §26.
 
-| φ (frecuencia que queda) | ψ mínimo | **concentración exigida ψ/φ** |
+La tabla que se publicó, para referencia — **es el corte en h = 1 y no debe usarse como vara**:
+
+| φ (frecuencia que queda) | ψ mínimo (h=1) | concentración (h=1) |
 |---|---|---|
-| 0,75 | 0,818 | **1,09×** |
-| 0,50 (mediana) | 0,622 | **1,24×** |
-| 0,25 (cuartil) | 0,397 | **1,59×** |
-| 0,10 | 0,227 | **2,27×** |
-
-**Lectura:** un filtro de mediana conviene sólo si la mitad que deja carga **más del 62 % de la
-ventaja**. Un filtro de cuartil, si el cuarto que deja carga más del 40 %.
+| ~~0,75~~ | ~~0,818~~ | ~~1,09×~~ |
+| ~~0,50 (mediana)~~ | ~~0,622~~ | ~~1,24×~~ |
+| ~~0,25 (cuartil)~~ | ~~0,397~~ | ~~1,59×~~ |
+| ~~0,10~~ | ~~0,227~~ | ~~2,27×~~ |
 
 **Respuesta a la pregunta 1: G3 y G5 no se salen de la cuenca por construcción.** Se salen si su
-filtro no concentra lo suficiente — y ahora **ese umbral es un número que cada filtro tiene que
-declarar como parte de su hipótesis, antes de correr**. Es una vara nueva, computable y verificable,
-en vez de una exclusión a mano alzada.
+filtro no concentra lo suficiente — y ese umbral es **una función que cada filtro tiene que declarar y
+superar antes de correr** (§26). Es una vara computable y verificable, en vez de una exclusión a mano
+alzada.
 
 ## 24. El precio de la cobertura de estratos, antes de pagarlo
 
@@ -642,9 +645,15 @@ G2/G3/G5, no ahora.
 
 **No, y va en el veredicto.**
 
-De los 200 declarados quedan **120 buscables**: G1 se fue con 40 y G4 tiene 40 que sólo miden. Y la
-región factible resultó ser una cuenca angosta en vez de un espacio de seis familias × ~33
-configuraciones. **El presupuesto se calibró para una geometría que ahora sabemos que no existe.**
+> **CORREGIDO el 24-ago-2026 (adenda 5, §27).** Acá decía "quedan **120** buscables", mezclando lo
+> **asignado** con lo **restante**. Los 120 son la asignación declarada a familias buscables
+> (G2 40 + G3 30 + G5 30 + G6 20); **restantes** son **118**, porque los 2 cartuchos ya gastados
+> salieron de G2 — **no** se imputaron a G4, que conserva sus 40 intactos y todos de sólo-medición.
+
+De los 200 declarados hay **120 asignados a familias buscables** y quedan **118 buscables sin gastar**:
+G1 se fue con 40, G4 tiene 40 que sólo miden, y G2 ya gastó 2. Y la región factible resultó ser una
+cuenca angosta en vez de un espacio de seis familias × ~33 configuraciones. **El presupuesto se
+calibró para una geometría que ahora sabemos que no existe.**
 
 **No se toca, y por la razón correcta:** el denominador es el presupuesto **declarado** (§1.4), y
 bajarlo aflojaría la vara por un accidente de descubrimiento. Lo que cuesta estar sobre-presupuestado:
@@ -655,11 +664,87 @@ bajarlo aflojaría la vara por un accidente de descubrimiento. Lo que cuesta est
 | 120 (buscables de hoy) | 177 | 3.6299 |
 | 60 | 117 | 3.5226 |
 
-Sobre-presupuestar de 120 a 200 cuesta **2.6 % de rigor**, y se paga en la dirección
+Sobre-presupuestar de 120 a 200 cuesta **2,62 % de rigor**, y se paga en la dirección
 **conservadora**. Es exactamente el precio que §1.4 anticipó cobrar y no hay motivo para tocarlo.
+
+**La fórmula, con sus denominadores exactos** (porque el número tiene que ser verificable, no
+plausible):
+
+```
+costo = z(α / K_total_declarado) / z(α / K_total_alternativo) − 1
+K_total = K₁ + K₂ = 57 + K₂            ← §1.1: el contador arrastra la Fase 1 y no se reinicia
+
+z(0.05/257) = 3.725987          z(0.05/177) = 3.630853
+costo = 3.725987 / 3.630853 − 1 = 2.6201 %
+```
+
+**Nota sobre una reproducción que da 3,77 %.** Ese valor sale de `z(0.05/200)/z(0.05/120) − 1 =
+3.6623/3.5293 − 1`, que usa **K = K₂ sin sumar K₁ = 57**. Los dos cálculos son correctos por separado;
+el que corresponde publicar es el de **K_total**, porque el denominador de la spec incluye las 57
+configuraciones de la Fase 1 y ése es justamente el contador que no se reinicia (§1.1). Queda anotado
+para que la diferencia sea reconstruible en vez de discutible.
 
 **Lo que sí va escrito en el veredicto:** *el presupuesto se declaró antes de conocer la geometría del
 problema, y la geometría resultó ser mucho más chica que el presupuesto.* Eso no es un error de la
 spec — es la consecuencia inevitable de exigir que el número se declare antes. Un presupuesto
 calibrado **después** de conocer la geometría no sería un presupuesto: sería un resultado disfrazado
 de plan. El costo de hacerlo bien fue 2.6 % de rigor sobrante, pagado en la dirección segura.
+
+
+---
+
+# Adenda 5 — tres correcciones de una verificación externa
+
+*Confirmadas por cálculo independiente y por el nuestro. Ninguna cambia el veredicto; las tres cambian
+un número o una vara que se publica, que es motivo suficiente.*
+
+## 26. La vara de un filtro es una FUNCIÓN, no una tabla
+
+Los dos términos del requisito **dependen de la tenencia**:
+
+```
+A(h) = θ·√h        (potencia)      θ = 2.8016/√S_B = 0.068577
+F(h) = f/√h        (fricción)      f = fricción/σ₁  = 0.048113
+```
+
+así que la vara de concentración también:
+
+```
+conc_min(φ, h) = [ θ·√h·√φ + (f/√h)·φ ] / [ φ · ( θ·√h + f/√h ) ]
+```
+
+| h ↓ / φ → | 0,75 | 0,50 | 0,25 | 0,10 |
+|---|---|---|---|---|
+| 0,3737 *(piso de la cuenca 5 %)* | 1,054× | **1,144×** | 1,348× | 1,752× |
+| 0,7016 *(óptimo)* | 1,077× | **1,207×** | 1,500× | 2,081× |
+| 1,0000 *(la tabla vieja)* | 1,091× | **1,243×** | 1,588× | 2,271× |
+| 1,3171 *(techo de la cuenca 5 %)* | 1,101× | **1,270×** | 1,653× | 2,411× |
+| 3,0000 | 1,125× | 1,336× | 1,811× | 2,752× |
+
+**El fallo concreto de la tabla vieja:** un filtro con φ = 0,50 y residuo h ≈ 1,32 que declarara una
+concentración de 1,26× **pasaba** la vara publicada (1,243×) y **no paga** la vara real (1,270×).
+
+**Consecuencia declarada: las familias de filtro declaran TRES números antes de correr, no dos.**
+
+| Número | Qué es |
+|---|---|
+| **φ** | fracción de operaciones que sobrevive al filtro |
+| **ψ** | fracción de la ventaja total que sobrevive |
+| **h_residuo** | **tenencia media de lo que sobrevive al filtro** |
+
+La vara se evalúa **en h_residuo**. Y la regla que lo cierra: **si un filtro no puede declarar
+h_residuo por adelantado, no puede declarar su hipótesis, y entonces no corre.** Cableado en
+`preregister()` para G3 y G5; sin los tres números se niega, y con los tres se niega igual si la
+concentración declarada no supera `conc_min(φ, h_residuo)`.
+
+## 27. Las otras dos correcciones
+
+**El costo de rigor.** El 2,62 % publicado es correcto pero se publicó sin su fórmula, que ahora está
+en la §25 con los denominadores exactos. Una reproducción independiente da 3,77 % porque usa
+`K = K₂` sin sumar `K₁ = 57`; ambos cálculos son correctos y el que corresponde es el de `K_total`,
+porque **el contador arrastra la Fase 1 y no se reinicia** (§1.1). La diferencia queda anotada en la
+§25 para que sea reconstruible.
+
+**La cuenta de cartuchos.** Publiqué "120 buscables" mezclando **asignado** con **restante**. Lo
+correcto: **120 asignados** a familias buscables, **118 restantes** — los 2 gastados salieron de G2,
+**no** se imputaron a G4, que conserva sus 40 intactos y todos de sólo-medición. Corregido en la §25.
