@@ -365,3 +365,167 @@ irreversible.
 horas de contado — la varianza demuestra que sí lo hay, 2,54× por unidad de tiempo. Dice que **aun
 suponiendo que la ventaja se concentre en la misma proporción**, la ventana resultante exige más de lo
 que sabemos producir. Es, otra vez, una afirmación sobre nuestro c, no sobre el mercado.
+
+---
+
+# Adenda 3 — el modelo detrás del bono, y el patrón que ata la fase entera
+
+## 17. De dónde sale √(w/τ) = 1.594, con el álgebra
+
+*El número se publica, así que tiene que sostenerse solo. Si un tercero no puede reconstruirlo, es
+una afirmación en vez de un cálculo.*
+
+**Notación.** Un día completo (24 h) tiene varianza `V` y ventaja bruta `E` (en dólares). Una ventana
+cubre la fracción `τ` del **tiempo** y la fracción `w` de la **varianza**.
+
+**Supuesto 1 — cómo escala σ.** La varianza es **aditiva entre ventanas disjuntas y no
+correlacionadas**: `V_ventana = w·V`, por lo tanto
+
+```
+σ_ventana = √w · σ_día
+```
+
+Es el supuesto estándar de incrementos de precio no correlacionados (martingala), y es lo que
+*significa* "fracción de varianza". Es también el supuesto bajo el cual w es medible: lo medimos en
+SPY sumando las varianzas de las dos patas.
+
+**Supuesto 2 — cómo se acumula la ventaja.** Acá hay tres ramas posibles, y la elección importa:
+
+| Rama | `E_ventana / E_día` | Bono resultante | Valor |
+|---|---|---|---|
+| **Conservadora** — la ventaja se devenga con el **tiempo** | `τ` | `(τ/√w)/√τ = √(τ/w)` | **0.627×** |
+| **Generosa** — la ventaja se concentra **como la varianza** | `w` | `(w/√w)/√τ = √(w/τ)` | **1.594×** |
+| **Extrema** — **toda** la ventaja del día ocurre en la ventana | `1` | `(1/√w)/√τ` | **2.317×** |
+
+**El álgebra, en tres líneas.** Con `δ = E/σ` y `c = δ/√h`, `h_ventana = τ`, `h_día = 1`:
+
+```
+δ_ventana = E_ventana / σ_ventana = (ρ·E_día) / (√w · σ_día) = (ρ/√w) · δ_día
+c_ventana = δ_ventana / √τ        = (ρ / (√w·√τ)) · δ_día
+c_ventana / c_día = ρ / √(w·τ)                        con ρ = E_ventana/E_día
+```
+
+Sustituyendo `ρ = w` sale `√(w/τ)`. **Chequeo interno:** el cociente entre la rama generosa y la
+conservadora tiene que dar exactamente `w/τ` — la concentración de varianza por unidad de tiempo —, y
+da **2.54**, que es el valor medido. El álgebra cierra sobre sí misma.
+
+**Elegimos la rama generosa** (1.594×) porque le da a la hipótesis el máximo crédito compatible con
+lo medido: el flujo se concentra, y suponemos que la ventaja se concentra en la misma proporción.
+
+**Y con la rama EXTREMA, que ni siquiera es defendible** —suponer que el 100 % de la ventaja del día
+ocurre en horario de contado y **cero** fuera—:
+
+| Ventana | Bono extremo | c lograble | c exigido | logrado/exigido |
+|---|---|---|---|---|
+| Sesión de contado completa | 2.317 | 0.1531 | 0.2432 | **63 %** |
+| Media sesión de contado | 2.317 | 0.1531 | 0.3547 | **43 %** |
+
+**Tampoco cruza.** La conclusión no depende de qué rama se elija — y tampoco depende del bono en
+absoluto, porque *contado a contado*, la mejor de las cuatro ventanas, tiene `τ = w = 1` y **bono
+exactamente 1**: no usa el modelo para nada.
+
+## 18. El patrón acumulado: la restricción somos nosotros
+
+Cuatro rutas independientes, cuatro veces el mismo veredicto:
+
+| Candidata | Murió por | Ruta |
+|---|---|---|
+| **F4** vuelta de mes | multiplicidad | p 0.0212 peor que el 0.0172 del azar en 57 búsquedas |
+| **G2** multi-día | potencia, a **dos** tenencias | 84 y 518 operaciones contra 342 y 1.121 necesarias |
+| **G4** bordes | fricción | 0.1766 σ de peaje, 3.6× su ventaja de potencia |
+| **G1** nocturna | descomposición sub-diaria | partir el día recorta σ más rápido de lo que multiplica operaciones |
+
+**Eso ya no son cuatro hallazgos: es uno medido cuatro veces.** Cada familia murió por un mecanismo
+distinto y todas llegaron al mismo número — **c no alcanza**.
+
+Y por la definición de la §9, **c es la calidad de las hipótesis que sabemos generar**. Entonces:
+
+> **La restricción que ata la fase entera no es la estructura de ninguna familia. Somos nosotros.**
+
+Cambiar de familia no cambia c, porque las cinco familias salen del mismo generador de hipótesis: el
+nuestro. Es la misma muestra tomada cinco veces, no cinco muestras.
+
+## 19. G6 es la única familia que muestrea un generador distinto
+
+De las seis familias declaradas, **cinco nos miden a nosotros**. G1, G2, G3, G4 y G5 son mecanismos
+que se nos ocurrieron a nosotros, escritos por nosotros, en el vocabulario que manejamos nosotros. Su
+c es nuestro c, medido cinco veces.
+
+**G6 —reglas propuestas por terceros— es la única que muestrea un generador distinto.** Es el único
+lugar de toda la Fase 2 donde c podría ser **otro número** en vez del mismo número otra vez.
+
+Eso cambia qué significa el orden declarado. Hoy **G6 está última**, con el presupuesto más chico
+(20 de 200), y es el único sitio donde la restricción que ata todo lo demás podría no aplicar.
+
+*(Lo que esto NO autoriza: reordenar. El orden está declarado en §4.2 y cambiarlo después de ver
+resultados es exactamente lo que la spec impide. Si se reordenara, el argumento tendría que ser el
+estructural —"G6 muestrea otro generador", que era cierto antes del primer cartucho— y nunca
+"las otras vinieron mal"; y sería un `CAMBIO_DE_REGLAS` con su dirección y su justificación.)*
+
+## 20. Qué haría falta para que una regla de un tercero entre a G6
+
+Repasadas las compuertas una por una. **Casi todas aplican sin cambios** — son sobre la regla y los
+datos, no sobre quién la pensó:
+
+| Compuerta | ¿Aplica? | Detalle |
+|---|---|---|
+| 20 cartuchos del presupuesto | **sí, igual** | ya escrito en §4.2: una regla que te pasó otro consume presupuesto exactamente igual |
+| Criba de medibilidad (familia y config) | **sí, sin cambios** | es frecuencia y σ; el origen no entra |
+| Barra §3, compuerta de potencia, caja fuerte | **sí, sin cambios** | |
+| Tope de concentración §2b | **sí** | G6 son 20 de 200 = 10 %, muy por debajo del 40 % |
+| Pre-registro antes del resultado | **sí, con un agregado** | ver abajo |
+| `mecanismo` declarado | **sí, con un agregado** | ver abajo |
+
+**Lo que hay que agregar, y sólo tiene sentido para reglas ajenas:**
+
+1. **Especificación completa antes de correr.** Las reglas de terceros llegan con huecos (umbral
+   exacto, salida, tamaño). **Cada parámetro que rellenamos nosotros es un grado de libertad**, y si
+   probamos varios rellenos, cada uno es un cartucho. La regla entra **completamente especificada**, o
+   los huecos se fijan por declaración escrita antes de correr — nunca eligiendo.
+2. **Mecanismo, aunque haya que reconstruirlo.** Muchas reglas ajenas vienen sin mecanismo ("a mí me
+   funciona"). §2b lo exige. Si el proponente no lo da, lo escribimos nosotros **etiquetado como
+   reconstrucción nuestra**, no como suya.
+3. **Cuáles de sus reglas probamos es una elección NUESTRA.** Si un amigo manda cinco y probamos dos,
+   esa selección es un cribado por plausibilidad. Se declara antes de correr ninguna: "se prueban
+   todas", o "en el orden en que llegaron", o el criterio que sea — pero declarado.
+4. **Registro de procedencia:** quién la propuso, cuándo, con qué palabras, y —lo que decide todo lo
+   demás— **si nos dijo que funciona**.
+
+## 21. Si una regla ajena midiera un c claramente mayor: qué se puede concluir y qué no
+
+**El problema, dicho antes de que llegue la primera:** una regla que alguien reporta como ganadora
+**ya viene seleccionada por su resultado**. Su c medido está sesgado exactamente como el de F4 — y
+**peor**, porque con F4 sabíamos que K = 57. Con la regla de un tercero, K es **desconocido y
+probablemente enorme**: todas las variantes que probó, más todos los traders cuyas reglas perdedoras
+nunca escuchamos. Es el problema del cajón de los fracasos, sin denominador.
+
+**Por lo tanto, se clasifican al ingreso —antes de correr— en dos clases:**
+
+**Clase A — mecanismo sin selección sobre datos que compartimos.** Propuesta por su razonamiento, o
+seleccionada sobre otro instrumento/mercado que nosotros no usamos como desarrollo. Su selección es
+débil o inexistente respecto de nuestra parte A.
+- **Su c ENTRA al estimador**, en su propio estrato de tenencia.
+- Y sería **la primera evidencia de que c no es una constante de este equipo sino del generador**.
+
+**Clase B — reportada como ganadora sobre datos que se solapan con los nuestros.**
+- **Su c NO entra al estimador**, y la exclusión se publica con el motivo.
+- **Se puede probar igual** (consume cartucho, se registra, se publica), pero su resultado **no puede
+  interpretarse como evidencia sobre c**.
+- Y algo más incómodo: **tampoco puede validarse contra nuestra barra**, porque `α/K` cubre *nuestra*
+  multiplicidad y la de ellos no la conocemos ni podemos contarla. Un p-valor calculado sobre datos
+  en los que otro ya seleccionó no es un p-valor.
+
+**Lo único que valida honestamente una regla de Clase B** es evidencia que su selector no pudo haber
+usado: un **forward test desde hoy**, sobre datos que todavía no existen. Es exactamente lo que
+`botc_potencia_f4.md` §6 concluyó para F4, y aplica igual acá — con la misma advertencia sobre el feed.
+
+**La clasificación se hace al ingreso, con el cuestionario, ANTES de medir nada.** Después de ver
+nuestro propio número la clasificación se vuelve motivada: nadie clasifica como Clase B una regla que
+acaba de medir un c espectacular. Por eso el cuestionario tiene que preguntar, explícitamente:
+*¿cuántas variantes probaste antes de ésta?*, *¿la elegiste porque rindió bien?*, *¿sobre qué datos e
+instrumento?*
+
+**Y el resumen honesto de la respuesta a "¿qué se puede concluir?":** de una regla ajena reportada
+como ganadora, **sobre c no se puede concluir nada**. De una regla ajena propuesta por su mecanismo,
+se puede concluir tanto como de una nuestra — y es el único experimento de toda la fase que podría
+mostrar que el techo no es del mercado sino nuestro.
