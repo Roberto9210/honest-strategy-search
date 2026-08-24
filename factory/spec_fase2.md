@@ -769,23 +769,48 @@ disponible — y a esta altura ya tiene 257 líneas de denominador.
 
 ## 9. Trabajo del día 0 (antes del primer backtest, sin excepción)
 
-1. `harness.preregister()` + `run_on` exigiendo pre-registro coincidente (§7.2).
-2. `harness.stat_test(trades)` que devuelva `t`, `p_crudo`, `α/K_total`, `1/(K_total+1)` y el veredicto
-   contra la línea de decisión — para que el diagnóstico sea automático y no una decisión de quien
-   escribe el informe.
-3. `harness.power_check(delta_hat, n_b_proyectado)` implementando §3.2, y `run_on(examen_final=True)`
-   **negándose a correr** si no hay un `power_check` aprobado previo en el ledger para esa candidata.
-   La compuerta 2 tiene que estar en el código, no en la buena voluntad.
-4. `PASS_BAR_F2` con los valores de §3, y `passes_bar` devolviendo las razones de falla, como ya hace.
-5. Entrada `meta` en el ledger con: apertura de Fase 2, K₁ = 57, K₂ = 200, K_total = 257, α = 0.05,
-   y los SHA-256 de los archivos de datos congelados (§4.5).
-6. Copiar a §7.3 el margen nocturno vigente de MES, con fecha y fuente. **Sin ese número, G1 no corre.**
-7. `harness.WINDOWS` con las dos ventanas de §4.4 cableadas por régimen (diario/overnight e intradía),
-   con sus exclusiones fijas (las 10 filas de OHLC incoherente, los 31 días `degraded`, 2018-08-05), y
-   `run_on` **negándose a correr** sobre fechas fuera de la ventana de su régimen. La ventana tiene que
-   estar en el código, no en la memoria de quien corre el backtest.
-8. `harness.report_per_year(result)` que emita el registro año por año exigido por §3.3, para que
-   publicarlo sea el camino por defecto y no un acto de voluntad.
+**Dónde vive.** En `factory/harness_f2.py`, no dentro de `harness.py`. `harness.py` es evidencia
+publicada de la Fase 1 y queda **byte a byte idéntico**, para que sus 57 resultados sigan
+reproduciéndose exactamente como se imprimieron; `harness_f2` lo envuelve y agrega las compuertas.
+Pruebas: `tests/fase2/test_dia0.py` — conductuales, cada una contra su control (qué hacía el harness
+de la Fase 1 en el mismo caso), sobre una copia temporal del ledger.
+
+| # | Ítem | Estado |
+|---|---|---|
+| 1 | `preregister()` + `run_on` exigiendo pre-registro coincidente (§7.2) | **hecho** |
+| 2 | `stat_test()`: `t`, `p_crudo`, `α/K_total` y `1/(K_total+1)` juntos, siempre | **hecho** |
+| 3 | `power_check()` + `run_on(examen_final=True)` negándose sin uno aprobado (§3.2) | **hecho** |
+| 4 | `PASS_BAR_F2` y `passes_bar_a()` devolviendo las razones de falla | **hecho** |
+| 5 | Entrada `meta` de apertura: K₁, K₂, K_total, α y los SHA-256 de los datos | `open_phase2()` escrito y probado; **falta la firma** |
+| 6 | Margen nocturno de MES en §7.3, con fecha y fuente | **pendiente — G1 no corre** |
+| 7 | `WINDOWS` por régimen y `run_on` negándose fuera de ventana (§4.4) | **hecho** (ver nota) |
+| 8 | `report_per_year()` para el registro año por año de §3.3 | **hecho** |
+
+Detalles que la implementación fijó y que valen como parte de la spec:
+
+- **El cartucho se gasta al pre-registrar, no al correr.** Reservar barato sería una forma de no
+  contar. Un pre-registro lo consume su resultado y no autoriza una segunda corrida.
+- **Sin hipótesis no hay pre-registro.** Una configuración sin mecanismo escrito en una línea es un
+  barrido con otro nombre.
+- **La adopción de una celda de vecindad cobra las nueve**, y hay que pedirla explícita. Es el bloque
+  3×3 de F4 —donde (4,2) daba PF 1.691 contra el 1.507 publicado— mecanizado.
+- **El autotest `part="B"` de la Fase 1 está exento por nombre** del conteo de usos de la caja fuerte:
+  es la fila sintética que el README ya señala en voz alta, y no evaluó precios reales.
+
+### Nota — el régimen intradía queda BLOQUEADO hasta tener el mapeo de día de negociación
+
+Al cablear las exclusiones apareció un desajuste que no se puede tapar: los **31 días `degraded`**
+están fechados por **día de negociación CME** (18:00 → 17:00 ET, etiquetado por la fecha en que
+termina), que es la convención del QC, mientras que el corte del régimen es por **fecha de calendario**
+del índice. Las dos no coinciden: la franja 18:00–23:59 ET de un día pertenece al día de negociación
+siguiente. Excluir por calendario **dejaría entrar la mitad de cada día degradado y sacaría media
+sesión sana**.
+
+Un chequeo aproximado no es un chequeo. Hasta que el mapeo esté implementado y probado,
+`INTRADAY_TRADING_DAY_MAPPING_READY = False` y **G4 no corre**. No bloquea nada hoy —G1, G2 y G3 son
+diarias y van antes en el orden declarado— y evita que la primera corrida de G4 se apoye en una
+exclusión que se ve bien y no lo es. Es el mismo error que la Fase 1 aprendió a los golpes: un chequeo
+que existe no es un chequeo que corre.
 
 ---
 
