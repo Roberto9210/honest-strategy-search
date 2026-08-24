@@ -1632,14 +1632,22 @@ Es la versión general de lo que §3.2 ya exige por candidata: la compuerta de p
 ## 60. "No detectado" no es "no existe" — y ahora hay un test que lo vigila
 
 Con el piso en **0,068577** y los efectos medidos entre **0,0139 y 0,0618**, esta fase **nunca tuvo
-forma de distinguir** *"no hay borde"* de *"hay un borde y la muestra no alcanza"*. Las dos hipótesis
+forma de distinguir** *ausencia de borde* de *borde real con muestra insuficiente*. Las dos hipótesis
 producen exactamente los mismos datos.
 
 **Todo el documento usa el lenguaje de la primera y nunca el de la segunda.** Verificado: no hay
 ninguna formulación de ausencia de efecto en `frontera_factibilidad.md` ni en `spec_fase2.md`.
 
-Y para que siga así, `tests/fase2/test_dia0.py` §25 **falla si aparece una**: escanea los dos
-documentos buscando *"no existe ventaja"*, *"no hay ventaja"*, *"no existe borde"*, *"no hay señal"*,
-*"las reglas no funcionan"*, *"sin ventaja explotable"*, *"queda demostrado que no"* y variantes —
-**salvo dentro de un tramo tachado `~~…~~`**, donde una cita vieja puede decir lo que dijo. El test se
-prueba a sí mismo: se le inyecta una frase prohibida y la detecta; se la tacha y deja de dispararse.
+Y para que siga así, `tests/fase2/test_dia0.py` §25 **falla si aparece una** en el texto vivo de
+`frontera_factibilidad.md` o de `spec_fase2.md`. La lista completa va acá abajo **tachada, que es la
+única forma en que estas frases pueden aparecer en el documento**, porque el test sólo perdona los
+tramos `~~…~~`, donde una cita vieja puede decir lo que dijo:
+
+~~no existe ventaja~~ · ~~no hay ventaja~~ · ~~no existe borde~~ · ~~no hay borde~~ ·
+~~no existe señal~~ · ~~no hay señal~~ · ~~las reglas no funcionan~~ · ~~sin ventaja explotable~~ ·
+~~no tienen ventaja~~ · ~~no tiene ventaja~~ · ~~queda demostrado que no~~ · ~~probamos que no hay~~
+
+El test se prueba a sí mismo: se le inyecta una frase prohibida y la detecta; se la tacha y deja de
+dispararse. **Y el tachado no es una puerta trasera:** §25 exige además que el texto tachado sea menos
+del **2 %** del documento y que ningún tramo pase de **400 caracteres**, para que "tacharlo todo" no
+sea una salida.

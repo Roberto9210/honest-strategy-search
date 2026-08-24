@@ -14,6 +14,7 @@ from __future__ import annotations
 import io
 import json
 import os
+import re
 import shutil
 import sys
 import tempfile
@@ -1438,7 +1439,6 @@ AUSENCIA_PROHIBIDA = (
 
 def _sin_tachados(texto):
     """Quita los tramos ~~tachados~~: ahi una cita vieja puede decir lo que sea."""
-    import re
     return re.sub(r"~~.*?~~", " ", texto, flags=re.S)
 
 
@@ -1463,6 +1463,23 @@ def s25_lenguaje_de_ausencia(tmp):
     limpio = _sin_tachados(tachado).lower()
     check(not any(p.lower() in limpio for p in AUSENCIA_PROHIBIDA),
           "la misma frase, tachada, NO dispara: las citas viejas se conservan")
+
+    print("    -- y el tachado no es una puerta trasera: tiene presupuesto")
+    for rel in docs:
+        texto = io.open(os.path.join(REPO, rel), encoding="utf-8").read()
+        tramos = re.findall(r"~~.*?~~", texto, flags=re.S)
+        tachado = sum(len(x) for x in tramos)
+        frac = tachado / max(1, len(texto))
+        mayor = max([len(x) for x in tramos] or [0])
+        check(frac < 0.02,
+              f"{rel}: texto tachado {frac*100:.2f}% del documento (< 2%)")
+        check(mayor <= 400,
+              f"{rel}: el tramo tachado mas largo mide {mayor} caracteres (<= 400)")
+
+    print("    -- CONTROL: tachar el documento entero NO es una salida")
+    bloque = "~~" + ("El resultado prueba que no hay ventaja. " * 40) + "~~"
+    check(max(len(x) for x in re.findall(r"~~.*?~~", bloque, flags=re.S)) > 400,
+          "un documento tachado en bloque violaria el tope de 400 caracteres")
 
     print("    -- el numero que sostiene la regla")
     theta = f2.POWER_CONST / (1669 ** 0.5)
