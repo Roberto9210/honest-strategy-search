@@ -178,8 +178,14 @@ que la frontera predijo. Los dos instrumentos ahora coinciden porque miden lo mi
 ## 8. Qué queda sobre la mesa
 
 La celda más barata de todo el espacio de diseño sigue siendo **G1** (0.1167 σ, $9.46 brutos por
-operación) — una operación por sesión, tenencia de ~1 sesión, sin filtro. Todo filtro reduce la
-frecuencia y **sube** la barra, por lo que G3 y G5 empeoran la aritmética por construcción.
+operación) — una operación por sesión, tenencia de ~1 sesión, sin filtro.
+
+> **CORREGIDO el 24-ago-2026 (adenda 4, §23).** Acá decía *"todo filtro reduce la frecuencia y sube la
+> barra, por lo que G3 y G5 empeoran la aritmética por construcción"*. **Es falso como afirmación
+> general** y la corrección está en la §23: un filtro no sólo recorta operaciones, también **concentra
+> la ventaja** en las que deja, y conviene si esa concentración supera un umbral computable
+> (1.24× para un filtro de mediana, 1.59× para uno de cuartil). G3 y G5 **no** están excluidas por
+> construcción: tienen una vara, y esa vara es la hipótesis que cada filtro debe declarar.
 
 Y G1 es la única que **la serie diaria congelada no puede medir**: el tramo cierre→apertura de ES=F en
 Yahoo carga el 3,3 % de la varianza porque es la reapertura de las 18:00 ET.
@@ -345,8 +351,10 @@ Y con el bono de concentración aplicado al c medido:
 | Fuera de horario | 0,654 | 0.0432 | **24 %** | 18 % |
 
 **Ninguna cruza, ni dándole a la hipótesis el máximo crédito de concentración y el c más inflado que
-tenemos.** Y hay un motivo estructural: partir el día **recorta σ más rápido de lo que multiplica
-operaciones**, así que toda descomposición sub-diaria queda *peor* que la tenencia de un día.
+tenemos.** Y hay un motivo
+estructural, precisado en la §22: estas ventanas **no son encadenables** — la sesión de contado ocurre
+una vez por día, así que tienen el σ de una ventana corta y el n_B de una regla diaria. Lo peor de los
+dos lados.
 
 ## 16. Veredicto sobre el mapeo: las horas no valen
 
@@ -529,3 +537,129 @@ instrumento?*
 como ganadora, **sobre c no se puede concluir nada**. De una regla ajena propuesta por su mecanismo,
 se puede concluir tanto como de una nuestra — y es el único experimento de toda la fase que podría
 mostrar que el techo no es del mercado sino nuestro.
+
+
+---
+
+# Adenda 4 — la consolidación: la región factible es una cuenca angosta, no un espacio
+
+## 22. Dónde está el mínimo de verdad, y cuán ancho es
+
+Juntando las dos fronteras, la región factible colapsa. Pero el número publicado en la §1 estaba
+evaluado sólo en enteros h ≥ 1, y el mínimo real no cae ahí. Derivándolo:
+
+```
+exigido(h) = θ·√h + f/√h
+d/dh = 0  ⟹  θ/(2√h) = f/(2h^{3/2})  ⟹  h* = f/θ
+h* = 0.048113 / 0.068577 = 0.7016 sesiones ≈ 16,8 h
+exigido(h*) = 0.11488 σ      exigido(1) = 0.11669 σ  →  h=1 está a 1,6 % del óptimo
+```
+
+**No es un punto: es una cuenca plana.**
+
+| Dentro del … del mínimo | h admisible |
+|---|---|
+| 5 % | **[0,37 , 1,32] sesiones** |
+| 10 % | [0,29 , 1,70] |
+| 25 % | [0,18 , 2,81] |
+
+**Y por qué las ventanas de contado no entran en la cuenca aunque tengan h < 1.** La fórmula supone
+operaciones **encadenadas** (n_B = S_B/h). La sesión de contado ocurre **una vez por día**: tiene el σ
+de una ventana corta y el n_B de una regla diaria — lo peor de los dos lados. **La cuenca sólo aplica
+a lo encadenable.**
+
+**Veredicto sobre la consolidación: correcta en lo esencial.** La región factible es una banda angosta
+alrededor de ~0,7–1,3 sesiones, encadenable, sin filtro; y h = 1 está a 1,6 % del óptimo, así que el
+cartucho 2 **sí** midió esa celda. Lo que no es correcto es llamarla "una celda": es una cuenca, y su
+piso es 0.1149 σ, no 0.1167 σ.
+
+## 23. Filtros: corrección a una afirmación que publiqué
+
+Escribí que *"todo filtro reduce la frecuencia y sube la barra, así que G3 y G5 empeoran la aritmética
+por construcción"*. **Está mal como afirmación general**, y la corrección importa porque decide si dos
+familias vivas siguen teniendo sentido.
+
+Un filtro no sólo recorta operaciones: **su propósito es concentrar la ventaja** en las que deja. Hay
+que comparar las dos cosas.
+
+Sea una regla base con n_B operaciones y ventaja bruta δ por operación. Un filtro deja la fracción
+**φ** de las operaciones y la fracción **ψ** de la ventaja total (*"el filtro sirve"* significa ψ > φ).
+La tenencia no cambia, así que σ por operación tampoco:
+
+```
+ventaja por operación filtrada = δ · ψ/φ          n_B filtrado = φ · n_B
+```
+
+Conviene filtrar si `δ'/exigido' > δ/exigido`, lo que se reduce a:
+
+```
+ψ  >  [ A·√φ + F·φ ] / (A + F)        con A = 2.8016/√n_B ,  F = fricción/σ
+```
+
+En la celda óptima (n_B = 1.669, A = 0.06858, F = 0.04811):
+
+| φ (frecuencia que queda) | ψ mínimo | **concentración exigida ψ/φ** |
+|---|---|---|
+| 0,75 | 0,818 | **1,09×** |
+| 0,50 (mediana) | 0,622 | **1,24×** |
+| 0,25 (cuartil) | 0,397 | **1,59×** |
+| 0,10 | 0,227 | **2,27×** |
+
+**Lectura:** un filtro de mediana conviene sólo si la mitad que deja carga **más del 62 % de la
+ventaja**. Un filtro de cuartil, si el cuarto que deja carga más del 40 %.
+
+**Respuesta a la pregunta 1: G3 y G5 no se salen de la cuenca por construcción.** Se salen si su
+filtro no concentra lo suficiente — y ahora **ese umbral es un número que cada filtro tiene que
+declarar como parte de su hipótesis, antes de correr**. Es una vara nueva, computable y verificable,
+en vez de una exclusión a mano alzada.
+
+## 24. El precio de la cobertura de estratos, antes de pagarlo
+
+La cobertura sirve a la **medición**; la concentración en la cuenca sirve a la **búsqueda**. Ahora que
+sabemos que fuera de la cuenca es estrictamente peor para buscar, **cada cartucho de cobertura es
+gasto puro de medición** y tiene que justificarse solo.
+
+**Cobertura hoy:** `corto` ✅ (cartucho 2, h=1) · `medio` ✅ (cartucho 1, h=3) · `largo` ❌ ·
+`intradia` ❌ (sólo G4 puede cubrirlo).
+
+| Gasto | Qué compra |
+|---|---|
+| **1 cartucho** (`largo`, h ≥ 6) | Cierra la obligación de §2b. Curva de 3 puntos. |
+| **2 cartuchos** (+ `intradia` vía G4) | Curva de 4 puntos, uno por estrato: permite afirmar *"ningún estrato muestra c cerca de θ"* — groseramente, con barras de ±0.0143. |
+| **26 cartuchos** (~6,6 por estrato) | Permite **detectar si c varía con h**: la diferencia observada entre estratos es 0.0661 − 0.0440 = 0.0221, y detectarla al 80 % exige SE por estrato ≤ 0.00558, o sea peso 32.141 = 6,6 cartuchos. |
+
+**El precio, escrito antes de pagarlo:** 2 cartuchos = **1,3 %** de los 158 restantes, y compran una
+curva de 4 puntos con barras anchas. 26 cartuchos = **17 %**, y compran la única evidencia capaz de
+distinguir el modelo **persistente** del **transitorio** (§4, §11) — que es el parámetro del que
+dependen los "8,8 años" contra los "20,7 años" de la §5.
+
+**Recomendación:** pagar los 2 ahora (obligatorio + el estrato vacío) y **no** comprometer los 26. Los
+26 se justifican sólo si el veredicto va a apoyarse en la forma de c(h); si el veredicto se apoya en
+"c < θ en la cuenca", con la cuenca medida alcanza. Esa decisión se toma cuando esté el resultado de
+G2/G3/G5, no ahora.
+
+## 25. ¿Sigue calibrado el presupuesto de 200?
+
+**No, y va en el veredicto.**
+
+De los 200 declarados quedan **120 buscables**: G1 se fue con 40 y G4 tiene 40 que sólo miden. Y la
+región factible resultó ser una cuenca angosta en vez de un espacio de seis familias × ~33
+configuraciones. **El presupuesto se calibró para una geometría que ahora sabemos que no existe.**
+
+**No se toca, y por la razón correcta:** el denominador es el presupuesto **declarado** (§1.4), y
+bajarlo aflojaría la vara por un accidente de descubrimiento. Lo que cuesta estar sobre-presupuestado:
+
+| K₂ | K_total | \|t\| exigido |
+|---|---|---|
+| **200 (declarado)** | **257** | **3.7260** |
+| 120 (buscables de hoy) | 177 | 3.6299 |
+| 60 | 117 | 3.5226 |
+
+Sobre-presupuestar de 120 a 200 cuesta **2.6 % de rigor**, y se paga en la dirección
+**conservadora**. Es exactamente el precio que §1.4 anticipó cobrar y no hay motivo para tocarlo.
+
+**Lo que sí va escrito en el veredicto:** *el presupuesto se declaró antes de conocer la geometría del
+problema, y la geometría resultó ser mucho más chica que el presupuesto.* Eso no es un error de la
+spec — es la consecuencia inevitable de exigir que el número se declare antes. Un presupuesto
+calibrado **después** de conocer la geometría no sería un presupuesto: sería un resultado disfrazado
+de plan. El costo de hacerlo bien fue 2.6 % de rigor sobrante, pagado en la dirección segura.
