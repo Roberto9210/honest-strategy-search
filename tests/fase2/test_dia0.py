@@ -978,6 +978,66 @@ def s16_politica_asignacion(tmp):
     check(f2.verify_ledger() is True, "cadena v\u00e1lida")
 
 
+def s17_solo_medicion(tmp):
+    print("\n[17] \u00a73.6 \u2014 fuera de alcance para BUSCAR no es inutil para MEDIR")
+    fresh_ledger(tmp)
+    df = synthetic_daily()
+
+    print("    -- una familia NO VALIDABLE no puede gastar cartuchos...")
+    f2.log_measurability_screen("G4-bordes", 3338,
+                                "2 tramos de 30 min por sesion",
+                                sigma_por_operacion=22.08)
+    check(f2.screened_families()["G4-bordes"]["screen"]["validable"] is False,
+          "G4 sigue NO VALIDABLE con la friccion adentro")
+    raises(f2.SpecViolation,
+           lambda: pre("G4-bordes", {"x": 1}, "hip", mecanismo="bordes", h=0.08),
+           "pre-registrar en G4 antes de reclasificarla")
+
+    print("    -- ...hasta que se la reclasifica, y eso EXIGE aprobacion (AFLOJA)")
+    raises_msg(f2.SpecViolation,
+               lambda: f2.declare_measurement_only("G4-bordes", "cubrir el estrato corto", ""),
+               "SOLO_MEDICION sin aprobacion explicita",
+               must_contain=("aprobacion explicita", "AFLOJA"))
+    e = f2.declare_measurement_only(
+        "G4-bordes", "unico estrato de tenencia sin ningun dato", "Roberto")
+    check(e["kind"] == "SOLO_MEDICION", "estado propio, distinto de FUERA_DE_ALCANCE")
+    check("G4-bordes" not in f2.out_of_scope_families(),
+          "y NO es fuera de alcance: sus cartuchos no se perdieron")
+
+    print("    -- condicion 2: consume cartucho igual (revela rentabilidad)")
+    antes = f2.budget_used()
+    p = pre("G4-bordes", {"x": 1}, "borde de sesion", mecanismo="bordes", h=0.08)
+    check(f2.budget_used() == antes + 1, "gasto un cartucho, como cualquier otro")
+    check(p["solo_medicion"] is True and p["nunca_candidata"] is True,
+          "el pre-registro queda marcado nunca_candidata")
+    check(p["estrato_h"] == "intradia",
+          "y en el estrato intradia, el unico sin ningun dato")
+
+    print("    -- condicion 1: no puede abrir la caja fuerte, nunca")
+    f2.log_power_check("G4-bordes", {"x": 1}, delta_hat=0.5, n_a=1000, n_b_proyectado=3338)
+    raises_msg(f2.SpecViolation,
+               lambda: f2.run_on(df, "G4-bordes", {"x": 1}, strat_record,
+                                 examen_final=True),
+               "G4 pidiendo el examen final",
+               must_contain=("SOLO_MEDICION", "NUNCA"))
+
+    print("    -- condicion 3: la config corrida queda vedada PARA SIEMPRE")
+    f2.abandon("G4-bordes", {"x": 1}, "cierre de prueba")
+    check(_cfg_en_vedadas(p), "la config figura entre las vedadas")
+    raises_msg(f2.SpecViolation,
+               lambda: pre("G4-bordes", {"x": 1}, "otra vez", mecanismo="bordes",
+                           h=0.08),
+               "re-registrar una config ya medida",
+               must_contain=("VEDADA PARA SIEMPRE", "despues de ver su resultado"))
+    check(f2.verify_ledger() is True, "cadena v\u00e1lida")
+
+
+def _cfg_en_vedadas(prereg):
+    import json as _j
+    clave = prereg["family"] + "|" + _j.dumps(prereg["config"], sort_keys=True)
+    return clave in f2.measurement_only_configs()
+
+
 def main():
     print("=" * 78)
     print("FASE 2 — pruebas del trabajo de día 0 (spec_fase2.md §9)")
@@ -994,7 +1054,7 @@ def main():
                    s9_colgados, s10_reglas_congeladas, s11_margen_despliegue,
                    s12_bloqueantes, s13_criba_medibilidad,
                    s14_criba_por_config, s15_direccion_de_los_cambios,
-                   s16_politica_asignacion):
+                   s16_politica_asignacion, s17_solo_medicion):
             fn(tmp)
     except Exception:  # noqa: BLE001
         traceback.print_exc()

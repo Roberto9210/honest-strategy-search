@@ -296,3 +296,72 @@ ET) contra fuera de horario**, que es una descomposición real y estudiada, pero
 Bajo §7.2 eso es **una hipótesis distinta** y hay que re-declararla. Es legítimo, pero conviene
 decirlo antes de gastar las horas: el mapeo desbloquea **una variante de G1 con otro mecanismo**, no
 la G1 que está escrita.
+
+---
+
+# Adenda 2 — la frontera de la hipótesis de contado, calculada ANTES de tocar el mapeo
+
+*Aplicar a nuestra propia decisión de herramientas la misma regla que le exigimos a las estrategias.*
+
+El mapeo de día CME no rescata a G1: **la reemplaza** por otra hipótesis, *"el flujo se concentra en
+horario de contado"*. Entonces la pregunta no es si vale gastar horas en rescatar G1, sino si vale
+gastarlas en habilitar una hipótesis nueva **cuya factibilidad no calculamos**. Se calcula primero.
+
+## 14. La trampa del cálculo ingenuo
+
+Extrapolar el c diario hacia las ventanas cortas asumiría que el efecto **no** se concentra — que es
+exactamente lo contrario de la hipótesis. Sería asumir la respuesta. Así que se le da a la hipótesis
+**el máximo crédito posible**: que la ventaja se concentre *exactamente como la varianza*.
+
+Con w = fracción de varianza de la ventana y τ = fracción de tiempo:
+
+```
+ventaja_ventana / ventaja_día = w         (se concentra como la varianza)
+σ_ventana / σ_día             = √w
+⟹ δ_ventana = √w · δ_día
+⟹ c_ventana / c_día = √(w/τ)              ← el "bono de concentración"
+```
+
+Medido en SPY sobre la parte A —cuya apertura **sí** es la de contado—: el horario de contado carga
+**68,8 % de la varianza en 27,1 % del tiempo**, o sea **2,54× de concentración por unidad de tiempo**.
+El bono resultante es **√(0.688/0.271) = 1,594**.
+
+## 15. El resultado
+
+| Ventana | σ/op | n_B | Potencia | Fricción | Exigido | **c exigido** |
+|---|---|---|---|---|---|---|
+| Media sesión de contado | $47.54 | 3.338 | 0.0485 | 0.0820 | 0.1305 | **0.3547** |
+| Sesión de contado completa | $67.24 | 1.669 | 0.0686 | 0.0580 | 0.1266 | **0.2432** |
+| Contado a contado (24 h) | $81.06 | 1.669 | 0.0686 | 0.0481 | 0.1167 | **0.1167** |
+| Fuera de horario (17,5 h) | $45.27 | 1.669 | 0.0686 | 0.0861 | 0.1547 | **0.1812** |
+
+Y con el bono de concentración aplicado al c medido:
+
+| Ventana | Bono | c lograble (c=0.0661 inflado) | **logrado/exigido** | con c=0.0498 |
+|---|---|---|---|---|
+| Media sesión de contado | 1,594 | 0.1054 | **30 %** | 22 % |
+| Sesión de contado completa | 1,594 | 0.1054 | **43 %** | 33 % |
+| Contado a contado (24 h) | 1,000 | 0.0661 | **57 %** | 43 % |
+| Fuera de horario | 0,654 | 0.0432 | **24 %** | 18 % |
+
+**Ninguna cruza, ni dándole a la hipótesis el máximo crédito de concentración y el c más inflado que
+tenemos.** Y hay un motivo estructural: partir el día **recorta σ más rápido de lo que multiplica
+operaciones**, así que toda descomposición sub-diaria queda *peor* que la tenencia de un día.
+
+## 16. Veredicto sobre el mapeo: las horas no valen
+
+**La mejor de las cuatro ventanas es "contado a contado" — una tenencia de un día con una operación
+por sesión: exactamente el mismo σ y el mismo n_B que la celda que el cartucho 2 ya midió sobre la
+serie DIARIA.** El mapeo de día CME **no habilita ninguna celda mejor que la que ya podemos medir sin
+él**. Sus horas comprarían acceso a tres ventanas peores y a una que ya tenemos.
+
+Por lo tanto, y conforme a la regla que le exigimos a cualquier estrategia: **la hipótesis de contado
+no puede cruzar la frontera, así que G1 sale de alcance con ese motivo** — no por el defecto de la
+serie diaria, sino porque la hipótesis que el arreglo habilitaría tampoco alcanza. La decisión formal
+(perder sus 40 cartuchos, sin retirarlos del denominador ni reasignarlos) queda para Roberto, que es
+irreversible.
+
+*Nota sobre lo que este cálculo no dice:* no dice que no haya efecto de concentración de flujo en
+horas de contado — la varianza demuestra que sí lo hay, 2,54× por unidad de tiempo. Dice que **aun
+suponiendo que la ventaja se concentre en la misma proporción**, la ventana resultante exige más de lo
+que sabemos producir. Es, otra vez, una afirmación sobre nuestro c, no sobre el mercado.

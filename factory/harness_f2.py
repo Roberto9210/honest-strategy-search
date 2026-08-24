@@ -543,6 +543,81 @@ def screened_families() -> dict:
     return out
 
 
+# ---------------------------------------------------------------------------
+# §3.6 — SOLO_MEDICION: fuera de alcance para BUSCAR no es inutil para MEDIR
+#
+# Una configuracion de una familia NO VALIDABLE no puede pasar la barra jamas,
+# pero SI produce una estimacion insesgada de c en su estrato de tenencia — y el
+# estrato h < 1 sesion no tiene un solo dato. Retirar la familia tira esas
+# mediciones.
+#
+# Lo que NO cambia: una corrida de solo-medicion **revela rentabilidad** (c sale
+# de la ventaja media, que es exactamente la respuesta), asi que NO es gratis:
+# consume su cartucho igual. Cambia el destino, no el precio.
+#
+# LAS CINCO CONDICIONES:
+#   1. Estado propio, distinto de FUERA_DE_ALCANCE, bloqueado en codigo: sus
+#      resultados NUNCA pueden reportarse como candidatas ni abrir la caja fuerte.
+#   2. Consume cartucho normal. K_total sigue en 257.
+#   3. Toda configuracion corrida en modo solo-medicion queda VEDADA PARA SIEMPRE
+#      para la busqueda.
+#   4. Su c entra al estimador en SU PROPIO estrato de tenencia, nunca agrupado.
+#   5. LA ADVERTENCIA QUE HAY QUE LEER EL DIA QUE PASE:
+#
+#      Un resultado SOLO_MEDICION que se vea GANADOR es la senal mas fuerte de que
+#      algo anda mal en la MEDICION, no de que encontramos algo. Por construccion
+#      esa configuracion no podia validarse: exige mas ventaja bruta por operacion
+#      que la mejor que el proyecto midio jamas. Si igual brilla, lo primero que se
+#      revisa es el INSTRUMENTO —el sigma asumido, el conteo de operaciones, la
+#      ventana, la friccion aplicada, el lookahead— y recien despues el mercado.
+#      Se escribe hoy, sin ninguna tentacion a la vista, porque el dia que pase
+#      nadie va a querer leerlo.
+
+
+def measurement_only_families() -> dict:
+    out = {}
+    for e in read_ledger():
+        if e.get("kind") == "SOLO_MEDICION":
+            out[e["family"]] = e
+    return out
+
+
+def declare_measurement_only(family: str, motivo: str, aprobado_por: str) -> dict:
+    """Reclasifica una familia NO VALIDABLE a SOLO_MEDICION (§3.6).
+
+    Exige `aprobado_por` porque el cambio esta clasificado AFLOJA: permite gastar
+    cartuchos que las reglas de hoy prohiben."""
+    if family not in FAMILY_BUDGET:
+        raise SpecViolation(f"familia no declarada: {family!r}")
+    if not (motivo and motivo.strip()):
+        raise SpecViolation("reclasificacion sin motivo escrito (§3.6)")
+    if not (aprobado_por and aprobado_por.strip()):
+        raise SpecViolation(
+            "SOLO_MEDICION exige aprobacion explicita: es un cambio clasificado "
+            "AFLOJA porque permite gastar cartuchos hoy vedados (§3.6/§9.5c).")
+    if family in out_of_scope_families():
+        raise SpecViolation(
+            f"{family} ya esta FUERA DE ALCANCE: sus cartuchos se perdieron y no "
+            "vuelven. SOLO_MEDICION habia que declararlo antes (§7.6).")
+    return _append({
+        "phase": 2, "kind": "SOLO_MEDICION", "family": family,
+        "config": {"evento": "SOLO MEDICION"}, "part": "meta", "result": None,
+        "motivo": motivo.strip(), "aprobado_por": aprobado_por.strip(),
+        "note": (f"{family} pasa a SOLO_MEDICION (§3.6). Sus configuraciones "
+                 "consumen cartucho igual, sus resultados se publican con la "
+                 "leyenda 'esto nunca pudo ser candidata', su c entra al estimador "
+                 "en su propio estrato, y quedan VEDADAS para siempre para la "
+                 "busqueda. ADVERTENCIA: un resultado de aca que se vea ganador es "
+                 "senal de que algo anda mal en la MEDICION, no de un hallazgo."),
+    })
+
+
+def measurement_only_configs() -> set:
+    """Configuraciones ya corridas en modo solo-medicion: vedadas para la busqueda."""
+    return {_cfg_key(e["family"], e["config"]) for e in read_ledger()
+            if e.get("solo_medicion")}
+
+
 def declare_not_validable(family: str, motivo: str) -> dict:
     """La familia sale de la Fase 2 por NO VALIDABLE. Su presupuesto NO se gasta,
     y —igual que con cualquier salida de alcance— NO se retira del denominador
@@ -832,7 +907,13 @@ def preregister(family: str, config: dict, hypothesis: str,
             "cartucho. Corré log_measurability_screen(family, n_b_max, fuente) "
             "primero — contar frecuencia no gasta presupuesto (§3.5)."
         )
-    if not sc["screen"]["validable"]:
+    solo_med = family in measurement_only_families()
+    if solo_med and _cfg_key(family, config) in measurement_only_configs():
+        raise SpecViolation(
+            f"la configuracion {config} ya se corrio en modo SOLO_MEDICION y queda "
+            "VEDADA PARA SIEMPRE (§3.6, condicion 3). Una config medida no puede "
+            "volver como busqueda: seria elegirla despues de ver su resultado.")
+    if not sc["screen"]["validable"] and not solo_med:
         sch = sc["screen"]
         raise SpecViolation(
             f"{family} está declarada NO VALIDABLE: en su mejor celda exige "
@@ -1013,6 +1094,8 @@ def preregister(family: str, config: dict, hypothesis: str,
         "mecanismo": mecanismo.strip(),
         "h": float(h),
         "estrato_h": estrato_de(h),
+        "solo_medicion": bool(solo_med),
+        "nunca_candidata": bool(solo_med),
         "budget_after": budget_used() + 1,
         "note": "PRE-REGISTRADA, sin correr",
     })
@@ -1119,6 +1202,12 @@ def run_on(df: pd.DataFrame, family: str, config: dict, strategy_fn,
             "(§7.2). Si ya se corrió por fuera, registralo con log_spec_violation()."
         )
 
+    if examen_final and family in measurement_only_families():
+        raise SpecViolation(
+            f"{family} esta en SOLO_MEDICION: sus resultados NUNCA pueden reportarse "
+            "como candidatas ni abrir la caja fuerte (§3.6, condicion 1). Por "
+            "construccion esta familia no puede pasar la barra.")
+
     regime_name = FAMILY_REGIME.get(family)
     if regime_name is None:
         raise WindowViolation(f"familia {family!r} sin régimen declarado en §4.4")
@@ -1178,7 +1267,13 @@ def run_on(df: pd.DataFrame, family: str, config: dict, strategy_fn,
         "stat": {k: v for k, v in stat_test(trades).items()},
         "margen_vigente": (overnight_margin() or {}).get("_hash"),
         "operable": can_declare_operable(family)[0],
-        "note": "EXAMEN FINAL" if examen_final else "",
+        "solo_medicion": bool(prereg.get("solo_medicion")),
+        "nunca_candidata": bool(prereg.get("solo_medicion")),
+        "note": ("EXAMEN FINAL" if examen_final else
+                 ("SOLO MEDICION: esto nunca pudo ser candidata. Su c entra al "
+                  "estimador en su estrato; si el resultado se ve ganador, lo "
+                  "primero que se revisa es el instrumento, no el mercado (§3.6)."
+                  if prereg.get("solo_medicion") else "")),
     }
     if part == "B" or n_b_proyectado is not None:
         body["per_year"] = report_per_year(trades).to_dict(orient="index")
