@@ -1023,6 +1023,20 @@ def estratos_cubiertos() -> dict:
 #     NOTA: §1.2 declara la aproximacion normal para la BARRA de una candidata
 #     (n >= 100, donde t y z coinciden a 3 decimales). Ese es otro bloque; el del
 #     estimador de c nunca se habia declarado.
+#
+# (3) SUPUESTO DE INDEPENDENCIA ENTRE MECANISMOS, declarado el 24-ago-2026 porque
+#     el modelo lo necesita y nadie lo habia escrito. DerSimonian-Laird supone que
+#     los m estimadores de mecanismo son sorteos INDEPENDIENTES. Medido: c1
+#     (liquidez) y c3 (difusion) correlacionan +0.7036 en las 64 sesiones donde
+#     ambos tienen SALIDA el mismo dia. Eso NO es la correlacion entre los
+#     estimadores; la inducida entre las medias es
+#         Corr ~ rho_par * n_solap / sqrt(n1*n2) = 0.7036*64/sqrt(244*1718) = +0.070
+#     Chico, pero NO cero: el supuesto se viola levemente. Se declara como
+#     LIMITACION CONOCIDA en vez de darse por cumplido, y el veredicto tiene que
+#     publicarla. Direccion del sesgo: una correlacion positiva entre estimadores
+#     hace que tau se SUBESTIME, o sea que el SE de la media salga mas chico de lo
+#     que corresponde y la meta de mecanismos sea OPTIMISTA.
+ESTIMADOR_C_INDEPENDENCIA = "+0.070 medido entre estimadores; supuesto violado levemente"
 ESTIMADOR_C_MODELO = "efectos aleatorios DerSimonian-Laird, punto por inversa de varianza"
 ESTIMADOR_C_DISTRIBUCION = "t con df = m - 1"
 
@@ -1053,6 +1067,36 @@ def t_crit(df: int, alpha: float = 0.05) -> float:
         else:
             hi = mid
     return (lo + hi) / 2
+
+
+def mechanism_target(mecanismos: dict, alpha: float = 0.05,
+                     m_max: int = 40) -> dict:
+    """Cuantos mecanismos harian falta para que el intervalo deje de contener al
+    cero, con el estimador VIGENTE (§3.8).
+
+    Supuesto explicito: cada mecanismo nuevo cae en la media actual y tau se
+    mantiene. Es la version optimista de la proyeccion; si los nuevos cayeran por
+    encima de la media, la brecha se angosta y la meta sube.
+
+    Existe para que la meta publicada NO se despegue del estimador que la produce:
+    un numero publicado que dejo de derivarse de su fuente es el mismo defecto que
+    el de la formula sin el factor 2.
+    """
+    est = c_estimate(mecanismos)
+    if not est.get("computable"):
+        return {"meta": None, "motivo": est.get("motivo"), "estimador": est}
+    ses = np.array([v[1] for v in mecanismos.values()], dtype=float)
+    tau2 = est["tau"] ** 2
+    vbar = float((ses ** 2).mean())
+    brecha = abs(est["c"] - est["theta"])
+    for m in range(2, m_max + 1):
+        se_m = sqrt((tau2 + vbar) / m)
+        if brecha / se_m > t_crit(m - 1, alpha):
+            return {"meta": m, "se_meta": se_m, "t_meta": brecha / se_m,
+                    "t_crit": t_crit(m - 1, alpha), "tau2": tau2, "vbar": vbar,
+                    "brecha": brecha, "alpha": alpha, "estimador": est}
+    return {"meta": None, "motivo": f"no se alcanza con m <= {m_max}",
+            "tau2": tau2, "vbar": vbar, "brecha": brecha, "estimador": est}
 
 
 def c_estimate(mecanismos: dict) -> dict:

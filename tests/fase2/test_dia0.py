@@ -1279,6 +1279,63 @@ def s21_matriz_y_tope(tmp):
     check(f2.verify_ledger() is True, "cadena v\u00e1lida")
 
 
+def s22_meta_y_rotulos(tmp):
+    print("\n[22] \u00a73.8 \u2014 la meta se deriva del estimador, y los rotulos van por efecto")
+
+    COTAS = {"c1 aporta informacion propia": (0.04190, 0.02044),
+             "c1 totalmente dependiente de c2": (0.03315, 0.02453)}
+    DIF = ("difusion", (-0.00489, 0.02413))
+
+    print("    -- la meta publicada tiene que salir del estimador vigente")
+    metas = {}
+    for nom, liq in COTAS.items():
+        r = f2.mechanism_target({"liquidez": liq, DIF[0]: DIF[1]})
+        metas[nom] = r
+        check(r["meta"] is not None, f"{nom[:30]}: meta = {r['meta']}")
+        check(r["t_meta"] > r["t_crit"],
+              f"  t {r['t_meta']:.4f} > t_crit(df={r['meta']-1}) {r['t_crit']:.4f}")
+        se_chk = ((r["tau2"] + r["vbar"]) / r["meta"]) ** 0.5
+        check(abs(se_chk - r["se_meta"]) < 1e-12, "  SE(meta) reproduce su formula")
+        # y con un mecanismo menos NO alcanza
+        if r["meta"] > 2:
+            se_prev = ((r["tau2"] + r["vbar"]) / (r["meta"] - 1)) ** 0.5
+            check(r["brecha"] / se_prev <= f2.t_crit(r["meta"] - 2, 0.05),
+                  f"  con {r['meta']-1} mecanismos todavia NO alcanza: la meta es minima")
+
+    print("    -- LA META PUBLICADA EN EL DOCUMENTO coincide con la derivada")
+    doc = io.open(os.path.join(REPO, "factory", "frontera_factibilidad.md"),
+                  encoding="utf-8").read()
+    m_cons = metas["c1 aporta informacion propia"]["meta"]
+    m_gen = metas["c1 totalmente dependiente de c2"]["meta"]
+    check(f"meta {m_cons}" in doc or f"**{m_cons}** mecanismos" in doc
+          or f"= {m_cons}" in doc,
+          f"la meta conservadora ({m_cons}) figura en el documento")
+    check(f"**{m_gen}**" in doc or f"= {m_gen}" in doc,
+          f"la meta generosa ({m_gen}) figura en el documento")
+    check("6 mecanismos" not in doc.split("Adenda 9")[-1],
+          "y la meta vieja de 6 no sobrevive en la adenda vigente")
+
+    print("    -- los rotulos van por EFECTO sobre el veredicto, no por supuesto")
+    p_a = metas["c1 aporta informacion propia"]["estimador"]["p"]
+    p_b = metas["c1 totalmente dependiente de c2"]["estimador"]["p"]
+    check(p_a > p_b,
+          f"'c1 aporta info propia' da p={p_a:.4f} > p={p_b:.4f}: es la que MAS "
+          "cuesta rechazar")
+    check(m_cons > m_gen,
+          f"y exige mas mecanismos ({m_cons} vs {m_gen}): por eso es la CONSERVADORA")
+    check("CONSERVADORA" in doc and "GENEROSA" in doc,
+          "el documento usa los rotulos por efecto")
+
+    print("    -- el supuesto de independencia entre mecanismos esta declarado")
+    check(hasattr(f2, "ESTIMADOR_C_INDEPENDENCIA"), "hay constante declarada")
+    check("violado" in f2.ESTIMADOR_C_INDEPENDENCIA,
+          f"y dice que se viola: {f2.ESTIMADOR_C_INDEPENDENCIA}")
+    rho_par, n1, n3, nov = 0.7036, 244, 1718, 64
+    rho_est = rho_par * nov / (n1 * n3) ** 0.5
+    check(abs(rho_est - 0.0696) < 1e-3,
+          f"correlacion inducida entre estimadores = {rho_est:+.4f}, no +0.70")
+
+
 def main():
     print("=" * 78)
     print("FASE 2 — pruebas del trabajo de día 0 (spec_fase2.md §9)")
@@ -1297,7 +1354,8 @@ def main():
                    s14_criba_por_config, s15_direccion_de_los_cambios,
                    s16_politica_asignacion, s17_solo_medicion,
                    s18_vara_de_filtros, s19_estimador_y_formula,
-                   s20_procedencia_y_n_efectivo, s21_matriz_y_tope):
+                   s20_procedencia_y_n_efectivo, s21_matriz_y_tope,
+                   s22_meta_y_rotulos):
             fn(tmp)
     except Exception:  # noqa: BLE001
         traceback.print_exc()

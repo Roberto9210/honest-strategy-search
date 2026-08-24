@@ -954,7 +954,7 @@ errores, y los dos en contra nuestra**: el rótulo cambiado y la cota subestimad
 
 Medir un solo par era insuficiente y la matriz completa muestra por qué.
 
-| Par | Operaciones idénticas | % de A | % de B | Fechas de entrada compartidas | % de A | Sesiones co-operando | ρ (P&L) |
+| Par | Operaciones idénticas | % de A | % de B | Fechas de entrada compartidas | % de A | **Salidas compartidas** | ρ (P&L) |
 |---|---|---|---|---|---|---|---|
 | **c1–c2** | **0** | 0,0 % | 0,0 % | **244** | **100,0 %** | 109 | **+0,6529** |
 | c1–c3 | 0 | 0,0 % | 0,0 % | 0 | 0,0 % | 64 | +0,7036 |
@@ -973,14 +973,26 @@ porque tres cierres consecutivos a la baja implican uno. Bajo §3.10 no son la m
 
 | Cota | Supuesto sobre c1 | liquidez | c global | τ | t (df=1) | p |
 |---|---|---|---|---|---|---|
-| **Optimista** *(la publicada)* | c1 aporta información propia | +0,04190 ± 0,02044 | **+0,020262 ± 0,023329** | 0,024385 | −2,0710 | **0,2864** |
-| **Conservadora** | c1 totalmente dependiente de c2 | +0,03315 ± 0,02453 | **+0,013876 ± 0,019020** | 0,011475 | −2,8759 | **0,2130** |
+| **CONSERVADORA** *(ex "optimista")* | c1 aporta información propia | +0,04190 ± 0,02044 | **+0,020262 ± 0,023329** | 0,024385 | −2,0710 | **0,2864** |
+| **GENEROSA** *(ex "conservadora")* | c1 totalmente dependiente de c2 | +0,03315 ± 0,02453 | **+0,013876 ± 0,019020** | 0,011475 | −2,8759 | **0,2130** |
+
+> **RÓTULOS CORREGIDOS el 24-ago-2026 (adenda 9, §43):** estaban puestos por el supuesto sobre los
+> datos y empujaban hacia la confirmación — la que llamaba "conservadora" da **p menor** y exige
+> **menos mecanismos**. Van por su **efecto sobre el veredicto**: la que hace más difícil rechazar es
+> la conservadora.
 
 **Las dos se publican; ninguna se promedia y ninguna se elige.** El veredicto no cambia: bajo t(df = 1)
 el intervalo contiene al cero en las dos.
 
 Y **c3 no comparte ninguna operación ni ninguna fecha con c1 ni con c2**: sus disparadores son
-complementarios. La partición en dos mecanismos se sostiene.
+complementarios.
+
+> **CORREGIDO el 24-ago-2026 (adenda 9, §42).** Acá seguía *"la partición en dos mecanismos se
+> sostiene"*. **La conclusión no se sigue de esa evidencia:** cero operaciones compartidas es
+> **necesario, no suficiente**. Lo que el estimador necesita es **independencia estadística**, y c1 y c3
+> correlacionan +0,7036 en las 64 sesiones donde ambos cierran (+0,070 entre los estimadores). La
+> partición se sostiene **en cuanto a operaciones y fechas**, y todavía **no** en cuanto a independencia
+> estadística.
 
 ## 37. El c del residuo no tenía intervalo, y con intervalo la afirmación se cae
 
@@ -1052,3 +1064,100 @@ COTA B — promedio de LOS CUATRO NUEVOS     ≤ (6 × 0,033848 − 2 × 0,01850
 
 El **0,0301** que publiqué quedaba **11,1 % por debajo de A** y **27,5 % por debajo de B**, y estaba
 rotulado como B. El 27 % que reporté es correcto **contra B**.
+
+---
+
+# Adenda 9 — la asimetría verificada, el supuesto que faltaba, y los rótulos dados vuelta
+
+## 41. La asimetría c1–c3 = 64 contra c2–c3 = 0: **no es un bug**, y revela qué medía la columna
+
+Verificado como se pidió. Lo primero que aparece es **qué medía realmente mi columna "n co-op"**: en el
+script de la matriz la serie por sesión se llena en la **fecha de SALIDA**, así que *n co-op* = sesiones
+donde ambas configs **cierran** el mismo día. **No es solapamiento de exposición**, que es lo que el
+rótulo sugería.
+
+| Par | Entradas compartidas | Salidas compartidas |
+|---|---|---|
+| c1–c3 | **0** | 64 |
+| c2–c3 | **0** | 0 |
+| c1–c2 | 244 | 109 |
+
+Y la descomposición pedida, de las 64 salidas compartidas c1–c3:
+
+```
+respecto de la entrada de c1: {D+3: 64}    ← exactamente su tenencia
+respecto de la entrada de c3: {D+1: 64}    ← exactamente su tenencia
+coincidencias en D (mismo día de entrada): 0 y 0
+entradas compartidas c1–c3: 0
+```
+
+**Ninguna cae en D y los desplazamientos son exactamente los de la tenencia.** La asimetría es
+consecuencia de que c1 sigue abierta en D+1 y D+2 cuando c2 ya cerró; **no hay error de indexado**.
+La columna queda renombrada **"salidas compartidas"** en la §36 para que no vuelva a leerse como
+exposición.
+
+## 42. El modelo supone independencia entre mecanismos, y el supuesto se viola
+
+La frase publicada era: *"c3 no comparte ninguna operación ni fecha con c1 ni c2 — la partición en dos
+mecanismos se sostiene"*.
+
+> **CORREGIDO.** La conclusión no se sigue de esa evidencia: **cero operaciones compartidas es
+> necesario, no suficiente.** Lo que el estimador necesita es **independencia estadística**, y ésa es
+> otra cosa.
+
+**Declarado ahora (§3.8, punto 3):** DerSimonian-Laird supone que los m estimadores de mecanismo son
+**sorteos independientes**. Medido, c1 y c3 correlacionan **+0,7036** en las 64 sesiones donde ambos
+cierran. Pero eso **no es** la correlación entre los estimadores; la inducida entre las medias es:
+
+```
+Corr(media₁, media₃) ≈ ρ_par · n_solap / √(n₁·n₃) = 0,7036 · 64/√(244·1718) = +0,070
+```
+
+**Chico, pero no cero: el supuesto se viola levemente.** Se declara como **limitación conocida** en vez
+de darse por cumplido, y **el veredicto tiene que publicarla**. Dirección del sesgo, dicha explícita:
+una correlación positiva entre estimadores hace que **τ se subestime**, o sea que el SE de la media
+salga más chico de lo debido y **la meta de mecanismos sea optimista**.
+
+**Redacción correcta:** *la partición se sostiene en cuanto a operaciones y fechas —c3 no comparte
+ninguna con c1 ni c2— y todavía **no** se sostiene en cuanto a independencia estadística, que es lo que
+el estimador necesita.*
+
+## 43. Los rótulos estaban dados vuelta y empujaban hacia la confirmación
+
+| Supuesto sobre los datos | c global | τ | p | Meta de mecanismos |
+|---|---|---|---|---|
+| c1 aporta información propia | +0,020262 ± 0,023329 | 0,02438 | **0,2864** | **5** |
+| c1 totalmente dependiente de c2 | +0,013874 ± 0,019018 | 0,01147 | **0,2130** | **4** |
+
+La que yo llamaba *"conservadora"* —colapsar c1 dentro de c2— **achica τ² por un factor de 4,5**, y eso
+achica el SE más de lo que achica la brecha. Es conservadora **sobre la independencia** y **generosa
+sobre la conclusión**: da p menor y exige menos mecanismos. Hoy no cambia nada porque el intervalo
+cubre el cero en las dos, **pero el día que diverjan el rótulo empuja hacia la que confirma**.
+
+> **Renombradas por su efecto sobre el veredicto, no por su supuesto sobre los datos.** La que hace
+> **más difícil rechazar** es la conservadora.
+
+| Rótulo nuevo | Supuesto | p | Meta |
+|---|---|---|---|
+| **CONSERVADORA** | c1 aporta información propia | 0,2864 | **5** |
+| **GENEROSA** | c1 totalmente dependiente de c2 | 0,2130 | **4** |
+
+Con los números de hoy, **la que llamaba "optimista" pasa a ser la CONSERVADORA y viceversa**.
+
+## 44. La meta de mecanismos estaba vieja, y ahora sale del código
+
+Los **6** se fijaron en el estado del cartucho 3, y desde entonces el estimador cambió dos veces
+(n efectivo, y las dos cotas). Recomputada con el estimador vigente:
+
+| Cota | SE(meta) | t | t_crit | **Meta** |
+|---|---|---|---|---|
+| **CONSERVADORA** | 0,014796 | 3,2653 | 2,7764 (df=4) | **5** |
+| **GENEROSA** | 0,013449 | 4,0673 | 3,1824 (df=3) | **4** |
+
+**Y atada con un test**, porque es el mismo defecto de método que el de la fórmula sin el factor 2:
+**un número publicado que dejó de derivarse de lo que lo produce.** `mechanism_target()` calcula la
+meta desde el estimador vigente, y el test afirma que la meta publicada en este documento coincide con
+la derivada, que es mínima (con un mecanismo menos no alcanza) y que `SE(meta)` reproduce su fórmula.
+
+*Supuesto explícito de la proyección, que no cambia:* cada mecanismo nuevo cae **en la media actual** y
+τ se mantiene. Si cayeran por encima, la brecha se angosta y la meta sube.
