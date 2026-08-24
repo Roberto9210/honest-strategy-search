@@ -834,15 +834,79 @@ def freeze_data_hashes(data_dir: str | None = None) -> dict:
     return out
 
 
+# El margen nocturno es una entrada de COSTO, no una regla: no forma parte de lo
+# que el acta congela, y su ausencia no impide abrir la fase. Se registra AUSENTE
+# EXPLÍCITO — nunca en cero, nunca con un valor "mientras tanto", porque un número
+# provisorio en un campo de riesgo es indistinguible de un número real.
+MARGEN_AUSENTE = {
+    "estado": "AUSENTE",
+    "valor_usd": None,
+    "fuente": None,
+    "leido_el": None,
+    "nota": ("No se conoce el requisito de margen nocturno del bróker. NO se usa "
+             "cero ni un valor provisorio ni la cifra de CME (que es el piso, no "
+             "lo exigido). Entra despues como entrada COSTO_MARGEN propia y "
+             "fechada; hasta entonces G1 no corre (§7.3)."),
+}
+
+
+def register_overnight_margin(valor_usd: float, fuente: str, leido_el: str,
+                              nota: str = "") -> dict:
+    """El margen nocturno de MES, cuando llegue: entrada propia y fechada.
+
+    `valor_usd`: el requisito del BRÓKER, no el de CME (§7.3).
+    `fuente`: de dónde se leyó, textual (ej. "NinjaTrader Tools > Instruments > MES").
+    `leido_el`: fecha de lectura, YYYY-MM-DD. Sin ella el dato no es citable.
+
+    Habilita G1 solo si los tres están. Fail-closed: falta uno ⇒ no habilita.
+    """
+    if not (valor_usd and float(valor_usd) > 0):
+        raise SpecViolation("margen nocturno sin valor positivo: no se inventa (§7.3)")
+    if not (fuente and fuente.strip()):
+        raise SpecViolation("margen nocturno sin fuente escrita (§7.3)")
+    if not (leido_el and leido_el.strip()):
+        raise SpecViolation("margen nocturno sin fecha de lectura (§7.3)")
+    return _append({
+        "phase": 2, "kind": "COSTO_MARGEN", "family": "META",
+        "config": {"evento": "MARGEN NOCTURNO MES"},
+        "part": "meta", "result": None,
+        "margen_nocturno_mes": {
+            "estado": "DECLARADO",
+            "valor_usd": float(valor_usd),
+            "fuente": fuente.strip(),
+            "leido_el": leido_el.strip(),
+            "nota": nota.strip() or None,
+        },
+        "note": "Margen nocturno de MES declarado con fuente y fecha. G1 habilitada (§7.3).",
+    })
+
+
 def open_phase2(margen_nocturno_mes: dict | None = None,
-                data_dir: str | None = None) -> dict:
+                data_dir: str | None = None, dry_run: bool = False) -> dict:
     """Escribe la entrada meta que abre la Fase 2 (§9.5). Es la firma.
 
-    `margen_nocturno_mes`: {"valor_usd": ..., "fuente": ..., "leido_el": ...}.
-    Puede ir en None — la fase abre igual, pero G1 no corre hasta que esté (§7.3).
+    `margen_nocturno_mes`: por defecto MARGEN_AUSENTE. El margen es un costo, no
+    una regla: la fase abre sin él y G1 queda bloqueada hasta que llegue como
+    entrada `COSTO_MARGEN` propia (`register_overnight_margin`).
+
+    `dry_run=True` devuelve el acta EXACTA que se escribiría, sin escribirla.
+    Solo `ts` y `hash` se calculan al momento de escribir; todo lo demás es esto.
     """
+    if margen_nocturno_mes is None:
+        margen_nocturno_mes = dict(MARGEN_AUSENTE)
     hashes = freeze_data_hashes(data_dir)
-    return _append({
+    body = _acta_body(margen_nocturno_mes, hashes)
+    if dry_run:
+        preview = dict(body)
+        preview["prev"] = _last_hash()
+        preview["_dry_run"] = ("ts y hash se calculan al escribir; el resto es "
+                               "exactamente lo que se anexa")
+        return preview
+    return _append(body)
+
+
+def _acta_body(margen_nocturno_mes: dict, hashes: dict) -> dict:
+    return {
         "phase": 2, "kind": "APERTURA_FASE2", "family": "META", "config":
             {"evento": "APERTURA FASE 2"},
         "part": "meta", "result": None,
@@ -857,20 +921,31 @@ def open_phase2(margen_nocturno_mes: dict | None = None,
         "margen_nocturno_mes": margen_nocturno_mes,
         "note": ("Apertura de Fase 2 segun spec_fase2.md. Caja fuerte 2020-2026 "
                  "SELLADA, un solo uso. K_total=257 congelado. " +
-                 ("G1 HABILITADA." if margen_nocturno_mes else
-                  "G1 BLOQUEADA: falta el margen nocturno de MES (§7.3).")),
-    })
+                 ("G1 HABILITADA."
+                  if margen_nocturno_mes.get("estado") == "DECLARADO"
+                  else "G1 BLOQUEADA: margen nocturno de MES AUSENTE (§7.3). "
+                       "El margen es un costo, no una regla: entra despues como "
+                       "entrada propia y fechada.")),
+    }
 
 
 def phase2_is_open() -> bool:
     return any(e.get("kind") == "APERTURA_FASE2" for e in read_ledger())
 
 
-def g1_enabled() -> bool:
-    """G1 no corre sin el margen nocturno declarado con fecha y fuente (§7.3)."""
+def overnight_margin() -> dict | None:
+    """El margen nocturno declarado, si existe. Busca la entrada COSTO_MARGEN
+    más reciente y, por compatibilidad, el valor inline del acta."""
+    found = None
     for e in read_ledger():
-        if e.get("kind") == "APERTURA_FASE2":
+        if e.get("kind") in ("COSTO_MARGEN", "APERTURA_FASE2"):
             m = e.get("margen_nocturno_mes")
             if m and m.get("valor_usd") and m.get("fuente") and m.get("leido_el"):
-                return True
-    return False
+                found = m
+    return found
+
+
+def g1_enabled() -> bool:
+    """G1 no corre sin el margen nocturno declarado con valor, fuente y fecha
+    (§7.3). Fail-closed: ausente, cero o sin fecha ⇒ False."""
+    return overnight_margin() is not None

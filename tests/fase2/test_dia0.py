@@ -449,22 +449,49 @@ def s8_ledger_y_apertura(tmp):
     check(f2.verify_ledger() is False, "manosear el pasado se nota")
 
     fresh_ledger(tmp)
-    print("    -- apertura de Fase 2 sin el margen: abre, pero G1 queda bloqueada")
-    e = f2.open_phase2(margen_nocturno_mes=None, data_dir=os.path.join(REPO, "data"))
+    print("    -- dry_run muestra el acta sin escribir nada")
+    n_antes = len(f2.read_ledger())
+    prev = f2.open_phase2(data_dir=os.path.join(REPO, "data"), dry_run=True)
+    check(len(f2.read_ledger()) == n_antes, "dry_run no anexó ninguna línea")
+    check(f2.phase2_is_open() is False, "y la fase sigue cerrada")
+    check(prev["prev"] == f2.read_ledger()[-1]["hash"],
+          "el acta previsualizada engancha al último hash real del ledger")
+
+    print("    -- apertura sin el margen: abre, y G1 queda bloqueada")
+    e = f2.open_phase2(data_dir=os.path.join(REPO, "data"))
     check(f2.phase2_is_open() is True, "entrada APERTURA_FASE2 escrita")
     check(e["K_total"] == 257 and e["alpha"] == 0.05, "K_total y α quedan en el acta")
-    check(f2.g1_enabled() is False, "G1 bloqueada: falta el margen nocturno (§7.3)")
+    check(e["margen_nocturno_mes"]["estado"] == "AUSENTE",
+          "el margen queda AUSENTE explícito")
+    check(e["margen_nocturno_mes"]["valor_usd"] is None,
+          "nunca en cero ni con un valor provisorio")
+    check(f2.g1_enabled() is False, "G1 bloqueada (§7.3)")
     check("BLOQUEADA" in e["note"], "y el acta lo dice con todas las letras")
     check(isinstance(e["data_sha256"], dict) and len(e["data_sha256"]) == 3,
           "los SHA-256 de los tres archivos de datos quedan congelados")
     check(f2.verify_ledger() is True, "cadena válida después de la apertura")
+    check({k: v for k, v in prev.items() if k not in ("prev", "_dry_run")} ==
+          {k: v for k, v in e.items() if k not in ("ts", "prev", "hash")},
+          "lo que mostró dry_run es exactamente lo que se escribió")
 
-    fresh_ledger(tmp)
-    print("    -- con el margen declarado, G1 se habilita")
-    f2.open_phase2(margen_nocturno_mes={"valor_usd": 1234.0, "fuente": "PRUEBA",
-                                        "leido_el": "2026-08-23"},
-                   data_dir=os.path.join(REPO, "data"))
-    check(f2.g1_enabled() is True, "G1 habilitada solo con valor + fuente + fecha")
+    print("    -- el margen llega después, como entrada propia y fechada")
+    raises(f2.SpecViolation,
+           lambda: f2.register_overnight_margin(0, "NinjaTrader", "2026-08-23"),
+           "margen en cero")
+    raises(f2.SpecViolation,
+           lambda: f2.register_overnight_margin(1234.0, "", "2026-08-23"),
+           "margen sin fuente")
+    raises(f2.SpecViolation,
+           lambda: f2.register_overnight_margin(1234.0, "NinjaTrader", ""),
+           "margen sin fecha de lectura")
+    check(f2.g1_enabled() is False, "ninguno de los intentos fallidos habilitó G1")
+
+    m = f2.register_overnight_margin(1234.0, "PRUEBA Tools > Instruments > MES",
+                                     "2026-08-23")
+    check(m["kind"] == "COSTO_MARGEN", "entra como entrada de COSTO, no como regla")
+    check(f2.g1_enabled() is True, "y ahí sí G1 se habilita")
+    check(f2.overnight_margin()["valor_usd"] == 1234.0, "el valor queda consultable")
+    check(f2.verify_ledger() is True, "cadena válida con el margen adentro")
 
 
 def s9_colgados(tmp):
