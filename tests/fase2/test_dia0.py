@@ -1381,6 +1381,51 @@ def s23_filo_del_tope(tmp):
     check(f2.verify_ledger() is True, "cadena v\u00e1lida")
 
 
+def s24_ambos_topes(tmp):
+    print("\n[24] \u00a72b \u2014 los DOS topes se evaluan, y uno solo no alcanza")
+    fresh_ledger(tmp)
+    max0, desde0 = f2.MAX_CONCENTRACION, f2.CONCENTRACION_DESDE
+    try:
+        # Montaje con el tope suspendido, para aislar el chequeo que se prueba.
+        f2.MAX_CONCENTRACION = 1.0
+        for i, mec in enumerate(["liq", "liq", "dif", "liq"]):
+            pre("G2-multidia", {"z": i}, "hip", mecanismo=mec, h=1.0)
+            f2.abandon("G2-multidia", {"z": i}, "cierre")
+        f2.MAX_CONCENTRACION, f2.CONCENTRACION_DESDE = max0, 4
+        check(f2.budget_used() == 4 and f2.budget_used("G2-multidia") == 4,
+              "4 cartuchos, los 4 en G2 (como el ledger real)")
+        mec = f2.cartuchos_por_mecanismo()
+        check(mec["liq"] == 3 and mec["dif"] == 1, "liq 3, dif 1")
+
+        print("    -- el tope de MECANISMO deja pasar a 'dif' (2 de 5 = 40.0% exacto)")
+        tope = f2.MAX_CONCENTRACION * 5
+        check(not (mec["dif"] + 1 > tope), f"dif: 2 > {tope} es falso -> pasaria")
+
+        print("    -- pero el de FAMILIA bloquea G2 (5 de 5 = 100%)")
+        check(f2.budget_used("G2-multidia") + 1 > tope, f"G2: 5 > {tope} -> bloquea")
+
+        print("    -- y preregister() se niega igual: hay que pasar los DOS")
+        msg = raises_msg(
+            f2.SpecViolation,
+            lambda: pre("G2-multidia", {"z": 9}, "hip", mecanismo="dif", h=1.0),
+            "cartucho 5 a 'dif' dentro de G2",
+            must_contain=("tope de concentraci\u00f3n", "familia"))
+        check("G2-multidia" in msg,
+              "el rechazo lo produjo el tope de FAMILIA, no el de mecanismo")
+        check("mecanismo" not in msg.split("familia")[0],
+              "y el de mecanismo habia pasado: uno solo no alcanza")
+
+        print("    -- el mismo mecanismo en una familia NUEVA si entra")
+        e = pre("G3-regimen", {"z": 10}, "estado sobre la regla base de difusion",
+                mecanismo="dif", h=1.0)
+        check(f2.cartuchos_por_mecanismo()["dif"] == 2 and f2.budget_used() == 5,
+              "dif llega a 2 de 5 = 40.0% exacto, en familia G3: PASA")
+        f2.abandon("G3-regimen", {"z": 10}, "cierre")
+    finally:
+        f2.MAX_CONCENTRACION, f2.CONCENTRACION_DESDE = max0, desde0
+    check(f2.verify_ledger() is True, "cadena v\u00e1lida")
+
+
 def main():
     print("=" * 78)
     print("FASE 2 — pruebas del trabajo de día 0 (spec_fase2.md §9)")
@@ -1400,7 +1445,7 @@ def main():
                    s16_politica_asignacion, s17_solo_medicion,
                    s18_vara_de_filtros, s19_estimador_y_formula,
                    s20_procedencia_y_n_efectivo, s21_matriz_y_tope,
-                   s22_meta_y_rotulos, s23_filo_del_tope):
+                   s22_meta_y_rotulos, s23_filo_del_tope, s24_ambos_topes):
             fn(tmp)
     except Exception:  # noqa: BLE001
         traceback.print_exc()

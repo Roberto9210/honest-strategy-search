@@ -1231,13 +1231,18 @@ y el mecanismo es exactamente el recurso que limita la fase.
 
 **"Supera" = estrictamente mayor. Código y spec coinciden: es `>`.**
 
-Estado hoy: liquidez 3, difusión 1, total 4.
+> **CORREGIDO el 24-ago-2026 (adenda 11, §48).** La tabla de abajo mira **sólo el tope de mecanismo** y
+> hay **dos**. Los cuatro cartuchos están todos en G2, así que la **familia G2 da 5/5 y BLOQUEA** —y
+> difusión vive dentro de G2—. La conclusión *"cartucho 5 a difusión PASA"* **es falsa**: el único
+> camino es una **familia nueva**. Tabla completa de los cuatro chequeos en la §48.
 
-| Destino del cartucho 5 | Fracción | Resultado |
-|---|---|---|
-| difusión | 2/5 = **40,0 % exacto** | **PASA** (`2 > 2.0` es falso) |
-| liquidez | 4/5 = 80,0 % | BLOQUEADO |
-| mecanismo nuevo | 1/5 = 20,0 % | PASA |
+Estado hoy: liquidez 3, difusión 1, total 4 — **los cuatro en G2**.
+
+| Destino del cartucho 5 | Fracción | Tope de mecanismo | ~~Resultado~~ |
+|---|---|---|---|
+| difusión ~~dentro de G2~~ | 2/5 = **40,0 % exacto** | pasa | ~~PASA~~ → **BLOQUEADO por familia** |
+| liquidez | 4/5 = 80,0 % | BLOQUEA | BLOQUEADO |
+| mecanismo nuevo ~~en G2~~ | 1/5 = 20,0 % | pasa | ~~PASA~~ → **BLOQUEADO por familia** |
 
 **Con `>=` el cartucho 5 tendría que ser mecanismo nuevo obligatoriamente.** Con `>` todavía puede ser
 una configuración de difusión. Queda declarado y cubierto por un test con el caso de igualdad exacta.
@@ -1273,3 +1278,126 @@ magnitud verdadera.
 
 **Y el número que faltaba en el reporte:** escribí *"eso no es la correlación entre estimadores:"* y
 dejé la frase sin número detrás. Es **+0,00095**.
+
+---
+
+# Adenda 11 — el tope de familia, la limitación cerrada, y qué concluye la fase si el mecanismo no se puede operar
+
+## 48. Mi §46 miró un solo tope de los dos, y la conclusión era falsa
+
+Publiqué *"cartucho 5 a difusión = 40,0 % exacto → PASA"*. **Es cierto del tope de mecanismo y falso
+del de familia, y hay que pasar los dos.** Los cuatro cartuchos reales están **todos en G2**.
+
+Con `(usados + 1) > 0,40 · (gastado + 1)` y `gastado = 4` (tope = 2,0):
+
+| Chequeo | usados + 1 | Tope | Resultado |
+|---|---|---|---|
+| mecanismo `liquidez-vendedores-forzados` | 4 | 2,0 | **BLOQUEA** |
+| mecanismo `difusion-informacion` | 2 | 2,0 | pasa |
+| mecanismo NUEVO | 1 | 2,0 | pasa |
+| **familia `G2-multidia`** | **5** | **2,0** | **BLOQUEA** |
+| familia `G3-regimen` (nueva) | 1 | 2,0 | pasa |
+| familia `G6-terceros` (nueva) | 1 | 2,0 | pasa |
+
+**Y difusión vive dentro de G2** (cartucho 3, `momento_k_dias`, familia `G2-multidia`). Por lo tanto:
+
+> **El cartucho 5 NO puede ser difusión por el camino de G2. El único camino es una FAMILIA NUEVA.**
+> Lo que sí entra: un estado de **G3** sobre la regla base de difusión — familia G3 (1/5, pasa) y
+> mecanismo difusión (2/5 = 40,0 % exacto, pasa). Los dos topes cumplidos.
+
+Cubierto por un test que reproduce el estado real, verifica que el tope de mecanismo **habría dejado
+pasar**, que el de familia bloquea, y que `preregister()` se niega **igual** — porque hay que pasar los
+dos.
+
+## 49. "Los reparto entre familias": fue un **fixture de test**, no el ledger
+
+| Pregunta | Respuesta |
+|---|---|
+| ¿Qué archivo? | `tests/fase2/test_dia0.py`, función `s23_filo_del_tope` |
+| ¿Sobre qué ledger? | `fresh_ledger(tmp)` → **copia en tempdir**, truncada al cierre de la Fase 1 |
+| ¿Se tocó el ledger real? | **No.** Los 4 pre-registros siguen con `family = "G2-multidia"` |
+| ¿Alguna entrada reetiqueta familia? | **Ninguna.** Las dos `MIGRACION_ETIQUETA` cambian **sólo** el campo `mecanismo`; `family` queda `G2-multidia` |
+| Cadena | verificada, `True` |
+
+**No hubo reescritura retroactiva.** El único mecanismo que toca etiquetas —§2c— es append-only, exige
+cita textual y **no puede cambiar la familia**, sólo el mecanismo.
+
+## 50. La limitación de independencia: **se cierra**, con su justificación
+
+```
+r(liquidez, difusión) = +0,0262   sobre n = 4.865 sesiones
+Fisher z = 0,026206   SE = 0,014341
+IC 95 % = [−0,0019 , +0,0543]      p = 0,0677      contiene el cero
+correlación inducida entre estimadores = +0,00095
+```
+
+**Decisión: la limitación se CIERRA.** Justificación, en dos partes:
+
+1. La dependencia medida **no es distinguible de cero** (p = 0,068, el IC cruza el cero).
+2. Aun tomando el punto estimado como si fuera real, la correlación **entre los estimadores** —que es
+   lo único que afecta al modelo— es **+0,00095**: despreciable frente a cualquier otra fuente de
+   error del estimador.
+
+Y el principio propio, aplicado en la dirección que incomoda: **una limitación inflada también
+desinforma.** Arrastrar una limitación que los datos no sostienen es el mismo error que publicar una
+que sobreestima — sólo que disfrazado de prudencia.
+
+**Lo que NO se cierra y queda como nota residual:** la independencia se probó **entre los dos únicos
+mecanismos que existen**, con 1 grado de libertad. La prueba es débil por construcción, y hay que
+rehacerla cuando m crezca. Eso es una nota sobre el **poder de la prueba**, no una limitación sobre el
+resultado.
+
+## 51. Qué concluye la fase si el mecanismo que completa la meta no se puede operar
+
+Escrito **antes** de gastar el cartucho, no después de ver el número.
+
+### (a) Si G4 queda por encima de θ y los demás no: ¿la fase concluye SÍ o NO?
+
+**Las dos cosas, y por eso el veredicto tiene que tener dos renglones, no uno:**
+
+| Pregunta | Respuesta en ese escenario |
+|---|---|
+| **Medición** — *¿existe algún mecanismo con c > θ?* | **SÍ** |
+| **Búsqueda** — *¿existe una ventaja explotable para nosotros?* | **NO** |
+
+G4 no puede ser candidata por construcción: exige **0,2251 σ** brutos por operación contra la
+referencia **0,1749** —la mejor ventaja que el proyecto midió jamás— y además está en `SOLO_MEDICION`,
+donde `run_on(examen_final=True)` se niega. Un c de G4 por encima de θ probaría que **existe un borde
+que sabemos medir y no sabemos operar**.
+
+**Ése es un resultado válido y hay que poder publicarlo como tal**, con esa frase: *hay una ventaja
+detectable en un lugar donde los costos y la caja fuerte no nos dejan llegar.* Lo que **no** se puede
+hacer es presentarlo como si la búsqueda hubiera tenido éxito.
+
+### (b) ¿La meta debería contar por separado operables y sólo-medición? **Sí.**
+
+Y la consecuencia hay que republicarla:
+
+| Meta | Cuenta | Valor hoy | Alcanzable con el plan |
+|---|---|---|---|
+| **m_total** (para estimar c del generador) | todos, incluida `SOLO_MEDICION` | **2** de 5 necesarios | sólo si se desbloquea G4 o llega G6 |
+| **m_operable** (para el veredicto de búsqueda) | sólo familias que pueden producir candidata | **2** de 5 necesarios | **G4 no cuenta.** Quedan G3/G5 (configuraciones, no mecanismos) y G6 (sin reglas) |
+
+> **La meta operable es la que decide el veredicto de búsqueda, y con el plan actual es
+> INALCANZABLE:** G4 no puede aportarla, G3 y G5 producen configuraciones y G6 no tiene reglas. **La
+> única fuente de un mecanismo operable nuevo es G6.**
+
+Eso reordena las opciones de la §45: desbloquear G4 sirve a la meta **total** —y por lo tanto al
+estimador de c— pero **no** a la meta operable. Para el veredicto de búsqueda, **G6 es la dependencia
+crítica del plan**.
+
+## 52. Las cuatro opciones, textuales, con costo y dependencia
+
+Reproducidas de la §45 **palabra por palabra**, con las tres columnas que faltaban:
+
+| # | Texto original de la §45 | Costo | Depende de | ¿Afloja alguna vara? |
+|---|---|---|---|---|
+| **2** | *"**Conseguir reglas para G6.** No depende de nosotros."* | 20 cartuchos declarados; el cuestionario ya está escrito (§20) | **Roberto** — son sus amigos traders, y las respuestas al cuestionario de 5 preguntas siguen pendientes desde el veredicto de la Fase 1 | **No.** Todas las compuertas aplican sin cambios (§20) |
+| **1** | *"**Desbloquear G4** implementando y probando el mapeo de día CME (trabajo acotado de horas, §13, con blanco de verificación de 4.183 días). Aporta el tercer mecanismo, en el estrato de tenencia que hoy no tiene ningún dato."* | horas de código, verificable contra el QC | nosotros | **No.** Ya está clasificado y aprobado como `SOLO_MEDICION` (AFLOJA aprobado el 24-ago) |
+| **3** | *"**Declarar que la fase no alcanza su meta** y cerrarla con ese hallazgo escrito."* | 0 cartuchos | Roberto | **No.** Es el veredicto §8 |
+| **4** | *"**Redefinir qué cuenta como mecanismo** para que un filtro cuente como uno nuevo. **Eso sería un `CAMBIO_DE_REGLAS` que AFLOJA** —aumentaría m sin aumentar la diversidad real— y tiene que pasar por ahí, con aprobación explícita y marca permanente. **No puede colarse.**"* | 0 cartuchos | Roberto | **SÍ — AFLOJA.** Exige aprobación explícita y queda marcada para siempre en el veredicto |
+
+**La opción 2 sube al primer lugar de la lista**, y no por preferencia: es la **única** que puede
+producir un mecanismo **operable** nuevo, que es lo que el veredicto de búsqueda necesita (§51b). Y su
+dependencia crítica es Roberto: **sin reglas de terceros, la meta operable de la Fase 2 es
+inalcanzable por construcción, y el único final disponible es la opción 3.**
