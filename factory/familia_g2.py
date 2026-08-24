@@ -65,3 +65,53 @@ def reversion_k_dias(df: pd.DataFrame, cfg: dict) -> pd.DataFrame:
     out = pd.DataFrame(trades, columns=["exit_time", "points"]).set_index("exit_time")
     out["contracts"] = 1
     return out
+
+
+def momento_k_dias(df: pd.DataFrame, cfg: dict) -> pd.DataFrame:
+    """Tras `k` cierres consecutivos A FAVOR, seguir el movimiento.
+
+    Mecanismo distinto al de `reversion_k_dias`: no es provisión de liquidez a
+    vendedores forzados sino **difusión gradual de información** — la noticia se
+    absorbe a lo largo de varios días, así que un movimiento engendra movimiento.
+
+    Se escribe como función APARTE en vez de agregarle un modo a
+    `reversion_k_dias`, para que esa función quede byte a byte idéntica y los
+    cartuchos 1 y 2 sigan reproduciéndose exactamente.
+
+    Mismo modelo anti-lookahead y mismo no-solapamiento (§3.1).
+    """
+    k = int(cfg["k"])
+    hold = int(cfg["hold"])
+    side = int(cfg.get("side", 1))
+    if k < 1 or hold < 1 or side not in (1, -1):
+        raise ValueError(f"config inválida para momento_k_dias: {cfg}")
+
+    closes = df["close"].to_numpy(dtype=float)
+    opens = df["open"].to_numpy(dtype=float)
+    n = len(df)
+
+    # a_favor[t] = el cierre de t se movió EN el sentido que vamos a tomar
+    a_favor = np.zeros(n, dtype=bool)
+    if n > 1:
+        a_favor[1:] = ((closes[1:] > closes[:-1]) if side == 1
+                       else (closes[1:] < closes[:-1]))
+
+    trades = []
+    i = k
+    while i < n - 1:
+        if a_favor[i - k + 1:i + 1].all():
+            entry_i = i + 1
+            exit_i = entry_i + hold
+            if exit_i >= n:
+                break
+            pts = (opens[exit_i] - opens[entry_i]) * side
+            trades.append((df.index[exit_i], pts))
+            i = exit_i
+        else:
+            i += 1
+
+    if not trades:
+        return pd.DataFrame(columns=["points", "contracts"])
+    out = pd.DataFrame(trades, columns=["exit_time", "points"]).set_index("exit_time")
+    out["contracts"] = 1
+    return out
