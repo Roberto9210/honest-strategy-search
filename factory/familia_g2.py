@@ -115,3 +115,54 @@ def momento_k_dias(df: pd.DataFrame, cfg: dict) -> pd.DataFrame:
     out = pd.DataFrame(trades, columns=["exit_time", "points"]).set_index("exit_time")
     out["contracts"] = 1
     return out
+
+
+def reversion_sigma(df: pd.DataFrame, cfg: dict) -> pd.DataFrame:
+    """Reversión disparada por MAGNITUD, no por racha.
+
+    Tras un retorno de cierre a cierre por debajo de −m·σ (σ = desvío realizado
+    de los últimos `vent` días, calculado SOLO con información previa a t),
+    comprar en la apertura de t+1 y salir tras `hold` sesiones.
+
+    Mismo mecanismo económico que `reversion_k_dias` —provisión de liquidez a
+    vendedores forzados— con otra variable de disparo: el tamaño del
+    desplazamiento en vez del conteo de cierres consecutivos. Está declarado así
+    en la definición de G2 (§4.2: "o después de un desplazamiento de m desvíos").
+
+    Mismo modelo anti-lookahead y mismo no-solapamiento (§3.1).
+    """
+    m = float(cfg["m"])
+    hold = int(cfg["hold"])
+    vent = int(cfg.get("vent", 20))
+    side = int(cfg.get("side", 1))
+    if hold < 1 or vent < 2 or side not in (1, -1):
+        raise ValueError(f"config inválida para reversion_sigma: {cfg}")
+
+    closes = df["close"].to_numpy(dtype=float)
+    opens = df["open"].to_numpy(dtype=float)
+    n = len(df)
+    ret = np.zeros(n)
+    ret[1:] = closes[1:] / closes[:-1] - 1.0
+    # σ con información estrictamente previa a t: ventana [t-vent, t-1]
+    sig = pd.Series(ret).rolling(vent).std().shift(1).to_numpy()
+
+    trades = []
+    i = vent + 1
+    while i < n - 1:
+        s = sig[i]
+        if s and s > 0 and (ret[i] * side) <= -m * s:
+            entry_i = i + 1
+            exit_i = entry_i + hold
+            if exit_i >= n:
+                break
+            pts = (opens[exit_i] - opens[entry_i]) * side
+            trades.append((df.index[exit_i], pts))
+            i = exit_i
+        else:
+            i += 1
+
+    if not trades:
+        return pd.DataFrame(columns=["points", "contracts"])
+    out = pd.DataFrame(trades, columns=["exit_time", "points"]).set_index("exit_time")
+    out["contracts"] = 1
+    return out
