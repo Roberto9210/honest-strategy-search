@@ -857,6 +857,94 @@ def estratos_cubiertos() -> dict:
 
 
 # ---------------------------------------------------------------------------
+# §3.8 — EL BLOQUE DEL ESTIMADOR DE c: MODELO Y DISTRIBUCION, DECLARADOS
+#
+# Declarado el 24-ago-2026, ANTES de medir el cuarto mecanismo, porque la
+# eleccion vale tres cartuchos y decidirla despues de ver el cuarto punto seria
+# decidirla con el resultado a la vista.
+#
+# (1) MODELO. Rige EFECTOS ALEATORIOS (DerSimonian-Laird) con el punto estimado
+#     por inversa de varianza, pesos 1/(se_i^2 + tau^2): el punto y el tau salen
+#     del MISMO estimador. Lo publicado el 24-ago mezclaba el promedio SIMPLE con
+#     el SE de DL, que son dos estimadores distintos.
+#     Argumento: mecanismos distintos son fenomenos distintos y suponer un c comun
+#     es una asuncion fuerte que no tenemos como sostener. Efectos fijos solo
+#     regiria si pudieramos afirmar que c es una constante del generador, y
+#     justamente no podemos: es lo que estamos midiendo.
+#     Con m = 1 el modelo NO ES COMPUTABLE y se reporta asi, sin caer de vuelta a
+#     efectos fijos para tener un numero.
+# (2) DISTRIBUCION DE REFERENCIA: t con df = m - 1, NO la normal. tau esta
+#     estimado a partir de m mecanismos y tratarlo como conocido es
+#     anticonservador. Bajo normal alcanzarian 3 mecanismos; bajo t(df) hacen
+#     falta 6. La eleccion vale TRES cartuchos y por eso se declara antes.
+#     NOTA: §1.2 declara la aproximacion normal para la BARRA de una candidata
+#     (n >= 100, donde t y z coinciden a 3 decimales). Ese es otro bloque; el del
+#     estimador de c nunca se habia declarado.
+ESTIMADOR_C_MODELO = "efectos aleatorios DerSimonian-Laird, punto por inversa de varianza"
+ESTIMADOR_C_DISTRIBUCION = "t con df = m - 1"
+
+
+def t_p_two_sided(t0: float, df: int) -> float:
+    """P(|T| > t0) con T ~ t(df), por substitucion t = sqrt(df)*tan(theta):
+        P = 2*Gamma((df+1)/2)/(sqrt(pi)*Gamma(df/2)) * INT cos^{df-1}(theta)
+    Control: df=1 es Cauchy y da 1 - (2/pi)*arctan|t|."""
+    from math import atan, gamma, pi
+    t0 = abs(float(t0))
+    df = int(df)
+    if df < 1:
+        raise SpecViolation(f"df debe ser >= 1: {df}")
+    k = 2 * gamma((df + 1) / 2) / (sqrt(pi) * gamma(df / 2))
+    th0 = atan(t0 / sqrt(df))
+    xs = np.linspace(th0, pi / 2, 200001)
+    ys = np.cos(xs) ** (df - 1)
+    integral = np.trapezoid(ys, xs) if hasattr(np, "trapezoid") else np.trapz(ys, xs)
+    return float(k * integral)
+
+
+def t_crit(df: int, alpha: float = 0.05) -> float:
+    lo, hi = 0.0, 500.0
+    for _ in range(200):
+        mid = (lo + hi) / 2
+        if t_p_two_sided(mid, df) > alpha:
+            lo = mid
+        else:
+            hi = mid
+    return (lo + hi) / 2
+
+
+def c_estimate(mecanismos: dict) -> dict:
+    """Estimador de c segun §3.8. `mecanismos` = {nombre: (c_i, se_i)}."""
+    nombres = sorted(mecanismos)
+    m = len(nombres)
+    cs = np.array([mecanismos[k][0] for k in nombres], dtype=float)
+    ses = np.array([mecanismos[k][1] for k in nombres], dtype=float)
+    theta = POWER_CONST / sqrt(1669)
+    out = {"modelo": ESTIMADOR_C_MODELO, "distribucion": ESTIMADOR_C_DISTRIBUCION,
+           "m": m, "mecanismos": nombres, "theta": theta}
+    if m < 2:
+        out.update({"computable": False, "c": None, "se": None, "tau": None,
+                    "t": None, "p": None,
+                    "motivo": ("con m < 2 el modelo de efectos aleatorios NO es "
+                               "computable: tau no tiene grados de libertad. Se "
+                               "reporta como no computable, NUNCA se cae de vuelta "
+                               "a efectos fijos para tener un numero (§3.8).")})
+        return out
+    w0 = 1 / ses ** 2
+    mu0 = float((w0 * cs).sum() / w0.sum())
+    Q = float((w0 * (cs - mu0) ** 2).sum())
+    denom = float(w0.sum() - (w0 ** 2).sum() / w0.sum())
+    tau2 = max(0.0, (Q - (m - 1)) / denom) if denom > 0 else 0.0
+    w = 1 / (ses ** 2 + tau2)
+    mu = float((w * cs).sum() / w.sum())
+    se = float(1 / np.sqrt(w.sum()))
+    t = (mu - theta) / se
+    out.update({"computable": True, "c": mu, "se": se, "tau": float(np.sqrt(tau2)),
+                "Q": Q, "df": m - 1, "t": t, "p": t_p_two_sided(t, m - 1),
+                "p_normal_solo_referencia": erfc(abs(t) / sqrt(2))})
+    return out
+
+
+# ---------------------------------------------------------------------------
 # §3.7 — LA VARA DE LOS FILTROS ES UNA FUNCION, NO UNA TABLA
 #
 # Un filtro no solo recorta operaciones: CONCENTRA la ventaja en las que deja.

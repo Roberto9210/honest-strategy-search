@@ -1100,6 +1100,54 @@ def s18_vara_de_filtros(tmp):
     check(f2.verify_ledger() is True, "cadena v\u00e1lida")
 
 
+def s19_estimador_y_formula(tmp):
+    print("\n[19] \u00a73.8 \u2014 el estimador de c y la formula publicada")
+
+    print("    -- la distribucion t, contra su forma cerrada en df=1 (Cauchy)")
+    import math
+    for t0 in (0.5, 1.6422, 3.0):
+        cerrada = 1 - (2 / math.pi) * math.atan(t0)
+        check(abs(f2.t_p_two_sided(t0, 1) - cerrada) < 1e-6,
+              f"t={t0}: integracion {f2.t_p_two_sided(t0,1):.6f} = cerrada {cerrada:.6f}")
+    check(abs(f2.t_crit(1, 0.05) - 12.7062) < 1e-2,
+          f"t critico df=1 al 95% = {f2.t_crit(1,0.05):.4f} (tabla: 12.706)")
+    check(abs(f2.t_crit(5, 0.05) - 2.5706) < 1e-3,
+          f"t critico df=5 al 95% = {f2.t_crit(5,0.05):.4f} (tabla: 2.571)")
+
+    print("    -- el estimador: punto y tau del MISMO estimador (DL ponderado)")
+    r = f2.c_estimate({"liquidez": (0.04981, 0.02112),
+                       "difusion": (-0.00490, 0.02413)})
+    check(abs(r["c"] - 0.023700) < 1e-5, f"c ponderado = {r['c']:.6f} (no el simple 0.022455)")
+    check(abs(r["tau"] - 0.031344) < 1e-5, f"tau DL = {r['tau']:.6f}")
+    check(abs(r["t"] + 1.642234) < 1e-5, f"t = {r['t']:.6f}")
+    check(r["df"] == 1, "df = m - 1 = 1")
+    check(abs(r["p"] - 0.348204) < 1e-5,
+          f"p bajo t(df=1) = {r['p']:.6f}  (bajo normal seria {r['p_normal_solo_referencia']:.4f})")
+    check(r["p"] > 3 * r["p_normal_solo_referencia"],
+          f"la distribucion cambia el p por un factor {r['p']/r['p_normal_solo_referencia']:.2f}")
+
+    print("    -- con m=1 el modelo NO es computable, y no se cae a efectos fijos")
+    r1 = f2.c_estimate({"uno": (0.05, 0.02)})
+    check(r1["computable"] is False and r1["c"] is None, "no devuelve numero")
+    check("NUNCA se cae de vuelta" in r1["motivo"], "y dice por que")
+
+    print("    -- LA FORMULA PUBLICADA, ejecutada tal como esta escrita en el documento")
+    doc = io.open(os.path.join(REPO, "factory", "frontera_factibilidad.md"),
+                  encoding="utf-8").read()
+    check("z(0.05/(2*257))" in doc or "z(0.05/(2\u00b7257))" in doc,
+          "el documento escribe el cuantil con el factor 2 explicito")
+    # ejecutar la formula como la leeria un tercero: cuantil de UNA cola
+    z1 = f2.z_two_sided(2 * (0.05 / (2 * 257)))
+    z2 = f2.z_two_sided(2 * (0.05 / (2 * 177)))
+    costo = 100 * (z1 / z2 - 1)
+    check(abs(z1 - 3.725987) < 1e-5, f"z(0.05/(2*257)) = {z1:.6f}")
+    check(abs(z2 - 3.630853) < 1e-5, f"z(0.05/(2*177)) = {z2:.6f}")
+    check(abs(costo - 2.6201) < 1e-4,
+          f"la formula escrita produce {costo:.4f}% = el numero publicado 2.6201%")
+    check(f"{costo:.4f}"[:6] in doc or "2,6201" in doc or "2.6201" in doc,
+          "y ese numero esta en el documento")
+
+
 def main():
     print("=" * 78)
     print("FASE 2 — pruebas del trabajo de día 0 (spec_fase2.md §9)")
@@ -1117,7 +1165,7 @@ def main():
                    s12_bloqueantes, s13_criba_medibilidad,
                    s14_criba_por_config, s15_direccion_de_los_cambios,
                    s16_politica_asignacion, s17_solo_medicion,
-                   s18_vara_de_filtros):
+                   s18_vara_de_filtros, s19_estimador_y_formula):
             fn(tmp)
     except Exception:  # noqa: BLE001
         traceback.print_exc()

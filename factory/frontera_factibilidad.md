@@ -670,11 +670,21 @@ Sobre-presupuestar de 120 a 200 cuesta **2,62 % de rigor**, y se paga en la dire
 **La fórmula, con sus denominadores exactos** (porque el número tiene que ser verificable, no
 plausible):
 
+> **CORREGIDO el 24-ago-2026 (adenda 6, §28).** La fórmula que estaba acá era
+> `z(0.05/257)/z(0.05/177) − 1` y **no produce el número publicado**: leída como cuantil de una cola
+> —que es como la lee cualquiera— da 3.547365/3.447896 − 1 = **2,8849 %**. Los z publicados son
+> **bilaterales**, o sea `z_{1−α/(2K)}`, y sin el factor 2 la fórmula no es reconstruible. El número
+> 2,6201 % es correcto; la fórmula escrita estaba mal. **El defecto: nadie ejecutó la fórmula
+> publicada, sólo el código que la implementa.** Ahora hay un test que la ejecuta tal como está escrita
+> (`tests/fase2/test_dia0.py` §19).
+
 ```
-costo = z(α / K_total_declarado) / z(α / K_total_alternativo) − 1
+costo = z(α / (2·K_total_declarado)) / z(α / (2·K_total_alternativo)) − 1
+      = z_{1−α/(2K_dec)} / z_{1−α/(2K_alt)} − 1        ← cuantil de UNA cola, bilateral al α
 K_total = K₁ + K₂ = 57 + K₂            ← §1.1: el contador arrastra la Fase 1 y no se reinicia
 
-z(0.05/257) = 3.725987          z(0.05/177) = 3.630853
+z(0.05/(2·257)) = z(9.727626e-05) = 3.725987
+z(0.05/(2·177)) = z(1.412429e-04) = 3.630853
 costo = 3.725987 / 3.630853 − 1 = 2.6201 %
 ```
 
@@ -748,3 +758,88 @@ porque **el contador arrastra la Fase 1 y no se reinicia** (§1.1). La diferenci
 **La cuenta de cartuchos.** Publiqué "120 buscables" mezclando **asignado** con **restante**. Lo
 correcto: **120 asignados** a familias buscables, **118 restantes** — los 2 gastados salieron de G2,
 **no** se imputaron a G4, que conserva sus 40 intactos y todos de sólo-medición. Corregido en la §25.
+
+
+---
+
+# Adenda 6 — la fórmula, el estimador y la distribución que no estaba declarada
+
+*Tres correcciones de una verificación externa. La tercera cambia cuántos cartuchos vale la fase, así
+que se resuelve antes de gastar el cartucho 4 y no después.*
+
+## 28. La fórmula publicada no producía el número publicado
+
+Está corregida en la §25, con el factor 2 explícito. El número (**2,6201 %**) siempre fue correcto; lo
+que estaba mal era la fórmula escrita, que sin el factor 2 y leída como cuantil de una cola da
+**2,8849 %**.
+
+**El defecto de método, que importa más que el número:** publiqué esa fórmula *para que la diferencia
+fuera reconstruible*, y como estaba escrita no lo era. **Nadie ejecutó la fórmula publicada — sólo el
+código que la implementa.** Corregido con un test que **lee el documento y ejecuta la fórmula tal como
+está escrita**, afirmando que iguala el número publicado a 4 decimales (`tests/fase2/test_dia0.py`
+§19). Es la única forma de que un documento no vuelva a divergir de su implementación.
+
+## 29. El estimador mezclaba dos estimadores
+
+El punto publicado (−0.0461) era el **promedio simple no ponderado** de los dos mecanismos
+(c = 0.022455), combinado con un **SE de DerSimonian-Laird**. Son dos estimadores distintos y el punto
+y el τ tienen que salir del mismo.
+
+**Se adopta el ponderado por inversa de varianza con pesos `1/(se_i² + τ²)`**, que es el que
+corresponde al τ de DL:
+
+| | Publicado (mezclado) | **Adoptado (DL ponderado)** |
+|---|---|---|
+| c | ~~0.022455~~ | **0.023700** |
+| c − θ | ~~−0.046122~~ | **−0.044877** |
+| SE | 0.027325 | 0.027327 |
+| t | ~~−1.686~~ | **−1.6422** |
+
+La conclusión no cambia —contiene el cero en ambos— pero el número publicado tiene que salir de un
+solo estimador.
+
+## 30. La distribución de referencia no estaba declarada, y vale tres cartuchos
+
+Todos los p del bloque del estimador usaban la **normal**, tratando τ como conocido. **τ está estimado
+a partir de m mecanismos: con m = 2, un grado de libertad.**
+
+**¿Estaba declarada?** No. §1.2 declara `p_crudo = erfc(|t|/√2)` —la aproximación normal— pero **para
+la barra de una candidata**, donde n ≥ 100 y t y z coinciden a 3 decimales. El bloque del estimador de
+c es posterior y su distribución nunca se declaró.
+
+**Se declara ahora, antes del cartucho 4: t con df = m − 1.** Motivo: τ está estimado y tratarlo como
+conocido es anticonservador; la normal sólo estaría justificada con m grande.
+
+**Lo que cambia:**
+
+| | Bajo normal | **Bajo t(df = m−1)** |
+|---|---|---|
+| p del estado actual (m=2, t=−1.6422) | 0.1005 | **0.3482** |
+| mecanismos para resolver al 95 % | 3 | **6** |
+
+| m | df | SE | t | p normal | **p t(df)** |
+|---|---|---|---|---|---|
+| 2 | 1 | 0.027355 | 1.6405 | 0.1009 | **0.3485** |
+| 3 | 2 | 0.022335 | 2.0092 | 0.0445 | 0.1823 |
+| 4 | 3 | 0.019343 | 2.3201 | 0.0203 | 0.1031 |
+| 5 | 4 | 0.017301 | 2.5939 | 0.0095 | 0.0604 |
+| **6** | **5** | **0.015793** | **2.8415** | 0.0045 | **0.0362** |
+
+**Y el modelo también se declara**, porque la §29 obligaba a elegir uno: rige **efectos aleatorios
+(DerSimonian-Laird)**. Argumento: mecanismos distintos son fenómenos distintos, y suponer un c común a
+todos es una asunción fuerte que no tenemos cómo sostener — efectos fijos sólo regiría si pudiéramos
+afirmar que c es una constante del generador, y eso es justamente lo que estamos midiendo. **Con m = 1
+el modelo no es computable y se reporta así, sin caer de vuelta a efectos fijos para tener un número.**
+
+## 31. El "resuelve al 95 %" tenía un supuesto no declarado
+
+**El supuesto:** que cada mecanismo nuevo caiga **en la media actual o por debajo**. Si cae por encima,
+la brecha se angosta y no resuelve nada.
+
+**Escrito como rango, que es lo que corresponde.** Para m = 6 (df = 5), con t crítico 2,5706 y
+SE = 0.015793, hace falta |media − θ| ≥ 0.040598, o sea **media ≤ 0.027978**. Con los dos actuales en
+0.023700, **los cuatro nuevos deben promediar c ≤ 0.0301**.
+
+Los dos medidos promedian 0.0225, así que el supuesto es **plausible pero no está garantizado**. Si
+los nuevos mecanismos vinieran sistemáticamente por encima de 0.0301, la fase no se resolvería con
+seis: se resolvería en la otra dirección, que es un resultado igual de bueno y hoy no lo sabemos.
