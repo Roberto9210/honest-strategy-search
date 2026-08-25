@@ -4,7 +4,8 @@
 pre-registra nada, no compra datos. La Fase 2 está cerrada y este documento no la toca: §8.3 exige spec
 nueva y documento nuevo, y **cualquier búsqueda futura hereda K = 257** (§1.6).
 
-**Entregable de esta tanda: pasos 1, 2 y 3.** Los pasos 4 a 7 no se ejecutan todavía.
+**Entregable de esta tanda: la predicción sobre ρ, NG y HG, σ a ciegas con la tabla de fricción,
+la potencia con el n efectivo real, y la regla de decisión.** No se pre-registra nada.
 
 ---
 
@@ -246,3 +247,299 @@ ningún archivo de la Fase 2**, que quedó cerrada con su veredicto.
 excluidos con el motivo escrito **antes** de ver un resultado, la prohibición de re-optimizar con su
 aritmética, la declaración de que el conjunto entero es fuera de muestra, y el instrumento de fricción
 con su ancla medida — esperando dos entradas por mercado y una decisión sobre cómo obtener σ.
+
+---
+
+## 5. La predicción sobre ρ — **escrita antes de medir nada**
+
+*Sección fijada y escrita a disco antes de calcular un solo solapamiento. Se escribe primero para que
+la medición sea la prueba de una predicción, y no el descubrimiento de una excusa.*
+
+### El argumento que faltaba, y juega en contra
+
+> **El mecanismo que estamos probando ES la razón por la que los mercados van a correlacionar.**
+
+La venta forzada **no es local**. Una llamada de margen no liquida la posición que perdió: liquida **lo
+que se pueda vender**, y lo hace **todo a la vez**. Entonces CL, GC y BTC tienen tres cierres a la baja
+simultáneos precisamente en los **eventos de liquidez sistémica** — marzo de 2020 es el caso de manual,
+y es exactamente el episodio donde el mecanismo debería producir su ventaja más grande.
+
+**Las operaciones se agrupan en el tiempo, y ρ será alta POR LA MISMA RAZÓN POR LA QUE EL EFECTO
+EXISTIRÍA.** No es un parámetro molesto que ojalá salga bajo: es una **consecuencia de la hipótesis**.
+
+> **Un diseño que necesita ρ baja está apostando contra su propio mecanismo.** Si ρ sale baja, la buena
+> noticia estadística es una mala noticia sobre la hipótesis: querría decir que las ventas forzadas de
+> cada mercado son locales, y entonces el argumento a priori que admitió a CL, GC y BTC —el de la
+> liquidación que cruza mercados— era más débil de lo que dijimos.
+
+### La predicción, con su magnitud, para poder fallar
+
+1. **ρ̄ entre las series de retorno de la estrategia será POSITIVA, en el rango 0,15 – 0,35.**
+2. **Las fechas se agruparán:** el solapamiento observado de sesiones ocupadas superará al esperado bajo
+   independencia por un factor (`lift`) **≥ 2 en al menos dos de los tres pares**.
+3. **La concentración estará en los episodios de liquidez sistémica**, con marzo de 2020 como el mayor.
+
+**Qué se puede medir a ciegas y qué no.** El punto 2 es **frecuencia** —fechas contra fechas— y se puede
+medir sin tocar un P&L, igual que `count_trades_only` en la Fase 2. El punto 1 **no**: ρ entre retornos
+exige los retornos, y esos llevan la respuesta adentro. Se mide en el paso 4 con la disciplina que el
+propio encargo fijó (desmediar y devolver únicamente la matriz), **nunca antes de pre-registrar**. Acá
+se mide el 2, y se reporta como lo que es: **evidencia sobre el mecanismo del agrupamiento, no una
+estimación de ρ.**
+
+## 6. NG y HG, cada uno con su argumento — **sin mirar el conteo**
+
+*La tentación está marcada en el encargo y se toma en serio: la idea de subdividir sectores apareció
+DESPUÉS de ver que faltaban mercados. Por eso cada uno se juzga con el mismo estándar con el que se
+excluyó a ZN y a 6E, y el conteo no se mira hasta el final.*
+
+### NG (gas natural) — **RECHAZADO por argumento**
+
+*¿Es un sector distinto de CL?* **Sí, y eso no se discute:** su conductor es clima y almacenamiento, no
+el macro global. La subdivisión energía → {crudo, gas} es defendible **por sí sola**.
+
+*¿Quiénes son los vendedores forzados?* Ahí se cae. La condición 2 exige tenedores apalancados
+**predominantemente largos**, y en NG el posicionamiento especulativo **no tiene un lado estable**: la
+literatura de posicionamiento muestra al dinero administrado alternando entre neto largo y neto corto
+según la estación, y los eventos de flujo forzado más famosos del gas —Amaranth 2006, los aprietes de
+invierno— son **squeezes contra los CORTOS**, que fuerzan **comprar**, no vender.
+
+> **NG no falla por tener un efecto chico: falla porque el signo del flujo forzado no es estable.** Es
+> el mismo motivo por el que se excluyó a ZN, y se aplica el mismo criterio.
+
+### HG (cobre) — **RECHAZADO, y el motivo es más incómodo**
+
+*¿Es un sector distinto de GC?* Se puede argumentar: conductor industrial contra conductor
+monetario. **Pero el sector no se declaró por "conductor": se declaró por INDEPENDENCIA del flujo
+forzado**, que es lo que la potencia agrupada necesita.
+
+*¿Quiénes son los vendedores forzados?* Existe una historia real: el cobre se usa como **colateral de
+financiamiento**, y cuando el crédito se aprieta ese colateral se liquida — Qingdao 2014 es el caso. Es
+un vendedor forzado con disparador exógeno, de la misma familia que el del oro.
+
+*Y sin embargo:* ese disparador es **el mismo** que el del oro — un apretón de liquidez— y golpea a los
+dos metales **a la vez**. Por §5, que se escribió antes que esto, **el par (GC, HG) es el que más ρ
+debería tener de todos los pares posibles**, y un par con ρ alta aporta casi nada al n efectivo.
+
+> **HG se rechaza por la regla de un mercado por sector INDEPENDIENTE, aplicando el criterio de §5 que
+> se escribió antes de contar nada.** El argumento del vendedor forzado en cobre es aceptable; su
+> independencia respecto del oro no lo es.
+
+### La sospecha de mí mismo, como corresponde
+
+El encargo pide desconfiar si el total daba justo seis. **No dio seis: dio tres.** NG y HG se rechazaron
+los dos, así que **la subdivisión no rescató el conteo** — y ése es el único dato que respalda que el
+análisis no se torció hacia el número que hacía falta. Si hubiera dado seis clavados, la sospecha
+correspondía; da tres, y el problema del paso 5 sigue exactamente igual de grande que antes de escribir
+esta sección.
+
+---
+
+## 7. σ a ciegas, y la tabla de fricción
+
+**Cómo se midió, que es la mitad del punto.** `factory/sigma_ciego.py` corre la regla sobre las barras
+de cada mercado y devuelve **únicamente** dispersión, frecuencia y bordes de la serie. Nunca una media,
+nunca una suma, nunca un P&L. La salida se valida contra una lista blanca de claves y **falla cerrado**
+si aparece cualquier otra, o si un valor no es escalar.
+
+**La prueba de que es ciega no es la promesa: son los controles** (`tests/multimercado/test_ciego.py`,
+**21 aserciones, 0 fallas**):
+
+| control | qué hace | qué exige |
+|---|---|---|
+| **signo dado vuelta** | multiplica por −1 el P&L de **todas** las operaciones | la salida **no cambia ni un campo** |
+| **constante sumada** | le suma +5, −5 y +100 a cada operación | la salida **no cambia ni un campo** |
+| **control del control** | mide la media bajo esas mismas mutaciones | la media **sí** cambia (−0,623 → +0,623), σ no |
+
+> **Una función cuya salida no distingue una regla ganadora de una perdedora no puede filtrar el
+> resultado.** Es la misma separación que la Fase 2 hizo entre contar **frecuencia** y contar
+> **rentabilidad** (§3.5), aplicada a σ, que es una propiedad del **mercado** y no de si la regla acierta.
+
+**Datos:** barras diarias de Yahoo, la misma fuente y el mismo `yfinance` que bajaron `ES=F`
+(`download_data.py`). Costo: **cero**. Van a `data/`, que está gitignored — no se redistribuyen.
+
+| mercado | serie | sesiones | n operaciones | ocupación | σ por operación |
+|---|---|---|---|---|---|
+| **CL** WTI | 2000-08-23 → 2026-08-25 | 6.529 | **385** | 17,7 % | 2,7348 pts = **273,5 ticks** |
+| **GC** oro | 2000-08-30 → 2026-08-25 | 6.520 | **347** | 16,0 % | 28,176 pts = **281,8 ticks** |
+| **BTC** CME | 2017-12-18 → 2026-08-25 | 2.185 | **130** | 17,8 % | 2.879,4 pts = **575,9 ticks** |
+
+*Tamaños de tick usados: CL 0,01 · GC 0,10 · BTC 5,00. **No verificados contra CME** (la página no carga
+desde acá): entran a `qc/` antes de pre-registrar, como manda §4.5.*
+
+### La fricción no mata a ninguno — y la razón es incómoda
+
+Todo en **ticks**, que es la unidad robusta: `f = costo_vuelta_completa / σ_operación`.
+
+| mercado | σ (ticks) | peaje que lo empata con ES/MES | **peaje LETAL** | f si paga 3 ticks | n exigido |
+|---|---|---|---|---|---|
+| ancla **ES/MES** | 133,9 | — (paga 3,12) | 14,3 | **0,023301** | **1.120** |
+| **CL** | 273,5 | 6,4 | **29,3** | 0,010970 | 851 |
+| **GC** | 281,8 | 6,6 | **30,2** | 0,010647 | 845 |
+| **BTC** | 575,9 | 13,4 | **61,6** | 0,005209 | 757 |
+
+Los tres pagan **menos fricción que ES/MES** por unidad de riesgo, y el peaje real (2–4 ticks) está a un
+factor **~10** del letal. **Estable por era**, además — se partió cada serie al medio y ninguna mitad se
+acerca al ancla:
+
+| | primera mitad | segunda mitad |
+|---|---|---|
+| CL | f = 0,011436 | f = 0,010543 |
+| GC | f = 0,014904 | f = 0,008766 |
+| BTC | f = 0,008270 | f = 0,004149 |
+
+*(El rango dentro de un mismo mercado es grande —GC casi duplica— porque el peaje en ticks es fijo y σ
+creció con el nivel de precio. No cambia la conclusión, pero se declara: es la misma lección que §64 de
+la Fase 2.)*
+
+> **La tabla de fricción no mató a nadie, y eso NO es una buena noticia: es la señal de que los dos
+> filtros no eran independientes.** El paso 3 iba a matar mercados baratos, y los mercados baratos
+> —granos, ganado— ya los había matado el paso 1 por estructura. Lo que quedó después del argumento a
+> priori es, por construcción, un conjunto de mercados de σ alta. **El filtro de fricción llegó tarde a
+> su propia función.**
+
+## 8. La predicción sobre ρ, contrastada: **FALLÓ**
+
+*Medido después de escribir §5 a disco, con la función ciega: fechas contra fechas, ni un P&L.*
+
+**Predicho: `lift ≥ 2` en al menos dos de los tres pares.**
+
+| par | días comunes | ocupa A | ocupa B | observado | esperado si independientes | **lift** | ¿cumple? |
+|---|---|---|---|---|---|---|---|
+| CL–GC | 6.519 | 0,177 | 0,160 | 0,0387 | 0,0283 | **1,37** | no |
+| CL–BTC | 2.184 | 0,165 | 0,179 | 0,0375 | 0,0294 | **1,28** | no |
+| GC–BTC | 2.183 | 0,143 | 0,179 | 0,0298 | 0,0255 | **1,17** | no |
+
+**0 de 3. Lift medio 1,27. La predicción falló**, y la consecuencia estaba escrita antes de medir, así
+que se aplica sin renegociarla:
+
+> *"Si ρ sale baja, la buena noticia estadística es una mala noticia sobre la hipótesis: querría decir
+> que las ventas forzadas de cada mercado son locales, y entonces el argumento a priori que admitió a
+> CL, GC y BTC —el de la liquidación que cruza mercados— era más débil de lo que dijimos."* (§5)
+
+Las dos caras, sin quedarse con la cómoda:
+
+- **Estadística:** ρ probablemente esté cerca del extremo bajo, y el efecto de diseño muerde menos.
+- **Mecanismo:** los días de operación **sí** se agrupan —27 % por encima del azar es real y consistente
+  en los tres pares— **pero no como predice "una llamada de margen liquida todo a la vez"**. Ese relato
+  pedía un factor 2 o más. La versión que sobrevive es más floja: **hay algo de sincronía, y es
+  moderada.**
+
+**Límite de esta medición, dicho con todas las letras:** co-ocupación de fechas **no es** ρ entre
+retornos. Un lift de 1,27 no fija ρ. Lo único que este número hace es **falsificar la versión fuerte del
+agrupamiento**, y sugerir —sin probar— que ρ está más cerca de 0,10 que de 0,35. **ρ se mide en el paso
+4, con la matriz ciega, y nunca antes de pre-registrar.**
+
+## 9. La potencia — con una corrección de fórmula primero
+
+**La fórmula escrita en el encargo no produce los números del encargo.** `n_ef = N/(1+(N−1)·ρ̄)` trata a
+**todas** las operaciones como un solo conglomerado:
+
+| con N = 732, m = 3, ρ = 0,10, δ = 0,083767 | n efectivo | potencia |
+|---|---|---|
+| `N/(1+(N−1)ρ)` — **como está escrita** | 9,9 | **5,8 %** |
+| `N/(1+(m−1)ρ)` — **la que da sus números** | 610,0 | **54,3 %** |
+
+El conglomerado no son "todas las operaciones juntas": son los **m mercados observados a la vez**. El
+tamaño de conglomerado es **m**, no N. Con `(N−1)` el diseño colapsa a `1/ρ` operaciones efectivas y
+cualquier ρ > 0 lo mata, lo cual es absurdo. **Se usa `(m−1)`, que reproduce 54,3 % y 48,2 % exactos.**
+
+### La tabla del encargo, reproducida
+
+| mercados | ρ=0,00 | ρ=0,05 | ρ=0,10 | ρ=0,20 |
+|---|---|---|---|---|
+| **3 — los admitidos** | **62,0 %** | **58,0 %** | **54,3 %** | **48,2 %** |
+| 4 | 74,4 % | 68,5 % | 63,1 % | 54,3 % |
+| 6 | 89,3 % | 81,8 % | 74,4 % | 62,0 % |
+| 12 | 99,5 % | 95,4 % | 87,9 % | 71,7 % |
+
+**Ni con correlación cero llegan tres mercados.** Y con ρ = 0,20, **doce** mercados (71,7 %) dan menos
+que **seis** sin correlación (89,3 %).
+
+### Con el n REAL, que es mejor de lo supuesto y no alcanza igual
+
+`CL 385 + GC 347 + BTC 130 = **862** operaciones`, contra las 732 que suponía la tabla (ES tenía 244; CL
+y GC tienen historia más larga y disparan más seguido).
+
+| ρ | n efectivo | z esperado | **potencia** |
+|---|---|---|---|
+| 0,00 | 862,0 | 2,459 | **69,1 %** |
+| 0,05 | 783,6 | 2,345 | 65,0 % |
+| 0,10 | 718,3 | 2,245 | **61,2 %** |
+| 0,20 | 615,7 | 2,079 | 54,7 % |
+| 0,30 | 538,8 | 1,944 | 49,4 % |
+
+### El entregable de verdad: **la pregunta invertida**
+
+No es "cuántos mercados necesito". Es: **dado lo que sobrevivió, ¿qué tamaño de efecto detecta este
+diseño al 80 %?**
+
+| ρ | n efectivo | **δ mínimo detectable** | contra el δ medido (0,083767) |
+|---|---|---|---|
+| 0,00 | 862,0 | **0,095422** | **1,14×** |
+| 0,10 | 718,3 | **0,104530** | **1,25×** |
+| 0,20 | 615,7 | 0,112905 | 1,35× |
+| 0,30 | 538,8 | 0,120701 | 1,44× |
+
+Y cuántos mercados **como éstos** (≈ 287 operaciones cada uno) harían falta para llegar al 80 % contra
+δ = 0,083767:
+
+| ρ | mercados necesarios |
+|---|---|
+| 0,00 | **4** (1.149 operaciones) |
+| 0,10 | **6** (1.724) |
+| 0,20 | 15 (4.310) |
+| 0,30 | **inalcanzable** |
+
+## 10. La regla de decisión, declarada ahora
+
+### El requisito del veredicto, aplicado a este paquete
+
+`veredicto_fase2.md` §17 exige, antes de pre-registrar: **(a)** efecto mínimo detectable, **(b)** efecto
+esperado con su fuente, **(c)** reparto — que acá **no aplica** (§0b).
+
+```
+(a) delta minimo detectable  = 0,0954 (rho=0)  ...  0,1207 (rho=0,30)
+(b) delta esperado           = 0,083767
+    fuente: cartucho 1 de la Fase 2 (ledger d38a1e04c6bfc0f8), que es el MAXIMO
+    SESGADO de cuatro mediciones y cuyo IC al 90% contiene el cero
+```
+
+> **(b) < (a) en TODO el rango de ρ. Por la regla que este proyecto escribió tres commits atrás, el
+> paquete NO habilita abrir la fase tal como está: sólo podría abrirse declarando que su único resultado
+> posible es "no detectado".**
+
+Y hay que decirlo así: la regla se cumple **contra nosotros mismos**, en el primer diseño al que se le
+aplicó después de escribirla. Para eso se escribió.
+
+### La regla, para que no se re-discuta después
+
+> **Si el diseño no llega a 80 % de potencia contra un δ que Roberto considere perseguible, la fase NO
+> se abre y este paquete se publica como NEGATIVO — que es un resultado, no un fracaso, exactamente como
+> la Fase 2.**
+
+**Qué podría cambiarlo, y son dos cosas concretas, no una lista de deseos:**
+
+1. **Un cuarto mercado.** A ρ = 0 hacen falta **cuatro**, y hay exactamente un candidato con bandera sin
+   resolver: **KC/CC**. La bandera dejó de ser un detalle administrativo — **es la diferencia entre 69 %
+   y 80 %**. Se resuelve verificando specs de ICE, no aflojando el argumento.
+2. **ρ medido cerca de cero.** El lift de 1,27 lo sugiere y no lo prueba. Se mide en el paso 4.
+
+Y lo que **no** puede cambiarlo: agregar ZN, 6E, NG o HG. Los cuatro se rechazaron por argumento
+**antes** de conocer este número, y volver sobre ellos ahora sería elegir mercados por lo que le conviene
+al cálculo de potencia — exactamente lo que §1 y §6 existen para impedir.
+
+### Las dos ramas del resultado eventual, selladas
+
+- **(a) Si el conjunto multi-mercado confirma** —p ≤ 0,05 bilateral, prueba única, K = 1— se afirma:
+  *"una regla congelada, elegida en ES y jamás ajustada, superó una prueba única sobre mercados nunca
+  vistos"*. **Con qué fuerza:** una sola prueba, sin partición, con la multiplicidad ya pagada; **no** es
+  una estimación insesgada de su rendimiento futuro.
+- **(b) Si NO confirma** se afirma: *"no pudimos confirmarla"*. **Jamás** *"el mecanismo no existe"*.
+  Con 69 % de potencia en el mejor caso, un no-resultado deja **31 %** de probabilidad de haberse perdido
+  un efecto real del tamaño supuesto — y el δ supuesto ya es el máximo sesgado de cuatro.
+
+---
+
+*Estado al cierre de esta tanda: **0 cartuchos gastados, K = 257 intacto, nada pre-registrado, ningún
+dato comprado**. Fase 2 sin tocar: 469 aserciones, ledger 106 líneas, caja fuerte sellada. La medición
+ciega suma 21 aserciones propias con sus dos controles.*
