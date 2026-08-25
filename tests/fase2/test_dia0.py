@@ -1595,6 +1595,66 @@ def s27_la_caja_fuerte_es_el_futuro(tmp):
           "solo cruzaria el maximo sesgado (0.0618); liquidez (0.0419) seguiria debajo")
 
 
+def s28_piso_del_dataset(tmp):
+    print("\n[28] \u00a78.6 \u2014 el piso del dataset y el reparto A/B")
+    from math import sqrt as _sq
+    z, N = f2.POWER_CONST, 6544
+
+    print("    -- el piso: hallar exige (z/c)^2 y validar otras tantas")
+    piso = z * _sq(2.0 / N)
+    check(abs(piso - 0.048978) < 1e-6,
+          f"c >= z*sqrt(2/N) = {piso:.6f} con N={N} sesiones")
+    check(abs(2 * (z / piso) ** 2 - N) < 1.0,
+          "y en el piso las dos mitades suman exactamente el dataset")
+    check(abs(z * _sq(2.0 / (N + 760)) - 0.046359) < 1e-6,
+          "con el backfill completo del ES el piso solo baja a 0.046359")
+
+    print("    -- aplicado a los c disponibles")
+    for c, tot, entra in ((0.06180, 4110, True), (0.04190, 8941, False),
+                          (0.03315, 14285, False), (0.020262, 38236, False)):
+        need = 2 * (z / c) ** 2
+        check(abs(round(need) - tot) <= 1,
+              f"c={c:+.6f} exige {round(need):,} sesiones totales (publicado {tot:,})")
+        check((need <= N) is entra,
+              f"c={c:+.6f} {'entra' if entra else 'NO entra'} en las {N:,} disponibles")
+
+    print("    -- la causa raiz: el prior del dia cero SUPERA el piso del dataset")
+    prior = 0.174903 / _sq(7)
+    check(abs(prior - 0.066107) < 1e-6, f"c(F4) = {prior:.6f}")
+    check(prior > piso,
+          f"prior {prior:.6f} > piso {piso:.6f}: la fase ERA viable con este dataset")
+    check(prior < z / _sq(1669),
+          f"pero prior {prior:.6f} < theta_B {z/_sq(1669):.6f}: el reparto la mataba")
+
+    print("    -- el que ata es max(theta_A, theta_B), y se minimiza en 50/50")
+    def ata(sa):
+        return max(z / _sq(sa), z / _sq(N - sa))
+    for sa, sb, ta, tb in ((4875, 1669, 0.040125, 0.068577),
+                           (3926, 2618, 0.044712, 0.054754),
+                           (3272, 3272, 0.048978, 0.048978),
+                           (2618, 3926, 0.054754, 0.044712)):
+        check(abs(z / _sq(sa) - ta) < 1e-6 and abs(z / _sq(sb) - tb) < 1e-6,
+              f"reparto {sa:,}/{sb:,}: theta_A {ta:.6f}, theta_B {tb:.6f}")
+    mejor = min(range(int(N * 0.30), int(N * 0.70)), key=ata)
+    check(abs(mejor / N - 0.50) < 0.01,
+          f"el minimo de max(theta_A,theta_B) cae en A = {100*mejor/N:.1f}%")
+    check(abs(ata(mejor) - piso) < 1e-4,
+          f"y vale {ata(mejor):.6f} = el piso analitico {piso:.6f}")
+    check(ata(4875) > prior > ata(3272),
+          "el reparto real deja el prior AFUERA y el 50/50 lo deja adentro")
+
+    print("    -- CONTROL: NINGUN reparto baja del piso (es un minimo, no un promedio)")
+    peor = 0.0
+    for sa in range(200, N - 200, 37):
+        check_silent = ata(sa) >= piso - 1e-12
+        if not check_silent:
+            peor = max(peor, piso - ata(sa))
+    check(peor == 0.0,
+          f"{len(range(200, N-200, 37)):,} repartos probados: ninguno baja de {piso:.6f}")
+    check(ata(3272) - piso < 1e-9 < ata(4875) - piso,
+          "el 50/50 toca el piso; el reparto real queda estrictamente por encima")
+
+
 def main():
     print("=" * 78)
     print("FASE 2 — pruebas del trabajo de día 0 (spec_fase2.md §9)")
@@ -1616,7 +1676,7 @@ def main():
                    s20_procedencia_y_n_efectivo, s21_matriz_y_tope,
                    s22_meta_y_rotulos, s23_filo_del_tope, s24_ambos_topes,
                    s25_lenguaje_de_ausencia, s26_de_que_sigma_sale_c,
-                   s27_la_caja_fuerte_es_el_futuro):
+                   s27_la_caja_fuerte_es_el_futuro, s28_piso_del_dataset):
             fn(tmp)
     except Exception:  # noqa: BLE001
         traceback.print_exc()

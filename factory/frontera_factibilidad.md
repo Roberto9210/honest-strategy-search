@@ -1886,3 +1886,94 @@ congeladas en el ledger con su hash desde días atrás.** Por eso la regla se es
 
 Mirar antes de declarar convierte la prueba más fuerte disponible en la más vacía. **Declarado y
 sellado primero; datos después.**
+
+---
+
+# Adenda 16 — el piso del dataset, y la causa raíz que estaba un escalón más abajo
+
+*Cartuchos gastados: 0. Ninguna constante modificada. Ninguna ventana tocada — §27 sigue prohibiendo
+que una sesión de la parte A entre a la parte B, y está bien que lo prohíba.*
+
+## 68. El piso del dataset: **c ≥ 0,048978**
+
+Con el total a la vista —**6.544 sesiones** = 4.875 de A + 1.669 de B— aparece un número que faltaba: el
+**efecto más chico que este conjunto de datos puede hallar Y validar**.
+
+```
+hallar   un efecto c exige   (z/c)² sesiones      z = z_{α/2} + z_{1−β} = 2,801585
+validar  ese efecto exige    (z/c)² sesiones      (la misma potencia del otro lado)
+                             ------------------
+                             2·(z/c)² ≤ N
+
+           2·(z/c)² ≤ 6.544   ⟺   c ≥ z·√(2/N) = 2,801585·√(2/6.544) = 0,048978
+```
+
+Es un **piso absoluto**: no lo mueve ningún reparto, no lo mueve esperar más sesiones de las que hay, y
+el backfill completo del ES (760 sesiones, §66) sólo lo baja a **0,046359**.
+
+| c disponible | sesiones totales que exige | ¿entra en 6.544? |
+|---|---|---|
+| cartucho 1 — el máximo sesgado | 4.110 | **ALCANZA** |
+| liquidez CONSERVADORA (0,0419) | 8.941 | no, por **2.397** |
+| liquidez GENEROSA (0,03315) | 14.285 | no, por 7.741 |
+| estimador global CONSERVADORA | 38.236 | no, por 31.692 |
+| estimador global GENEROSA | 81.552 | no, por 75.008 |
+
+## 69. La causa raíz es **el reparto**, no el dataset — y no es la que publiqué
+
+§59 dijo: *"el mejor efecto jamás medido ya estaba 3,6 % por debajo del piso de detección"*, con el piso
+= θ_B = 0,068577. Eso es cierto **dado el reparto**. Pero el reparto era un **parámetro libre**, y con el
+piso real del dataset a la vista la conclusión cambia de lugar:
+
+```
+prior del día cero   c(F4) = 0,066107
+piso del DATASET             0,048978      ->  0,066107 > 0,048978
+```
+
+> **La fase era viable con este dataset. Lo que no era viable era el reparto.**
+
+Lo que ata no es θ_A ni θ_B por separado: es **max(θ_A, θ_B)**, porque hay que hallar *y* validar.
+
+| reparto | S_A | S_B | θ_A | θ_B | **el que ata** | prior 0,0661 | c₁ 0,0618 |
+|---|---|---|---|---|---|---|---|
+| **74,5/25,5** (el real, heredado) | 4.875 | 1.669 | 0,040125 | **0,068577** | **0,068577** | **NO pasa** | **NO pasa** |
+| 60/40 | 3.926 | 2.618 | 0,044712 | 0,054754 | 0,054754 | pasa | pasa |
+| **50/50** | 3.272 | 3.272 | 0,048978 | 0,048978 | **0,048978** | **pasa** | **pasa** |
+| 40/60 | 2.618 | 3.926 | 0,054754 | 0,044712 | 0,054754 | pasa | pasa |
+
+Barrido numérico de A entre 30 % y 70 %: el mínimo de `max(θ_A, θ_B)` cae en **50,0 %** y vale
+**0,048978**, exactamente el piso analítico.
+
+Con el reparto real, θ_B queda **3,7 % por encima** del prior (equivalente: el prior queda 3,6 % por
+debajo de θ_B, que es como lo publiqué). Con 50/50 quedaría **25,9 % por debajo**, y el cartucho 1
+medido también pasaría. **60/40 y hasta 40/60 también habrían servido**: no hacía falta acertarle al
+óptimo, sólo no dejar θ_B arriba del prior.
+
+> **El reparto 74,5/25,5 se heredó de la Fase 1 —donde la pregunta era otra— y no se volvió a mirar
+> cuando la pregunta cambió. Ésa es la causa raíz. La ejecución no falló, el análisis de potencia
+> faltaba (§59), y adentro del análisis que faltaba el parámetro que decidía era el reparto.**
+
+**No se puede arreglar ahora, y no se intenta:** las 4.875 sesiones de A ya se buscaron, y §27 prohíbe
+que vuelvan a B. Esto va al veredicto como **causa raíz y lección**, no como acción.
+
+## 70. La regla general, que vale más que el caso
+
+> **Cuando el objetivo es descubrir y después validar con la misma potencia de los dos lados, el reparto
+> óptimo es 50/50, porque ambos lados necesitan el mismo (z/c)².** Un reparto 70/30 optimiza el
+> descubrimiento a costa de la validación — y eso es exactamente al revés cuando **la validación es la
+> restricción que ata**.
+
+Se suma como tercer punto al requisito de §59, que queda así:
+
+> **Ninguna fase se pre-registra sin publicar antes:**
+> **(a)** su efecto mínimo detectable;
+> **(b)** el tamaño de efecto que espera encontrar, con su fuente;
+> **(c)** **el reparto A/B derivado de (b), con la cuenta que lo justifica.**
+>
+> Si **(b) < el piso del dataset** `z·√(2/N)`, la fase **no se abre**: no hay reparto que la salve.
+> Si el reparto propuesto pone **θ_B por encima de (b)**, **el reparto está mal, no la fase.**
+
+Y el corolario que explica por qué esto no se vio antes: **un reparto heredado es un supuesto heredado.**
+La Fase 1 eligió 70/30 para una pregunta —¿sobrevive alguna candidata al examen final?— y la Fase 2 lo
+adoptó sin recalcularlo para la suya —¿cuánto vale c?—. Nadie mintió y nadie se equivocó en una cuenta:
+simplemente **el parámetro que decidía el resultado nunca entró en la discusión**.
