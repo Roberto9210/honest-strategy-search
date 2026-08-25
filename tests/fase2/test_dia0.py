@@ -1490,6 +1490,66 @@ def s25_lenguaje_de_ausencia(tmp):
     check(abs(theta - 0.068577) < 1e-6, f"piso de deteccion = {theta:.6f}")
 
 
+def s26_de_que_sigma_sale_c(tmp):
+    print("\n[26] \u00a73.8 \u2014 c sale del sigma OBSERVADO de cada configuracion")
+    from math import sqrt as _sq
+
+    print("    -- la identidad t = c*sqrt(n*h), con fixture sintetico (sin datos)")
+    rng = np.random.default_rng(20260824)
+    for h in (1, 3, 7):
+        x = rng.normal(4.0, 90.0, 800)
+        n = len(x)
+        media, sd = float(x.mean()), float(x.std(ddof=1))
+        t_real = media / (sd / _sq(n))
+        c_obs = (media / sd) / _sq(h)
+        c_esc = (media / (81.06 * _sq(h))) / _sq(h)
+        check(abs(c_obs * _sq(n * h) - t_real) < 1e-9,
+              f"h={h}: c con sigma OBSERVADO reproduce t exacto ({t_real:+.4f})")
+        check(abs(c_esc * _sq(n * h) - t_real) > 1e-3,
+              f"h={h}: c con sigma ESCALADO NO reproduce t (control)")
+
+    data_path = os.path.join(REPO, "data", "es_daily.csv")
+    if not os.path.exists(data_path):
+        print("    (resto salteado: data/es_daily.csv no esta)")
+        return
+    from familia_g2 import reversion_k_dias
+    df = pd.read_csv(data_path)
+    c0 = df.columns[0]
+    df[c0] = pd.to_datetime(df[c0])
+    df = df.set_index(c0).sort_index()
+    df.columns = [x.lower() for x in df.columns]
+    a = f2.WINDOWS["diario"].slice(df, "A")
+
+    print("    -- el c PUBLICADO del cartucho 1 sale del observado, no del escalado")
+    tr = reversion_k_dias(a, {"k": 3, "side": 1, "hold": 3})
+    bruto = (tr["points"] * harness.POINT_VALUE * tr["contracts"]).to_numpy(dtype=float)
+    media, sd_obs = float(bruto.mean()), float(bruto.std(ddof=1))
+    c_obs = (media / sd_obs) / _sq(3)
+    c_esc = (media / (81.06 * _sq(3))) / _sq(3)
+    check(abs(c_obs - 0.0618) < 5e-5,
+          f"c con sigma observado = {c_obs:.6f} = el publicado 0.0618")
+    check(abs(c_esc - 0.0618) > 5e-3,
+          f"c con sigma escalado = {c_esc:.6f} NO es el publicado (control)")
+    theta = f2.POWER_CONST / _sq(1669)
+    check(c_obs < theta < c_esc,
+          f"y la direccion: el escalado ({c_esc:.5f}) cruzaria theta ({theta:.6f}) "
+          f"y el observado ({c_obs:.5f}) no. La eleccion es la CONSERVADORA")
+
+    print("    -- sigma_1 = 81.06 es apertura-a-apertura en la parte A, y la tabla \u00a71")
+    for k, doc in ((1, 81.06), (2, 112.07), (3, 134.01), (5, 170.43),
+                   (7, 196.87), (10, 231.01), (20, 317.85)):
+        s = (a["open"].diff(k) * harness.POINT_VALUE).dropna()
+        check(abs(float(s.std(ddof=1)) - doc) < 0.005,
+              f"sigma a {k}d = ${float(s.std(ddof=1)):.2f} = ${doc:.2f} del documento")
+
+    print("    -- la tabla de horizontes se reproduce de (POWER_CONST/c)^2")
+    for c, sb_doc in ((0.06180, 2055), (0.04190, 4471), (0.03315, 7142),
+                      (0.020262, 19118), (0.013874, 40776)):
+        check(abs(round((f2.POWER_CONST / c) ** 2) - sb_doc) <= 1,
+              f"c={c:+.6f} -> S_B necesario {round((f2.POWER_CONST/c)**2):,} "
+              f"(publicado {sb_doc:,})")
+
+
 def main():
     print("=" * 78)
     print("FASE 2 — pruebas del trabajo de día 0 (spec_fase2.md §9)")
@@ -1510,7 +1570,7 @@ def main():
                    s18_vara_de_filtros, s19_estimador_y_formula,
                    s20_procedencia_y_n_efectivo, s21_matriz_y_tope,
                    s22_meta_y_rotulos, s23_filo_del_tope, s24_ambos_topes,
-                   s25_lenguaje_de_ausencia):
+                   s25_lenguaje_de_ausencia, s26_de_que_sigma_sale_c):
             fn(tmp)
     except Exception:  # noqa: BLE001
         traceback.print_exc()

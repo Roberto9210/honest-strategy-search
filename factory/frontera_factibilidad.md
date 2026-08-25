@@ -1651,3 +1651,113 @@ El test se prueba a sí mismo: se le inyecta una frase prohibida y la detecta; s
 dispararse. **Y el tachado no es una puerta trasera:** §25 exige además que el texto tachado sea menos
 del **2 %** del documento y que ningún tramo pase de **400 caracteres**, para que "tacharlo todo" no
 sea una salida.
+
+---
+
+# Adenda 14 — de qué σ sale c, y los dos lados del error de escala
+
+*Cartuchos gastados: 0. Ninguna constante modificada — `assert_frozen_constants()` pasa. Todo lo de
+abajo es re-cómputo sobre configuraciones ya pre-registradas y ya corridas.*
+
+## 61. La pregunta que bloqueaba el veredicto: **c usa el σ OBSERVADO**
+
+La ruta del código, entera:
+
+```
+core del estadistico : harness_f2.stat_test()  -> sd = float(net.std(ddof=1))
+                                                  delta = mean / sd
+c por configuracion  : c = delta_bruto / sqrt(h),  delta_bruto = media_bruta / sd_OBSERVADO
+```
+
+`sd` es el desvío de **las operaciones reales de esa configuración**. No hay escalado por raíz de t en
+ninguna parte del cálculo de c.
+
+### La prueba que no depende de leer el código: la identidad
+
+```
+t = media/(sd/√n) = δ·√n = c·√h·√n = c·√(n·h) = c·√S
+```
+
+| configuración | t real | c_OBSERVADO·√(n·h) | c_ESCALADO·√(n·h) |
+|---|---|---|---|
+| cartucho 1 · reversión k=3 h=3 | **+1,6715** | **+1,6715** | +1,9926 |
+| cartucho 2 · reversión k=1 h=1 | **+1,7098** | **+1,7098** | +1,7893 |
+| cartucho 3 · momento k=1 h=1 | **−0,2028** | **−0,2028** | −0,1909 |
+| cartucho 4 · rev_σ m=0,25 h=1 | **+1,3804** | **+1,3804** | +1,5618 |
+
+La columna del medio reproduce el t **exacto** en los cuatro; la de la derecha en ninguno. Y **θ sale de
+esa misma identidad** (`t = c·√S_B` ⟹ `θ = POWER_CONST/√S_B`), así que c y θ están en la misma escala
+**sólo** con el σ observado. Si c usara el σ escalado, la comparación `c vs θ` no significaría nada.
+
+> **Respuesta: el σ observado. c ya es correcto, la tabla de horizontes de §57 no se mueve, y el
+> hallazgo se cierra con el test §26, que fija la identidad, el número publicado y su control.**
+
+## 62. Y la dirección del error es **la inversa** de la hipótesis
+
+| configuración | σ observado | σ escalado σ₁√h | c con OBSERVADO | c con ESCALADO |
+|---|---|---|---|---|
+| **cartucho 1** (h=3) | $167,37 | $140,40 | **+0,06178** | +0,07365 |
+| cartucho 2 (h=1) | $84,83 | $81,06 | +0,04400 | +0,04605 |
+| cartucho 3 (h=1) | $76,30 | $81,06 | −0,00489 | −0,00460 |
+| cartucho 4 (h=1) | $91,71 | $81,06 | +0,03950 | +0,04470 |
+
+El σ escalado es **menor** que el observado a h=3, así que usarlo **infla** c. El cartucho 1 habría dado
+**+0,07365 > θ = 0,068577**: habría parecido **detectable**.
+
+> **Deflactar c por 1,1921 lo contaría dos veces: el σ grande ya está adentro. Y la elección que se
+> hizo —el σ observado— es la CONSERVADORA, no la favorable.**
+
+## 63. Corrección a la adenda 13 §58: el $140,40 era mío, no de la frontera
+
+§58 escribió *"σ que supone la frontera: σ₁·√3 = $140,40"*. **Falso.** La tabla de §1 mide σ
+**empíricamente para cada tenencia**, y su procedencia queda ahora fijada al centavo: **es el cambio de
+apertura a apertura sobre k sesiones en la parte A**.
+
+| | 1 d | 2 d | 3 d | 5 d | 7 d | 10 d | 20 d |
+|---|---|---|---|---|---|---|---|
+| documento §1 | $81,06 | $112,07 | $134,01 | $170,43 | $196,87 | $231,01 | $317,85 |
+| medido hoy | $81,06 | $112,07 | $134,01 | $170,43 | $196,87 | $231,01 | $317,85 |
+
+Las siete filas reproducen exacto (test §26). Tiene sentido que sea apertura-a-apertura: **las
+estrategias ejecutan en la apertura**, así que una posición de una sesión *es* apertura-a-apertura.
+
+**El supuesto de raíz de t existe, pero vive en un solo lugar:** el término `f/h` de la vara, que es
+`fricción/(σ₁·h)` — ahí y sólo ahí se asume `σ_h = σ₁√h`. La comparación honesta para el cartucho 1 es
+contra el σ **incondicional** de 3 días, $134,01, no contra $140,40: la regla condicionada a tres
+cierres a la baja tiene σ = $167,37, un **24,9 %** más que el incondicional de su propia tenencia.
+
+## 64. Los dos lados del error de escala, publicados juntos
+
+**El lado anticonservador (c): no se materializa.** c usa el σ observado (§61).
+
+**El lado conservador (fricción): se materializa dos veces, y una es grande.**
+
+| término | valor | contra qué |
+|---|---|---|
+| `f/h` publicado (h=3) | 0,016038 | — |
+| fricción en la escala del cartucho 1 | 0,013453 | el publicado pide **19 % de más** |
+| `f` publicado (h=1), σ de la parte A | 0,048113 | — |
+| `f` con el σ de la parte B, $272,19 | **0,014328** | el publicado pide **3,36× de más** |
+
+El segundo es el que importa y no estaba escrito. σ₁ = $81,06 es un número de la **parte A**
+(2000-2019, índice en 1.000–3.000). En el **hold-out** —donde la regla se operaría— el σ
+apertura-a-apertura es **$272,19**, porque el índice está en 6.000. El peaje es fijo en dólares, así que
+**pesa 3,36 veces menos** en la era operativa:
+
+```
+vara a h=1 publicada  : θ + f_A = 0,068577 + 0,048113 = 0,116689   (fricción 41,2 %)
+vara a h=1 con σ de B : θ + f_B = 0,068577 + 0,014328 = 0,082905   (fricción 17,3 %)
+```
+
+**Supuesto que hace válida la comparación:** c es una razón adimensional y por eso es estable al nivel
+del índice, mientras que la fricción es fija en dólares y no lo es.
+
+> **No cambia el veredicto**, porque θ = 0,068577 no depende de la escala y **el mayor c medido
+> (+0,0618) sigue por debajo de las dos varas**. Pero corrige el titular de §53: **la fricción no es el
+> 41 % de la vara en la era en que se operaría, es el 17 %.** La restricción es todavía más pura
+> estadística de lo que publiqué.
+
+**Ninguna constante fue modificada.** `σ₁ = 81.06` es el valor congelado en `filter_bar` y en toda la
+frontera; cambiarlo por el σ de la parte B mueve la vara **hacia abajo** para todas las candidatas
+futuras, así que es un **AFLOJA** y exige `CAMBIO_DE_REGLAS` con aprobación explícita. Queda **dicho y
+no hecho**.
