@@ -1449,7 +1449,8 @@ def _sin_tachados(texto):
 
 def s25_lenguaje_de_ausencia(tmp):
     print("\n[25] \u00a78.5 \u2014 'no detectado' no es 'no existe'")
-    docs = ["factory/frontera_factibilidad.md", "factory/spec_fase2.md"]
+    docs = ["factory/frontera_factibilidad.md", "factory/spec_fase2.md",
+            "factory/veredicto_fase2.md"]
     for rel in docs:
         texto = io.open(os.path.join(REPO, rel), encoding="utf-8").read()
         limpio = _sin_tachados(texto).lower()
@@ -1791,6 +1792,111 @@ def s29_el_estado_de_salida_no_se_pierde(tmp):
           "main() llama a escribir_resultado antes de devolver su codigo")
 
 
+def s30_veredicto_contra_el_ledger(tmp):
+    print("\n[30] \u00a78.2 \u2014 cada numero del veredicto sale del ledger real")
+    rel = "factory/veredicto_fase2.md"
+    ruta = os.path.join(REPO, rel)
+    check(os.path.exists(ruta), "existe factory/veredicto_fase2.md")
+    v = io.open(ruta, encoding="utf-8").read()
+    # El veredicto habla del ledger PUBLICADO, no de la copia del tempdir.
+    previo = f2.LEDGER_PATH
+    f2.set_ledger(PUBLISHED_LEDGER)
+    try:
+        _s30_cuerpo(v)
+    finally:
+        f2.set_ledger(previo)
+
+
+def _s30_cuerpo(v):
+    # Version sin cortes de linea: markdown envuelve, y una frase obligatoria no
+    # deja de estar escrita porque el parrafo la parta en dos.
+    vp = " ".join(v.replace("\n> ", " ").split())
+
+    print("    -- presupuesto")
+    br = f2.budget_report()
+    check(br["K_total"] == 257 and "257" in v, "K_total 257 declarado y publicado")
+    check(br["usado"] == 4 and "**4**" in v, f"K corrido = {br['usado']}")
+    check(br["perdidos_fuera_de_alcance"] == 40, "40 cartuchos perdidos (G1)")
+    check(br["restante"] == 156 and "156" in v, "156 sin usar al cierre")
+    for fam, d in sorted(br["por_familia"].items()):
+        check(f"| {d['presupuesto']} |" in v or str(d["presupuesto"]) in v,
+              f"{fam}: presupuesto {d['presupuesto']} publicado")
+
+    print("    -- la cadena y el hash de la ultima linea")
+    L = f2.read_ledger()
+    check(f2.verify_ledger(), "verify_ledger() -> True")
+    check(len(L) == 106 and "106" in v, f"ledger de {len(L)} lineas")
+    check(L[-1]["hash"] in v, f"el hash de la ultima linea esta en el veredicto: {L[-1]['hash']}")
+    check(L[60]["hash"] in v, "y el hash del acta de apertura")
+
+    print("    -- los cuatro resultados, tal como los guardo el ledger")
+    res = [e for e in L if e.get("phase") == 2 and e.get("kind") == "RESULTADO"]
+    check(len(res) == 4, f"{len(res)} resultados en el ledger")
+    for e in res:
+        st = e.get("stat") or {}
+        r = e.get("result") or {}
+        check(f"{abs(st['t']):.4f}".replace(".", ",") in v,
+              f"t = {st['t']:+.4f} publicado")
+        check(f"{r['trades']:,}".replace(",", ".") in v or str(r["trades"]) in v,
+              f"n = {r['trades']} publicado")
+
+    print("    -- el mejor p contra las dos lineas, y la frase obligatoria")
+    ps = [(e.get("stat") or {}).get("p_crudo") for e in res]
+    mejor = min(ps)
+    check(abs(mejor - 0.020262647505616918) < 1e-12, f"mejor p de la fase = {mejor:.6f}")
+    check(mejor > f2.LUCK_P,
+          f"y esta POR ENCIMA de la linea de la suerte {f2.LUCK_P:.8f}")
+    check("es peor que lo que produce el azar preguntando la misma cantidad de veces" in vp,
+          "la frase de §8.2 esta escrita (buscada sin cortes de linea)")
+    positivos = [(e.get("stat") or {}).get("p_crudo") for e in res
+                 if (e.get("stat") or {}).get("media", 0) > 0]
+    check(positivos and abs(min(positivos) - 0.1910393100734308) < 1e-12,
+          f"mejor p con efecto POSITIVO = {min(positivos):.6f}")
+
+    print("    -- la caja fuerte")
+    check(f2.vault_uses() == [], "vault_uses() vacio")
+    check(not [e for e in L if e.get("phase") == 2 and e.get("part") == "B"],
+          "0 entradas de Fase 2 sobre la parte B")
+    check("sigue sellada" in v, "y el veredicto lo afirma explicitamente (§8.2)")
+
+    print("    -- cambios de reglas: 19, uno solo afloja")
+    ch, af = f2.rules_changes(), f2.loosening_changes()
+    check(len(ch) == 19 and "19" in v, f"{len(ch)} cambios de reglas")
+    check(len(af) == 1, "exactamente uno AFLOJA")
+    check(af[0]["hash"] in v, f"con su hash: {af[0]['hash']}")
+    check(str(af[0].get("aprobado_por")) in v, "y con quien lo aprobo")
+    check(sum(1 for c in ch if c["direccion"] == "ENDURECE") == 18, "18 ENDURECEN")
+
+    print("    -- ventanas y SHA-256 de los datos contra el acta")
+    acta = L[60]
+    hoy = f2.freeze_data_hashes()
+    for k, d in sorted(acta.get("data_sha256", {}).items()):
+        check(hoy[k]["sha256"] == d["sha256"], f"{k}: SHA-256 identico al del acta")
+    check("2000-09-18" in v and "2026-08-19" in v, "las ventanas publicadas")
+
+    print("    -- deriva de reglas: harness.py intacto, los otros dos declarados")
+    dr = f2.rules_drift()
+    check("factory/harness.py" not in dr.get("cambiados", {}),
+          "harness.py NO cambio desde el acta")
+    for f in dr.get("cambiados", {}):
+        check(os.path.basename(f) in v, f"la deriva de {f} esta publicada")
+
+    print("    -- bloqueantes y familias")
+    check(f2.overnight_margin() is None and "sin resolver" in v,
+          "el margen sigue sin dato, y el veredicto lo dice")
+    check("G6-terceros" in v and "NUNCA SE CRIB" in v.upper(),
+          "G6 sin criba, publicado como dato del metodo")
+    check(list(f2.out_of_scope_families()) == ["G1-nocturna"], "G1 fuera de alcance")
+    check(list(f2.measurement_only_families()) == ["G4-bordes"], "G4 en SOLO_MEDICION")
+
+    print("    -- el piso del dataset y la causa raiz")
+    from math import sqrt as _sq
+    check("0,048978" in v, "el piso del dataset z*sqrt(2/N) publicado")
+    check(abs(f2.POWER_CONST * _sq(2.0 / 6544) - 0.048978) < 1e-6, "y reproduce")
+    check("prueba justa" in v and "nunca" in v.lower(),
+          "la precision de la causa raiz esta escrita")
+
+
 def main():
     print("=" * 78)
     print("FASE 2 — pruebas del trabajo de día 0 (spec_fase2.md §9)")
@@ -1813,7 +1919,8 @@ def main():
                    s22_meta_y_rotulos, s23_filo_del_tope, s24_ambos_topes,
                    s25_lenguaje_de_ausencia, s26_de_que_sigma_sale_c,
                    s27_la_caja_fuerte_es_el_futuro, s28_piso_del_dataset,
-                   s29_el_estado_de_salida_no_se_pierde):
+                   s29_el_estado_de_salida_no_se_pierde,
+                   s30_veredicto_contra_el_ledger):
             fn(tmp)
     except Exception:  # noqa: BLE001
         traceback.print_exc()
