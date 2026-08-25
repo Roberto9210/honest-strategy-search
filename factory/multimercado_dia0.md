@@ -543,3 +543,68 @@ al cálculo de potencia — exactamente lo que §1 y §6 existen para impedir.
 *Estado al cierre de esta tanda: **0 cartuchos gastados, K = 257 intacto, nada pre-registrado, ningún
 dato comprado**. Fase 2 sin tocar: 469 aserciones, ledger 106 líneas, caja fuerte sellada. La medición
 ciega suma 21 aserciones propias con sus dos controles.*
+
+---
+
+## 11. La puerta KC, medida — y **cerrada**
+
+§10 la dejó abierta porque a ρ = 0 hacían falta cuatro mercados y KC/CC era el único candidato. Se mide
+la puerta **sin bajar un solo dato de KC**, suponiéndole el aporte de un mercado típico (244
+operaciones, el n de ES; los tres admitidos promedian 287):
+
+| ρ | n efectivo | z esperado | **potencia con KC** |
+|---|---|---|---|
+| **0,00** | 1.106,0 | 2,7858 | **79,6 %** ← al filo, y **por debajo** |
+| 0,02 | 1.043,4 | 2,7058 | 77,2 % |
+| 0,05 | 961,7 | 2,5978 | 73,8 % |
+| 0,10 | 850,8 | 2,4433 | 68,6 % |
+| 0,20 | 691,2 | 2,2024 | 59,6 % |
+
+**Para 80,0 % exactos** hace falta `n_efectivo = (2,801585/0,083767)² = 1.118,6`, o sea que **KC tenga
+que aportar ≥ 257 operaciones** — y eso **con ρ exactamente cero**. Con ρ = 0,02, apenas por encima de
+cero, el requisito salta a **KC ≥ 324**.
+
+### Las tres condiciones simultáneas, y por qué eso es una puerta cerrada
+
+1. **KC aporta ≥ 257 operaciones.** Plausible, pero no medido y no se va a medir acá.
+2. **ρ = exactamente cero.** El lift medido de 1,27 (§8) dice que hay sincronía, poca pero **real y
+   consistente en los tres pares**. ρ exactamente cero es el único valor que el dato ya recogido vuelve
+   **improbable**.
+3. **Creer δ = 0,083767**, que es el **máximo sesgado de cuatro mediciones** y cuyo **IC 90 % contiene el
+   cero**. Y acá está lo que decide: **§3.2 obliga a reportar la potencia en el extremo inferior del
+   intervalo**, y ese extremo es **negativo**. Con δ ≤ 0 **ningún número de mercados alcanza jamás**.
+
+> **La rama KC queda declarada CERRADA.** No porque sea imposible, sino porque exige que **las tres**
+> ocurran a la vez, y la tercera es la que este proyecto pasó una fase entera aprendiendo a no suponer.
+> Sólo se reabre por **decisión explícita de Roberto**, escrita, sabiendo que compra 79,6 % en el mejor
+> caso imaginable.
+
+*(Nota menor de aritmética, resuelta: la lectura rota `(N−1)` da **5,8 %** y no 4,5 %. La diferencia es
+la **cola de abajo** del contraste bilateral, `Φ(−z−1,96) = 1,3 %`, que con z chico deja de ser
+despreciable. La prueba es a dos colas, así que la potencia correcta suma las dos. Misma conclusión.)*
+
+## 12. Lo que este paquete demostró sobre el método
+
+**La predicción sobre ρ se escribió a disco antes de medir, falló, y la consecuencia pre-declarada se
+aplicó sin renegociarla.**
+
+No es una anécdota de proceso: es **§7.2 aplicado a nosotros mismos**. La regla que la Fase 2 impuso a
+cada configuración —el pre-registro entra al ledger **antes** de conocer el resultado, y los errores de
+diseño consumen presupuesto igual— se aplicó acá a una **hipótesis nuestra sobre nuestro propio
+diseño**. Predijimos `lift ≥ 2`, medimos 1,27, y en vez de reinterpretar el umbral aplicamos lo que
+habíamos escrito: que ρ baja es **buena noticia estadística y mala noticia sobre el mecanismo**.
+
+> **Es la demostración más limpia del método en todo el proyecto**, porque no hubo nada que ganar
+> haciéndolo bien: nadie se habría enterado si el umbral se movía después de ver el 1,27.
+
+---
+
+## El cierre
+
+> **El paquete del día cero se publica como NEGATIVO. La fase multi-mercado NO se abre: δ mínimo
+> detectable (0,095–0,121) > δ esperado (0,0838, máximo sesgado, IC 90 % contiene cero) en todo el rango
+> de ρ, regla pre-declarada aplicada. Ramas cerradas: KC (al filo aun en el mejor caso), ZN/6E/NG/HG
+> (por argumento, sellado antes de contar).**
+
+**2026-08-25.** K = 257 intacto, 4 corridos, **el cartucho 5 sin gastar — y que quede sin gastar es
+parte del resultado**. Nada pre-registrado, ningún dato comprado, la caja fuerte de la Fase 2 sellada.
