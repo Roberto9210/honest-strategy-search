@@ -1459,7 +1459,8 @@ c ≥ θ + f*/h   ⟹   f* = h·(c − θ)      Si c < θ, f* sale NEGATIVO.
 | estimador global GENEROSA | +0,013874 | 0,068577 | −0,054703 | **IMPOSIBLE** |
 | cartucho 1 solo — el mejor medido, h=3 | +0,0618 | 0,068577 | −0,020330 | **IMPOSIBLE** |
 
-> **Ninguno. Todos los c medidos están por debajo de θ, y θ es la vara con fricción CERO. No existe
+> **Ninguno. Todos los c medidos están por debajo de θ — el umbral de 80 % de potencia, no un
+> acantilado (§75) — y θ es la vara con fricción CERO. No existe
 > reducción de peaje —ni del 100 %— que alcance. Haría falta que nos pagaran por operar.**
 
 ### La premisa corregida: "neto positivo" y "detectable" son dos varas distintas
@@ -1612,7 +1613,9 @@ c(F4)       = 0,174903/√7          = 0,066107
 ```
 
 > **La comparación que nunca se hizo: c(F4) = 0,066107 contra θ = 0,068577. El mejor efecto que el
-> proyecto había medido jamás ya estaba un 3,6 % POR DEBAJO del piso de detección, el día cero.**
+> proyecto había medido jamás ya estaba un 3,6 % POR DEBAJO de θ, que es el umbral de **80 % de
+> potencia** — no un piso de detectabilidad (§75). Con ese prior, el examen habría tenido menos del
+> 80 % de potencia, y con la ocupación real de una regla concreta, mucho menos (§73).**
 
 **La fase sólo podía terminar en "no detectado", y ahí terminó.** La ejecución fue impecable —cada
 compuerta hizo lo suyo, cada número se corrigió, el ledger no tiene un hueco— **y el agujero es de
@@ -1921,8 +1924,8 @@ el backfill completo del ES (760 sesiones, §66) sólo lo baja a **0,046359**.
 
 ## 69. La causa raíz es **el reparto**, no el dataset — y no es la que publiqué
 
-§59 dijo: *"el mejor efecto jamás medido ya estaba 3,6 % por debajo del piso de detección"*, con el piso
-= θ_B = 0,068577. Eso es cierto **dado el reparto**. Pero el reparto era un **parámetro libre**, y con el
+§59 dijo que el mejor efecto jamás medido estaba 3,6 % por debajo de θ_B = 0,068577 — el umbral de
+**80 % de potencia** (§75). Eso es cierto **dado el reparto**. Pero el reparto era un **parámetro libre**, y con el
 piso real del dataset a la vista la conclusión cambia de lugar:
 
 ```
@@ -1977,3 +1980,138 @@ Y el corolario que explica por qué esto no se vio antes: **un reparto heredado 
 La Fase 1 eligió 70/30 para una pregunta —¿sobrevive alguna candidata al examen final?— y la Fase 2 lo
 adoptó sin recalcularlo para la suya —¿cuánto vale c?—. Nadie mintió y nadie se equivocó en una cuenta:
 simplemente **el parámetro que decidía el resultado nunca entró en la discusión**.
+
+---
+
+# Adenda 17 — la caja fuerte: qué dice la spec, y por qué el cartucho 1 no llega a la puerta
+
+*Cartuchos gastados: 0. **La caja fuerte no se tocó**: ni un archivo, ni una fila, ni un chequeo de
+integridad. Todo lo de abajo sale de la spec, de la parte A y de aritmética.*
+
+## 71. P1 — la prueba sobre B es **única, a α = 0,05**. Textual
+
+`spec_fase2.md` §3.3, en la tabla "Vara declarada ahora, antes de mirar nada":
+
+> | Significancia | **p ≤ 0.05 bilateral (prueba única pre-registrada; la multiplicidad ya se pagó en A)** |
+
+Inequívoco, y con el motivo adentro del paréntesis: **la penalidad de multiplicidad vive en la
+compuerta 1**, donde §3.4 la declara —*"p ≤ 0.05/257 (t ≥ 3.726)"*— y **no se cobra dos veces**. La
+rama que decide es la de **71 %**, no la de 11 %.
+
+## 72. P2 — la puerta de entrada, textual, y el cartucho 1 **no califica**
+
+`spec_fase2.md` §3.3, primer párrafo:
+
+> *"La abre **la primera candidata que pase las compuertas 1 y 2**, y solo por el camino
+> `harness.run_on(..., examen_final=True)`, que la registra en el ledger."*
+
+Compuerta 1 (§3.1) exige, entre otras: *"Operaciones: n_A ≥ 100"* · *"Significancia corregida: |t_A| ≥
+**3.726** (= p_crudo ≤ 0.05/257)"* · *"Rentabilidad: Factor de ganancia neto ≥ 1.3"* · *"Robustez a
+valores extremos: recalculado quitando el mejor 1 % de las operaciones, |t_A| sigue ≥ 3.726"*.
+
+Compuerta 2 (§3.2) exige `n_B ≥ 7.8489/δ̂²`, y sube la vara de A:
+
+> *"la barra efectiva en A es |t_A| ≥ max( 3.726 , 2.8016 × √(n_A/n_B) ) ⇒ **4.788 para familias
+> diarias/overnight**"*
+
+**El cartucho 1 medido contra esas dos puertas** (todo en NETO, que es lo que la spec mide):
+
+| | cartucho 1 | exigido | |
+|---|---|---|---|
+| n_A | 244 | ≥ 100 | pasa |
+| **\|t_A\| neto** | **1,3075** (p crudo 0,1910) | **≥ 3,726** | **NO pasa** |
+| \|t_A\| por potencia | 1,3075 | ≥ 4,775 | **NO pasa** |
+| **n_B proyectado** | **84** | **≥ 1.120** | **NO pasa** |
+| potencia del examen | **11,6 %** | ≥ 80 % | **NO pasa** |
+
+> **La puerta exige significancia corregida en A y el cartucho 1 no la alcanzó: t = 1,31 contra 3,73
+> exigido, y una potencia proyectada de 11,6 % contra el 80 % mínimo. No califica, y esta línea se
+> cierra acá.** Ni siquiera hizo falta evaluar PF neto, vecindad ni el recorte del mejor 1 %.
+
+## 73. P3 — la tabla de potencia reproduce, y aparecen **dos correcciones que la bajan**
+
+**Reproducción exacta** (hipótesis única, α = 0,05 bilateral, efecto **c por sesión** sobre las 1.669
+sesiones de B, `√S_B = 40,8534`, `z_crítico = 1,95996`):
+
+| c | z esperado | potencia | | hipótesis en la caja (c = 0,0618) | potencia |
+|---|---|---|---|---|---|
+| 0,0618 | 2,525 | **71 %** | | 1 regla | **71 %** |
+| 0,0550 | 2,247 | **61 %** | | 2 reglas | **61 %** |
+| 0,0500 | 2,043 | **53 %** | | 3 reglas | **55 %** |
+| 0,0419 | 1,712 | **40 %** | | 5 reglas | **48 %** |
+
+Y con la penalidad de la búsqueda (α/257, z = 3,726): **11 %**. Los ocho números coinciden.
+
+### Corrección 1: esos c son BRUTOS, y la prueba se hace en NETO
+
+`c ≡ δ_bruto/√h` por definición (§9). La compuerta y el examen miden **neto por operación**, porque la
+fricción va adentro de todo número. Para el cartucho 1: δ neto = 0,083723 ⇒ **c neto = 0,048337**.
+
+### Corrección 2, la que manda: **ninguna regla ocupa la caja entera**
+
+`θ = z/√S_B` supone que la candidata está en el mercado **las 1.669 sesiones**. La identidad
+`t = c·√(n·h)` usa las sesiones **ocupadas**, no el calendario:
+
+| configuración | n_A | ocupa A | n_B proyectado | ocupa B | z esperado | **potencia real** |
+|---|---|---|---|---|---|---|
+| **cartucho 1** (h=3) | 244 | **15,0 %** | 84 | 15,1 % | 0,767 | **12 %** |
+| cartucho 2 (h=1) | 1.510 | 31,0 % | 518 | 31,0 % | 0,045 | 5 % |
+| cartucho 3 (h=1) | 1.718 | 35,3 % | 589 | 35,3 % | 1,359 | 27 % |
+| cartucho 4 (h=1) | 1.221 | 25,1 % | 419 | 25,1 % | 0,062 | 5 % |
+
+**La escalera completa del cartucho 1:**
+
+```
+71 %   c BRUTO 0,0618, ocupación 100 %      <- la cuenta de la verificación
+51 %   c NETO  0,048337, ocupación 100 %    <- corrigiendo bruto -> neto
+12 %   c NETO, ocupación REAL 15,1 %        <- el número honesto
+```
+
+> **θ = 0,068577 no es la potencia de ninguna regla concreta: es una FRONTERA que supone ocupación
+> total. Es una cota optimista, y como cota superior de lo alcanzable sigue siendo válida — pero
+> aplicarla a una regla que está en el mercado el 15 % del tiempo la halaga por un factor de 2,6 en z.**
+
+## 74. P4 — las tres ramas, declaradas igual
+
+Ninguna candidata califica hoy (§72), así que esto **no se ejecuta**. Se declara igual, sellado, para
+que exista antes que cualquier resultado:
+
+- **(a) Si la caja confirma la candidata** — p ≤ 0,05 bilateral y las cinco varas de §3.3 — se afirma
+  exactamente esto: *"una regla pre-registrada superó un examen único sobre datos nunca vistos, con la
+  potencia declarada de antemano"*. **Con qué fuerza:** una sola prueba, α = 0,05, con la multiplicidad
+  pagada en A; **no** es una estimación insesgada de su rendimiento futuro, y la degradación medida
+  (media neta en B ≥ 50 % de A) se publica como parte del resultado.
+- **(b) Si NO la confirma** se afirma: *"no pudimos confirmarla"*. **Jamás** *"el borde no existe"*. Con
+  71 % de potencia, un no-resultado deja ~29 % de probabilidad de haberse perdido un efecto **real del
+  tamaño supuesto** — y con la potencia real del cartucho 1 (12 %) el no-resultado no habría dicho
+  **nada**. La candidata muere igual (§3.3: *"Si falla, muere"*), pero el enunciado publicado es sobre
+  **nuestra capacidad de confirmar**, no sobre el mercado.
+- **(c) La caja queda gastada en los dos casos.** §7.1: *"Un solo uso para todo el programa."* Pase o
+  falle, no hay segundo examen para nadie, y la Fase 2 cierra con el veredicto de dos líneas de §8.
+
+## 75. P5 — θ es el umbral de **80 % de potencia**, no un piso de detectabilidad
+
+El mismo defecto de familia que *"no detectado no es no existe"*: un efecto apenas menor que θ **no es
+indetectable**, es **menos probable de detectar**. La redacción correcta lleva el número al lado:
+
+| decir | en vez de |
+|---|---|
+| *"detectable con 71 % de potencia"* | *"por debajo del piso de detección"* |
+| *"θ = umbral de 80 % de potencia"* | *"θ = piso de detección"* |
+| *"la fase no pudo correr una prueba justa"* | *"la fase se perdió un borde"* |
+
+Y la precisión sobre la causa raíz de §69, que va con todas las letras porque el lector se desliza solo
+de una a la otra:
+
+> **El piso de 50/50 (0,048978) lo pasan el prior del día cero (0,066107) y el cartucho 1 (0,0618, que
+> es el máximo sesgado). NO lo pasa ninguna de las tres estimaciones insesgadas: liquidez CONSERVADORA
+> 0,0419, liquidez GENEROSA 0,03315, global 0,020262.**
+>
+> **Entonces la causa raíz es "la fase no pudo correr una prueba justa", nunca "la fase se perdió un
+> borde real". Lo segundo no se puede afirmar con esta evidencia.** El reparto correcto habría dado una
+> prueba justa; qué habría concluido, no lo sabemos.
+
+`tests/fase2/test_dia0.py` §25 ahora **también falla** si aparece ~~no detectable~~, ~~indetectable~~ o
+~~piso de detección~~ **sin una cifra de potencia al lado** (dentro de 400 caracteres), salvo en un tramo
+tachado — por eso los tres van tachados acá, igual que la lista de §60: enumerar lo prohibido es
+indistinguible, para un escáner, de afirmarlo.

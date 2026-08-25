@@ -1429,6 +1429,11 @@ def s24_ambos_topes(tmp):
 
 # §8.5 — "no detectado" NO es "no existe". Formulaciones prohibidas en el
 # documento publicado, salvo dentro de una cita tachada (~~...~~).
+# §75 — theta es el umbral de 80% de POTENCIA, no un piso de detectabilidad.
+# Estos terminos solo se admiten con una cifra de potencia al lado (400 caracteres).
+POTENCIA_OBLIGATORIA = ("no detectable", "indetectable", "piso de deteccion",
+                        "piso de detecci\u00f3n")
+
 AUSENCIA_PROHIBIDA = (
     "no existe ventaja", "no hay ventaja", "no existe borde", "no hay borde",
     "no existe se\u00f1al", "no hay se\u00f1al", "las reglas no funcionan",
@@ -1480,6 +1485,36 @@ def s25_lenguaje_de_ausencia(tmp):
     bloque = "~~" + ("El resultado prueba que no hay ventaja. " * 40) + "~~"
     check(max(len(x) for x in re.findall(r"~~.*?~~", bloque, flags=re.S)) > 400,
           "un documento tachado en bloque violaria el tope de 400 caracteres")
+
+    print("    -- \u00a775: 'no detectable' sin su potencia al lado tampoco se admite")
+    for rel in docs:
+        texto = _sin_tachados(io.open(os.path.join(REPO, rel), encoding="utf-8").read())
+        bajo = texto.lower()
+        huerfanas = []
+        for termino in POTENCIA_OBLIGATORIA:
+            desde = 0
+            while True:
+                i = bajo.find(termino, desde)
+                if i < 0:
+                    break
+                desde = i + 1
+                ventana = bajo[max(0, i - 400):i + 400]
+                if not ("potencia" in ventana and "%" in ventana):
+                    huerfanas.append((termino, texto[max(0, i - 60):i + 60]))
+        check(not huerfanas,
+              f"{rel}: {len(huerfanas)} usos de 'no detectable/indetectable/piso de "
+              f"deteccion' sin cifra de potencia al lado")
+
+    print("    -- y este test tambien se prueba a si mismo")
+    suelta = "El efecto quedo por debajo del piso de deteccion y ahi murio."
+    acompanada = ("El efecto quedo por debajo del piso de deteccion, o sea que el examen "
+                  "habria tenido 71% de potencia y no el 80% exigido.")
+    def _huerfana(txt):
+        b = txt.lower()
+        return any((b.find(x) >= 0 and not ("potencia" in b and "%" in b))
+                   for x in POTENCIA_OBLIGATORIA)
+    check(_huerfana(suelta), "la frase SIN potencia se detecta")
+    check(not _huerfana(acompanada), "la misma frase CON su potencia pasa (control)")
 
     print("    -- el numero que sostiene la regla")
     theta = f2.POWER_CONST / (1669 ** 0.5)
