@@ -1655,6 +1655,107 @@ def s28_piso_del_dataset(tmp):
           "el 50/50 toca el piso; el reparto real queda estrictamente por encima")
 
 
+RESULTADO_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                              "ultimo_resultado.json")
+
+
+def escribir_resultado(ok, fallas, ledger_ok, codigo):
+    """El veredicto en un archivo. Sobrevive a `| tail`, a `| head` y a cualquier
+    tuberia que se coma el estado de salida."""
+    import datetime
+    payload = {
+        "ts_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(
+            timespec="seconds"),
+        "aserciones_ok": ok,
+        "fallas": len(fallas),
+        "detalle_fallas": list(fallas),
+        "ledger_publicado_ok": bool(ledger_ok),
+        "veredicto": "OK" if codigo == 0 else "FALLA",
+        "exit": codigo,
+    }
+    with io.open(RESULTADO_PATH, "w", encoding="utf-8") as fh:
+        json.dump(payload, fh, ensure_ascii=False, indent=2)
+    return payload
+
+
+def s29_el_estado_de_salida_no_se_pierde(tmp):
+    print("\n[29] el bug del tail: el veredicto tiene que sobrevivir a la tuberia")
+    import subprocess
+    import shutil as _sh
+
+    falla = os.path.join(tmp, "suite_que_falla.py")
+    pasa = os.path.join(tmp, "suite_que_pasa.py")
+    io.open(falla, "w", encoding="utf-8").write(
+        "import sys\nprint('aserciones OK: 3   fallas: 1')\nsys.exit(1)\n")
+    io.open(pasa, "w", encoding="utf-8").write(
+        "import sys\nprint('aserciones OK: 4   fallas: 0')\nsys.exit(0)\n")
+    py = sys.executable
+
+    print("    -- sin tuberia el estado de salida ya era correcto")
+    check(subprocess.run([py, falla], capture_output=True).returncode != 0,
+          "una suite que falla, sin entubar, devuelve estado != 0")
+    check(subprocess.run([py, pasa], capture_output=True).returncode == 0,
+          "y una que pasa devuelve 0 (control)")
+
+    bash = _sh.which("bash")
+    if bash:
+        print("    -- CONTROL: el bug, reproducido. Entubada SIN pipefail da 0")
+        cmd = f'"{py}" "{falla}" | tail -1'
+        r = subprocess.run([bash, "-c", cmd], capture_output=True)
+        check(r.returncode == 0,
+              f"suite que FALLA entubada a tail sin pipefail -> estado {r.returncode}: "
+              "el fallo queda invisible (esto es el bug)")
+
+        print("    -- EL ARREGLO: con pipefail el estado es el de la suite")
+        r = subprocess.run([bash, "-c", "set -o pipefail; " + cmd],
+                           capture_output=True)
+        check(r.returncode != 0,
+              f"la misma tuberia con pipefail -> estado {r.returncode} != 0")
+        r = subprocess.run([bash, "-c", f'set -o pipefail; "{py}" "{pasa}" | tail -1'],
+                           capture_output=True)
+        check(r.returncode == 0,
+              "y pipefail NO rompe el caso que pasa: sigue dando 0 (control)")
+    else:
+        check(False, "bash no esta disponible: el control del pipe no pudo correr")
+
+    print("    -- el runner del repo lleva el arreglo adentro")
+    runner = os.path.join(REPO, "tests", "fase2", "correr.sh")
+    check(os.path.exists(runner), "existe tests/fase2/correr.sh")
+    texto = io.open(runner, encoding="utf-8").read()
+    check("pipefail" in texto, "y declara pipefail")
+
+    print("    -- y el veredicto en archivo, que ninguna tuberia puede tapar")
+    global RESULTADO_PATH
+    real_path, RESULTADO_PATH = RESULTADO_PATH, os.path.join(tmp, "veredicto.json")
+    try:
+        p = escribir_resultado(3, ["una falla inventada"], True, 1)
+        leido = json.loads(io.open(RESULTADO_PATH, encoding="utf-8").read())
+        check(leido == p, "escribir_resultado deja en disco exactamente lo que devuelve")
+        for campo in ("aserciones_ok", "fallas", "veredicto", "exit", "ts_utc",
+                      "ledger_publicado_ok", "detalle_fallas"):
+            check(campo in leido, f"el archivo trae '{campo}'")
+        check(leido["veredicto"] == "FALLA" and leido["exit"] == 1,
+              "una corrida con fallas queda escrita como FALLA, sin depender del "
+              "estado de salida")
+        check(leido["detalle_fallas"] == ["una falla inventada"],
+              "y con el detalle de que fallo")
+
+        print("    -- CONTROL: una corrida limpia queda escrita como OK")
+        p2 = escribir_resultado(391, [], True, 0)
+        check(p2["veredicto"] == "OK" and p2["exit"] == 0,
+              "sin fallas y con el ledger intacto -> OK")
+        check(escribir_resultado(391, [], False, 1)["veredicto"] == "FALLA",
+              "y un ledger publicado roto tambien es FALLA, aunque no haya fallas")
+    finally:
+        RESULTADO_PATH = real_path
+
+    print("    -- y main() lo escribe de verdad, no es un helper huerfano")
+    fuente = io.open(os.path.abspath(__file__), encoding="utf-8").read()
+    cuerpo = fuente[fuente.index("def main():"):]
+    check("escribir_resultado(" in cuerpo,
+          "main() llama a escribir_resultado antes de devolver su codigo")
+
+
 def main():
     print("=" * 78)
     print("FASE 2 — pruebas del trabajo de día 0 (spec_fase2.md §9)")
@@ -1676,7 +1777,8 @@ def main():
                    s20_procedencia_y_n_efectivo, s21_matriz_y_tope,
                    s22_meta_y_rotulos, s23_filo_del_tope, s24_ambos_topes,
                    s25_lenguaje_de_ausencia, s26_de_que_sigma_sale_c,
-                   s27_la_caja_fuerte_es_el_futuro, s28_piso_del_dataset):
+                   s27_la_caja_fuerte_es_el_futuro, s28_piso_del_dataset,
+                   s29_el_estado_de_salida_no_se_pierde):
             fn(tmp)
     except Exception:  # noqa: BLE001
         traceback.print_exc()
@@ -1693,8 +1795,14 @@ def main():
     # cinturón: el ledger publicado quedó como estaba
     published_ok = harness.verify_ledger()
     print(f"ledger publicado intacto y verificado: {published_ok}")
+    codigo = 0 if not FAIL and published_ok else 1
+    # El VEREDICTO va a un archivo, no solo al estado de salida: entubar la suite
+    # (`| tail`) hace que la shell lea el estado de tail y no el nuestro, y un
+    # conteo falso paso desapercibido asi una vez. Un archivo no se entuba.
+    escribir_resultado(OK, FAIL, published_ok, codigo)
+    print(f"veredicto escrito en {os.path.relpath(RESULTADO_PATH, REPO)}")
     print("=" * 78)
-    return 0 if not FAIL and published_ok else 1
+    return codigo
 
 
 if __name__ == "__main__":
