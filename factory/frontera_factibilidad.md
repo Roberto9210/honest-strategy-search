@@ -1761,3 +1761,128 @@ del índice, mientras que la fricción es fija en dólares y no lo es.
 frontera; cambiarlo por el σ de la parte B mueve la vara **hacia abajo** para todas las candidatas
 futuras, así que es un **AFLOJA** y exige `CAMBIO_DE_REGLAS` con aprobación explícita. Queda **dicho y
 no hecho**.
+
+---
+
+# Adenda 15 — la premisa está invertida: la caja fuerte es el FUTURO, y lo buscado es el pasado
+
+*Cartuchos gastados: 0. Ningún archivo de datos nuevo abierto. Ninguna ventana modificada.*
+
+## 65. TAREA 1 — por qué "arranca en 2020": **caso (a), y dos veces**
+
+Antes de la cita: **la premisa de la pregunta está al revés, y eso decide todo.**
+
+```
+Parte A = 2000-09-18 -> 2019-12-31   4.875 sesiones   <- DONDE SE BUSCO
+Parte B = 2020-01-02 -> 2026-08-19   1.669 sesiones   <- LA CAJA FUERTE, SELLADA
+```
+
+Los cuatro cartuchos de la Fase 2 corrieron sobre **2000-2019**. En el ledger hay **8 entradas de Fase 2
+con `part = "A"` y ninguna con `part = "B"`**. Entonces:
+
+> **2020-2026 no es donde se descubrieron las reglas: es la caja fuerte que nunca se abrió. Y
+> 1998-2019 no es data nunca vista: 2000-2019 es exactamente la data sobre la que se buscó.**
+
+**Extender la parte B "hacia atrás" hasta 2018, o hasta 2008, no agrega data nueva: le pasa a la caja
+fuerte sesiones que ya fueron minadas.** Sería corregir el examen con la hoja de práctica. La aritmética
+que la pregunta propone es correcta como aritmética —θ = 2,8016/√S_B baja si S_B sube— pero **el S_B que
+sirve tiene que ser data jamás mirada**, y mover el corte hacia atrás produce lo contrario.
+
+### La razón escrita, textual
+
+De `spec_busqueda_estrategia.md` (Fase 1, día uno) — **el criterio que fija el corte**:
+
+> *"Partición temporal: los datos se cortan en dos desde el día uno. Con la parte A (más vieja, ~70%) se
+> desarrolla y ajusta. La parte B (más reciente, ~30%) queda en una caja fuerte: cada candidata la toca
+> una sola vez, al final, como examen final."*
+
+Hoy son 4.875 / 1.669 = **74,5 % / 25,5 %**. El corte cae en 2020-01-01 porque ahí cae ese reparto, y la
+parte reciente es la caja fuerte **a propósito**: es el régimen más parecido a aquel en el que se
+operaría.
+
+De `spec_fase2.md` §4.5, sobre por qué el corte no se mueve entre instrumentos:
+
+> *"La misma frontera de partición 2020-01-01, para que la caja fuerte siga siendo un objeto único y
+> coherente entre instrumentos."*
+
+Y de `spec_fase2.md` §4.4, sobre el **arranque** de la ventana — la pregunta que la verificación quería
+hacer, contestada por escrito el día cero:
+
+> *"Esta ventana YA es la máxima disponible en esta fuente. 2000-09-18 es la primera fila que Yahoo tiene
+> de ES=F: **no hay histórico diario que "extender"**. Cualquier ampliación exige una fuente nueva y
+> entra por §4.5."*
+
+> *"Prohibición explícita: SPY —que sí llega hasta 1993-01-29— **no es una serie de desarrollo.** Usar
+> SPY 1993-1999 para "alargar la parte A" es cambiar de instrumento, y entra por §4.5, declarado antes,
+> jamás después de una candidata."*
+
+**Veredicto de la TAREA 1: caso (a).** Hay razón metodológica declarada para el corte (reparto 70/30 con
+la parte reciente sellada, día uno de la Fase 1) y razón declarada para el arranque (límite de la
+fuente), las dos escritas **antes** del primer backtest, y las dos con la vía de ampliación
+pre-especificada. **No es (b) disfrazado ni (c).** El único matiz honesto: el corte en 2020 se **hereda**
+de la Fase 1; la spec de la Fase 2 da una razón para **mantenerlo**, no para haberlo elegido.
+
+## 66. TAREA 2 — qué haría falta, si se quisiera igual
+
+La parte que *sí* es un límite de descarga y no del problema es el **arranque**: 2000-09-18 es donde
+empieza Yahoo, no donde empieza el ES. Lo genuinamente nunca visto es **anterior a 2000-09-18**.
+
+- **Qué datos:** OHLCV diario del ES front-month continuo, **1997-09-09 → 2000-09-15**, ≈ **760
+  sesiones** (~3,0 años). *La fecha de nacimiento del ES es un dato a verificar por QC, no una cita.*
+- **De dónde:** CME DataMine (la fuente oficial) o un vendedor histórico de futuros. Yahoo ya está
+  descartado por el QC publicado. **Orden de magnitud: decenas a pocos cientos de dólares** para una
+  serie diaria de un instrumento; no es un obstáculo de costo. *Precios no verificados: van al QC antes,
+  como la Fase 1 hizo con Databento ($17.90 cotizados antes de comprar).*
+- **Obstáculos de continuidad, reales:**
+  1. **Construcción del continuo.** Nuestra serie es *front-month sin ajustar por roll*, de Yahoo. Otro
+     proveedor rollea con otra regla (volumen/OI contra calendario) y puede entregar back-adjusted.
+     Empalmar dos series construidas distinto en 2000-09-18 **fabrica un salto** y contamina el σ que
+     usa todo lo demás. Habría que rederivar ambas del contrato crudo, o descartar el empalme.
+  2. **El instrumento no existía como lo modelamos.** El **MES no existe antes de 2019**, y la fricción
+     de $3,90 ida y vuelta es un número de MES. En 1998 sólo hay ES ($50/punto) y el SP de pit. Una
+     corrida sobre 1997-2000 tiene que declarar **de qué contrato es su peaje**, y no puede ser el
+     actual.
+  3. **Horario de sesión.** El Globex de 1998 no es el de hoy. Nuestras estrategias ejecutan **en la
+     apertura**, y σ₁ = $81,06 es exactamente apertura-a-apertura (§63): si "la apertura" es otro
+     reloj, el objeto medido cambia.
+  4. **Escala y liquidez.** Índice ~1.000 contra ~6.000: el σ por sesión de esa era es **mucho menor**,
+     así que el peaje fijo pesa **más**, no menos — al revés que en la parte B (§64).
+  5. **Calendario** (feriados, medias ruedas) y revisiones del propio exchange.
+  6. **Régimen.** 1997-2000 es la burbuja puntocom con el ES recién nacido y volumen mínimo. Es data
+     legítimamente no vista, pero su intercambiabilidad con el régimen actual es **una hipótesis**, no
+     un supuesto gratis.
+
+### Y cuánto compra, en el mejor caso imaginable
+
+| | S_B | θ |
+|---|---|---|
+| hoy | 1.669 | 0,068577 |
+| **+ backfill completo 1997-2000 (760 sesiones)** | **2.429** | **0,056845** |
+
+| c | necesita S_B | con el backfill |
+|---|---|---|
+| cartucho 1 — el **máximo sesgado**, IC contiene θ | 2.055 | **pasaría** |
+| liquidez CONSERVADORA | 4.471 | faltan 2.042 = **8,1 años** |
+| liquidez GENEROSA | 7.142 | faltan 4.713 = 18,7 años |
+| estimador global CONSERVADORA | 19.118 | faltan 16.689 = 66,2 años |
+
+> **El backfill entero del ES —hasta su primer día de existencia— cubre el 27 % del hueco del único
+> mecanismo agrupado, y lo único que cruzaría la vara es el punto que ya sabemos que está contaminado
+> por selección (§57).** No hay más ES atrás: antes de 1997-09-09 el contrato no existía.
+
+## 67. El blindaje, escrito **antes** de que nadie mire un archivo nuevo
+
+La idea es fuerte donde sí aplica: **1997-2000 sería fuera de muestra genuino, con las hipótesis ya
+congeladas en el ledger con su hash desde días atrás.** Por eso la regla se escribe ahora, no después:
+
+> **Ninguna extensión de la caja fuerte se ejecuta sin pre-registro sellado ANTES de abrir un solo
+> archivo nuevo.** El pre-registro declara: (1) qué cartuchos exactos se re-corren, (2) sobre qué rango
+> exacto de fechas, (3) con qué criterio de éxito y su vara, (4) qué se concluye si el resultado sale al
+> revés, y (5) el QC de la serie nueva publicado antes (§4.5).
+>
+> **Y una sesión que alguna vez perteneció a la parte A no puede entrar jamás a la parte B.** Reciclar
+> data buscada como si fuera caja fuerte es la falsificación más grande que este programa podría
+> cometer; el test §27 la vuelve imposible en silencio.
+
+Mirar antes de declarar convierte la prueba más fuerte disponible en la más vacía. **Declarado y
+sellado primero; datos después.**

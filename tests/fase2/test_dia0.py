@@ -1550,6 +1550,51 @@ def s26_de_que_sigma_sale_c(tmp):
               f"(publicado {sb_doc:,})")
 
 
+def s27_la_caja_fuerte_es_el_futuro(tmp):
+    print("\n[27] \u00a74.4/\u00a77.1 \u2014 la caja fuerte es el FUTURO, y A jamas entra en B")
+
+    print("    -- las ventanas declaradas, tal como estan en la spec")
+    d = f2.WINDOWS["diario"]
+    check((d.a_start, d.a_end) == ("2000-09-18", "2019-12-31"),
+          f"parte A diaria = {d.a_start} -> {d.a_end} (donde se BUSCO)")
+    check((d.b_start, d.b_end) == ("2020-01-01", "2026-08-19"),
+          f"parte B diaria = {d.b_start} -> {d.b_end} (la caja fuerte)")
+
+    print("    -- A y B no se tocan, en los dos regimenes")
+    for nombre, r in sorted(f2.WINDOWS.items()):
+        check(r.a_end < r.b_start,
+              f"{nombre}: A cierra {r.a_end} ANTES de que B abra {r.b_start}")
+        check(r.a_start < r.a_end and r.b_start < r.b_end,
+              f"{nombre}: las dos ventanas son intervalos bien formados")
+
+    print("    -- CONTROL: correr B hacia atras se comeria sesiones YA BUSCADAS")
+    for propuesta in ("2018-01-01", "2008-01-01", "2001-01-01"):
+        check(d.a_start <= propuesta <= d.a_end,
+              f"arrancar B en {propuesta} cae DENTRO de la parte A: no es fuera de muestra")
+    check("1998-01-01" < d.a_start,
+          "1998-01-01 es ANTERIOR a la parte A: no esta buscado, pero tampoco esta "
+          "en esta fuente (la ventana arranca en 2000-09-18)")
+    check("1997-09-09" < d.a_start,
+          "lo unico jamas visto es anterior a 2000-09-18, y exige fuente nueva (#4.5)")
+
+    print("    -- la caja fuerte sigue sin abrirse: ni una entrada de Fase 2 con part='B'")
+    ent = [e for e in f2.read_ledger() if e.get("phase") == 2]
+    partes = sorted({e.get("part") for e in ent if e.get("part")})
+    check(partes == ["A", "meta"], f"partes usadas por la Fase 2: {partes}")
+    check(not [e for e in ent if e.get("part") == "B"],
+          f"0 entradas de Fase 2 sobre la parte B (de {len(ent)} entradas)")
+
+    print("    -- la aritmetica de lo que compraria el backfill completo del ES")
+    from math import sqrt as _sq
+    theta_hoy = f2.POWER_CONST / _sq(1669)
+    theta_bf = f2.POWER_CONST / _sq(1669 + 760)
+    check(abs(theta_hoy - 0.068577) < 1e-6, f"theta hoy = {theta_hoy:.6f}")
+    check(abs(theta_bf - 0.056845) < 1e-6,
+          f"theta con 760 sesiones nunca vistas = {theta_bf:.6f}")
+    check(0.0618 > theta_bf > 0.04190,
+          "solo cruzaria el maximo sesgado (0.0618); liquidez (0.0419) seguiria debajo")
+
+
 def main():
     print("=" * 78)
     print("FASE 2 — pruebas del trabajo de día 0 (spec_fase2.md §9)")
@@ -1570,7 +1615,8 @@ def main():
                    s18_vara_de_filtros, s19_estimador_y_formula,
                    s20_procedencia_y_n_efectivo, s21_matriz_y_tope,
                    s22_meta_y_rotulos, s23_filo_del_tope, s24_ambos_topes,
-                   s25_lenguaje_de_ausencia, s26_de_que_sigma_sale_c):
+                   s25_lenguaje_de_ausencia, s26_de_que_sigma_sale_c,
+                   s27_la_caja_fuerte_es_el_futuro):
             fn(tmp)
     except Exception:  # noqa: BLE001
         traceback.print_exc()
