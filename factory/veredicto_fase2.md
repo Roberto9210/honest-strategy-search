@@ -407,4 +407,6 @@ cometieron**), la spec y la suite.
 ---
 
 *Cerrado el 2026-08-25. `verify_ledger() -> True`. Última línea: `d306d0016d212767`. La parte B nunca
-se abrió.*
+se abrió. La suite cierra con **469 aserciones y 0 fallas** (`bash tests/fase2/correr.sh`, veredicto
+leído del archivo y no del estado de salida), y su §30 verifica contra el ledger cada número de este
+documento.*
