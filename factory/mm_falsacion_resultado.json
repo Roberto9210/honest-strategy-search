@@ -1,0 +1,165 @@
+{
+  "pre_registros": [
+    "87f11292a6eee7a9",
+    "f64878c04e90cdaf",
+    "3e5e015f4eef8a6a",
+    "81b6d915f9bf6ed6"
+  ],
+  "P1_placebo_calendario": {
+    "n": 627,
+    "delta_hat": 0.041684,
+    "se_cluster": 0.060435,
+    "z": 0.6897,
+    "por_mercado": {
+      "NQ": {
+        "n": 208,
+        "excluidas_por_roll": 103,
+        "sigma_usd": 618.8,
+        "delta_hat_mercado": 0.076414
+      },
+      "YM": {
+        "n": 196,
+        "excluidas_por_roll": 97,
+        "sigma_usd": 262.91,
+        "delta_hat_mercado": 0.102611
+      },
+      "NKD": {
+        "n": 223,
+        "excluidas_por_roll": 47,
+        "sigma_usd": 3552.53,
+        "delta_hat_mercado": -0.044259
+      }
+    },
+    "criterio": "pasa sii delta_hat < 0.0509",
+    "PASA": true,
+    "bloques": {
+      "bloque_A": {
+        "n": 454,
+        "delta_hat": 0.058058,
+        "se_cluster": 0.034875,
+        "z": 1.6648
+      },
+      "bloque_B": {
+        "n": 173,
+        "delta_hat": -0.001285,
+        "se_cluster": 0.198939,
+        "z": -0.0065
+      }
+    }
+  },
+  "P2_contado_testigo": {
+    "por_indice": {
+      "NQ": {
+        "indice": "^NDX",
+        "n_ventanas": 311,
+        "delta_bruto_contado": 0.090885,
+        "delta_bruto_futuro": 0.099089,
+        "diferencia": -0.008204
+      },
+      "YM": {
+        "indice": "^DJI",
+        "n_ventanas": 292,
+        "delta_bruto_contado": 0.153447,
+        "delta_bruto_futuro": 0.137671,
+        "diferencia": 0.015776
+      },
+      "NKD": {
+        "indice": "^N225",
+        "n_ventanas": 270,
+        "delta_bruto_contado": 0.087272,
+        "delta_bruto_futuro": 0.087777,
+        "diferencia": -0.000506
+      }
+    },
+    "criterio": "pasa sii delta bruto > 0 en los tres",
+    "PASA": true
+  },
+  "P3_concentracion_frontera": {
+    "n": 778,
+    "pasos_agrupados": [
+      0.035015,
+      -0.005934,
+      0.041206,
+      -0.002238,
+      0.032546,
+      0.010209
+    ],
+    "etiquetas": [
+      "-4->-3",
+      "-3->-2",
+      "-2->-1",
+      "-1->+1",
+      "+1->+2",
+      "+2->+3"
+    ],
+    "total_bruto": 0.110804,
+    "frontera": 0.071515,
+    "participacion_frontera": 0.6454,
+    "por_mercado": {
+      "NQ": {
+        "n": 309,
+        "pasos": [
+          0.024352,
+          -0.012019,
+          0.027818,
+          0.012914,
+          0.035019,
+          0.011005
+        ]
+      },
+      "YM": {
+        "n": 289,
+        "pasos": [
+          0.036142,
+          -0.00933,
+          0.065145,
+          -0.026306,
+          0.041,
+          0.03102
+        ]
+      },
+      "NKD": {
+        "n": 180,
+        "pasos": [
+          0.051509,
+          0.009963,
+          0.025754,
+          0.010396,
+          0.014728,
+          -0.024573
+        ]
+      }
+    },
+    "criterio": "pasa sii participacion >= 0.60",
+    "PASA": true
+  },
+  "P4_signo_rebalanceo": {
+    "tras_mes_en_baja": {
+      "n": 308,
+      "delta_hat": 0.194812,
+      "se_cluster": 0.094228,
+      "z": 2.0675
+    },
+    "tras_mes_en_alza": {
+      "n": 468,
+      "delta_hat": 0.042517,
+      "se_cluster": 0.048512,
+      "z": 0.8764
+    },
+    "brecha": 0.152295,
+    "fuera_por_condicionante": {
+      "NQ": 1,
+      "YM": 1,
+      "NKD": 0
+    },
+    "criterio": "pasa sii brecha >= 0.02",
+    "PASA": true
+  },
+  "nota": "resultado CRUDO; el veredicto es un documento aparte",
+  "PASAN": {
+    "P1_placebo_calendario": true,
+    "P2_contado_testigo": true,
+    "P3_concentracion_frontera": true,
+    "P4_signo_rebalanceo": true
+  }
+}
