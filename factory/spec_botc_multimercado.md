@@ -570,6 +570,43 @@ Divulgaciones obligatorias (§D1/§g, descriptivas, no pruebas): δ̂ y z por bl
 
 ---
 
+## k) La ronda de falsación — cuatro pruebas, y BOT C cierra ahí (encargo de Roberto, 26-ago)
+
+**K: 257 → 261.** Cuatro pruebas contra el mecanismo, cada una capaz de salir EN CONTRA, cada una con
+predicción firmada y commiteada ANTES de correr (`mm_prediccion_falsacion.md`), una corrida por prueba,
+crudo commiteado sin interpretar, documento de veredicto aparte con **una sola conclusión**:
+**"EL MECANISMO AGUANTA"** o **"EL MECANISMO NO ES LO QUE CREÍAMOS"**. Nada de "mixto" sin elegir.
+**Después de ese documento no hay ronda siguiente, ni quinta prueba, ni variante** — lo que quede
+picando va como "puerta declarada" al final del veredicto y ahí se queda.
+
+**Regla que gobierna todo:** prohibido probar otras ventanas de F4, otros parámetros, filtros o
+cualquier variante de `turn_of_month`. La grilla 3×3 del ledger es lo único que se cita sobre robustez;
+no se re-corre ni se amplía. Muestra: la congelada de la fase (NQ/YM/NKD post-roll); ES no participa y
+su caja fuerte sigue sellada; bloques A y B por separado.
+
+| # | prueba | qué mata | criterio pre-declarado (números en `mm_prediccion_falsacion.md`) |
+|---|---|---|---|
+| 1 | **Placebo de calendario**: la misma ventana de 6 pasos de apertura a apertura, mecánicamente en las sesiones 8→14 del mes, misma fricción, misma exclusión de roll | si el placebo paga parecido, F4 era **deriva alcista disfrazada de calendario** — y se agrega cuánto habría rendido estar comprado todo el mes | pasa ⟺ δ̂_placebo < δ̂_TOM/2 = 0,0509 |
+| 2 | **El contado como testigo**: ^NDX, ^DJI, ^N225 con la misma regla de ventana sobre su propio calendario, **bruto contra bruto** | si los futuros lo muestran y el contado no, es **artefacto de futuro** y F4 muere | pasa ⟺ δ̂ bruto > 0 en los TRES contados |
+| 3 | **Concentración en la frontera**: descomposición del retorno bruto en los 6 pasos de sesión | repartido parejo = se parece a deriva y refuerza a la 1 | pasa ⟺ los 3 pasos centrales cargan ≥ 60 % del total |
+| 4 | **El signo del rebalanceo** (de Roberto): corte por el SIGNO del retorno del mes que termina, conocido a la entrada — un solo corte, jamás un umbral | invertido o plano ⇒ la explicación de flujo de rebalanceo NO se sostiene, aunque el efecto exista | pasa ⟺ δ̂(tras mes en baja) − δ̂(tras mes en alza) ≥ 0,02 |
+
+**Regla de conclusión, declarada antes de correr:** "EL MECANISMO AGUANTA" ⟺ **las cuatro pasan**.
+Cualquier predicción fallada ⇒ "EL MECANISMO NO ES LO QUE CREÍAMOS", y el documento dice exactamente
+cuál falló y qué significa.
+
+**Prohibición que va escrita (prueba 4):** un resultado a favor **NO autoriza** operar "sólo después de
+meses en baja". Eso es una estrategia nueva, con su propia K y su propio pre-registro. La prueba 4
+explica, no habilita.
+
+**Límite que no puede romperse:** ninguno de estos resultados puede hacer a F4 más GRANDE. Como máximo
+cambia cuánta confianza merece. Si al escribir el veredicto aparece una "versión mejor de F4", eso es
+la búsqueda entrando por la ventana, y se para.
+
+**Corte: lunes 31 de agosto.** Si no está, se publica lo que haya y se cierra igual.
+
+---
+
 ## Lo que esta spec NO hace
 
 No pre-registra nada. No abre la fase. No gasta cartuchos. No compra datos. **No toca la caja fuerte de
