@@ -1,0 +1,153 @@
+{
+  "regla": {
+    "umbral_operaciones_efectivas": 341.78,
+    "delta_barra": 0.151542,
+    "procedencia": "spec_botc_multimercado.md §c-§d, commit 7c0e4d0"
+  },
+  "por_mercado": [
+    {
+      "mercado": "ES",
+      "n_parte_a": 230,
+      "sigma_puntos": 33.453,
+      "excluidas_por_roll_parte_a": 1
+    },
+    {
+      "mercado": "NQ",
+      "n_parte_a": 230,
+      "sigma_puntos": 89.1229,
+      "excluidas_por_roll_parte_a": 1,
+      "instrumento": "MNQ",
+      "sigma_usd_instrumento": 178.25,
+      "friccion_rt_usd": 2.4,
+      "f_i": 0.013465,
+      "delta_i": 0.151542
+    },
+    {
+      "mercado": "YM",
+      "n_parte_a": 210,
+      "sigma_puntos": 305.9398,
+      "excluidas_por_roll_parte_a": 2,
+      "instrumento": "MYM",
+      "sigma_usd_instrumento": 152.97,
+      "friccion_rt_usd": 2.4,
+      "f_i": 0.015689,
+      "delta_i": 0.151542
+    },
+    {
+      "mercado": "NKD",
+      "n_parte_a": 126,
+      "sigma_puntos": 511.0282,
+      "excluidas_por_roll_parte_a": 64,
+      "instrumento": "NKD",
+      "sigma_usd_instrumento": 2555.14,
+      "friccion_rt_usd": 52.5,
+      "f_i": 0.020547,
+      "delta_i": 0.151542
+    }
+  ],
+  "matriz_R": {
+    "ES": {
+      "ES": 1.0,
+      "NQ": 0.8162,
+      "YM": 0.954,
+      "NKD": 0.714
+    },
+    "NQ": {
+      "ES": 0.8162,
+      "NQ": 1.0,
+      "YM": 0.7395,
+      "NKD": 0.5948
+    },
+    "YM": {
+      "ES": 0.954,
+      "NQ": 0.7395,
+      "YM": 1.0,
+      "NKD": 0.7102
+    },
+    "NKD": {
+      "ES": 0.714,
+      "NQ": 0.5948,
+      "YM": 0.7102,
+      "NKD": 1.0
+    }
+  },
+  "n_comunes": {
+    "ES": {
+      "ES": 230,
+      "NQ": 230,
+      "YM": 210,
+      "NKD": 126
+    },
+    "NQ": {
+      "ES": 230,
+      "NQ": 230,
+      "YM": 210,
+      "NKD": 126
+    },
+    "YM": {
+      "ES": 210,
+      "NQ": 210,
+      "YM": 210,
+      "NKD": 126
+    },
+    "NKD": {
+      "ES": 126,
+      "NQ": 126,
+      "YM": 126,
+      "NKD": 126
+    }
+  },
+  "matriz_cota_sup_90": {
+    "ES": {
+      "ES": 1.0,
+      "NQ": 0.8446,
+      "YM": 0.962,
+      "NKD": 0.7706
+    },
+    "NQ": {
+      "ES": 0.8446,
+      "NQ": 1.0,
+      "YM": 0.7798,
+      "NKD": 0.6694
+    },
+    "YM": {
+      "ES": 0.962,
+      "NQ": 0.7798,
+      "YM": 1.0,
+      "NKD": 0.7675
+    },
+    "NKD": {
+      "ES": 0.7706,
+      "NQ": 0.6694,
+      "YM": 0.7675,
+      "NKD": 1.0
+    }
+  },
+  "compuerta_1": {
+    "N_nominal": 778,
+    "n_efectivo": 361.3,
+    "pasa": true
+  },
+  "compuerta_2": {
+    "n_efectivo_cota_sup": 346.7,
+    "pasa": true
+  },
+  "bloques_D1": {
+    "bloque_A_hasta_2019_11": {
+      "N": 566,
+      "n_efectivo": 265.8
+    },
+    "bloque_B_desde_2019_12": {
+      "N": 212,
+      "n_efectivo": 95.7
+    },
+    "nota": "R medida en 2000-2019 aplicada a ambos bloques; 2020-2026 de NQ/YM/NKD no es la caja fuerte (esa es ES)"
+  },
+  "potencia": {
+    "con_n_efectivo": 0.8214,
+    "delta_minimo_detectable": 0.147387,
+    "delta_75pct": 0.5794,
+    "delta_50pct": 0.3016
+  },
+  "VEREDICTO": "LA FASE SE ABRE"
+}
