@@ -15,8 +15,8 @@
       "vueltas_totales": 311,
       "excluidas_por_roll": 2,
       "vueltas_en_muestra": 309,
-      "excluidas_2000_2019": 1,
-      "en_muestra_2000_2019": 231,
+      "excluidas_bloque_A": 1,
+      "en_muestra_bloque_A": 230,
       "ejemplos_excluidos": [
         "2017-08",
         "2023-08"
@@ -28,8 +28,8 @@
       "vueltas_totales": 311,
       "excluidas_por_roll": 2,
       "vueltas_en_muestra": 309,
-      "excluidas_2000_2019": 1,
-      "en_muestra_2000_2019": 231,
+      "excluidas_bloque_A": 1,
+      "en_muestra_bloque_A": 230,
       "ejemplos_excluidos": [
         "2017-08",
         "2023-08"
@@ -41,8 +41,8 @@
       "vueltas_totales": 292,
       "excluidas_por_roll": 3,
       "vueltas_en_muestra": 289,
-      "excluidas_2000_2019": 2,
-      "en_muestra_2000_2019": 211,
+      "excluidas_bloque_A": 2,
+      "en_muestra_bloque_A": 210,
       "ejemplos_excluidos": [
         "2006-08",
         "2017-08",
@@ -55,8 +55,8 @@
       "vueltas_totales": 270,
       "excluidas_por_roll": 90,
       "vueltas_en_muestra": 180,
-      "excluidas_2000_2019": 64,
-      "en_muestra_2000_2019": 127,
+      "excluidas_bloque_A": 64,
+      "en_muestra_bloque_A": 126,
       "ejemplos_excluidos": [
         "2004-02",
         "2004-05",
@@ -68,15 +68,15 @@
   "pares": {
     "NQ-YM": {
       "comunes_historia_completa": 289,
-      "comunes_2000_2019": 211
+      "comunes_bloque_A": 210
     },
     "NQ-NKD": {
       "comunes_historia_completa": 180,
-      "comunes_2000_2019": 127
+      "comunes_bloque_A": 126
     },
     "YM-NKD": {
       "comunes_historia_completa": 180,
-      "comunes_2000_2019": 127
+      "comunes_bloque_A": 126
     }
   },
   "N_nominal_fase": 778

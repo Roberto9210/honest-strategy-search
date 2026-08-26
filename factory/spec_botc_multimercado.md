@@ -83,12 +83,16 @@ una banda que lo contiene bajo cualquier convención plausible.
 
 **La expectativa era cero. No es cero, y para un mercado es catastrófica.**
 
-| mercado | vueltas de mes totales | **tocadas por la banda de roll** | en muestra | de las tocadas, en 2000-2019 |
+| mercado | vueltas de mes totales | **tocadas por la banda de roll** | en muestra | de las tocadas, en el bloque A (≤ 2019-11) |
 |---|---|---|---|---|
-| ES *(referencia)* | 311 | **2** (2017-08, 2023-08) | 309 | **0** |
-| NQ | 311 | **2** (2017-08, 2023-08) | 309 | 0 |
-| YM | 292 | **3** (2006-08, 2017-08, 2023-08) | 289 | 1 |
-| **NKD** | 270 | **90 — el 100 % de las trimestrales** | **180** | 63 |
+| ES *(referencia)* | 311 | **2** (2017-08, 2023-08) | 309 | **1** |
+| NQ | 311 | **2** (2017-08, 2023-08) | 309 | 1 |
+| YM | 292 | **3** (2006-08, 2017-08, 2023-08) | 289 | 2 |
+| **NKD** | 270 | **90 — el 100 % de las trimestrales** | **180** | 64 |
+
+*(Corrección del 26-ago, misma tanda, antes de medir la matriz: la primera versión de esta tabla decía
+0/0/1/63 en la última columna — 2017-08 está DENTRO de 2000-2019 y la tabla se copió mal de la consola.
+La atrapó el control [1] de `tests/multimercado/test_matriz.py` antes de que se corriera nada.)*
 
 Los dos casos de ES/NQ son agosto→septiembre: cuando el tercer viernes de septiembre cae el día 15, la
 banda llega hacia atrás hasta la tercera sesión del mes, que es justo la sesión de salida. **Por una
@@ -98,9 +102,13 @@ sesión.**
 vencimiento está atado al **segundo** viernes, no al tercero, así que la banda de roll vive sobre las
 primeras sesiones del mes — exactamente donde F4 sale. **Los cuatro trimestres, todos los años.**
 
-**Consecuencia sobre el número publicado de ES:** las 2 vueltas excluidas de ES caen **ambas después de
-2019**. En la parte A quedan **231**, que es exactamente el `trades: 231` del ledger. **La regla de roll
-no mueve ni un centavo del resultado de F4 sobre ES.** El cimiento aguanta la revisión.
+**Consecuencia sobre el número publicado de ES, dicha sin maquillar:** una de las dos exclusiones de ES
+(2017-08) cae **dentro** del calendario de descubrimiento. La muestra congelada de ES en el bloque A
+tiene **230** vueltas, una menos que las 231 del ledger. **El número del ledger no se toca** — es el
+registro del descubrimiento, medido sin regla de roll, y así queda. Lo que esta fase mide (la fila de
+referencia de ES en la matriz) usa la muestra congelada de 230. La regla de roll le costó exactamente
+un trade al mercado de descubrimiento, y se paga: retocar la banda para salvarlo sería elegir la regla
+por el resultado.
 
 ### A.4 El control empírico, y por qué NO decide
 
@@ -334,17 +342,23 @@ lector tiene derecho a ver qué pasa si la maldición del ganador se cobró un t
 ## d) LA REGLA DE DECISIÓN — escrita antes de medir
 
 **Muestra congelada de la fase** (`factory/mm_muestra.py`, historia completa 2000-2026, post-exclusión
-de roll):
+de roll). El **bloque A** es el calendario del descubrimiento: períodos hasta **2019-11** inclusive — el
+turno 2019-12 sale en enero de 2020, el ledger de ES nunca lo contuvo, y medirlo exigiría leer precios
+de 2020, que hoy está prohibido para los cuatro mercados:
 
-| mercado | vueltas en muestra | de 2000-2019 | de 2020-2026 |
+| mercado | vueltas en muestra | bloque A (≤ 2019-11) | bloque B (2019-12 →) |
 |---|---|---|---|
-| NQ | **309** | 231 | 78 |
-| YM | **289** | 211 | 78 |
-| NKD | **180** | 127 | 53 |
-| **N nominal** | **778** | 569 | 209 |
+| NQ | **309** | 230 | 79 |
+| YM | **289** | 210 | 79 |
+| NKD | **180** | 126 | 54 |
+| **N nominal** | **778** | 566 | 212 |
 
-Períodos comunes por par (historia completa / 2000-2019): NQ-YM **289 / 211** · NQ-NKD **180 / 127** ·
-YM-NKD **180 / 127**.
+Períodos comunes por par (historia completa / bloque A): NQ-YM **289 / 210** · NQ-NKD **180 / 126** ·
+YM-NKD **180 / 126**.
+
+*(Corrección del 26-ago, misma tanda, antes de medir: la primera versión de esta tabla partía en
+"año ≤ 2019", que asignaba el turno 2019-12 al bloque A y no restaba las exclusiones de roll del bloque —
+decía 231/211/127 y 569/209. La definición corregida es la de arriba y es la que usa la medición.)*
 
 ### La regla
 
@@ -381,8 +395,8 @@ Por eso el reporte **tiene que** publicar, siempre:
 1. La matriz **completa**, sin promediar, **incluyendo la fila de ES** medida en 2000-2019. ES ya está
    completamente minado en esa ventana: mirarlo no filtra nada nuevo, y sin esa fila no se puede saber
    cuánta de la "evidencia nueva" es ES otra vez.
-2. `n_efectivo` **partido en dos bloques**: 2000-2019 (569 nominales, calendario compartido con el
-   descubrimiento) y 2020-2026 (209 nominales, calendario que ninguna búsqueda vio).
+2. `n_efectivo` **partido en dos bloques**: bloque A ≤ 2019-11 (566 nominales, calendario compartido
+   con el descubrimiento) y bloque B desde 2019-12 (212 nominales, calendario que ninguna búsqueda vio).
 3. La frase, si corresponde: **un resultado positivo empujado por el bloque 2000-2019 es una réplica de
    la muestra de selección, no una confirmación independiente.**
 

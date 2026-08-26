@@ -26,6 +26,7 @@ BANDA = 8                      # sesiones, terminando en el vencimiento inclusiv
 QM = (3, 6, 9, 12)
 EXPIRY = {"ES": "3F", "NQ": "3F", "YM": "3F", "NKD": "2F_thu"}
 MERCADOS_FASE = ("NQ", "YM", "NKD")     # ES entra solo como referencia
+A_LAST = pd.Period("2019-11", "M")      # ultimo periodo del calendario de descubrimiento
 
 
 def load(tag: str) -> pd.DataFrame:
@@ -84,12 +85,15 @@ def main() -> None:
             "vueltas_totales": len(s["todas"]),
             "excluidas_por_roll": len(s["drop"]),
             "vueltas_en_muestra": len(s["keep"]),
-            "excluidas_2000_2019": sum(1 for w in s["drop"] if w["per"].year <= 2019),
-            "en_muestra_2000_2019": sum(1 for w in s["keep"] if w["per"].year <= 2019),
+            # bloque A (descubrimiento) = per <= 2019-11: el ultimo periodo cuyo trade
+            # completo vive en 2000-2019. El turno 2019-12 SALE en enero 2020 y por eso
+            # el ledger de ES (parte A cortada en 2019-12-31) nunca lo contuvo.
+            "excluidas_bloque_A": sum(1 for w in s["drop"] if w["per"] <= A_LAST),
+            "en_muestra_bloque_A": sum(1 for w in s["keep"] if w["per"] <= A_LAST),
             "ejemplos_excluidos": [str(w["per"]) for w in s["drop"][:4]],
         }
         print(f"{t:4s} totales={len(s['todas']):3d}  excluidas_por_roll={len(s['drop']):3d}  "
-              f"en muestra={len(s['keep']):3d}  (parte A: {rep['mercados'][t]['en_muestra_2000_2019']:3d})")
+              f"en muestra={len(s['keep']):3d}  (bloque A: {rep['mercados'][t]['en_muestra_bloque_A']:3d})")
     print()
     tags = list(MERCADOS_FASE)
     N = sum(rep["mercados"][t]["vueltas_en_muestra"] for t in tags)
@@ -100,11 +104,11 @@ def main() -> None:
             pa = {w["per"] for w in S[ta]["keep"]}
             pb = {w["per"] for w in S[tb]["keep"]}
             comun_full = len(pa & pb)
-            paA = {w["per"] for w in S[ta]["keep"] if w["per"].year <= 2019}
-            pbA = {w["per"] for w in S[tb]["keep"] if w["per"].year <= 2019}
+            paA = {w["per"] for w in S[ta]["keep"] if w["per"] <= A_LAST}
+            pbA = {w["per"] for w in S[tb]["keep"] if w["per"] <= A_LAST}
             rep["pares"][f"{ta}-{tb}"] = {"comunes_historia_completa": comun_full,
-                                          "comunes_2000_2019": len(paA & pbA)}
-            print(f"  {ta}-{tb}: periodos comunes  completa={comun_full:3d}   2000-2019={len(paA & pbA):3d}")
+                                          "comunes_bloque_A": len(paA & pbA)}
+            print(f"  {ta}-{tb}: periodos comunes  completa={comun_full:3d}   bloque A={len(paA & pbA):3d}")
     rep["N_nominal_fase"] = N
     (HERE / "mm_muestra.json").write_text(json.dumps(rep, indent=2, ensure_ascii=False), encoding="utf-8")
     print("\nescrito: factory/mm_muestra.json")
