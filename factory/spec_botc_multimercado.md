@@ -451,6 +451,88 @@ el z bilateral exigido salta de 1,960 a **3,113**. El `n_efectivo` para 80 % de 
 
 ---
 
+## g) Qué AUTORIZA cada resultado — escrito antes del primer P&L (agregado 26-ago, tarde)
+
+*Agregado después del veredicto del día cero (la fase abre) y ANTES de pre-registrar la prueba única o
+calcular un solo P&L multi-mercado. El motivo, con el número que lo obliga: el bloque B tiene
+n_ef = 95,7 → **~32 % de potencia**, prácticamente el mismo 27,3 % de la caja fuerte de ES que detuvo
+a BOT C el 21-ago. La spec ya obligaba a llamar "réplica" a un positivo empujado por el bloque A; le
+faltaba la mitad que importa: qué habilita cada rama. Se fija ahora.*
+
+| resultado de la prueba única | qué se afirma | **qué AUTORIZA** |
+|---|---|---|
+| **NEGATIVO** (p > 0,05) | "no pudimos confirmarla" con ~82 % de potencia contra un δ ya optimista — el no-resultado más informativo que este proyecto puede producir | **F4 muere. BOT C se cierra por segunda vez, esta vez con evidencia multi-mercado.** Se publica el veredicto completo en `factory/` (mismo detalle que un positivo, §e) y el cierre se registra en el ledger. No autoriza: re-testear variantes, revivir F4 sobre otros mercados, ni "esperar más datos" |
+| **POSITIVO empujado por el bloque A** (p ≤ 0,05 en el conjunto, pero el bloque B por separado no acompaña ni en signo ni en magnitud) | réplica de la muestra de selección sobre índices que correlacionan 0,71-0,95 con ES — **no** confirmación independiente | **NO autoriza construir un bot con dinero. NO autoriza tocar la caja fuerte de ES.** Sí autoriza exactamente una cosa: mantener F4 como hipótesis viva y documentada, a la espera de evidencia de calendario nuevo (forward, o el paso del tiempo sobre el bloque B) |
+| **POSITIVO que sobrevive en el bloque B por separado** (mismo signo y magnitud comparable en las 212 vueltas que ninguna búsqueda vio) | el único caso que significa algo — **y viene de una prueba con ~32 % de potencia, así que un positivo ahí es SORPRENDENTE y se trata con más sospecha, no con menos**: a ese nivel de potencia, la fracción de positivos que son falsos o inflados es máxima (maldición del ganador otra vez) | **UN forward test pre-registrado en Sim101 con datos de mercado REALES — jamás el Simulated Data Feed (§6 de `botc_potencia_f4.md`: el reporte tiene que nombrar el feed) — y NUNCA dinero.** El pre-registro del forward fija su propia vara antes de encenderse |
+
+**La cuenta del forward, para que nadie la vuelva a estimar de memoria** (`factory/mm_sensibilidad.py`,
+con la R medida como supuesto declarado y las tasas post-roll reales):
+
+```
+NQ 11,92 + YM 11,88 + NKD 8,00 = 31,80 vueltas nominales/año
+n_efectivo por año = 31,80² / (31,80 + 2·(0,7395·11,88 + 0,5948·8 + 0,7102·8)) = 14,40
+342 efectivas ÷ 14,40  =  23,7 años de forward con los tres mercados
+342 ÷ 12               =  28,5 años con ES solo
+```
+
+*(El encargo estimaba ~15,2/año y ~22,5 años; la cuenta con la matriz medida da **14,40/año y 23,7
+años** — la diferencia es que NKD aporta 8/año y no 12, porque el roll le come las cuatro trimestrales.
+Por la regla del encargo, gana este número.)* La lectura honesta: el forward multi-mercado acelera
+sobre ES solo, pero **no convierte la validación en un proyecto corto: sigue siendo una década larga.**
+El forward autorizado por la rama 3 es evidencia lenta que se acumula, no un examen que se aprueba.
+
+## h) Sensibilidad al eslabón más débil: si NKD se cae — escrito ANTES del resultado
+
+NKD carga dos cosas a la vez: **la independencia de la fase** (sus ρ son 0,59-0,71 contra 0,74-0,95 de
+los pares con ES/NQ/YM) y **el dato de peor calidad** (serie desde 2004, 90 exclusiones de roll — el
+100 % de sus trimestrales —, detector empírico de roll inservible por el desfase Tokio/CME, único de
+los tres sin micro contrato). La pregunta obligada es qué sostiene si ese eslabón se rompe
+(`factory/mm_sensibilidad.py`, con la matriz ya publicada — cero P&L):
+
+| conjunto | N | compuerta 1 | compuerta 2 |
+|---|---|---|---|
+| NQ + YM + NKD *(el veredicto)* | 778 | 361,3 — PASA | 346,7 — PASA (+1,4 %) |
+| **NQ + YM (sin NKD)** | 598 | 348,7 — PASA | **341,0 — NO PASA (−0,2 %)** |
+
+> **Sin NKD, la compuerta 2 falla por menos de una operación efectiva. La apertura de esta fase
+> DEPENDE de su mercado de peor calidad de datos, y eso queda dicho antes de conocer un solo P&L.**
+> Consecuencia pre-declarada: si durante la fase apareciera un defecto de datos que obligue a excluir
+> a NKD, la fase **queda inválida entera** — no se re-corre con NQ+YM (ya sabemos que no pasa la
+> compuerta), no se re-corta la banda de roll de NKD para salvarlo, y no se busca un reemplazo después
+> de conocer resultados. Se publica como fase fallida por datos, que es un resultado.
+
+Y el límite de este análisis, para que nadie lo use al revés: **esta tabla NO habilita elegir
+subconjuntos.** Reportar el mejor subconjunto de mercados está en la lista de §f que convierte K = 1
+en mentira. La tabla existe para medir la fragilidad del diseño, no para ofrecer alternativas.
+
+### h.1 La alineación de calendario de NKD, verificada
+
+La duda del encargo: NKD cotiza en horario CME con subyacente de Tokio — ¿sus barras diarias llevan el
+mismo día calendario que ES/NQ/YM, o la ventana queda corrida una sesión? Medido sobre fechas e índices
+de sesión, cero precios (`factory/mm_sensibilidad.py` §3):
+
+- **Entradas: 126 de 126 ventanas comunes NQ-NKD entran el MISMO día calendario. Salidas: 124 de
+  126** — las 2 restantes difieren en un solo día, y no por convención horaria sino porque los
+  conjuntos de sesiones difieren (NKD tiene 5 sesiones que NQ no tiene — feriados de EE.UU. donde el
+  contrato igual imprimió — y le faltan 17, casi todas de 2004-2005).
+- Los días de semana de NKD son lunes-viernes puros (0 sábados/domingos): la barra lleva fecha de
+  calendario de EE.UU., la misma convención que ES/NQ/YM.
+
+**Veredicto: no hay corrimiento sistemático.** La ventana de NKD vive en las mismas fechas que la de
+NQ salvo 2/126 casos de un día, que son ruido de calendario, no un defecto de alineación. Las
+correlaciones medidas no son un artefacto de desfase.
+
+## i) Pendiente que BLOQUEA el pre-registro
+
+El AFLOJA `1ff6891425c4bcd0` quedó registrado como aprobado por el encargo de Roberto del 26-ago
+(corrección B). **Roberto debe confirmarlo explícitamente.** Hasta ese OK: no se pre-registra la prueba
+única, no se calcula ningún P&L multi-mercado, y la fase queda **abierta pero detenida**. Si Roberto NO
+lo confirma, el AFLOJA se revierte con su propia entrada de ledger y la lista vuelve a discutirse con
+la regla vieja (un mercado por pozo) — con la matriz ya pública, lo que esa discusión ya no puede
+fingir es que no sabemos que NQ-YM = 0,74.
+
+---
+
 ## Lo que esta spec NO hace
 
 No pre-registra nada. No abre la fase. No gasta cartuchos. No compra datos. **No toca la caja fuerte de
