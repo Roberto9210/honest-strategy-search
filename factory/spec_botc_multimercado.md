@@ -522,14 +522,51 @@ de sesión, cero precios (`factory/mm_sensibilidad.py` §3):
 NQ salvo 2/126 casos de un día, que son ruido de calendario, no un defecto de alineación. Las
 correlaciones medidas no son un artefacto de desfase.
 
-## i) Pendiente que BLOQUEA el pre-registro
+## i) Pendiente que BLOQUEABA el pre-registro — RESUELTO el 26-ago
 
 El AFLOJA `1ff6891425c4bcd0` quedó registrado como aprobado por el encargo de Roberto del 26-ago
-(corrección B). **Roberto debe confirmarlo explícitamente.** Hasta ese OK: no se pre-registra la prueba
-única, no se calcula ningún P&L multi-mercado, y la fase queda **abierta pero detenida**. Si Roberto NO
-lo confirma, el AFLOJA se revierte con su propia entrada de ledger y la lista vuelve a discutirse con
-la regla vieja (un mercado por pozo) — con la matriz ya pública, lo que esa discusión ya no puede
-fingir es que no sabemos que NQ-YM = 0,74.
+(corrección B), y el bloqueo exigía confirmación explícita. **Roberto lo aprobó explícitamente y por su
+nombre el mismo 26-ago**, como aprobación **INFORMADA** — la entrada de ledger correspondiente lista
+exactamente qué sabía al aprobar: que ρ(NQ,YM) = 0,7395 está medida y contada dentro del n efectivo;
+que decir que NO cerraba la fase (sin YM el n efectivo es 340,1 y no pasa ni la compuerta 1 —
+verificado, junto con sus otras dos filas: sin NKD 348,7, sin NQ 303,5); y que la fase abre por 1,4 %
+con ese margen entero puesto por NKD, el mercado de peores datos y el único sin micro. El pre-registro
+queda desbloqueado.
+
+## j) El encuadre, que manda sobre todo lo demás: esto es una REGLA DE PARADA, no una búsqueda
+
+*Escrito antes de correr, por orden explícita de Roberto (26-ago).*
+
+**F4 viene arrastrándose desde la Fase 1 como "la única que casi". Esta prueba existe para CERRARLA,
+no para ganar.** El resultado más probable es un "no detectado": el δ pre-registrado es el máximo de
+57 búsquedas y por lo tanto casi seguro inflado — al 75 % del efecto la potencia real es 58 %, a la
+mitad es 30 %.
+
+**Consecuencia de lenguaje, obligatoria en el veredicto:** si sale negativo se escribe **"PARAMOS DE
+BUSCAR"** — jamás "se demostró que F4 es falsa". Una prueba de esta potencia no demuestra ausencia.
+Pre-comprometerse a dejar de buscar es honesto; confundirlo con una refutación no lo es.
+
+**Fecha de corte: viernes 28 de agosto de 2026.** Si el 28 la prueba no está corrida y el veredicto
+escrito, se publica el estado tal como esté y BOT C se cierra igual. No se extiende.
+
+### j.1 El estadístico de la prueba única, fijado en el pre-registro
+
+Una sola prueba sobre los tres mercados juntos, muestra congelada completa (post-roll, 2000-2026):
+
+```
+net_it   = puntos_it × multiplicador_i − fricción_RT_i     (MNQ 2,40 · MYM 2,40 · NKD 52,50)
+s_it     = net_it / σ_i                (σ_i = sd muestral del net del mercado i, ddof=1)
+δ̂        = (1/N) Σ s_it               (N = 778)
+SE       = raíz( Σ_p (T_p − k_p·δ̂)² ) / N     — errores agrupados por PERÍODO de vuelta de mes
+           (T_p = suma de s en el período p, k_p = mercados activos en p)
+z        = δ̂ / SE          confirma ⟺ |z| ≥ 1,959964  (p ≤ 0,05 bilateral, K = 1)
+```
+
+El SE agrupado por período es la varianza honesta: no supone la R medida en el bloque A, la mide donde
+la prueba vive. Como diagnóstico de consistencia — no como segunda prueba, y se publica pase lo que
+pase — se reporta también `z_diseño = δ̂·√361,3`, el z que implicaba el n efectivo pre-registrado.
+Divulgaciones obligatorias (§D1/§g, descriptivas, no pruebas): δ̂ y z por bloque A y B por separado, y
+δ̂ por mercado.
 
 ---
 
