@@ -1,0 +1,83 @@
+{
+  "n_before": 4,
+  "m_after": 3,
+  "banda_roll_sesiones": 8,
+  "convencion_vencimiento": {
+    "ES": "3F",
+    "NQ": "3F",
+    "YM": "3F",
+    "NKD": "2F_thu"
+  },
+  "mercados": {
+    "ES": {
+      "desde": "2000-09-18",
+      "hasta": "2026-08-19",
+      "vueltas_totales": 311,
+      "excluidas_por_roll": 2,
+      "vueltas_en_muestra": 309,
+      "excluidas_2000_2019": 1,
+      "en_muestra_2000_2019": 231,
+      "ejemplos_excluidos": [
+        "2017-08",
+        "2023-08"
+      ]
+    },
+    "NQ": {
+      "desde": "2000-09-18",
+      "hasta": "2026-08-26",
+      "vueltas_totales": 311,
+      "excluidas_por_roll": 2,
+      "vueltas_en_muestra": 309,
+      "excluidas_2000_2019": 1,
+      "en_muestra_2000_2019": 231,
+      "ejemplos_excluidos": [
+        "2017-08",
+        "2023-08"
+      ]
+    },
+    "YM": {
+      "desde": "2002-04-05",
+      "hasta": "2026-08-26",
+      "vueltas_totales": 292,
+      "excluidas_por_roll": 3,
+      "vueltas_en_muestra": 289,
+      "excluidas_2000_2019": 2,
+      "en_muestra_2000_2019": 211,
+      "ejemplos_excluidos": [
+        "2006-08",
+        "2017-08",
+        "2023-08"
+      ]
+    },
+    "NKD": {
+      "desde": "2004-02-17",
+      "hasta": "2026-08-26",
+      "vueltas_totales": 270,
+      "excluidas_por_roll": 90,
+      "vueltas_en_muestra": 180,
+      "excluidas_2000_2019": 64,
+      "en_muestra_2000_2019": 127,
+      "ejemplos_excluidos": [
+        "2004-02",
+        "2004-05",
+        "2004-08",
+        "2004-11"
+      ]
+    }
+  },
+  "pares": {
+    "NQ-YM": {
+      "comunes_historia_completa": 289,
+      "comunes_2000_2019": 211
+    },
+    "NQ-NKD": {
+      "comunes_historia_completa": 180,
+      "comunes_2000_2019": 127
+    },
+    "YM-NKD": {
+      "comunes_historia_completa": 180,
+      "comunes_2000_2019": 127
+    }
+  },
+  "N_nominal_fase": 778
+}
