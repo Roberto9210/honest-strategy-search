@@ -1,0 +1,54 @@
+{
+  "pre_registro": "8129df0c2170b9fe (ledger), spec commits 7c0e4d0/250d298/59fa917/9456128",
+  "prueba_unica": {
+    "n": 778,
+    "delta_hat": 0.101767,
+    "se_cluster": 0.051335,
+    "z": 1.9824,
+    "p_bilateral": 0.047432,
+    "periodos": 309,
+    "confirma": true,
+    "z_critico": 1.959964
+  },
+  "z_diseno_diagnostico": 1.9344,
+  "por_mercado": {
+    "NQ": {
+      "n": 309,
+      "sigma_usd": 560.74,
+      "friccion_rt_usd": 2.4,
+      "delta_hat_mercado": 0.094809,
+      "excluidas_por_roll": 2
+    },
+    "YM": {
+      "n": 289,
+      "sigma_usd": 229.01,
+      "friccion_rt_usd": 2.4,
+      "delta_hat_mercado": 0.127191,
+      "excluidas_por_roll": 3
+    },
+    "NKD": {
+      "n": 180,
+      "sigma_usd": 3526.93,
+      "friccion_rt_usd": 52.5,
+      "delta_hat_mercado": 0.072892,
+      "excluidas_por_roll": 90
+    }
+  },
+  "bloque_A_hasta_2019_11": {
+    "n": 566,
+    "delta_hat": 0.063542,
+    "se_cluster": 0.033799,
+    "z": 1.88,
+    "p_bilateral": 0.06011,
+    "periodos": 230
+  },
+  "bloque_B_desde_2019_12": {
+    "n": 212,
+    "delta_hat": 0.20382,
+    "se_cluster": 0.164918,
+    "z": 1.2359,
+    "p_bilateral": 0.216501,
+    "periodos": 79
+  },
+  "nota": "resultado CRUDO, escrito antes de cualquier interpretacion; el veredicto es un documento aparte"
+}
