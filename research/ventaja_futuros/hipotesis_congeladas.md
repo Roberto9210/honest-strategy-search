@@ -222,3 +222,98 @@ mide en el período mirado, y es un HECHO A VERIFICAR, no una hipótesis.
 ## 4 · Hipótesis surgidas después de ver datos
 
 *(vacía al 2026-09-03; lo que se agregue acá lleva fecha y no hereda la protección de arriba)*
+
+---
+
+# ENMIENDA 1 — 2026-09-03
+
+**Se anota al pie. Nada de arriba se reescribe.** Se commitea **sola**, antes de correr la cuenta de
+potencia nueva y antes de la comprobación del traslado. **Ninguna cifra de H2d (acierto, PnL, signo de
+`close − open`) se ha visto ni se verá con esta enmienda.**
+
+## E1.1 · Decisión de Roberto: Ventana D HEREDA K
+
+`factory/spec_fase2.md` §1.1 y §1.6: K = 261 al día de hoy (`f21fe78`), no se reinicia, y **cualquier fase
+futura divide α entre 261 + su presupuesto**. Ventana D declara **K_D = 1: H2d, una configuración, una
+población.** Si H1–H3 se admiten algún día, cada una suma 1 en el momento de admitirse. **α de H2d =
+0,05 / 262 = 1,908 × 10⁻⁴**, a dos colas como estaba (§2, H2d).
+
+Los seis reportes de febrero de ALAYA quedan **INVERIFICABLES** en `registro_multiplicidad.md` §1 y **no
+se suman**.
+
+## E1.2 · Lo que heredar K arrastra, y que el §0 y `diseno.md` no tenían: **la caja fuerte del programa**
+
+`spec_fase2.md` §5 y §7: **«La parte B, 2020-01-01 → 2026-08-19, sigue sellada. Un solo uso para TODO
+el programa»**, y **«la misma frontera de partición 2020-01-01, para que la caja fuerte siga siendo un
+objeto único»**. Esa caja es el **diario de ES** (`es_daily.csv`, Yahoo). El diario de ES de NT8 desde
+2020 es **la misma información** —los mismos días de mercado, la misma resolución— de otro proveedor.
+**Leer NT8 2020+ para elegir o ajustar algo es abrir la caja por otra puerta.**
+
+**Consecuencias, y son tres:**
+
+1. **La partición de `diseno.md` §1.3 queda RETIRADA.** Ponía el período mirado de H2d en 2019-05-06 →
+   2022-12-31, que está **adentro** de la caja del programa. No se corrió nada sobre ella. Se retira antes
+   de que se corra.
+2. **La frontera de H2d es 2020-01-01, la del programa.** Todo lo que se mire para controles (C0–C5 de
+   `diseno.md` §1.6) se mira **antes** de esa fecha. El intocado de H2d **es** la caja del programa, y su
+   única corrida gasta **el único uso del programa**, para H2d, para H1–H3 y para las familias G de la
+   fase 2 a la vez. **Abrirla es una decisión de Roberto, no de esta ventana, y no se toma acá.**
+3. **Las mediciones de terreno de esta ventana** (`terreno_tenencia`, `terreno_horas`, `terreno_stop`)
+   corrieron sobre 2016–2019 y **no tocaron la caja**. La comprobación del traslado de E1.4 usa fechas de
+   2020+ **sin evaluar ninguna hipótesis** (compara el signo del hueco entre dos libros, nunca contra el
+   día): se declara acá como medición de procedencia, de la misma clase que el control del 2016-11-16.
+
+## E1.3 · Población de H2d: pasa de MES a **ES diario de NT8**, y el motivo
+
+H2d afirma algo del **índice** (el signo del hueco), no del contrato. Ventana A (`f75d126`, control de
+período) midió medianas de excursión de ES y MES a 1,06 % una vez alineado el período. Y ES tiene
+**2.498 pares consecutivos mismo contrato** contra 1.821 de MES (guardián, tabla M3), y sobre todo
+**existe antes de 2020**: MES nace en 2019-05-06 y deja ~165 sesiones fuera de la caja; ES deja **852**.
+
+| tramo | ES diario NT8 | MES diario NT8 |
+|---|---|---|
+| **MIRADO**: 2016-08-23 → 2019-12-31 | ~852 sesiones (guardián: 866 fechas, 14 de roll) | ~165 |
+| **INTOCADO = caja del programa**: 2020-01-02 → 2026-08-21 | ~1.640 | ~1.650 |
+
+**Y hay que decirlo antes de que la tabla lo muestre: cambiar a ES casi no cambia el N del intocado**,
+porque el intocado lo fija la frontera del programa y MES ya existe casi entero adentro de ella. Lo que
+ES compra es el **mirado**: 852 sesiones para C0–C5 en vez de 165. La potencia se calcula en
+`potencia_heredada.py` sobre ambas poblaciones y con α heredado; los N exactos de pares mismo-contrato por
+tramo los cuenta el script desde las fechas de los CSV (fechas y contratos, no precios).
+
+**NQ: no es la misma hipótesis y no se agrega.** Un hueco del Nasdaq no es un hueco del S&P; correr H2d
+sobre NQ sería una **segunda configuración evaluada contra datos de mercado** (§1.1) y pagaría K_D = 2.
+Agrupar ES + NQ en una sola prueba tampoco: son los mismos días de mercado, correlacionados, y sumar sus
+sesiones infla N sin agregar información independiente. **Decisión de esta ventana: K_D = 1, sólo ES.**
+Si alguna vez se quiere NQ, se paga y se pre-registra aparte.
+
+## E1.4 · El precio del traslado: qué se supone, y cómo se comprueba con lo que hay
+
+**Supuesto de traslado, dicho exacto:** que el **signo** de `open_t − close_{t−1}` en ES coincide con el
+de MES en la misma fecha, de modo que una regularidad de signo medida en ES sea la misma regularidad que
+se operaría en MES. **No se supone** que coincidan los tamaños (Ventana A: 8 puntos de diferencia de
+apertura el mismo día) ni la ejecución.
+
+**Comprobación, sobre las fechas donde los dos existen y los dos están en el mismo contrato de su raíz
+(≈ 1.821):** por fecha, `sign(gap_ES)` contra `sign(gap_MES)`. Se imprime: fechas con ambos huecos no
+nulos y su acuerdo de signo; fechas con al menos un hueco nulo (`open == close_prev` exacto) y cuántas;
+acuerdo restringido a `|gap| ≥ 0,25` en los dos; acuerdo por año. **Nada de `close − open` se calcula ni
+se imprime.**
+
+**Criterio, fijado ahora:**
+
+| resultado | criterio sobre las fechas con ambos huecos no nulos |
+|---|---|
+| **PASA: el traslado deja de ser supuesto** | acuerdo de signo **≥ 95 %** |
+| **INDETERMINADO** | entre 90 % y 95 %: se reporta y no se sigue sin decisión |
+| **FALLA: H2d no se puede medir en ES para operar en MES** | **< 90 %** |
+
+Y una lectura que se declara antes: si la fracción de fechas con hueco **nulo** es alta (la fase 2 midió
+15,7 % en Yahoo; el `close` de NT8 es la liquidación, `discordancia_20161116_resultado.md` §3), eso no
+es desacuerdo entre libros: es la precondición C0 de `diseno.md`, y se rotula como tal.
+
+## E1.5 · Qué se corre ahora y qué no
+
+Se corre: `potencia_heredada.py` (aritmética + conteo de fechas) y `traslado_signo.py` (E1.4). **No se
+corre H2d. La caja sigue cerrada.** El veredicto —si H2d queda en pie, con qué población y con qué
+umbral de efecto— va en la Enmienda 2, después de ver esas dos salidas y ninguna otra.
