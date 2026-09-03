@@ -317,3 +317,84 @@ es desacuerdo entre libros: es la precondición C0 de `diseno.md`, y se rotula c
 Se corre: `potencia_heredada.py` (aritmética + conteo de fechas) y `traslado_signo.py` (E1.4). **No se
 corre H2d. La caja sigue cerrada.** El veredicto —si H2d queda en pie, con qué población y con qué
 umbral de efecto— va en la Enmienda 2, después de ver esas dos salidas y ninguna otra.
+
+---
+
+# ENMIENDA 2 — 2026-09-03 — el veredicto, después de `potencia_heredada.txt` y `traslado_signo.txt` y de nada más
+
+**Se anota al pie. Nada de arriba se reescribe.** Ninguna cifra de H2d se ha visto: las dos salidas
+cuentan fechas, contratos y signos de hueco entre libros; ninguna calcula `close − open`.
+
+## E2.1 · El traslado deja de ser supuesto: **PASA, 96,61 %**
+
+Sobre 1.845 fechas comunes (2019-05-07 → 2026-08-21, ambos en el mismo contrato de su raíz), 1.741 con
+ambos huecos no nulos: **el signo coincide en 1.682, el 96,61 %.** Criterio E1.4: ≥ 95 % PASA.
+
+| condición | fechas | acuerdo |
+|---|---|---|
+| ambos huecos no nulos | 1.741 | 96,61 % |
+| alguno con \|gap\| ≥ 1 punto | 1.599 | 98,44 % |
+| alguno con \|gap\| ≥ 2 puntos | 1.296 | 99,38 % |
+| 2019 solo (los primeros meses de MES) | 148 | 89,19 % |
+| 2020 → 2026, cada año | 155–247 | 95,1 % a 99,2 % |
+
+Los 59 desacuerdos tienen mediana de \|gap\| de **0,50 en las dos raíces**: dos ticks. **Los libros
+discrepan cuando el hueco es ruido de un par de ticks; cuando el hueco es de un punto o más, coinciden
+98 de cada 100 veces.** La regla congelada opera desde un tick y **no se cambia por esto**: cambiar el
+umbral después de ver esta tabla sería ajustar la regla con datos, aunque los datos no sean de H2d. Queda
+dicho como costo conocido de la regla: en ~4 % de las fechas el signo de ES no es el de MES, y son las
+fechas de hueco mínimo.
+
+**Precondición C0, rotulada y no dictaminada:** 5,6 % de fechas con algún hueco nulo (ES 2,9 %, MES
+3,1 %), **por debajo del 10 % que §2 fijó**. El `close` de NT8 es la liquidación de las 15:15 CT, así que
+el hueco de las columnas es el de 15:15 → 17:00 y no el nocturno (`discordancia_20161116_resultado.md`
+§3); pero no está degenerado como en Yahoo (15,7 %). La parte de varianza de C0 se mide en el mirado
+cuando se mida.
+
+**Orientación:** NQ contra MNQ da 94,86 %; **ES contra NQ da 85,98 %**: dos índices distintos no ven el
+mismo hueco en 14 de cada 100 días. **Confirma E1.3: NQ no es la misma hipótesis.**
+
+## E2.2 · La potencia con α heredado: **la población no resolvió sola el problema; la frontera manda**
+
+Pares consecutivos mismo contrato, contados desde fechas y contratos (`potencia_heredada.txt`):
+
+| población | mirado < 2020 | intocado ≥ 2020 (caja del programa) |
+|---|---|---|
+| ES | **851** | **1.687** |
+| MES | 167 | 1.683 |
+
+**El intocado de ES y el de MES tienen el mismo N (1.687 contra 1.683)**, porque MES nace en 2019-05 y
+casi entero cae adentro de la caja. Lo que ES compra es el mirado: 851 contra 167. Eso es lo que E1.3
+dijo antes de la tabla, y la tabla lo confirma.
+
+Con α = 0,05/262 a dos colas (z = 3,73), potencia binomial exacta sobre el intocado de ES (n = 1.687):
+
+| acierto real | 52 % | 55 % | 56 % | 57 % | 58 % | 60 % |
+|---|---|---|---|---|---|---|
+| potencia | 0,017 | **0,641** | **0,882** | 0,978 | 0,998 | 1,000 |
+
+**Acierto mínimo detectable al 80 %: 55,6 %.** Con α = 0,05 era 53,4 %. **55 % ya no es alcanzable
+(0,64); 56 % sí (0,88).** La pregunta concreta tiene respuesta concreta: **no, 55 % no volvió a ser
+alcanzable; la decisión de población no resolvió el problema de potencia, y no podía, porque el N del
+intocado lo fija la frontera 2020-01-01 y no el instrumento.** Sumar NQ a ES daría 0,98 al 55 % pero es
+N inflado con los mismos días: no se usa, y está impreso para que se vea lo que inflaría. K_D = 1, 2 o 4
+cambian la tercera cifra decimal; el denominador 261 es el que pesa.
+
+## E2.3 · Veredicto: **H2d QUEDA EN PIE**, con esta población y este umbral
+
+| | |
+|---|---|
+| **hipótesis** | H2d tal como está en §2, sin cambios de regla: un tick de umbral, entrada `open_t`, salida `close_t`, un contrato, dos colas |
+| **población** | **ES diario de NT8** (CSV de `37a0144`), contrato de máximo volumen por fecha, pares consecutivos mismo contrato. **El traslado a MES está medido: 96,6 % de acuerdo de signo, 98,4 % con hueco de un punto o más** |
+| **mirado** | 2016-08-23 → 2019-12-31, **851** pares. Sólo para C0 (varianza), C1–C5 de `diseno.md` §1.6, con C3 «otro libro» reescrito: ahora el otro libro es **MES** en sus 167 pares de 2019, y su criterio pasa a ser el de E1.4, que ya pasó |
+| **intocado** | **la caja del programa, 2020-01-02 → 2026-08-21, 1.687 pares.** Una corrida, que gasta el único uso del programa. **Abrirla es decisión de Roberto** |
+| **α** | 0,05 / 262 = 1,908 × 10⁻⁴, dos colas, K_D = 1 |
+| **umbral de efecto** | **detectable al 80 % desde 55,6 % de acierto neto**; a 55 % la potencia es 0,64 y se declara así: si el efecto real es 55 %, hay 36 % de probabilidad de no verlo aunque exista |
+| **costo** | 3,90 USD por ida y vuelta, adentro de cada fila, como en `diseno.md` §1.4 |
+| **si falla** | como `diseno.md` §1.5: muere, se anota, no hay variante ni segunda corrida, y la caja queda gastada para todo el programa |
+
+**Lo que cambió respecto del diseño original y por qué, en una línea cada uno:** población MES → ES
+(existe antes de la frontera; traslado medido); partición 50/50 propia → frontera del programa (heredar
+K hereda la caja); α 0,05 → 0,05/262 (§1.6); umbral 55 % → 55,6 % (consecuencia de las dos anteriores).
+**Lo que no cambió: la regla de H2d, su falsador, su costo, y que no se corre nada hasta que Roberto
+decida abrir la caja.**

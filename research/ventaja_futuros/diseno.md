@@ -210,3 +210,19 @@ gastada para toda la fase, no sólo para estas tres.
 | independencia de tres operaciones por sesión | **HIPÓTESIS PARA MEDIR** en el mirado, si alguna regla llega a tres | el mirado |
 | la potencia de la tabla | **HECHO**: aritmética, `potencia.py`, sin datos | — |
 | H2d tiende a extenderse | **HIPÓTESIS PARA MEDIR**, propia, a dos colas | el intocado, una vez |
+
+---
+
+# NOTA FECHADA — 2026-09-03 — este diseño quedó enmendado por `hipotesis_congeladas.md`, Enmiendas 1 y 2
+
+**Nada de arriba se reescribe.** Lo que ya no rige, y dónde está lo que rige:
+
+- **§1.1 población:** MES → **ES diario de NT8**. Traslado a MES medido (96,6 % de acuerdo de signo). E1.3, E2.1.
+- **§1.2 potencia:** las cifras de arriba usan α = 0,05 y 0,0125. **Rige α = 0,05/262** (K heredado). Con él,
+  el intocado detecta desde **55,6 %**, no desde 55 %. E2.2, `potencia_heredada.txt`.
+- **§1.3 partición:** **RETIRADA.** Ponía el mirado adentro de la caja del programa (2020-01-01 → 2026-08-19,
+  un solo uso). Rige: mirado 2016-08-23 → 2019-12-31 (851 pares de ES), intocado = la caja (1.687). E1.2, E2.3.
+- **§1.6 C3 «otro libro»:** el otro libro pasa a ser MES sobre sus 167 pares de 2019, con el criterio de E1.4.
+- **§2 (H1–H3 sobre ES Databento):** sigue condicional y ahora con una condición más: su intocado es **la
+  misma caja del programa** que la de H2d y la de las familias G de la fase 2. **Un solo uso para todo.**
+- **§1.4, §1.5 y el resto de §1.6:** sin cambios.
