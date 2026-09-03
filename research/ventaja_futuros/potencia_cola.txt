@@ -1,0 +1,57 @@
+POTENCIA DEL ESTADISTICO DE COLA -- Ventana D, 2026-09-03. ES 1-min Databento 2016-2019. NO gasta cartucho.
+alpha = 0.05/264 = 1.8939e-04 dos colas, z = 3.733; potencia 80 %, z_b = 0.842; particion 459 / 492
+Referencia a batir: el efecto medido en la cola ya publicado es p95 ALTO / p95 BAJO = 1.51x (commit 06758f6).
+NADA se calcula partido por estado: todo es incondicional o simulado bajo H0.
+
+======================================================================================================================
+0. POBLACION: 951 sesiones, la misma de la corrida anterior. Excursion adversa larga de la sesion completa, incondicional.
+======================================================================================================================
+  p50 = 8.75   p90 = 32.75   p95 = 48.50   p99 = 89.88 pts   max = 161.25
+
+======================================================================================================================
+A) CONTRASTE DE p95 -- error estandar del cociente bajo H0, por remuestreo de la MISMA distribucion
+======================================================================================================================
+  4000 remuestreos; las dos mitades salen de la misma distribucion, asi que esto es el ruido puro del cociente de p95
+  desvio de log(p95_1/p95_2) bajo H0 = 0.1514   -> un cociente de p95 de 1.00 tiene ruido de +-34.5 % al 95 %
+  EFECTO MINIMO DETECTABLE al 80 % en el cociente de p95: 1.998x
+  para comparar, el mismo calculo con alpha 0.05 (sin la deuda): 1.528x
+
+======================================================================================================================
+B) TASA DE SUPERAR UN UMBRAL L -- la redaccion literal de la forma 3. L en USD de MES, un contrato
+======================================================================================================================
+    L (USD)  L (pts)  tasa base  n dias   factor min detectable   tasa que habria que ver
+        100     20.0     20.82%     198                   1.80x              27.05% vs 15.01%
+        200     40.0      7.05%      67                   3.25x              10.98% vs 3.37%
+        300     60.0      2.94%      28                  10.78x               5.55% vs 0.51%
+        400     80.0      1.37%      13           no alcanzable                        --
+        500    100.0      0.53%       5           no alcanzable                        --
+        750    150.0      0.11%       1           no alcanzable                        --
+       1000    200.0     0.00 %       0       imposible: 0 dias                        --
+
+======================================================================================================================
+C) CONTRA EL EFECTO QUE EXISTE (1.51x en p95, ya publicado)
+======================================================================================================================
+  estadistico de p95:  detectable desde 2.00x   contra 1.51x medido   -> NO ALCANZA
+  tasa con L = 200 USD: detectable desde 3.25x   contra 1.51x medido en p95   -> NO ALCANZA
+  tasa con L = 400 USD: detectable desde no alcanzable   contra 1.51x medido en p95   -> NO ALCANZA
+
+  Cuidado con comparar peras con manzanas: 1.51x es el cociente de p95, no el cociente de TASAS,
+  y la seccion B pide un cociente de tasas. La seccion D traduce uno en otro sin partir por estado.
+
+======================================================================================================================
+D) TRADUCCION: que cociente de TASAS implica un efecto de cola de 1.51x en p95
+======================================================================================================================
+  Modelo declarado, y es una COTA OPTIMISTA a proposito: se supone que la cola de cada grupo es la
+  incondicional escalada, con ALTO por s y BAJO por s/1.51, s = sqrt(1.51) = 1.229. Es optimista porque
+  el efecto medido NO es un escalamiento puro: la mediana no se movio (1.00x), asi que el desplazamiento
+  real de la cola es menor que el de un escalamiento que multiplique todo. Si ni con esta cota alcanza,
+  no alcanza. Todo se evalua sobre la distribucion INCONDICIONAL: no se parte por estado.
+    L (USD)  L (pts)  tasa base  tasa ALTO  tasa BAJO   cociente implicado  detectable    
+        100     20.0     20.82%     26.92%     14.93%                1.80x       1.80x   ALCANZA
+        200     40.0      7.05%     10.09%      5.05%                2.00x       3.25x   no alcanza
+        300     60.0      2.94%      5.05%      1.68%                3.00x      10.78x   no alcanza
+        400     80.0      1.37%      2.10%      0.53%                4.00x         n/a   no alcanza
+        500    100.0      0.53%      1.37%      0.11%               13.00x         n/a   no alcanza
+        750    150.0      0.11%      0.11%      0.00%                 infx         n/a   no alcanza
+
+  LA CAJA SIGUE CERRADA.
