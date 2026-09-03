@@ -76,3 +76,40 @@ otra cantidad: incluye ganancias que compensan.
 | script | `research/ventaja_futuros/terreno_stop.py` |
 | salida cruda, commiteada antes de interpretar | `research/ventaja_futuros/terreno_stop.txt` |
 | resumen | `research/ventaja_futuros/terreno_stop_resultado.md` |
+
+---
+
+# ENMIENDA 1 — 2026-09-03
+
+**Se anota al pie. Nada de arriba se reescribe.**
+
+## Qué pasó
+
+La primera corrida (`50c0cf8` → script) **paró en el control** y no imprimió nada más. El script sale
+con código 1 antes de calcular frecuencia, horas, exceso o la cuenta de 20 sesiones. **Al momento de
+escribir esta enmienda no se ha visto ninguna cifra de las salidas 1 a 4.** Lo único visto es la tabla
+del control:
+
+| criterio | resultado |
+|---|---|
+| convergencia con stop a 60 ↔ sin stop, mediana y p95 dentro del 10 % | **cumplido en las 8 filas**: peor diferencia +4,8 % (T23 largo, p95) |
+| toque en T23 con D = 60 **< 3 %** | **3,09 % en T23 largo**; 0,93 % en corto |
+
+## Por qué el umbral estaba mal escrito, y no el cálculo
+
+El mismo párrafo del control dice que **60 está entre el p95 (51,12) y el p99 (89,02)** de la excursión
+de T23 largo medida en `terreno_tenencia.txt`. Eso implica una frecuencia de toque **entre 1 % y 5 %**,
+y el «< 3 %» fue un número redondo puesto sin derivarlo. 3,09 % está dentro de lo que la premisa del
+propio pre-registro admite. **El criterio que prueba el cálculo es la convergencia, y pasó.**
+
+## Qué se cambia, y es más exigente que lo que reemplaza
+
+La frecuencia de toque con stop a D **es la misma cantidad** que la fracción de sesiones cuya excursión
+adversa máxima en la ventana es ≥ D, calculada por otro camino (primera barra que cruza, contra máximo de
+la ventana). Se reemplaza el «< 3 %» por:
+
+- **igualdad exacta**, en las cuatro ventanas y los dos lados, entre la frecuencia de toque con D = 60 y la
+  fracción de sesiones con excursión ≥ 60 de `window_stats` (la función de `terreno_tenencia.py`);
+- y que en T23 esa fracción esté **entre 1 % y 5 %**, que es lo que p95 y p99 obligan.
+
+La convergencia del 10 % queda como estaba. Se corre de nuevo **después** de commitear esta enmienda sola.
