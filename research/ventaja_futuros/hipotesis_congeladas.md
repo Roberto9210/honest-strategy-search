@@ -398,3 +398,87 @@ cambian la tercera cifra decimal; el denominador 261 es el que pesa.
 K hereda la caja); α 0,05 → 0,05/262 (§1.6); umbral 55 % → 55,6 % (consecuencia de las dos anteriores).
 **Lo que no cambió: la regla de H2d, su falsador, su costo, y que no se corre nada hasta que Roberto
 decida abrir la caja.**
+
+---
+
+# ENMIENDA 3 — 2026-09-03 — rige el protocolo de la spec: K se cobra en A, la caja se examina a 0,05
+
+**Se anota al pie. Nada de arriba se reescribe. Al momento de escribir esto no se ha visto ningún
+resultado de H2d:** ningún script de este repo ha calculado `close − open` sobre ninguna fecha de ES ni
+de MES diario; lo único visto son fechas, contratos, signos de hueco entre libros (E2.1) y la dispersión
+de la excursión adversa de los minutos de Databento (`potencia_terreno_condicional.txt`). El orden del
+log es la garantía: esta enmienda se commitea sola, antes de `h2d_compuerta1.py`.
+
+## E3.1 · Qué decía la Enmienda 2
+
+Que H2d se probaba **una sola vez, en el intocado** (la caja del programa, 1.687 pares), con
+**α = 0,05/262 a dos colas**, y que el mirado (851 pares) servía **sólo para los controles C0–C5**: ninguna
+cifra de acierto del mirado se publicaba. El umbral de efecto salía de ahí: 55,6 % en B.
+
+## E3.2 · En qué contradecía la spec
+
+`factory/spec_fase2.md` (`e17cde9`), leído textual en `caja_alcance_y_uso.md` §2:
+
+- §3.3 línea 359: "Significancia | p ≤ 0.05 bilateral (**prueba única pre-registrada; la multiplicidad ya
+  se pagó en A**)".
+- §3.1 línea 262–270: la compuerta 1 se pasa **en la parte A**, con n_A ≥ 100, |t_A| ≥ 3,726 (p ≤ 0,05/257),
+  factor de ganancia neto ≥ 1,3, vecindad sin celda perdedora, |t_A| ≥ 3,726 sin el mejor 1 % de las
+  operaciones, y operaciones no solapadas.
+- §1.2 línea 82–86: el estadístico es `t = media(neto) / (desvío(neto, ddof=1) / √n)`, `p = erfc(|t|/√2)`,
+  y "**No se sustituye por otro estadístico después de ver los resultados**".
+- §3.3 línea 351: "La abre **la primera candidata que pase las compuertas 1 y 2**".
+- Ledger, CAMBIO_DE_REGLAS del 2026-08-25: "la prueba sobre B NO arrastra la penalidad de la busqueda; esa
+  vive en la compuerta 1 [...] y no se cobra dos veces".
+
+La Enmienda 2 cobraba K en B y no exigía nada en A. La spec cobra K en A y examina B a 0,05. Son dos
+protocolos distintos, y el de la enmienda **borraba una compuerta**: la que obliga a la candidata a ganarse
+el derecho a la caja sobre datos ya vistos antes de gastar el único uso del programa.
+
+## E3.3 · Cuál rige y por qué
+
+**Decisión de Roberto, 2026-09-03: rige el protocolo de la spec.** El motivo no es sólo que esté escrito:
+es que el tamiz en A es exactamente lo que impide gastar el único tiro en un candidato flojo, que fue el
+motivo por el que no se abrió la caja. De la Enmienda 2 quedan en pie la población (ES diario de NT8, con
+traslado medido), el mirado 2016-08-23 → 2019-12-31 y el intocado = la caja del programa; **cae el α sobre
+B y cae la prohibición de publicar el acierto del mirado**, porque el mirado ahora es la parte A de la
+compuerta 1.
+
+## E3.4 · Lo que se corre ahora: la compuerta 1 de H2d sobre el mirado, y sólo eso
+
+Población: ES diario de NT8 (CSV del guardián `37a0144`+), contrato de máximo volumen por fecha, pares
+consecutivos mismo contrato, **2016-08-23 → 2019-12-31, 851 pares esperados**. La regla es la de §2 y de
+`diseno.md` §1.1, sin cambios: `gap_t = open_t − close_{t−1}`; si `|gap_t| ≥ 0,25`, `sign(gap_t)`, entrada
+`open_t`, salida `close_t`, un contrato; `neto = sign(gap_t) × (close_t − open_t) × 5 − 3,90` en USD de MES,
+sobre puntos de ES (traslado E2.1). K_D = 1: esta corrida **es** la evaluación de H2d contra datos de
+mercado (§1.1) y cuesta lo que ya está contado.
+
+Orden de la salida y criterios, fijados antes de correr:
+
+1. **C0 primero, y si dispara se para ahí.** Identidad `open_t == close_{t−1}` > 10 % de los pares, **o**
+   varianza de `gap` < 10 % de la varianza de `close_t − close_{t−1}`: H2d **muere** como hipótesis de hueco
+   nocturno con estas columnas (decisión de Roberto: no se sigue con una hipótesis rotulada "hueco de
+   mantenimiento"). El script imprime C0 y termina sin calcular nada más.
+2. **C1–C5 arriba del resultado**, como en `diseno.md` §1.6: C1 placebo de signo (1.000 permutaciones,
+   semilla 20260903, banda 2,5–97,5 % del acierto y del t); C2 rival de momentum `sign(close_{t−1} −
+   close_{t−2})`; C3 otro libro = **MES** en sus pares de 2019 (E2.3), coincidencia de signo de (acierto −
+   0,5) y de la media neta; C4 escala 2 contratos = exactamente 2× bruto y 2× fricción; C5 uniones
+   descartadas por cambio de contrato, conteo y meses.
+3. **El resultado**, con: n, aciertos, acierto, binomial exacta a dos colas (el estadístico del falsador
+   congelado, se imprime y se exige), **media neta, desvío, t_A y p_crudo (§1.2, el estadístico que decide)**,
+   factor de ganancia neto, t_A sin el mejor 1 % de las operaciones, y la línea de la suerte 1/(K+1).
+4. **Compuerta 1 pasa sólo si todo esto pasa:** n_A ≥ 100; **|t_A| ≥ 3,731** (= p ≤ 0,05/262 con K = 261
+   heredado y K_D = 1; la spec escribe 3,726 para 257, y se usa la más dura); binomial a dos colas
+   p ≤ 0,05/262 con acierto > 0,5 (< 0,5 con significación es gap fill, no confirma: §2); PF neto ≥ 1,3;
+   t_A ≥ 3,731 sin el mejor 1 %; **vecindad**: el único parámetro es el umbral de un tick, que no tiene
+   celda por debajo (los huecos son múltiplos de 0,25, así que 0 ticks es la misma regla); se imprime la
+   celda **2 ticks (0,50)** como robustez, **sin adoptarla** (§9.5: adoptar cobra), y no puede perder plata.
+5. **Compuerta 2**, con n_A real y n_B proyectado del **calendario** de la caja (1.687 pares × la tasa de
+   operación medida en A; ningún precio de B): `|t_A| ≥ 2,8016 × √(n_A / n_B)`. Se imprime la vara y si
+   pasa.
+6. **Si no pasa la compuerta 1: H2d muere sin haber gastado nada**, se anota DESCARTADA al pie de este
+   archivo, sin variante, sin filtro de tamaño, sin segunda corrida. **Si pasa: NO se abre la caja.** Se
+   reporta y lo decide Roberto. La compuerta 3 sería sobre la caja a 0,05 bilateral, con PF ≥ 1,3 y ≥ 5 de
+   7 años positivos (§3.3), y gastaría el único uso del programa.
+
+Salida cruda a `h2d_compuerta1.txt`, commiteada antes de una palabra de interpretación. `diseno.md` no se
+reescribe: su nota fechada remite acá.
