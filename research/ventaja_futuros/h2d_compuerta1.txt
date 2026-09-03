@@ -1,0 +1,15 @@
+COMPUERTA 1 DE H2d SOBRE EL MIRADO -- Ventana D, 2026-09-03. ES diario NT8, contrato de max volumen, pares mismo contrato.
+Ejecuta hipotesis_congeladas.md Enmienda 3 E3.4. alpha = 0.05/262 = 1.9084e-04; |t| >= 3.731; linea de la suerte 1/(K+1) = 0.00380
+LA CAJA NO SE LEE: el cargador descarta toda fila >= 2020-01-01 antes de calcular nada.
+
+======================================================================================================================
+0. POBLACION: fechas en el mirado 866 (2016-08-23 -> 2019-12-31); pares mismo contrato 851; esperados 851
+======================================================================================================================
+
+======================================================================================================================
+C0 - PRECONDICION -- si dispara, H2d muere aqui y el script termina
+======================================================================================================================
+  fechas con open_t == close_(t-1) exacto: 70 de 851 = 8.23 %   (criterio: > 10 % dispara)
+  varianza(gap) = 18.559   varianza(close_t - close_(t-1)) = 462.267   fraccion = 4.01 %   (criterio: < 10 % dispara)
+  |gap| p50 = 1.00 pts   |cc| p50 = 9.25 pts
+  C0: DISPARA -- H2d NO es medible como hueco nocturno con estas columnas. H2d MUERE. Nada mas se calcula.
