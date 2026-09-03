@@ -110,6 +110,50 @@ está medido. La **forma 3** es la única que decide «hoy no», pero exige L de
 suficiente; sin L no existe. La **forma 2** es la que convierte el tamaño en una regla mecánica sin
 buscar nada. Si Roberto quiere una sola, la forma 1 primero, porque su respuesta negativa también vale.
 
+---
+
+# NOTA FECHADA — 2026-09-03, más tarde — la forma 3 está muerta antes de escribirse
+
+Cuenta pedida por Roberto antes de pre-registrar nada, y **no gasta cartucho**: es la compuerta de
+potencia que la spec exige calcular antes (§3.2). Salida: `potencia_cola.txt` (`ef5c556`). Nada se
+midió partido por estado: todo es incondicional sobre las 951 sesiones o simulado bajo H0.
+
+**El 1,52× que declaré detectable era para un contraste de medias en log. Para el estadístico que la
+forma 3 usa de verdad, el umbral es mucho más alto.**
+
+| estadístico | efecto mínimo detectable, α = 0,05/264 | efecto que existe |
+|---|---|---|
+| cociente de p95 | **2,00×** | 1,51× |
+| tasa de superar 100 USD (base 20,8 %) | 1,80× | 1,80× implicado |
+| tasa de superar 200 USD (base 7,1 %) | 3,25× | 2,00× implicado |
+| tasa de superar 300 USD (base 2,9 %) | 10,78× | 3,00× implicado |
+| tasa de superar 400 USD o más | no alcanzable a ningún factor | — |
+
+El ruido del cociente de p95 con esta partición es ±34,5 % al 95 % aun cuando el cociente verdadero
+sea 1,00: un p95 es un estadístico caro. Sin la deuda de multiplicidad el umbral sería 1,53×, o sea
+**la deuda es exactamente lo que lo mata**: 1,51 pasaba a 0,05 y no pasa a 0,05/264.
+
+La fila de las tasas implicadas usa un modelo de escalamiento **declaradamente optimista** (la cola de
+cada grupo es la incondicional escalada), porque el efecto real no es escalamiento puro: la mediana no
+se movió. Ni con esa cota alcanza, salvo en L = 100 USD, donde el implicado empata al detectable
+—1,80 contra 1,80— y eso no decide nada. Y 100 USD por día no es el límite diario de ninguna cuenta
+fondeada; es un décimo de lo que esas cuentas fijan.
+
+**Dato que cierra la puerta por el otro lado:** en 2016–2019, con un contrato de MES, la excursión
+adversa **nunca llegó a 1.000 USD** (máximo 161,25 pts = 806 USD, cero días sobre 1.000). En el rango
+donde un límite diario real vive, el evento casi no ocurre y no hay nada que contrastar.
+
+**Veredicto: la forma 3 no se pre-registra.** Está muerta antes de escribirse, y el cartucho queda sin
+gastar. K sigue en 263. No hace falta el límite diario L: la cuenta no depende de su valor, porque en
+todo el rango plausible el umbral detectable queda por encima del efecto que existe.
+
+**Lo que queda vivo de este documento:** nada en su forma actual. Las tres formas están cerradas: la 1
+sin preguntar y con su cartucho gastado, la 2 debilitada por la correlación de +0,29, la 3 muerta por
+potencia. Una cuarta forma tendría que apoyarse en un efecto más grande que los medidos, o en una
+población con más sesiones que las 951 que quedan fuera de la caja.
+
+---
+
 Ninguna hipótesis queda formulada acá. Cualquiera que se formule va a la sección 4 de
 `hipotesis_congeladas.md`, con condición, decisión, X y potencia escritos antes, y con esta línea:
 **elegida después de ver las escaleras.**
