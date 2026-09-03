@@ -113,3 +113,39 @@ la ventana). Se reemplaza el «< 3 %» por:
 - y que en T23 esa fracción esté **entre 1 % y 5 %**, que es lo que p95 y p99 obligan.
 
 La convergencia del 10 % queda como estaba. Se corre de nuevo **después** de commitear esta enmienda sola.
+
+---
+
+# ENMIENDA 2 — 2026-09-03
+
+**Se anota al pie. Nada de arriba se reescribe. Sigue sin verse ninguna cifra de las salidas 1 a 4:**
+la segunda corrida (`166e091` → script) también paró en el control.
+
+## Qué pasó
+
+| criterio de la Enmienda 1 | resultado |
+|---|---|
+| igualdad exacta toque ↔ fracción con excursión ≥ 60 | **cumplida en las 8 filas** |
+| convergencia con stop ↔ sin stop, 10 % | **cumplida en las 8 filas**, peor +4,8 % |
+| «en T23 esa fracción entre 1 % y 5 %» | largo 3,09 % cumple; **corto 0,93 % no** |
+
+## Por qué la banda estaba mal escrita, por segunda vez
+
+La banda 1–5 % la derivé de los percentiles del lado **largo** (p95 51,12 < 60 < p99 89,02) y la escribí
+«para T23» sin decir el lado. En el lado corto, **p99 = 57,87 < 60**, así que la frecuencia esperada es
+**menor que 1 %**, y 0,93 % es exactamente eso. **Dos veces seguidas el control paró por un número que
+escribí sin derivarlo del dato que ya tenía.** Queda escrito porque es la lección: un umbral de control
+se deriva o no se pone.
+
+## Qué se cambia
+
+Se reemplaza la banda fija por la banda que **los percentiles de cada ventana y lado implican**, calculada
+en el script a partir de la misma `window_stats` (los mismos números de `terreno_tenencia.txt`):
+
+- si `p95 ≤ 60 ≤ p99` → frecuencia entre 1 % y 5 %;
+- si `60 > p99` → frecuencia < 1 %;
+- si `60 < p95` → frecuencia > 5 %.
+
+Ocho comprobaciones, una por fila, ninguna escrita a mano. Igualdad exacta y convergencia quedan como
+estaban. Se corre de nuevo **después** de commitear esta enmienda sola. Si vuelve a parar, se reporta a
+Roberto sin tocar nada más.
