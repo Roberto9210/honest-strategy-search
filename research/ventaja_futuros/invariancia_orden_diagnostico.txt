@@ -1,0 +1,47 @@
+DIAGNOSTICO DE LA FALLA DE K0 -- Ventana D, 2026-09-03. No reabre la pregunta: no recalcula el contraste principal
+ni los rankings, y no cambia ningun criterio. Separa bug de alineacion, grosor de la mediana y ausencia de senal.
+
+======================================================================================================================
+0. POBLACION: 951 sesiones, la misma que uso el script de la pregunta
+======================================================================================================================
+
+======================================================================================================================
+1. PRUEBA DE ALINEACION -- el rango de HOY contra la excursion de HOY (tiene que separar; si no, hay bug)
+======================================================================================================================
+  particion por rango de HOY (control positivo, NO es la condicion pre-registrada)
+    ALTO n= 462 media   19.95 | p10=  1.75 p25=  4.50 p50= 13.00 p75= 25.25 p90= 49.10 p95= 63.50 p99=100.51
+    BAJO n= 489 media    8.73 | p10=  1.25 p25=  3.25 p50=  7.00 p75= 11.75 p90= 18.25 p95= 22.90 p99= 39.06
+    diferencia de medias +11.217 pts   t = +10.322   p = 5.629e-25   factor de medias 2.285x
+
+======================================================================================================================
+2. LA CONDICION PRE-REGISTRADA -- rango de AYER contra su mediana movil
+======================================================================================================================
+  particion por rango de AYER (la condicion que fallo K0)
+    ALTO n= 459 media   15.83 | p10=  1.50 p25=  4.00 p50=  8.75 p75= 19.00 p90= 38.35 p95= 59.75 p99=100.92
+    BAJO n= 492 media   12.64 | p10=  1.50 p25=  3.75 p50=  8.75 p75= 16.00 p90= 27.95 p95= 39.61 p99= 64.67
+    diferencia de medias +3.191 pts   t = +2.816   p = 4.864e-03   factor de medias 1.253x
+
+======================================================================================================================
+3. CORRELACIONES DE RANGO (Spearman), sobre las mismas sesiones
+======================================================================================================================
+  rango de HOY  vs excursion adversa de HOY: +0.5292   (por construccion, alto)
+  rango de AYER vs excursion adversa de HOY: +0.2894
+  rango de AYER vs rango de HOY:             +0.5785   (esto es el agrupamiento de volatilidad)
+  rango de AYER vs rango de HOY, en log:     +0.6043
+
+======================================================================================================================
+4. LA MISMA CONDICION CONTRA EL RANGO DE HOY (no contra la excursion): separa el agrupamiento?
+======================================================================================================================
+  rango de HOY partido por el estado de AYER
+    ALTO n= 459 media   30.80 | p10= 12.00 p25= 15.88 p50= 22.50 p75= 36.75 p90= 58.50 p95= 75.82 p99=120.07
+    BAJO n= 492 media   25.22 | p10= 10.75 p25= 14.50 p50= 21.00 p75= 31.50 p90= 46.73 p95= 57.22 p99= 85.02
+    diferencia de medias +5.586 pts   t = +4.209   p = 2.566e-05   factor de medias 1.222x
+
+======================================================================================================================
+5. GROSOR DE LA MEDIANA: cuantos valores distintos hay cerca del centro
+======================================================================================================================
+  mediana global de la excursion = 8.75 pts; valores a menos de 0.75 pts de ella y su frecuencia:
+    [(8.0, 12), (8.25, 10), (8.5, 12), (8.75, 15), (9.0, 5), (9.25, 7), (9.5, 10)]
+  la excursion es multiplo de 0.25, asi que dos muestras parecidas comparten mediana exacta con facilidad.
+
+  LA CAJA SIGUE CERRADA.
