@@ -482,3 +482,36 @@ Orden de la salida y criterios, fijados antes de correr:
 
 Salida cruda a `h2d_compuerta1.txt`, commiteada antes de una palabra de interpretación. `diseno.md` no se
 reescribe: su nota fechada remite acá.
+
+---
+
+# H2d · DESCARTADA — 2026-09-03 — C0 disparó; ninguna cifra de dirección se calculó
+
+Salida cruda: `h2d_compuerta1.txt`. Población como se esperaba: 866 fechas, **851 pares** mismo contrato,
+2016-08-23 → 2019-12-31. La caja no se leyó: el cargador descarta toda fila ≥ 2020-01-01 antes de calcular.
+
+| C0, criterio congelado en §2 y `diseno.md` §1.6 | medido | dispara |
+|---|---|---|
+| identidad `open_t == close_{t−1}` > 10 % | 70 de 851 = **8,23 %** | no |
+| varianza del hueco < 10 % de la varianza cierre→cierre | 18,56 de 462,27 = **4,01 %** | **sí** |
+
+Mediana de |hueco| 1,00 pts contra 9,25 pts de cierre a cierre. Es lo que el hecho del §0.1 anticipaba:
+la apertura diaria de NT8 es la reapertura de las 17:00 CT y el cierre es la liquidación de ~15:14 CT, así
+que las columnas miden el corte de mantenimiento de 60 minutos, que carga el 4 % de la varianza del día.
+La fase 2 había medido 3,3 % en el diario de Yahoo. **H2d no es medible como hipótesis de hueco nocturno
+con estas columnas.**
+
+**Decisión de Roberto, tomada antes de correr (E3.4 punto 1): muere ahí, sin rótulo de «hueco de
+mantenimiento», sin variante.** Por el punto 1 el script terminó en C0: **C1 a C5 y el resultado no se
+calcularon y no existen en ningún archivo.** Nadie sabe hacia dónde apuntaba el 4 %, y así queda.
+
+Lo que esto deja escrito para lo que siga:
+
+- **K_D = 1 queda gastado.** El cartucho se gasta al pre-registrar (spec §9.5), no al correr; que la regla
+  no haya producido una operación no lo devuelve. K = 262 para la próxima configuración de este programa.
+- **La caja no se gastó.** Sigue sellada; este archivo no leyó ninguna fila posterior a 2019-12-31.
+- **Cualquier hipótesis de hueco nocturno sobre el diario de NT8 está muerta por la misma medición**, sea
+  de MES, ES o NQ: el diario no tiene una apertura nocturna. Medir el hueco liquidación → 08:30 CT exige
+  minutos, es decir la población de Databento (§0.3), y sería una configuración nueva que pagaría K. **No
+  se agrega ninguna acá** (§3).
+- H1, H2 y H3 siguen como estaban: congeladas, condicionales a que Roberto admita los minutos de ES.

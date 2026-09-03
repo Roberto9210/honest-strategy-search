@@ -226,3 +226,11 @@ gastada para toda la fase, no sólo para estas tres.
 - **§2 (H1–H3 sobre ES Databento):** sigue condicional y ahora con una condición más: su intocado es **la
   misma caja del programa** que la de H2d y la de las familias G de la fase 2. **Un solo uso para todo.**
 - **§1.4, §1.5 y el resto de §1.6:** sin cambios.
+
+# NOTA FECHADA — 2026-09-03, más tarde — Enmienda 3 y descarte de H2d
+
+- **Rige el protocolo de la spec** (Enmienda 3): K se cobra en A con la compuerta 1 sobre el mirado, la caja
+  se examinaría a 0,05. El α de 0,05/262 sobre el intocado de la nota anterior **ya no rige**.
+- **H2d DESCARTADA** por C0: el hueco de las columnas diarias de NT8 carga el 4,01 % de la varianza cierre a
+  cierre (criterio congelado: < 10 % dispara). `h2d_compuerta1.txt`. Nada de C1–C5 ni del resultado se calculó.
+- **§1 entero queda como registro de un diseño que no llegó a correr su regla.** La caja no se gastó.
