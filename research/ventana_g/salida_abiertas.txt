@@ -1,0 +1,29 @@
+====================================================================================================
+1. VALOR A MERCADO DE LAS QUE QUEDAN ABIERTAS AL CORTE (horizonte 1 sesion)
+====================================================================================================
+   En PUNTOS de ES. Positivo = a favor. Es lo que cobra o paga un operador que
+   aplana al cierre en vez de aguantar.
+
+       bracket  sin resolver  n abiertas    media     p50     p10     p90      min     max
+      5pt:10pt          7.1%       8,432   -2.005   -2.00   -6.00    2.00    -9.75    4.75
+     10pt:10pt         18.9%      22,348    0.000    0.00   -5.25    5.25    -9.75    9.75
+     20pt:10pt         35.4%      41,827    3.323    2.50   -4.25   12.25    -9.75   19.50
+      5pt:20pt         17.4%      20,486   -5.798   -5.12  -13.50    0.75   -19.50    4.75
+     10pt:20pt         35.4%      41,827   -3.323   -2.50  -12.25    4.25   -19.50    9.75
+
+   Guardadas las muestras en m2m_T_S.npy para que el modelo las remuestree.
+   Notar el signo de la media: dice si aplanar al cierre cobra o paga.
+
+====================================================================================================
+2. LA ANOMALIA DE LAS 5 SESIONES, con 100,000 rutas (antes 20.000)
+====================================================================================================
+   Si el error de la regla se achica, era ruido. Si no, hay algo mas.
+
+       bracket    asim  sin res  sesgo medido  regla predice  error 20k  error 100k
+      5pt:10pt  -0.333     0.0%         +0.42          +0.00      -0.22       -0.41
+     10pt:10pt  +0.000     0.7%         +0.00          -0.00      +0.00       -0.00
+     20pt:10pt  +0.333     4.0%         -2.24          -0.66      +1.32       +1.58
+      5pt:20pt  -0.600     1.1%         +1.51          +0.33      -0.94       -1.18
+     10pt:20pt  -0.333     4.0%         +2.24          +0.66      -1.32       -1.58
+
+   'error 20k' es el de la corrida anterior; 'error 100k' el de esta.
