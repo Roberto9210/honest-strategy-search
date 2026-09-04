@@ -1,0 +1,70 @@
+====================================================================================================
+TEST DE PERMUTACION - el piso del CANDIDATO, no el de las entradas al azar
+NO GASTA CARTUCHO. K = 261. La caja sellada no se toca.
+====================================================================================================
+
+   celda 5pt:20pt, ranuras cada 300 barras, sesiones reales.
+   1,006 sesiones, 4,994 ranuras (4.96 por sesion).
+   Comision y deslizamiento MEDIDOS ya adentro de la tabla.
+
+====================================================================================================
+LOS TRES CANDIDATOS - patron observado
+====================================================================================================
+
+                  candidato  operaciones  op/sesion   tenencia  abiertas   $/sesion    error
+      C0 (todas, lado azar)        4,994       4.96       393b     29.0%     -11.44    31.33
+         C_LENTO (vol baja)        1,665       1.66       511b     35.0%      +4.55    16.84
+            C_VENT (q=0.55)        4,994       4.96       384b     27.2%     +45.57    30.97
+
+   VENTAJA INYECTADA EN C_VENT, declarada por formula antes de medirla:
+      E[|P&L largo - P&L corto|] = $470.85 por operacion
+      NOMINAL  = (q - 0,5) * E[|dif|] = 0.05 * 470.85 = $23.54/op  ->  $116.87/sesion
+      REALIZADA en este sorteo (q observada 0.5390) = $14.64/op  ->  $72.69/sesion
+      La nominal es la ESPERANZA sobre sorteos; la realizada es la de ESTE.
+      El control se juzga contra la REALIZADA, que es la que de verdad se puso.
+
+====================================================================================================
+LAS DOS NULAS
+   A rotacion: corre (ranuras, lados) sobre la grilla. Destruye CUANDO.
+   B signo: da vuelta los lados. Destruye QUE LADO, conserva todo lo demas.
+====================================================================================================
+
+                  candidato      nula  nula $/ses   desvio  observado   VENTAJA  en desvios      PISO
+      C0 (todas, lado azar)A rotacion      -26.74    24.05     -11.44    +15.30        +0.6    +26.74
+      C0 (todas, lado azar)   B signo      -26.86    23.76     -11.44    +15.41        +0.6    +26.86
+         C_LENTO (vol baja)A rotacion       -8.75    15.36      +4.55    +13.30        +0.9     +8.75
+         C_LENTO (vol baja)   B signo       +3.68    12.49      +4.55     +0.87        +0.1     -3.68
+            C_VENT (q=0.55)A rotacion      -27.14    23.96     +45.57    +72.70        +3.0    +27.14
+            C_VENT (q=0.55)   B signo      -27.58    23.73     +45.57    +73.14        +3.1    +27.58
+
+====================================================================================================
+EL CONTROL
+   C0 y C_LENTO: ventaja CERO dentro del error. C_VENT: recupera la inyectada.
+   Que la nula B recupere la inyectada esta casi FORZADO por construccion; la que
+   informa es la nula A, y que las dos den cero en los dos sin ventaja.
+====================================================================================================
+
+                  candidato      nula   ventaja   nominal  REALIZADA   desvio  vs realiz.  recupera  veredicto
+      C0 (todas, lado azar)A rotacion    +15.30     +0.00      +0.00    24.05        +0.6         -         OK
+      C0 (todas, lado azar)   B signo    +15.41     +0.00      +0.00    23.76        +0.6         -         OK
+         C_LENTO (vol baja)A rotacion    +13.30     +0.00      +0.00    15.36        +0.9         -         OK
+         C_LENTO (vol baja)   B signo     +0.87     +0.00      +0.00    12.49        +0.1         -         OK
+            C_VENT (q=0.55)A rotacion    +72.70   +116.87     +72.69    23.96        +0.0      100%         OK
+            C_VENT (q=0.55)   B signo    +73.14   +116.87     +72.69    23.73        +0.0      101%         OK
+
+   CONTROL PASADO
+   RESOLUCION del test: el desvio de la nula es +-$23.73 por sesion, o sea +-33% de la ventaja inyectada.
+   Con 4,994 operaciones no se puede afinar mas que eso, y decirlo importa:
+   'recupera la inyectada' significa 'dentro de esa resolucion', no 'clavada'.
+
+====================================================================================================
+CUANTO SE CORRE LA TENENCIA BAJO LA NULA A - la limitacion que avise antes
+====================================================================================================
+
+                  candidato  tenencia obs  tenencia rotada  abiertas obs  abiertas rotada
+      C0 (todas, lado azar)          393b             393b         29.0%            29.0%
+         C_LENTO (vol baja)          511b             399b         35.0%            30.6%
+            C_VENT (q=0.55)          384b             393b         27.2%            29.0%
+
+   Si la tenencia rotada se aleja de la observada, la nula A no esta apareada
+   en tenencia y hay que mirar tambien la nula B, que si la conserva exacta.

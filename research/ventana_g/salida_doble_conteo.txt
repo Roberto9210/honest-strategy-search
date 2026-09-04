@@ -1,0 +1,44 @@
+====================================================================================================
+DOBLE CONTEO? - sobrepaso de barrera contra deslizamiento de entrada
+NO GASTA CARTUCHO. K = 261. Prediccion escrita antes de correr, ver docstring.
+====================================================================================================
+
+   Bootstrap IID sin drift, 6 series de 1,357,785 barras, brackets de span 25.
+   Deslizamiento de entrada inyectado: [0.0, 0.25] puntos (1 tick entero en el segundo caso).
+
+   --- deslizamiento de entrada inyectado = 0.00 pt ---
+         bracket      p    1-2p   sesgo pt/op    error
+        5pt:20pt   0.80   -0.60       -0.0415   0.0042
+       10pt:15pt   0.60   -0.20       -0.0155   0.0021
+   12.5pt:12.5pt   0.50    0.00       -0.0011   0.0007
+       15pt:10pt   0.40    0.20       +0.0150   0.0022
+        20pt:5pt   0.20    0.60       +0.0405   0.0044
+   ajuste: pendiente a = +0.0691   ordenada b = -0.0005   R2 = 0.9988
+
+   --- deslizamiento de entrada inyectado = 0.25 pt ---
+         bracket      p    1-2p   sesgo pt/op    error
+        5pt:20pt   0.80   -0.60       -0.2915   0.0042
+       10pt:15pt   0.60   -0.20       -0.2655   0.0021
+   12.5pt:12.5pt   0.50    0.00       -0.2511   0.0007
+       15pt:10pt   0.40    0.20       -0.2350   0.0022
+        20pt:5pt   0.20    0.60       -0.2095   0.0044
+   ajuste: pendiente a = +0.0691   ordenada b = -0.2505   R2 = 0.9988
+
+====================================================================================================
+EL VEREDICTO
+====================================================================================================
+
+                                   e = 0,00    e = 0,25   movimiento   esperado
+          PENDIENTE (sobrepaso)     +0.0691     +0.0691      +0.0000    +0.0000
+     ORDENADA (desliz. entrada)     -0.0005     -0.2505      -0.2500    -0.2500
+
+   La pendiente se movio 0.0000 (0.0% de su valor).
+   La ordenada se movio -0.2500 contra los -0.25 inyectados (error 0.0000).
+
+   -> SON DOS TERMINOS DISTINTOS. El deslizamiento de entrada entra entero
+      en la ordenada y no toca la pendiente. NO hay doble conteo y el piso
+      publicado NO cambia.
+
+   Nota sobre la coincidencia numerica: sobrepaso 0.0691 pt = 0.28 ticks contra 0,28 ticks del limite de deslizamiento de entrada.
+   Que dos cantidades den parecido no las hace la misma: lo que decide es como
+   escalan, y escalan distinto.

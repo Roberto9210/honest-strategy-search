@@ -1734,3 +1734,135 @@ operación **más negativa**, no menos. Entonces `P(pasar)` baja y la esperanza 
 **La respuesta a la pregunta de la ventana —la evaluación tiene esperanza negativa en las 8 firmas y
 los 3 tamaños— sobrevive y se refuerza.** Lo que no sobrevive es **el criterio**, y ése queda
 reemplazado por los dos pisos en dólares de la tabla de arriba.
+
+---
+
+# EL TEST DE PERMUTACIÓN, Y TRES RAMAS QUE SE CIERRAN (2026-09-04)
+
+**No gasta cartucho. K = 261.** Construcción y validación de instrumento contra candidatos
+sintéticos de propiedades conocidas. La caja sellada (2020-01-02 → 2026-08-19) no se toca.
+
+## 1 — El test de permutación: el piso del CANDIDATO
+
+El piso de $44,64 era propiedad de las **entradas al azar**. Un candidato real entra
+condicionado, y eso le cambia cuántas veces opera, cuánto aguanta, qué fracción le queda abierta y
+de qué lado está. **Dos nulas, porque destruyen cosas distintas:**
+
+- **A — rotación:** corre circularmente `(qué ranuras toma, de qué lado)` sobre la grilla. Conserva
+  exacto el conteo, el espaciado y la secuencia de lados. **Destruye CUÁNDO.**
+- **B — signo:** da vuelta los lados al azar dejando las ranuras intactas. Conserva exacto la
+  tenencia, la fracción abierta y el conteo. **Destruye QUÉ LADO.**
+
+**Aviso escrito antes de correr, y confirmado:** para una señal que depende del precio es
+*imposible* conservar la tenencia bajo una permutación temporal, porque la tenencia la produce el
+precio. Medido: en `C_LENTO` la tenencia pasa de **511 a 399 barras** y las abiertas de **35,0% a
+30,6%** al rotar. Por eso van las dos nulas.
+
+### Los tres candidatos, sobre 1.006 sesiones reales y 4.994 ranuras
+
+| candidato | operaciones | op/sesión | tenencia | abiertas | $/sesión |
+|---|---|---|---|---|---|
+| C0 (todas, lado al azar) | 4.994 | 4,96 | 393b | 29,0% | −11,44 |
+| **C_LENTO** (sólo volatilidad baja) | 1.665 | 1,66 | **511b** | **35,0%** | +4,55 |
+| **C_VENT** (ventaja inyectada q=0,55) | 4.994 | 4,96 | 384b | 27,2% | +45,57 |
+
+`C_LENTO` es el que pedía la tarea: **sin ventaja pero opera tres veces menos y aguanta un 30% más.**
+
+### El resultado del control
+
+| candidato | nula | ventaja hallada | nominal | **REALIZADA** | desvío | vs realizada | recupera |
+|---|---|---|---|---|---|---|---|
+| C0 | rotación | +15,30 | 0 | 0 | 24,05 | +0,6 | — |
+| C0 | signo | +15,41 | 0 | 0 | 23,76 | +0,6 | — |
+| C_LENTO | rotación | +13,30 | 0 | 0 | 15,36 | +0,9 | — |
+| C_LENTO | signo | +0,87 | 0 | 0 | 12,49 | **+0,1** | — |
+| **C_VENT** | rotación | **+72,70** | +116,87 | **+72,69** | 23,96 | **+0,0** | **100%** |
+| **C_VENT** | signo | **+73,14** | +116,87 | **+72,69** | 23,73 | **+0,0** | **101%** |
+
+**CONTROL PASADO.** Cero en los dos sin ventaja; recuperación exacta en el que la tiene.
+
+### Un error que casi publico
+
+La primera lectura decía «recupera $72,70 contra los $116,87 inyectados: **62%**, pasa a −1,8
+desvíos». **Estaba comparando contra la cifra equivocada.** Los $116,87 son la ventaja **nominal**,
+o sea la *esperanza* sobre sorteos de la moneda que decide si el candidato acierta el lado. Lo que
+de verdad se inyectó en **este** sorteo es calculable exacto —`media[(acierta − ½)·|P&L largo −
+P&L corto|]`— y dio **$72,69**: la moneda salió `q = 0,5390` en vez de 0,5500 y además cayó
+anticorrelacionada con el tamaño de la diferencia.
+
+Contra la cantidad correcta la recuperación es **100% y 101%, a 0,0 desvíos**. La lección: *un
+control contra una esperanza en vez de contra el valor realizado se lee como fallado cuando está
+perfecto.*
+
+### La resolución, que hay que decir
+
+El desvío de la nula es **±$23,73 por sesión = ±33%** de la ventaja inyectada. Con 4.994
+operaciones no se afina más. **«Recupera la inyectada» significa «dentro de esa resolución», no
+«clavada»** — aunque acá haya dado 100%.
+
+**Cuál mitad del control informa y cuál no:** que la **nula B** recupere la inyección está casi
+*forzado* por construcción, porque la inyección se define contra el promedio de los dos lados, que
+es justo lo que B estima. La que **no** está forzada, y por lo tanto la que informa, es que la
+**nula A** también la recupere (+72,70) y que las dos den cero en C0 y C_LENTO.
+
+## 2 — Sobrepaso y deslizamiento de entrada: **dos términos distintos**
+
+La sospecha era doble conteo: sobrepaso **0,26 ticks** contra un límite de deslizamiento de entrada
+de **0,28 ticks**. Se distinguen por su **firma funcional**: el sobrepaso es geométrico y vale
+`o·(1−2p)` —cambia de signo con el bracket—; el deslizamiento de entrada es un costo por operación,
+constante y siempre negativo. En el ajuste `sesgo = a·(1−2p) + b`, uno vive en la pendiente y el
+otro en la ordenada.
+
+Inyectando **e = 0,25 pt** (un tick entero) de deslizamiento de entrada:
+
+| | e = 0,00 | e = 0,25 | movimiento | esperado |
+|---|---|---|---|---|
+| **pendiente** (sobrepaso) | +0,0691 | +0,0691 | **+0,0000** | +0,0000 |
+| **ordenada** (desliz. entrada) | −0,0005 | −0,2505 | **−0,2500** | −0,2500 |
+
+**Exacto en las dos coordenadas. Son dos términos distintos, no hay doble conteo, y el piso no
+cambia.** Y la coincidencia numérica se apretó todavía más —en esta corrida el sobrepaso dio
+**0,28 ticks clavados**, idéntico al límite de deslizamiento— y aun así son cosas distintas: **que
+dos cantidades den parecido no las hace la misma; lo que decide es cómo escalan.**
+
+## 3 — Los cortes reales: la aproximación era inocua
+
+| celda | partición | sesiones | $/sesión | error | PISO |
+|---|---|---|---|---|---|
+| 5pt:20pt | bloques de 1.380 | 983 | −55,29 | 6,69 | +44,64 |
+| 5pt:20pt | **sesiones reales** | 1.006 | −53,31 | 6,73 | **+42,93** |
+| 20pt:10pt | bloques de 1.380 | 983 | −68,37 | 4,09 | +71,71 |
+| 20pt:10pt | **sesiones reales** | 1.006 | −69,68 | 3,70 | **+72,93** |
+
+El piso se mueve **−$1,71 y +$1,22**, contra errores de $6,69 y $4,09. **INOCUA** por el criterio
+escrito antes. Control pasado: las dos particiones cubren la misma serie (operaciones +0,3% y
++0,6%).
+
+*(Detalle de la partición real: 1.007 sesiones, mediana 1.362 barras, y **una sesión de una sola
+barra** que se descarta por el corte de 60.)*
+
+## 4 — El tramo sin tendencia: **la rama se cierra**
+
+| año | movimiento | 5pt:20pt largo | 5pt:20pt corto | 20pt:10pt largo | 20pt:10pt corto |
+|---|---|---|---|---|---|
+| 2016 | +195,5 pt | +35,91 (+0,7) | −80,13 (−1,5) | −3,39 (−0,1) | −110,02 (−2,1) |
+| 2017 | +424,5 pt | +85,56 (+2,7) | −101,38 (−3,2) | +69,40 (+2,2) | −121,27 (−3,8) |
+| **2018** | **−168,0 pt** | **−156,32** (−1,6) | −89,87 (−1,0) | **−128,13** (−1,4) | −101,51 (−1,1) |
+| 2019 | +727,0 pt | +77,81 (+1,0) | −197,85 (−2,6) | +61,74 (+0,8) | −224,14 (−3,0) |
+
+**En 2018, el único año a la baja, el largo pierde más que el corto** —se dan vuelta— en las dos
+celdas. **El empate del largo (−$2,36 sobre 2016-2019) era el tramo alcista.** Queda cerrado.
+
+**Y va el aviso, para que no se lea mal después: aunque el largo empatara, empatar no es ventaja.
+El piso sigue siendo el piso, no cero.**
+
+**Honestidad sobre la fuerza:** el −$156,32 de 2018 está a **−1,6 desvíos**, así que por sí solo no
+está establecido. Lo que sostiene la conclusión es que **el patrón es consistente en las dos celdas
+y que el orden largo/corto se invierte** justo en el único año sin tendencia alcista.
+
+### Y algo que aparece de paso y cambia el criterio
+
+**El piso no es un número: es un número por año.** Para 5pt:20pt va de **$3,49 (2017) a $106,03
+(2018)** — un factor de **30**. El $44,64 es un promedio de 2016-2019, y un candidato medido en un
+año tranquilo enfrenta un piso treinta veces más bajo que en uno agitado. **Cualquier uso del piso
+tiene que decir sobre qué régimen de volatilidad se calculó.**
