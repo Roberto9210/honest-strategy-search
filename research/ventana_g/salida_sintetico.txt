@@ -1,0 +1,94 @@
+====================================================================================================
+TEST SINTETICO - el replicador contra un caso de respuesta conocida
+NO GASTA CARTUCHO. K = 261. Prediccion sellada en PREDICCION_SELLADA_sintetico.md
+====================================================================================================
+
+ES 1-min 2016-2019: 1,357,785 barras, 1,357,768 incrementos utiles (se excluyen 16 saltos de contrato).
+   media del incremento  +0.000910 pt   (el drift medido)
+   desvio del incremento  0.6079 pt
+   rango medio de la barra 0.6577 pt
+   barras con maximo por debajo del cierre anterior: 3.30%
+
+====================================================================================================
+CONTROL 0 - el generador. Los sinteticos tienen que igualar volatilidad y rango
+   QUE LO HARIA FALLAR: media del incremento distinta de cero, o desvio / rango
+   que no reproduzcan los de ES. Ahi el sintetico no seria comparable con el real.
+====================================================================================================
+
+   Calibracion del numero de sub-pasos contra el rango medio real (0.6577 pt):
+      m =   1   rango medio 0.4855 pt   dif -0.1723
+      m =   2   rango medio 0.5858 pt   dif -0.0720
+      m =   3   rango medio 0.6407 pt   dif -0.0170
+      m =   5   rango medio 0.7016 pt   dif +0.0438
+      m =   8   rango medio 0.7499 pt   dif +0.0921
+      m =  12   rango medio 0.7849 pt   dif +0.1272
+      m =  20   rango medio 0.8239 pt   dif +0.1661
+      m =  30   rango medio 0.8485 pt   dif +0.1908
+   -> se toma m = 3 sub-pasos por barra (el mas cercano al rango real).
+
+   serie            media inc  desvio inc  rango medio   vs real
+   ES real          +0.000910      0.6079       0.6577         -
+   A gaussiano      +0.000311      0.6079       0.6397     -2.7%
+   B bootstrap      -0.000230      0.6060       0.6566     -0.2%
+
+   media cero a 3 errores estandar: OK
+   B reproduce el rango real por construccion (remuestrea barras enteras).
+   CONTROL 0 PASADO
+
+====================================================================================================
+CONTROL 1 - HORIZONTE LARGO (20 sesiones). Casi todo resuelve, y
+   sin censura un paseo IID sin drift TIENE que dar S/(S+T).
+   QUE LO HARIA FALLAR: sesgo por encima de 3 errores estandar con sin-resolver
+   cerca de cero. Eso seria el replicador roto, y nada mas de esta ventana valdria.
+====================================================================================================
+
+   serie             bracket   S/(S+T)  sesgo pool  error est  en errores  sin resolv   ambiguo  veredicto
+   A gaussiano     10pt:10pt     50.0%       +0.00       0.20        +0.0        0.0%    0.000%         OK
+   A gaussiano     20pt:10pt     33.3%       +0.56       0.19        +2.9        0.0%    0.000%         OK
+   A gaussiano      5pt:20pt     80.0%       -0.92       0.17        -5.5        0.0%    0.000%        MAL
+   B bootstrap     10pt:10pt     50.0%       -0.01       0.20        -0.0        0.0%    0.013%         OK
+   B bootstrap     20pt:10pt     33.3%       +1.00       0.19        +5.1        0.0%    0.000%        MAL
+   B bootstrap      5pt:20pt     80.0%       -1.09       0.17        -6.6        0.0%    0.008%        MAL
+
+   CONTROL 1 FALLADO
+
+====================================================================================================
+CONTROL 2 - SEPARACION LARGO/CORTO. Los sinteticos no tienen drift por
+   construccion, asi que los dos lados tienen que dar lo mismo.
+   QUE LO HARIA FALLAR: separacion por encima de 3 errores estandar. Eso seria
+   drift residual en el generador, o un replicador que trata distinto a los lados.
+   NO es vacio: sobre ES real esta misma medicion da +5,67 puntos.
+====================================================================================================
+
+   serie             bracket    largo    corto  separacion  error est  en errores  veredicto
+   A gaussiano     10pt:10pt    +0.63    -0.63       +1.25       0.41        +3.1        MAL
+   A gaussiano     20pt:10pt    +1.51    -0.40       +1.91       0.39        +4.9        MAL
+   A gaussiano      5pt:20pt    -0.33    -1.51       +1.18       0.33        +3.5        MAL
+   B bootstrap     10pt:10pt    -0.37    +0.36       -0.73       0.41        -1.8         OK
+   B bootstrap     20pt:10pt    +1.27    +0.73       +0.54       0.39        +1.4         OK
+   B bootstrap      5pt:20pt    -1.15    -1.03       -0.12       0.33        -0.4         OK
+
+   CONTROL 2 FALLADO
+
+====================================================================================================
+LA PREGUNTA - a UNA SESION, el sintetico reproduce el residuo de ~1,3 puntos?
+   El sesgo por censura se predice con -0,5 x asimetria x %sin_resolver.
+   RESIDUO = sesgo pooled - lo que la censura explica.
+   QUE HARIA FALLAR LA LECTURA 'el replicador esta bien': un residuo sintetico
+   del mismo tamano que el real. Ahi el culpable seria el codigo, no el mercado.
+====================================================================================================
+
+   serie             bracket  sesgo pool  sin resolv   ambiguo   censura   RESIDUO  error est  en errores
+   A gaussiano     10pt:10pt       +0.00        0.3%    0.000%     -0.00     +0.00       0.20        +0.0
+   A gaussiano     20pt:10pt       -0.91        7.3%    0.000%     -1.21     +0.30       0.20        +1.5
+   A gaussiano      5pt:20pt       -0.21        1.6%    0.000%     +0.48     -0.69       0.17        -4.2
+   B bootstrap     10pt:10pt       -0.02        0.3%    0.030%     -0.00     -0.02       0.20        -0.1
+   B bootstrap     20pt:10pt       -0.18        7.1%    0.000%     -1.19     +1.01       0.20        +5.0
+   B bootstrap      5pt:20pt       -0.64        1.6%    0.015%     +0.49     -1.13       0.17        -6.8
+
+   Para comparar, lo MEDIDO sobre ES real (des-driftado, 5 sesiones):
+      10pt:10pt  residuo +0,00   (identidad de construccion, no informa)
+      20pt:10pt  residuo -1,32
+      5pt:20pt   residuo +0,78
+
+   Peor residuo sintetico en un bracket asimetrico: 1.13 puntos.

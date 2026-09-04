@@ -1,0 +1,66 @@
+====================================================================================================
+EL ERROR ESTANDAR DE VERDAD - K series sinteticas independientes
+NO GASTA CARTUCHO. K = 261. Medicion del error de un instrumento.
+====================================================================================================
+
+   10 series de 1,357,785 barras, remuestreo IID de las barras reales de ES
+   (conserva la forma marginal exacta, destruye la estructura serial),
+   centradas a media cero. 30,000 rutas por lado, igual que en el real.
+
+   serie 1/10 lista
+   serie 2/10 lista
+   serie 3/10 lista
+   serie 4/10 lista
+   serie 5/10 lista
+   serie 6/10 lista
+   serie 7/10 lista
+   serie 8/10 lista
+   serie 9/10 lista
+   serie 10/10 lista
+
+====================================================================================================
+HORIZONTE 1 SESION - dispersion del sesgo ENTRE series independientes
+====================================================================================================
+       bracket  sesgo medio  desvio REAL   binomial  subestima     min     max  recorrido
+     10pt:10pt       -0.004        0.005      0.205       0.0x   -0.01   +0.00       0.01
+     20pt:10pt       -1.139        0.264      0.199       1.3x   -1.65   -0.87       0.79
+      5pt:20pt       +0.306        0.289      0.165       1.8x   -0.09   +0.94       1.03
+
+====================================================================================================
+HORIZONTE 5 SESIONES - dispersion del sesgo ENTRE series independientes
+====================================================================================================
+       bracket  sesgo medio  desvio REAL   binomial  subestima     min     max  recorrido
+     10pt:10pt       -0.005        0.007      0.204       0.0x   -0.02   +0.00       0.02
+     20pt:10pt       +0.259        0.239      0.193       1.2x   +0.00   +0.65       0.64
+      5pt:20pt       -0.199        0.236      0.165       1.4x   -0.46   +0.23       0.70
+
+====================================================================================================
+LA PREGUNTA - el residuo medido sobre ES real cabe adentro de esta nula?
+   La nula es: series SIN estructura serial y SIN drift, del mismo largo que ES,
+   medidas con el mismo procedimiento. Si el real cae adentro, el residuo NO esta
+   establecido: es lo que hace una serie cualquiera de este largo.
+   QUE HARIA FALLAR LA LECTURA 'no esta establecido': que el real quede afuera del
+   recorrido completo de las K series, o a mas de 3 desvios de la media nula.
+====================================================================================================
+
+       bracket  residuo REAL  nula media  nula desvio  en desvios  nula min  nula max  cae adentro?
+     10pt:10pt         +0.00      -0.005        0.007        +0.7     -0.02     +0.00            SI
+     20pt:10pt         -1.32      +0.259        0.239        -6.6     +0.00     +0.65            NO
+      5pt:20pt         +0.78      -0.199        0.236        +4.2     -0.46     +0.23            NO
+
+====================================================================================================
+Y LA SEPARACION LARGO/CORTO - el drift medido sobrevive a la misma nula?
+   Sobre ES real la separacion de 10pt:10pt dio +5,67 puntos, y con eso se
+   calibro el factor de des-drift. Si la nula SIN drift ya produce
+   separaciones de ese tamano, la calibracion no tiene de donde agarrarse.
+   QUE HARIA FALLAR LA LECTURA 'el drift es real': que el valor real caiga
+   adentro del recorrido de las K series, que no tienen drift por construccion.
+====================================================================================================
+
+       bracket   sep REAL  nula media  nula desvio  en desvios  nula min  nula max  cae adentro?
+     10pt:10pt      +5.67      -0.378        2.082        +2.9     -4.01     +2.64            NO
+     20pt:10pt      +5.67      -0.260        2.351        +2.5     -4.72     +3.95            NO
+      5pt:20pt      +3.68      -0.407        1.352        +3.0     -3.43     +1.63            NO
+
+   Recordatorio: la fila 10pt:10pt es la IDENTIDAD de construccion. Su desvio
+   tiene que ser cero exacto y no informa nada sobre el mercado.

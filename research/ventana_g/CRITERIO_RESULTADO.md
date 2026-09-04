@@ -1244,3 +1244,159 @@ trata como primario.** Consecuencia si se confirmara: la entrada pasiva es posib
 deslizamiento de entrada podria ser cero o negativo **a cambio de riesgo de no ejecucion y de
 seleccion adversa** - dos terminos que este modelo tampoco tiene. Dado el punto 3(a), **esa es la
 medicion que mas mueve el signo de todo.**
+
+---
+
+# EL TEST SINTÉTICO: EL REPLICADOR ESTÁ BIEN, Y MIS BARRAS DE ERROR ESTABAN MAL (2026-09-04)
+
+**No gasta cartucho. K = 261.** Validación de un instrumento contra casos de respuesta conocida. No
+hay hipótesis de mercado contra el α heredado, no se elige entre candidatas, no se declara ninguna
+regla de operación. La caja sellada (ES diario 2020-01-02 → 2026-08-19) no se tocó: todo es
+2016-2019.
+
+**La predicción se selló antes de correr**, en `PREDICCION_SELLADA_sintetico.md`, y quedó en el repo
+sin editar.
+
+## 0 — Qué se hizo
+
+Se le dio al **mismo** replicador (`linea_base.replica`) dos series donde la respuesta se conoce:
+
+- **A — gaussiano.** Paseo IID con σ = 0,6079 pt por barra (la medida en ES), con `m` sub-pasos
+  dentro de cada barra para que el rango intrabarra no sea degenerado. `m = 3` calibrado contra el
+  rango medio real (0,6577 pt): da 0,6399, el más cercano de la grilla.
+- **B — bootstrap.** Remuestreo IID de los **tripletes** reales de cada barra (Δcierre, extensión
+  arriba, extensión abajo contra el cierre anterior), centrados a media cero. Conserva **exactamente**
+  la forma marginal de la barra de ES y destruye **sólo** la estructura serial. Reproduce el rango
+  real al 0,2%.
+
+## 1 — El resultado, sin adornar
+
+**El replicador no está roto. El residuo es una propiedad del ES real.**
+
+Sobre series IID sin drift con las marginales exactas de ES, el sesgo *pooled* corregido por censura
+vuelve a `S/(S+T)`:
+
+| horizonte | bracket | media de 10 series | desvío entre series |
+|---|---|---|---|
+| 5 sesiones | 10pt:10pt | −0,005 | 0,007 |
+| 5 sesiones | 20pt:10pt | **+0,259** | 0,239 |
+| 5 sesiones | 5pt:20pt | **−0,199** | 0,236 |
+
+Y el real cae **afuera** de esa nula, en los dos brackets asimétricos:
+
+| bracket | residuo REAL | nula media | nula desvío | en desvíos | recorrido de las 10 | ¿cae adentro? |
+|---|---|---|---|---|---|---|
+| 20pt:10pt | −1,32 | +0,259 | 0,239 | **−6,6** | [+0,00, +0,65] | **NO** |
+| 5pt:20pt | +0,78 | −0,199 | 0,236 | **+4,2** | [−0,46, +0,23] | **NO** |
+
+Eso es todo lo que dice, y no digo más: **el residuo de ~1,3 puntos es del mercado, no del código.**
+
+## 2 — Pero la predicción sellada FALLÓ, y por qué importa
+
+Sellé «los dos sintéticos convergen dentro de **±0,3 puntos**». La primera corrida dio +0,56, −0,92,
++1,00 y −1,09 con 0,0% sin resolver. **Falló contra la tolerancia que yo mismo escribí.**
+
+Falló porque **la tolerancia estaba mal**, no porque el replicador lo estuviera. La derivé del error
+binomial `√(p(1−p)/n)`, que supone rutas independientes. **No lo son:** se sortean 30.000 entradas
+sobre 1,36 millones de barras y cada una escanea cientos o miles, así que la misma barra participa de
+decenas de rutas; y además hay **una sola serie**, con su propia realización. El binomial mide el
+ruido del sorteo de entradas y no ve nada de lo demás.
+
+Medido contra 10 series independientes:
+
+| magnitud | desvío binomial (el que usaba) | desvío real | subestima |
+|---|---|---|---|
+| sesgo *pooled*, 1 sesión | 0,17 – 0,20 | 0,26 – 0,29 | **1,3 – 1,8×** |
+| sesgo *pooled*, 5 sesiones | 0,17 – 0,19 | 0,24 | **1,2 – 1,4×** |
+| **separación largo/corto** | 0,41 | **2,08 – 2,35** | **≈ 5×** |
+
+El *pooling* cancela casi toda la realización de la serie —es la misma identidad de construcción que
+ya demostré—; **la separación es justamente la componente que la identidad no cancela**, y por eso
+ahí el error explota. Todas las barras de error de esta ventana que involucren la separación estaban
+mal por un factor de cinco.
+
+## 3 — Una corrección a lo que estuve por concluir a mitad de camino
+
+Antes del ensamble corrí dos tests de localización (`sintetico_escala.py`) suponiendo que el sesgo
+era **sobrepaso de barrera** —un paseo con saltos cruza la barrera en vez de tocarla, y el paro
+opcional da `p = (S+o)/(S+T+2o)`—. Las dos predicciones escritas antes de correr:
+
+- **por tamaño:** a razón fija el sesgo debe caer como 1/tamaño. Dio +1,34 → +1,12 → **+2,21** donde
+  esperaba +1,34 → +0,67 → +0,34.
+- **por granularidad:** debe caer como 1/√m. Dio −0,05, +0,10, +0,73, −0,07, −0,06: sin tendencia, y
+  con `m=1` —donde el sobrepaso es **máximo**— prácticamente cero.
+
+Con eso yo estaba escribiendo que **todo era ruido**. **El ensamble me corrigió.** Esos dos tests
+usaron horizontes de hasta 103.927 barras sobre una serie de 600.000 —cada ruta cubre el 17% de la
+serie entera, quedan ~6 ventanas independientes— así que **ahí el error real es enorme y el test no
+informa nada**, ni a favor ni en contra del sobrepaso. La lectura correcta de esos dos tests no es
+«falsados»: es **indecidibles al tamaño de error que tienen**. Lo único que sirvió de ellos fue
+destapar el problema de la barra de error, que es lo que llevó al ensamble.
+
+## 4 — Tres cosas que la corrección mueve
+
+1. **La media de la nula no es cero:** +0,26 y −0,20. La fórmula de censura `−0,5·asimetría·%sin
+   resolver` deja un residuo sistemático. Medidos contra la nula y no contra cero, los residuos
+   reales son **−1,58** y **+0,98**: la corrección los hace **más grandes**, no más chicos.
+2. **El drift sobrevive, pero con mucho menos margen.** Separación real +5,67 contra una nula de
+   −0,38 ± **2,08**: son **2,9 desvíos**, afuera del recorrido de las 10 series pero por poco. Con la
+   barra de error vieja (0,41) eso parecía 14 desvíos.
+3. **El factor de des-drift 0,425 arrastra ±0,18.** La separación barre 11,85 puntos por unidad de
+   factor; ±2,08 de incertidumbre en la separación son ±0,176 en el factor. **No es 0,425: es
+   0,43 ± 0,18.**
+
+## 5 — La debilidad de este test, que es real y hay que decirla
+
+**El bootstrap IID resuelve mucho más rápido que ES.** A una sesión deja **1,6%** sin resolver donde
+el real deja **15,7%**. Es esperable —ES tiene agrupamiento de volatilidad y ratos muertos, el
+remuestreo IID no— pero significa que **la nula no está apareada en el término de censura**, que es
+justamente el término más grande a un día. La comparación se hace sobre el residuo ya corregido por
+fórmula, y **el error de esa fórmula es lo que queda adentro del número.** Un bootstrap por bloques
+apareado en la tasa de sin-resolver sería el test que cierra esto; no está hecho.
+
+## 6 — Controles de esta corrida, cada uno con qué lo haría fallar
+
+| control | qué lo haría fallar | resultado |
+|---|---|---|
+| generador: media cero, σ y rango iguales a ES | media a más de 3 errores de cero, o rango que no reproduzca | **PASADO** (rango −2,7% A, −0,2% B) |
+| horizonte largo → `S/(S+T)` | sesgo > 3 errores con 0% sin resolver | **FALLADO contra el binomial**; pasado contra el desvío real |
+| separación ≈ 0 en el sintético | separación > 3 errores | **FALLADO contra el binomial**; el desvío real es 5× mayor |
+| identidad 10pt:10pt en el ensamble | cualquier dispersión distinta de cero | **PASADO**: desvío 0,005 |
+| real contra la nula | que el real cayera adentro del recorrido | **el real queda AFUERA en los dos** |
+
+Detalle sobre la identidad: el desvío de 10pt:10pt da 0,005 y no 0,000 exacto. La diferencia es la
+**ambigüedad**: una barra que contiene las dos barreras se cuenta como pérdida para el largo **y**
+para el corto, y eso rompe la antisimetría en esa fracción de casos. La identidad es exacta salvo
+barras ambiguas.
+
+---
+
+# EL ARRASTRE DEL DES-DRIFT: NI LIMPIO NI RUIDO (2026-09-04)
+
+**No gasta cartucho. K = 261.** Roberto marcó que en `salida_desdrift.txt` el *pooled* se movía ~0,5
+puntos con el factor de des-drift cuando, por mi propia conclusión de esa misma corrida, no debería
+moverse. Se corrieron seis factores en vez de tres, con números aleatorios comunes.
+
+| factor | 10:10 pool | 10:10 sep | 20:10 pool | 20:10 sep | 5:20 pool | 5:20 sep |
+|---|---|---|---|---|---|---|
+| 0,00 | +0,000 | +5,67 | −2,146 | +5,67 | +1,517 | +3,68 |
+| 0,20 | +0,000 | +2,74 | −1,977 | +3,08 | +1,240 | +1,91 |
+| 0,40 | +0,000 | +0,19 | −2,025 | +0,59 | +1,210 | +0,56 |
+| 0,60 | +0,000 | −2,11 | −2,063 | −1,89 | +1,209 | −0,96 |
+| 0,80 | +0,000 | −3,91 | −1,953 | −3,95 | +1,141 | −2,40 |
+| 1,00 | +0,000 | −6,18 | −1,649 | −6,56 | +0,915 | −4,00 |
+
+| bracket | recorrido | pendiente | R² | residuo máx. de la recta | lectura |
+|---|---|---|---|---|---|
+| 20pt:10pt | +0,497 | +0,360 | **0,620** | 0,140 | ni recta ni dispersión |
+| 5pt:20pt | −0,601 | −0,472 | **0,837** | 0,107 | ni recta ni dispersión |
+
+**La respuesta: ninguna de las dos.** No es una recta —R² de 0,62 y 0,84 con un **plateau** claro en
+el medio: 20:10 se queda entre −1,95 y −2,15 en cinco de los seis factores y sólo se despega en
+1,00— y tampoco es dispersión sin orden, porque los extremos se mueven en la dirección esperada y el
+residuo de la recta (0,11–0,14) es cinco veces menor que el recorrido.
+
+**Mi conclusión anterior queda a medias.** «El drift vive en la separación y casi nada en el pooled»
+es correcta en magnitud: la separación barre **11,85** puntos y el *pooled* **0,50**, un factor de 24.
+Pero **«casi nada» no es «nada»**, y ese medio punto es del tamaño del criterio (+1,2) y del residuo
+(−1,3). Al nivel al que estaba escrito todo esto, medio punto no es despreciable.
