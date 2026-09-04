@@ -160,8 +160,30 @@ llegar a cero. Eso ya es una ventaja de mercado real, y no es lo que se estaba p
    En la realidad las perdidas se agrupan — es lo mismo que midio la Ventana D en ES 2016-2019: el
    agrupamiento de volatilidad es de cola, con p95 en 1,51x contra una mediana de 1,00x. Agrupamiento
    significa mas probabilidad de una racha larga que la binomial, y una racha larga es exactamente lo
-   que toca el drawdown. **Toda probabilidad de pasar de este documento es OPTIMISTA en una magnitud
-   que no se midio.**
+   que toca el drawdown. ~~**Toda probabilidad de pasar de este documento es OPTIMISTA en una magnitud
+   que no se midio.**~~
+
+   > **CORREGIDO 2026-09-04, y la correccion invierte el signo.** Esa conclusion —«el agrupamiento
+   > vuelve optimistas los numeros»— era una suposicion, no una medicion, y **se midio y salio al
+   > reves**. En `compuerta_nocturna.py` la probabilidad de ruina se calculo de las dos maneras sobre
+   > los mismos datos: remuestreo IID (que destruye el agrupamiento) y bloques historicos consecutivos
+   > (que lo conservan). El agrupamiento da **menos** muerte, no mas:
+   >
+   > | N noches | IID | bloques historicos |
+   > |---|---|---|
+   > | 5 | 44,1% | 34,9% |
+   > | 10 | 68,3% | 54,9% |
+   > | 20 | 82,3% | 73,4% |
+   >
+   > El motivo es que los tramos tranquilos son la mayoria y muestrear por bloques los preserva,
+   > mientras que el IID reparte la cola uniformemente y le da a cada noche una chance independiente
+   > de matar. La cola es mas gorda con agrupamiento, pero el grueso es mas quieto, y la ruina la
+   > decide el grueso cruzando el piso repetidas veces.
+   >
+   > **Lo que queda en pie:** el modelo sigue suponiendo independencia y eso sigue siendo un supuesto
+   > sin verificar para la *cadena de la evaluacion* (aca se midio sobre posiciones nocturnas, no
+   > sobre brackets intradiarios). Lo que NO se puede seguir diciendo es en que direccion sesga.
+   > **La magnitud no se midio y el signo tampoco era el que se afirmaba.**
 2. **El drawdown trailing intradia es peor que lo que captura un modelo de pasos discretos.** El piso
    real sigue el pico de equity *incluyendo el no realizado*, tick a tick dentro de la operacion. Aca
    solo sigue el saldo al cierre de cada operacion. Apex y Take Profit Trader lo dicen textualmente
