@@ -1,0 +1,45 @@
+
+========================================================================================================
+CONTROL - la misma tabla con COSTO POR OPERACION = 0
+N = 10 micros MES   costo = $0.00 por micro por operacion   20,000 caminos por celda
+========================================================================================================
+firma                           5pt:10pt (R:R 0.5)   10pt:10pt (R:R 1.0)   20pt:10pt (R:R 2.0)     8pt:4pt (R:R 2.0)
+                                sin ventaja: 66.7%    sin ventaja: 50.0%    sin ventaja: 33.3%    sin ventaja: 33.3%
+--------------------------------------------------------------------------------------------------------
+Apex (Intraday 50K)               75.3% [tenencia]      56.1% [tenencia]      38.7% [tenencia]       36.2% [desliz.]
+Topstep (50K)                     78.1% [tenencia]      58.3% [tenencia]      42.4% [tenencia]       36.6% [desliz.]
+Lucid Pro (50K)                   70.7% [tenencia]      56.4% [tenencia]      41.6% [tenencia]       35.4% [desliz.]
+FundedNext Flex (50K)             67.2% [tenencia]      52.2% [tenencia]      39.5% [tenencia]       35.4% [desliz.]
+BluSky Launch (50K)               86.7% [tenencia]      69.7% [tenencia]      56.0% [tenencia]       41.0% [desliz.]
+Take Profit Trader (50K)          87.6% [tenencia]      70.9% [tenencia]      57.4% [tenencia]       43.0% [desliz.]
+Tradeify Growth (50K)             66.2% [tenencia]      49.3% [tenencia]      32.7% [tenencia]       33.1% [desliz.]
+MyFundedFutures Rapid (50K)       70.3% [tenencia]      55.8% [tenencia]      40.7% [tenencia]       35.8% [desliz.]
+--------------------------------------------------------------------------------------------------------
+MEJOR (menos acierto exigido): Tradeify Growth (50K)  20pt:10pt  -> 32.7%   factible=False
+PEOR  (mas acierto exigido):   Take Profit Trader (50K)  5pt:10pt  -> 87.6%   factible=False
+
+Criterio escrito a mano en el pedido: TODAS las celdas deben dar 50,0%.
+CONTROL FALLADO CONTRA EL CRITERIO ESCRITO A MANO: 32 de 32 celdas no dan 50,0%.
+
+Por que el criterio de 50,0% no puede valer, con aritmetica elemental:
+  Con costo cero, un bracket que arriesga S y busca T da valor esperado nulo
+  cuando p*T = (1-p)*S, es decir p = S/(S+T). Eso es 50,0% SOLO si T = S.
+    5pt:10pt -> equilibrio en 66.7%. Con 50% de acierto el valor esperado por operacion es -2.5pt, no cero.
+    10pt:10pt -> equilibrio en 50.0%. Con 50% de acierto el valor esperado por operacion es +0.0pt, no cero.
+    20pt:10pt -> equilibrio en 33.3%. Con 50% de acierto el valor esperado por operacion es +5.0pt, no cero.
+    8pt:4pt -> equilibrio en 33.3%. Con 50% de acierto el valor esperado por operacion es +2.0pt, no cero.
+  Exigir 50,0% en un bracket 20pt:10pt declararia 'apenas en equilibrio' a una
+  estrategia que gana +5pt por operacion. El umbral esta mal, no la aritmetica.
+
+  Es la misma clase de fallo que el '< 3 %' de terreno_stop: umbral escrito a
+  mano en vez de derivado del dato. El control DERIVADO del dato es: con costo
+  cero la tasa exigida por el bracket debe ser exactamente S/(S+T).
+
+========================================================================================================
+CONTROL DERIVADO - con costo cero, el equilibrio por operacion = S/(S+T)
+========================================================================================================
+  5pt:10pt  p= 66.7%  valor esperado por operacion=-8.88e-16pt  OK
+  10pt:10pt  p= 50.0%  valor esperado por operacion=+0.00e+00pt  OK
+  20pt:10pt  p= 33.3%  valor esperado por operacion=-1.78e-15pt  OK
+  8pt:4pt  p= 33.3%  valor esperado por operacion=-4.44e-16pt  OK
+CONTROL DERIVADO PASADO

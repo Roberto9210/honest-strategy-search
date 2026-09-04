@@ -1,0 +1,18 @@
+========================================================================================================
+ENTREGABLE 1 - ACIERTO REQUERIDO POR OPERACION (esperanza positiva del intento)
+N = 10 micros MES   costo = $2.50 por micro por operacion   20,000 caminos por celda
+========================================================================================================
+firma                           5pt:10pt (R:R 0.5)   10pt:10pt (R:R 1.0)   20pt:10pt (R:R 2.0)     8pt:4pt (R:R 2.0)
+                                sin ventaja: 66.7%    sin ventaja: 50.0%    sin ventaja: 33.3%    sin ventaja: 33.3%
+--------------------------------------------------------------------------------------------------------
+Apex (Intraday 50K)               79.5% [tenencia]      58.6% [tenencia]      39.7% [tenencia]       40.3% [desliz.]
+Topstep (50K)                     82.6% [tenencia]      61.3% [tenencia]      43.5% [tenencia]       40.7% [desliz.]
+Lucid Pro (50K)                   73.4% [tenencia]      57.8% [tenencia]      42.3% [tenencia]       39.5% [desliz.]
+FundedNext Flex (50K)             70.4% [tenencia]      54.2% [tenencia]      40.3% [tenencia]       39.6% [desliz.]
+BluSky Launch (50K)               90.4% [tenencia]      72.0% [tenencia]      56.7% [tenencia]       45.1% [desliz.]
+Take Profit Trader (50K)          91.3% [tenencia]      73.2% [tenencia]      58.2% [tenencia]       47.1% [desliz.]
+Tradeify Growth (50K)             69.3% [tenencia]      51.6% [tenencia]      34.1% [tenencia]       37.3% [desliz.]
+MyFundedFutures Rapid (50K)       73.0% [tenencia]      57.2% [tenencia]      41.4% [tenencia]       39.9% [desliz.]
+--------------------------------------------------------------------------------------------------------
+MEJOR (menos acierto exigido): Tradeify Growth (50K)  20pt:10pt  -> 34.1%   factible=False
+PEOR  (mas acierto exigido):   Take Profit Trader (50K)  5pt:10pt  -> 91.3%   factible=False
