@@ -1400,3 +1400,213 @@ residuo de la recta (0,11–0,14) es cinco veces menor que el recorrido.
 es correcta en magnitud: la separación barre **11,85** puntos y el *pooled* **0,50**, un factor de 24.
 Pero **«casi nada» no es «nada»**, y ese medio punto es del tamaño del criterio (+1,2) y del residuo
 (−1,3). Al nivel al que estaba escrito todo esto, medio punto no es despreciable.
+
+---
+
+# EL RESIDUO NO SOBREVIVE A LA NULA APAREADA: ERA ESTRUCTURA SERIAL (2026-09-04)
+
+**No gasta cartucho. K = 261.** Medición de una nula y validación de instrumento. La caja sellada
+(2020-01-02 → 2026-08-19) no se toca: todo es 2016-2019.
+
+## El apareo funcionó, y funcionó mejor de lo que pedía
+
+El defecto que arreglaba este test: la nula IID dejaba **1,6%–7,4%** sin resolver donde ES real deja
+**17,4%–35,6%**. Se calibró el largo de bloque contra **una sola** tasa (20pt:10pt a una sesión,
+35,6%) y salió **L\* = 5.520 barras = 4,00 sesiones**.
+
+| sin resolver, 1 sesión | ES real | nula IID | **bloques L\*** | bloques centrados |
+|---|---|---|---|---|
+| 10pt:10pt | 19,0% | 0,3% | **18,4%** | 18,3% |
+| 20pt:10pt | 35,6% | 7,4% | **35,0%** | 35,6% |
+| 5pt:20pt | 17,4% | 1,6% | **17,3%** | 17,5% |
+
+**Un solo grado de libertad apareó los tres brackets.** Eso no estaba forzado y podría no haber
+pasado.
+
+Dato que vale por sí solo: hacen falta **cuatro sesiones consecutivas pegadas** para reproducir lo
+lento que ES resuelve un bracket. El agrupamiento de volatilidad de ES opera en escala de días, no
+de horas.
+
+## La respuesta: el residuo DESAPARECE
+
+Todo con el error de **entre series**, K = 32, desvío del desvío **12,7%** (con K = 10 era 23,6%).
+
+| horizonte | bracket | residuo REAL | nula bloques | desvío | binomial | subest. | **en desvíos** |
+|---|---|---|---|---|---|---|---|
+| 1 sesión | 20pt:10pt | −0,15 | −0,21 | 0,465 | 0,223 | 2,1× | **+0,1** |
+| 1 sesión | 5pt:20pt | −0,05 | −0,25 | 0,470 | 0,154 | 3,1× | **+0,4** |
+| 5 sesiones | 20pt:10pt | −1,48 | −0,33 | 0,614 | 0,189 | 3,2× | **−1,9** |
+| 5 sesiones | 5pt:20pt | +1,19 | +0,38 | 0,577 | 0,155 | 3,7× | **+1,4** |
+
+Contra la nula IID esos mismos números daban **−6,6 y +4,2 desvíos**. Contra la nula apareada dan
+**−1,9 y +1,4**. **A una sesión desaparece del todo** (+0,1 y +0,4).
+
+El 20pt:10pt a 5 sesiones aparece marcado «afuera del recorrido» de las 32 series. **No es
+evidencia:** está en −1,9 desvíos y el mínimo de 32 sorteos normales cae alrededor de −2,0 desvíos,
+así que quedar afuera del mínimo con ese z es lo esperable la mitad de las veces.
+
+**Digo lo que corresponde y nada más: era estructura serial. Es una corrección de la línea de base,
+NO una ventaja, y no produce dirección.**
+
+## Y se puede nombrar cuál estructura
+
+El cuarto modo saca la tendencia local de cada bloque y deja la volatilidad. K = 12.
+
+| bracket | nula bloques | nula bloques **centrados** | REAL |
+|---|---|---|---|
+| 20pt:10pt | −0,33 ± 0,61 | **−2,86 ± 0,75** | −1,48 |
+| 5pt:20pt | +0,38 ± 0,58 | **+2,30 ± 0,64** | +1,19 |
+
+**El agrupamiento de volatilidad solo, sin tendencia local, produce el efecto con el signo correcto y
+de sobra**: −2,86 donde el real es −1,48. El valor real queda **entre** las dos variantes sintéticas.
+No hace falta nada que no sepamos nombrar: una serie sin drift con la estructura serial de ES produce
+residuos de este tamaño y de este signo.
+
+## Lo que esto le hace a la vara
+
+Para 5pt:20pt a una sesión, la tasa «sin ventaja» bien simulada es **≈ 84,5%**, no 80,0%: 80,0 más
++4,71 de censura más −0,25 de estructura. Medido sobre ES real da 85,2%. **La diferencia son 0,7
+puntos, adentro del ruido.**
+
+Y el punto de equilibrio por operación está en **81,2%**. O sea que una entrada al azar «supera» el
+equilibrio por más de tres puntos **sólo porque las operaciones que no resuelven se excluyen del
+denominador y son justamente las perdedoras.** Ese es el mecanismo entero del +$10, y por eso el
+`PROTOCOLO_medir_un_candidato.md` existe.
+
+## El control, que dio FALLADO por culpa de mi propio criterio
+
+Sobre datos barajados —sin agrupamiento— el bootstrap por bloques tiene que reproducir la nula IID.
+Condición de falla declarada: residuo distinto de cero ahí.
+
+| bracket | IID media | barajado | dif | en desvíos | veredicto |
+|---|---|---|---|---|---|
+| 10pt:10pt | −0,004 ± 0,005 | −0,000 ± 0,001 | +0,004 | **+4,4** | MAL |
+| 20pt:10pt | +0,140 ± 0,308 | +0,172 ± 0,367 | +0,032 | +0,2 | OK |
+| 5pt:20pt | −0,146 ± 0,355 | −0,413 ± 0,309 | −0,267 | −2,1 | OK |
+
+**La fila que falla es la identidad de construcción.** El residuo de 10pt:10pt es idénticamente cero
+y su desvío es 0,005 y 0,001: comparar dos ceros con un cociente z amplifica una diferencia de 0,004
+puntos hasta 4,4 desvíos. **Es mi criterio el que está mal aplicado, no el método de bloques**, y es
+el reverso exacto del problema de los controles vacíos: un control cuya nula tiene varianza cero
+siempre «falla» cualquier prueba z. En las dos filas donde el control significa algo, pasa.
+
+**Salvedad que sí queda abierta:** el −0,267 de 5pt:20pt no es despreciable y **K = 8 es demasiado
+chico para resolverlo**. Si el método de bloques mete un sesgo propio de ese tamaño, se come una
+parte de la conclusión de arriba. Es la debilidad que dejo anotada.
+
+---
+
+# EL TEST DE DIRECCIÓN: SIGNO OPUESTO, PERO NADA DISTINGUIBLE DE CERO
+
+**No gasta cartucho. K = 261.**
+
+## Primero, la anti-identidad, que era la trampa a evitar
+
+Verificado numéricamente, no supuesto:
+
+| bracket | gana(largo) | pierde(corto) | ¿iguales? | el test es |
+|---|---|---|---|---|
+| 10pt:10pt | 15.293 | 15.293 | **SÍ** | **VACÍO** |
+| 20pt:10pt | 9.133 | 19.281 | no | válido |
+| 5pt:20pt | 23.838 | 5.922 | no | válido |
+
+Para `T = S` el largo y el corto usan **los mismos dos niveles** con las etiquetas dadas vuelta: es la
+misma medición dos veces y el signo opuesto está forzado. Para `T ≠ S` los niveles difieren y el test
+mide algo. **La trampa existía y estaba justo donde Roberto avisó.**
+
+## El resultado crudo: OPUESTO
+
+Sobre ES real, una sesión, cada lado corregido por **su propia** censura:
+
+| bracket | largo | corto | signos |
+|---|---|---|---|
+| 20pt:10pt | +1,23 | −1,37 | **opuesto** |
+| 5pt:20pt | +0,58 | −0,62 | **opuesto** |
+
+## Pero el diseño está confundido, y hay que decirlo
+
+`residuo_largo = P + D` y `residuo_corto = P − D`, donde `P` es el *pooled* y `D` la mitad de la
+separación. **Los signos salen opuestos cada vez que `|D| > |P|`**, y eso es una comparación entre dos
+magnitudes, no una prueba de direccionalidad. Peor: `P` es **por construcción idéntico en los dos
+lados**, así que preguntarle a `P` si es direccional no tiene sentido, y `D` es donde vive el drift.
+
+**El diseño que no está confundido es probar `D` contra su propia nula**, que es lo que hace
+`sep_nula.py`:
+
+| bracket, 1 sesión | separación REAL | nula media | nula desvío | en desvíos | lectura |
+|---|---|---|---|---|---|
+| 20pt:10pt | +2,60 | −0,34 | 1,889 | **+1,6** | no se distingue |
+| 5pt:20pt | +1,20 | −0,55 | 1,050 | **+1,7** | no se distingue |
+
+Y cada lado por separado contra su propia nula: `+1,23` contra un desvío de `1,275` y `+0,58` contra
+`0,895`. **Ninguno llega a un desvío y medio.**
+
+**La respuesta, entonces: los signos son opuestos, pero ni los residuos por lado ni su diferencia se
+distinguen de cero con el error bueno. No hay dirección medida.** La etiqueta «DIRECCIONAL» que
+imprime el script sale de una regla de signos escrita a mano y sin barra de error: **está mal, y la
+dejo en la salida a propósito para que se vea el error al lado de su corrección.**
+
+---
+
+# LA RAZÓN 1,08 CONTRA 1,6: SUBE, PERO NO LLEGA (2026-09-04)
+
+**No gasta cartucho. K = 261.** Medición descriptiva sobre muestra ya recogida. La caja sellada no se
+toca.
+
+Traje esta observación en el bloque (a) del reporte anterior y Roberto marcó, con razón, que antes de
+tratarla como estructura hay que descartar la explicación aburrida: **el rebote entre precio de compra
+y de venta infla la varianza de cierre a cierre y hunde la razón sin que el mercado sea más
+direccional.**
+
+## La medición
+
+La razón es `E[rango de la barra] / desvío del incremento`. Una barra browniana da `√(8/π) = 1,5958`.
+El rebote es un ruido de un solo paso: su aporte **no crece con la escala**, así que si es la
+explicación, la razón tiene que subir hacia 1,596 al agrandar la barra. Se agrega **dentro de cada
+sesión**, nunca a caballo del corte nocturno.
+
+| escala | barras | rango medio | desvío inc. | **razón** | vs browniano | VR(k) |
+|---|---|---|---|---|---|---|
+| 1 min | 1.357.784 | 0,6577 | 0,5961 | **1,103** | 69,2% | 1,000 |
+| 2 min | 678.597 | 0,9455 | 0,8189 | 1,155 | 72,4% | 0,944 |
+| 3 min | 452.332 | 1,1634 | 0,9956 | 1,169 | 73,2% | 0,930 |
+| 5 min | 271.235 | 1,5102 | 1,2692 | 1,190 | 74,6% | 0,907 |
+| 10 min | 135.340 | 2,1462 | 1,7801 | 1,206 | 75,6% | 0,892 |
+| 15 min | 90.091 | 2,6373 | 2,1661 | 1,218 | 76,3% | 0,880 |
+| 30 min | 44.831 | 3,7519 | 3,0576 | 1,227 | 76,9% | 0,877 |
+| 60 min | 21.975 | 5,3367 | 4,3929 | 1,215 | 76,1% | 0,905 |
+| 120 min | 10.972 | 7,6218 | 6,4172 | 1,188 | 74,4% | 0,966 |
+| 240 min | 4.993 | 10,3881 | 8,3912 | **1,238** | 77,6% | 0,826 |
+| 390 min | 2.984 | 13,3420 | 10,9909 | 1,214 | 76,1% | 0,872 |
+
+## El veredicto: SUBE, PERO NO LLEGA
+
+**Sí hay rebote, y es chico.** `VR(k)` cae de 1,000 a ~0,88: la varianza del minuto está inflada
+alrededor de un **12%** respecto de las escalas largas. Eso es el rebote, medido directo, sin modelo
+de barreras de por medio.
+
+**Pero explica sólo una quinta parte del hueco.** La razón sube de 1,103 a ~1,19–1,24 y **ahí se
+queda**, en el **76% del browniano**, desde los 5 minutos hasta la sesión entera. La distancia
+recorrida es `(1,19 − 1,103) / (1,596 − 1,103) = 18%`. El otro 82% no es microestructura.
+
+**Y la discretez del tick tampoco lo explica en el extremo largo.** A un minuto el rango mediano es
+0,50 pt = **2 ticks**, y una barra que visita dos o tres niveles no puede tener la razón de un
+browniano. Pero a 390 minutos el rango medio es 13,34 pt = **53 ticks**, y la razón sigue en 1,214.
+Ahí la grilla no puede ser la causa.
+
+**No le pongo nombre a lo que queda.** Lo que se puede decir con lo medido: la barra de ES es
+persistentemente más angosta respecto de su propio incremento que cualquier paseo browniano, a todas
+las escalas entre 1 minuto y una sesión, y ni el rebote ni la discretez del tick alcanzan para
+explicarlo.
+
+## Dos correcciones a mi propia observación
+
+1. **El número era 1,082 y es 1,103.** El 0,6079 que reporté como desvío incluía los incrementos que
+   cruzan el corte nocturno, que son más grandes e inflan el desvío. Dentro de sesión da 0,5961.
+2. **El `VR` de 120 min (0,966) está fuera de línea con sus vecinos** (0,877 a 30, 0,905 a 60, 0,826 a
+   240). Con 10.972 y 4.993 barras la estimación de varianza es ruidosa. Es ruido de la última
+   columna, no un rasgo.
+
+**Qué haría fallar esta lectura:** que la razón se hubiera quedado plana **y** `VR(k)` en 1. Ahí el
+rebote no explicaría nada y habría que buscar en otro lado desde cero. No fue el caso: el rebote
+existe, sólo que es chico.

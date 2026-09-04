@@ -1,0 +1,105 @@
+====================================================================================================
+BOOTSTRAP POR BLOQUES APAREADO EN LA TASA DE SIN-RESOLVER
+NO GASTA CARTUCHO. K = 261. La caja sellada no se toca.
+====================================================================================================
+
+====================================================================================================
+CALIBRACION DEL LARGO DE BLOQUE contra la tasa real de sin-resolver
+   Objetivo: 20pt:10pt a una sesion deja 35.6% sin resolver en ES real.
+   La nula IID dejaba ~1,6%: por eso no eran comparables.
+====================================================================================================
+
+     L (barras)   sin resolver   dif vs real
+              1           7.1%         -28.5
+              5          10.5%         -25.1
+             15          11.3%         -24.3
+             60          15.7%         -19.9
+            240          22.1%         -13.5
+            780          30.8%          -4.8
+          1,380          29.4%          -6.2
+          2,760          32.8%          -2.8
+          5,520          36.5%          +0.9
+         11,040          37.6%          +2.0
+
+   -> L* = 5,520 barras (4.00 sesiones). Diferencia 0.9 pt.
+
+   corriendo modo 'IID (L=1)' con K = 32 ...
+
+   corriendo modo 'bloques L*=5520' con K = 32 ...
+
+   corriendo modo 'CONTROL barajado' con K = 8 ...
+
+   corriendo modo 'bloques centrados' con K = 12 ...
+
+====================================================================================================
+APAREO - la nula por bloques reproduce la tasa de sin-resolver del ES real?
+====================================================================================================
+
+   horizonte 1 sesion
+       bracket   ES real       IID   bloques L*   centrados
+     10pt:10pt     19.0%      0.3%        18.4%       18.3%
+     20pt:10pt     35.6%      7.4%        35.0%       35.6%
+      5pt:20pt     17.4%      1.6%        17.3%       17.5%
+
+   horizonte 5 sesiones
+       bracket   ES real       IID   bloques L*   centrados
+     10pt:10pt      0.7%      0.0%         0.2%        0.3%
+     20pt:10pt      4.0%      0.0%         1.9%        3.1%
+      5pt:20pt      1.1%      0.0%         0.5%        0.7%
+
+====================================================================================================
+CONTROL - bloques sobre datos BARAJADOS deben reproducir la nula IID
+   QUE LO HARIA FALLAR: residuo distinto de cero ahi. Seria sesgo del metodo.
+====================================================================================================
+
+       bracket   IID media  IID desvio   barajado   desvio     dif  en desvios  veredicto
+     10pt:10pt      -0.004       0.005     -0.000    0.001  +0.004        +4.4        MAL
+     20pt:10pt      +0.140       0.308     +0.172    0.367  +0.032        +0.2         OK
+      5pt:20pt      -0.146       0.355     -0.413    0.309  -0.267        -2.1         OK
+
+   CONTROL FALLADO
+
+====================================================================================================
+LA PREGUNTA - el residuo real sobrevive a la nula APAREADA?
+   Todo con el error de ENTRE SERIES, no con el binomial.
+====================================================================================================
+
+   horizonte 1 sesion
+       bracket     REAL     nula   desvio  binomial  subest  en desvios     min     max  adentro?
+     10pt:10pt    +0.00    +0.00    0.000     0.226    0.0x        +0.0   +0.00   +0.00        SI
+     20pt:10pt    -0.15    -0.21    0.465     0.223    2.1x        +0.1   -1.19   +0.78        SI
+      5pt:20pt    -0.05    -0.25    0.470     0.154    3.1x        +0.4   -0.98   +0.79        SI
+
+   horizonte 5 sesiones
+       bracket     REAL     nula   desvio  binomial  subest  en desvios     min     max  adentro?
+     10pt:10pt    +0.00    +0.00    0.000     0.204    0.0x        +0.0   +0.00   +0.00        SI
+     20pt:10pt    -1.48    -0.33    0.614     0.189    3.2x        -1.9   -1.41   +0.79        NO
+      5pt:20pt    +1.19    +0.38    0.577     0.155    3.7x        +1.4   -0.69   +1.77        SI
+
+   Desvio del desvio: 1/raiz(2(K-1)) con K=32 -> 12.7%  (con K=10 era 23,6%)
+
+   Y con la tendencia local sacada (cada bloque centrado), K = 12
+       bracket     nula   desvio  vs bloques
+     10pt:10pt    +0.00    0.000       +0.00
+     20pt:10pt    -2.86    0.750       -2.53
+      5pt:20pt    +2.30    0.644       +1.92
+
+====================================================================================================
+TEST DE DIRECCION - el residuo tiene el mismo signo comprando y vendiendo?
+   mismo signo -> volatilidad o forma, sin direccion. Opuesto -> direccional.
+====================================================================================================
+
+   ANTI-IDENTIDAD: para T=S el largo y el corto usan los mismos dos niveles con
+   las etiquetas al reves, asi que gana(largo) tiene que ser IGUAL a pierde(corto)
+   y el test es VACIO. Para T!=S los niveles difieren y el test mide algo.
+
+       bracket   gana(largo)  pierde(corto)   iguales?    el test es
+     10pt:10pt        15,293         15,293         SI         VACIO
+     20pt:10pt         9,133         19,281         no        valido
+      5pt:20pt        23,838          5,922         no        valido
+
+   Sobre ES real, 1 sesion, cada lado corregido por su propia censura:
+       bracket    largo    corto     signos   desvio nula largo                   lectura
+     10pt:10pt    +2.60    -2.60    opuesto               1.219       vacio por identidad
+     20pt:10pt    +1.23    -1.37    opuesto               1.275               DIRECCIONAL
+      5pt:20pt    +0.58    -0.62    opuesto               0.895               DIRECCIONAL
