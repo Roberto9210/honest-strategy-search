@@ -37,8 +37,9 @@ import sys
 import numpy as np
 
 from aritmetica import FIRMAS
-from bracket import (C1, TICK, sim_bracket, filtro_terreno, trades_por_dia,
+from bracket import (C1, TICK, sim_bracket, trades_por_dia,
                      factible_escala, factible_dia, factible_horizonte)
+from factibilidad import filtro_mercado, filtro_azar, veredicto_azar
 
 SEMILLA = 20260904
 NPATHS = 20_000
@@ -106,32 +107,40 @@ def acierto_sin_ventaja(T_pt, S_pt):
 
 
 def factible(firma, N, T_pt, S_pt, c1):
-    """Filtros ya medidos: terreno (deslizamiento y tenencia) mas los de diseno de la
-    propia firma. Devuelve (bool, motivo_corto)."""
+    """Filtros SEPARADOS (ver factibilidad.py): el de mercado rechaza y no se negocia; el
+    de azar esta calibrado sobre entradas sin ventaja, asi que frente a un candidato CON
+    ventaja no rechaza, deja la celda SIN DECIDIR.
+    Devuelve (estado, motivo) con estado en {'si', 'no', 'sin decidir'}."""
     f = FIRMAS[firma]
     T_ticks, S_ticks = T_pt * 4, S_pt * 4
     ev, fu = f["eval"], f["fund"]
 
-    terreno_ok, fa, fb, motivo = filtro_terreno(S_ticks)
-    if not terreno_ok:
-        corto = "desliz." if fa is not True else "tenencia"
-        if fa is None:
-            corto = "sin dato"
-        return False, corto
+    ok_m, ratio, _ = filtro_mercado(S_pt)
+    if ok_m is None:
+        return "no", "desliz. no medido"
+    if ok_m is False:
+        return "no", f"mercado {ratio*100:.0f}%"
+
+    veredictos = {v: veredicto_azar(filtro_azar(T_pt, S_pt, v)) for v in ("T23", "RTH")}
+    if "RECHAZA" in veredictos.values():
+        return "no", "azar rechaza"
+    azar_limpio = all(v == "pasa" for v in veredictos.values())
 
     tpd = trades_por_dia(round(S_ticks / 4))
     win = T_ticks * TICK * N - c1 * N
     if fu.get("qual_days", 0) and tpd * win < fu.get("qual_amt", 0.0):
-        return False, "no califica"
+        return "no", "no califica"
     if not factible_escala(N, S_ticks, T_ticks, ev["target"]):
-        return False, "1 op decide"
+        return "no", "1 op decide"
     if not (factible_dia(N, S_ticks, T_ticks, c1, ev["target"], ev["dd"])
             and factible_dia(N, S_ticks, T_ticks, c1, fu["target"], fu["dd"])):
-        return False, "1 dia decide"
+        return "no", "1 dia decide"
     if not factible_horizonte(N, S_ticks, T_ticks, c1, ev["target"], ev["dd"],
                               ev.get("max_days", 250)):
-        return False, "horizonte"
-    return True, "ok"
+        return "no", "horizonte"
+    if azar_limpio:
+        return "si", f"pasa ambos (mercado {ratio*100:.0f}%, al borde)"
+    return "sin decidir", "azar indeterminado con ventaja"
 
 
 def _fmt(p):
@@ -156,7 +165,7 @@ def tabla(c1, titulo, npaths=NPATHS):
         for T_pt, S_pt in BRACKETS:
             ok, motivo = factible(nombre, N_TABLA, T_pt, S_pt, c1)
             p = acierto_requerido(nombre, N_TABLA, T_pt, S_pt, c1, npaths)
-            marca = "" if ok else f" [{motivo}]"
+            marca = {"si": "", "sin decidir": " [?]"}.get(ok, " [x]")
             fila += f"{_fmt(p) + marca:>22}"
             if p is not None:
                 celdas.append((p, nombre, T_pt, S_pt, ok))
@@ -348,13 +357,13 @@ def main():
         sensibilidad()
     elif a.firma and a.objetivo and a.stop:
         nombre = ALIAS[a.firma]
-        ok, motivo = factible(nombre, a.contratos, a.objetivo, a.stop, a.costo)
+        estado, motivo = factible(nombre, a.contratos, a.objetivo, a.stop, a.costo)
         p = acierto_requerido(nombre, a.contratos, a.objetivo, a.stop, a.costo)
         print(f"{nombre}   N={a.contratos} micros   {a.objetivo:g}pt:{a.stop:g}pt "
               f"(R:R {a.objetivo/a.stop:.1f})   costo ${a.costo:.2f}/op")
         print(f"  acierto requerido : {_fmt(p).strip()}")
         print(f"  sin ventaja da    : {acierto_sin_ventaja(a.objetivo, a.stop)*100:.1f}%")
-        print(f"  factible          : {'SI' if ok else 'NO (' + motivo + ')'}")
+        print(f"  factible          : {estado.upper()} ({motivo})")
     else:
         ap.print_help()
 

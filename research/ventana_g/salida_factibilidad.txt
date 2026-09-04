@@ -1,0 +1,70 @@
+============================================================================================================
+FILTROS DE TERRENO SEPARADOS - que descarta el mercado y que descarta el azar
+NO GASTA CARTUCHO. K = 261.
+============================================================================================================
+
+1) FILTRO DE MERCADO (deslizamiento). Invariante a la ventaja. NO NEGOCIABLE.
+   corte escrito a mano: exceso p95 <= 25% del stop
+       stop   exceso p95    ratio    veredicto   fuente
+        4pt       2.10pt    52.5%      RECHAZA   T23 largo
+       10pt       2.50pt    25.0%         pasa   T23 largo
+       20pt       3.82pt    19.1%         pasa   T23 largo
+
+2) FILTRO DE AZAR (tenencia). Medido sobre entradas SIN ventaja.
+   Frente a un candidato CON ventaja no rechaza: queda INDETERMINADO.
+   corte escrito a mano: P(resolver en la ventana) >= 50%
+   Corregido: usa LAS DOS barreras (objetivo y stop), no solo el stop.
+
+   ventana T23 (1380 min), entrada larga
+          bracket   P(toca obj)  P(toca stop)   cota inf   cota sup       veredicto
+         5pt:10pt  70.5% (>=D6)         46.2%      70.5%      ---              pasa
+        10pt:10pt         51.8%         46.2%      51.8%      98.0%            pasa
+        20pt:10pt         22.2%         46.2%      46.2%      68.4%   indeterminado
+          8pt:4pt         60.6%         75.5%      75.5%     100.0%            pasa
+         5pt:20pt  70.5% (>=D6)         21.4%      70.5%      ---              pasa
+        10pt:20pt         51.8%         21.4%      51.8%      73.2%            pasa
+        20pt:20pt         22.2%         21.4%      22.2%      43.6%         RECHAZA
+
+   ventana RTH (390 min), entrada larga
+          bracket   P(toca obj)  P(toca stop)   cota inf   cota sup       veredicto
+         5pt:10pt  60.0% (>=D6)         38.8%      60.0%      ---              pasa
+        10pt:10pt         38.0%         38.8%      38.8%      76.8%   indeterminado
+        20pt:10pt         14.2%         38.8%      38.8%      53.0%   indeterminado
+          8pt:4pt         47.4%         70.9%      70.9%     100.0%            pasa
+         5pt:20pt  60.0% (>=D6)         16.8%      60.0%      ---              pasa
+        10pt:20pt         38.0%         16.8%      38.0%      54.8%   indeterminado
+        20pt:20pt         14.2%         16.8%      16.8%      31.0%         RECHAZA
+
+============================================================================================================
+3) TABLA DE FACTIBILIDAD RECONCILIADA
+============================================================================================================
+          bracket   mercado (no neg.)        azar T23        azar RTH                   veredicto
+         5pt:10pt                pasa            pasa            pasa        pasa ambos, al borde
+        10pt:10pt                pasa            pasa   indeterminado          sin decidir (azar)
+        20pt:10pt                pasa   indeterminado   indeterminado          sin decidir (azar)
+          8pt:4pt             RECHAZA            pasa            pasa        INFACTIBLE (mercado)
+         5pt:20pt                pasa            pasa            pasa        pasa ambos, al borde
+        10pt:20pt                pasa            pasa   indeterminado          sin decidir (azar)
+        20pt:20pt                pasa         RECHAZA         RECHAZA          sin decidir (azar)
+
+   Recordatorio: los dos cortes (25% y 50%) son ESCRITOS A MANO, no derivados.
+   Todo lo que 'pasa' arriba, pasa por uno o dos puntos porcentuales.
+
+============================================================================================================
+4) EL DESLIZAMIENTO EN LA UNIDAD DEL CRITERIO - puntos de acierto que agrega
+============================================================================================================
+   equilibrio del bracket con exceso e:  p = (S+e)/(S+e+T)
+   el costo del modelo ya cuenta la MEDIANA (0.25pt = 1 tick);
+   lo NO modelado es el tramo de la mediana al p95.
+
+        bracket   moneda  requerido  ventaja ped.   p95 no modelado  cuantas veces
+      20pt:10pt    33.3%      34.1%         +0.8             +4.6           6.0x
+      10pt:10pt    50.0%      51.6%         +1.6             +4.9           3.1x
+      10pt:20pt    66.7%      67.1%         +0.4             +3.5           8.1x
+       5pt:10pt    66.7%      69.3%         +2.6             +4.2           1.6x
+       5pt:20pt    80.0%      80.9%         +0.9             +2.5           2.7x
+
+   En TODAS las celdas el tramo de deslizamiento que el modelo no captura es
+   mas grande que la ventaja entera que el criterio le pide al candidato.
+   El promedio del exceso -que decidiria el punto- NO ESTA MEDIDO: el terreno
+   publico mediana, p95, p99 y maximo, no la media.
