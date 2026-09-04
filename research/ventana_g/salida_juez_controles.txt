@@ -8,14 +8,14 @@ NO GASTA CARTUCHO. K = 261. Permutaciones por nula: 200. La caja sellada no se t
 C1  SIN VENTAJA. Esperado NO SUPERA. Falla si SUPERA o APUESTA.
    [C1] NO SUPERA   (7s)
       obs +26.96  nulaA -14.75 (vent +41.71, +1.5sd)  nulaB -20.95 (vent +47.91, +1.7sd)  pasiva -1.30 (+1.0sd)  sd 28.11  z_req 3.00
-      regimen: bajo=+50.0(+1.5sd)no  medio=+76.3(+1.6sd)SI  alto=+12.8(+0.2sd)no
+      regimen: bajo=+88.6(+2.5sd)SI  medio=+39.3(+0.8sd)no  alto=-3.3(-0.1sd)no
       cadena eval x fondeada (10 micros): P(pasa eval) 0.075  P(pago) 0.011  P(se acaba el rango) 0.004  E sesiones 7  E $/intento -69
       informativo = min(rotacion, signo, pasiva) = +1.0sd; lo frena: rotacion en rango, signo, pasiva
 
 C2  VENTAJA INYECTADA q=0.62. Esperado SUPERA y recuperacion dentro de +-33% de la realizada.
    [C2] SUPERA   (7s)
       obs +230.37  nulaA -4.54 (vent +234.91, +7.9sd)  nulaB -23.09 (vent +253.46, +8.6sd)  pasiva +2.25 (+7.7sd)  sd 29.61  z_req 3.00
-      regimen: bajo=+194.9(+5.7sd)SI  medio=+304.6(+6.6sd)SI  alto=+283.2(+4.4sd)SI
+      regimen: bajo=+210.9(+6.4sd)SI  medio=+279.4(+6.0sd)SI  alto=+283.0(+4.8sd)SI
       cadena eval x fondeada (10 micros): P(pasa eval) 0.321  P(pago) 0.094  P(se acaba el rango) 0.005  E sesiones 12  E $/intento +43
       informativo = min(rotacion, signo, pasiva) = +7.7sd; lo frena: nada (bate las tres)
       inyectada REALIZADA +255.44/sesion   recuperada: signo +253.46 (99%)   rotacion +234.91 (92%)
@@ -28,17 +28,17 @@ C4  ENTRADA CON RESULTADOS. Esperado RECHAZADA. Falla si se juzga.
    [C4] RECHAZADA   (0s)
       motivo: ENTRADA RECHAZADA. El campo 'pnl' aparece en candidato.operaciones[0] y es un RESULTADO.
 
-C5  VENTAJA SOLO EN EL TERCIL ALTO (q=0.75). Esperado APUESTA AL REGIMEN.
+C5  VENTAJA SOLO EN EL TERCIL ALTO EX-ANTE (sesion anterior; q=0.75). Esperado APUESTA AL REGIMEN.
    [C5] APUESTA AL REGIMEN   (7s)
-      obs +126.98  nulaA -8.03 (vent +135.01, +4.0sd)  nulaB -26.06 (vent +153.04, +4.5sd)  pasiva -0.74 (+3.8sd)  sd 33.87  z_req 3.00
-      regimen: bajo=-39.7(-1.2sd)no  medio=-12.2(-0.2sd)no  alto=+625.9(+10.3sd)SI
-      cadena eval x fondeada (10 micros): P(pasa eval) 0.173  P(pago) 0.094  P(se acaba el rango) 0.022  E sesiones 8  E $/intento +43
-      informativo = min(rotacion, signo, pasiva) = +3.8sd; lo frena: nada (bate las tres)
+      obs +116.31  nulaA -8.61 (vent +124.93, +3.7sd)  nulaB -25.59 (vent +141.91, +4.2sd)  pasiva -0.23 (+3.5sd)  sd 33.60  z_req 3.00
+      regimen: bajo=-58.8(-1.7sd)no  medio=+12.4(+0.3sd)no  alto=+595.5(+9.5sd)SI
+      cadena eval x fondeada (10 micros): P(pasa eval) 0.170  P(pago) 0.084  P(se acaba el rango) 0.022  E sesiones 8  E $/intento +31
+      informativo = min(rotacion, signo, pasiva) = +3.5sd; lo frena: nada (bate las tres)
 
 C6  ATAQUE A1: solo-largo restringido a 2017. Esperado NO SUPERA con la defensa.
    [C6 con defensa] NO SUPERA   (2s)
       obs +194.10  nulaA +201.09 (vent -6.98, -0.2sd)  nulaB +10.05 (vent +184.05, +5.0sd)  pasiva +160.13 (+0.9sd)  sd 36.49  z_req 3.00
-      regimen: bajo=+288.3(+7.0sd)SI  medio=-305.7(-2.8sd)no  alto=SIN DATOS
+      regimen: bajo=+150.0(+3.8sd)SI  medio=+340.8(+3.3sd)SI  alto=SIN DATOS
       cadena eval x fondeada (10 micros): P(pasa eval) 0.311  P(pago) 0.092  P(se acaba el rango) 0.008  E sesiones 8  E $/intento +41
       informativo = min(rotacion, signo, pasiva) = -0.2sd; lo frena: rotacion en rango, pasiva
       LECTURA: la nula de signo SOLA lo aprobaria a +5.0sd. Lo frenan la rotacion DENTRO del rango y la pasiva: la defensa de A1 es lo que actua.

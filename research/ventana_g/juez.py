@@ -20,10 +20,12 @@ SOLO dentro del rango de fechas del propio candidato, y se agrega un tercer punt
 una posicion PASIVA de la misma exposicion neta promedio sobre el mismo intervalo. Si el rango es
 tan corto que quedan pocas rotaciones independientes (rango / L* = 4 sesiones), es NO MEDIBLE.
 
-EL VEREDICTO POR REGIMEN. El piso va de $3,49 a $106 por anio (factor 30). Se calcula piso y
-ventaja por tercil de volatilidad de sesion (eje verificado en juez_regimen.py) y se EXIGE que la
-ventaja aguante en cada uno. Si aguanta solo en alguno: APUESTA AL REGIMEN. Es una categoria
-propia, no un aprobado con asterisco.
+EL VEREDICTO POR REGIMEN. El piso va de $3,49 a $106 por anio (factor 30). Se calcula la ventaja
+por tercil de volatilidad y se EXIGE que aguante en cada uno. Si aguanta solo en alguno: APUESTA
+AL REGIMEN, categoria propia, no un aprobado con asterisco. EL EJE ES EX-ANTE: la volatilidad de
+la sesion ANTERIOR, conocible al entrar (juez_regimen_exante.py: piso monotono, alto/bajo 20,8x y
+5,1x). La volatilidad de la sesion ENTERA incluye lo que paso despues de entrar; ese eje se llama
+hindsight, DESCRIBE el piso (juez_regimen.py) y se imprime aparte con ese nombre. No se juzga con el.
 
 EL PERIODO RESERVADO. 2016-2018 es trabajo; 2019 es verificacion. El juez se NIEGA a mostrar 2019
 hasta que el resultado de 2016-2018 este anotado en el registro. Es pre-registro real y
@@ -203,11 +205,22 @@ def cargar_mercado():
     hi = df["high"].to_numpy(float); lo = df["low"].to_numpy(float)
     rango = hi - lo
     vol_ses = np.array([rango[a:b].mean() for a, b in zip(ini, fin)])
+    # DOS EJES CON NOMBRES DISTINTOS, para que nadie los confunda dentro de seis meses:
+    #   tercil_hindsight - la sesion ENTERA. Incluye lo que paso despues de cada entrada. Sirve
+    #                      para DESCRIBIR el piso (juez_regimen.py). NO se juzga con esto.
+    #   tercil_exante    - la volatilidad de la sesion ANTERIOR, conocible al entrar. Con esto se
+    #                      JUZGA. Verificado en juez_regimen_exante.py: piso monotono, alto/bajo
+    #                      20,8x (5pt:20pt) y 5,1x (20pt:10pt), contra la vara de >= 3x.
     q33, q66 = np.quantile(vol_ses, [1 / 3, 2 / 3])
-    tercil = np.where(vol_ses <= q33, 0, np.where(vol_ses <= q66, 1, 2))
+    tercil_hind = np.where(vol_ses <= q33, 0, np.where(vol_ses <= q66, 1, 2))
+    vol_prev = np.concatenate([[np.nan], vol_ses[:-1]])
+    p33, p66 = np.nanquantile(vol_prev, [1 / 3, 2 / 3])
+    tercil_ex = np.where(np.isnan(vol_prev), -1,
+                         np.where(vol_prev <= p33, 0, np.where(vol_prev <= p66, 1, 2)))
     return dict(cl=df["close"].to_numpy(float), hi=hi, lo=lo, ts=ts, fin_de=fin_de,
                 ses_de=ses_de, ini=ini, fin=fin, nses=len(ini), n=n, anio_ses=anio[ini],
-                tercil=tercil, cortes_tercil=(float(q33), float(q66)))
+                tercil_exante=tercil_ex, tercil_hindsight=tercil_hind,
+                cortes_exante=(float(p33), float(p66)), cortes_hindsight=(float(q33), float(q66)))
 
 
 def resolver(m, idx, sgn, regla, exceso):
@@ -497,10 +510,12 @@ def juzgar_periodo(cand, m, idx, sgn, etiqueta, npermuta=NPERM, rotacion_global=
                 sgn=sgn, ten=ten, exceso=exceso, punto=punto, contratos=contratos, c1=c1)
 
 
-def regimen(r, m):
-    """Ventaja por tercil de volatilidad con la nula B (conserva la sesion exacta)."""
+def regimen(r, m, eje="tercil_exante"):
+    """Ventaja por tercil de volatilidad con la nula B (conserva la sesion exacta).
+    eje='tercil_exante' (sesion anterior) es el que JUZGA; eje='tercil_hindsight' (sesion
+    entera) solo DESCRIBE y se imprime aparte con ese nombre."""
     ses = np.arange(r["ses_lo"], r["ses_hi"] + 1)
-    terc = m["tercil"][ses]
+    terc = m[eje][ses]
     out = []
     for t, nom in ((0, "bajo"), (1, "medio"), (2, "alto")):
         mk = terc == t
@@ -627,7 +642,7 @@ def juzgar(cand, m, permitir_caja=False, prerregistro=None, verificar=False, npe
     reg = regimen(r, m)
     v, z_req, rent, info = veredicto_de(r, reg, variantes_total)
     r.update(veredicto=v, z_req=z_req, rentable=rent, informativo=info, regimen=reg,
-             cadena=cadena_pasar(r, m))
+             regimen_hindsight=regimen(r, m, "tercil_hindsight"), cadena=cadena_pasar(r, m))
     salida["periodos"]["trabajo"] = r
     if anotar_:
         anotar(registro, dict(cuando=datetime.now(timezone.utc).isoformat(timespec="seconds"),
@@ -659,6 +674,7 @@ def juzgar(cand, m, permitir_caja=False, prerregistro=None, verificar=False, npe
             regv = regimen(rv, m)
             vv, zq, rn, inf = veredicto_de(rv, regv, variantes_total)
             rv.update(veredicto=vv, z_req=zq, rentable=rn, informativo=inf, regimen=regv,
+                      regimen_hindsight=regimen(rv, m, "tercil_hindsight"),
                       cadena=cadena_pasar(rv, m))
             salida["periodos"]["verificacion"] = rv
             salida["verificacion"] = f"MOSTRADO: {vv}"
@@ -691,13 +707,22 @@ def _bloque_periodo(A, r, s):
     A(f"   RENTABLE (dolares > 0):                  {r['z_rent']:+.1f} desvios contra {r['z_req']:.2f} exigidos   {'SI' if r['rentable'] else 'no'}")
     A(f"   INFORMATIVO (bate rotacion, signo y pasiva): {r['z_info']:+.1f} desvios contra {r['z_req']:.2f} exigidos   {'SI' if r['informativo'] else 'no'}")
     A("")
-    A(f"   POR REGIMEN (terciles de volatilidad de sesion; nula de signo, que conserva la sesion):")
+    A(f"   POR REGIMEN, EJE EX-ANTE (tercil de volatilidad de la sesion ANTERIOR, conocible al entrar;")
+    A(f"   nula de signo, que conserva la sesion). Con esto se JUZGA:")
     A(f"   {'tercil':>8}{'sesiones':>10}{'obs':>10}{'nula':>10}{'ventaja':>10}{'desvios':>9}{'aguanta':>9}")
     for t in r["regimen"]:
         if not t["verificable"]:
             A(f"   {t['nombre']:>8}{t['n']:>10}{'':>10}{'':>10}{'':>10}{'':>9}{'SIN DATOS':>9}   (< {SES_MIN_TERCIL} sesiones: no verificable)")
         else:
             A(f"   {t['nombre']:>8}{t['n']:>10}{t['obs']:>+10.2f}{t['nula']:>+10.2f}{t['ventaja']:>+10.2f}{t['z']:>+9.1f}{('SI' if t['aguanta'] else 'no'):>9}")
+    partes = []
+    for t in r["regimen_hindsight"]:
+        if t["verificable"]:
+            partes.append(f"{t['nombre']} {t['ventaja']:+.1f} ({t['z']:+.1f}sd)")
+        else:
+            partes.append(f"{t['nombre']} sin datos")
+    A("   DESCRIPTIVO, EJE HINDSIGHT (sesion entera, incluye lo que paso despues de entrar; NO juzga): "
+      + "  ".join(partes))
     c = r["cadena"]
     A("")
     A(f"   LA CADENA eval x fondeada (Tradeify Growth 50K, {c['N']} micros): P(pasa eval) {c['p_pasa']:.3f}   "

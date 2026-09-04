@@ -23,8 +23,9 @@ este mal (me paso con "A domina a TODO capital", que contradecia mi propia curva
       LO HARIA FALLAR: cualquier veredicto numerico.
   C4  ENTRADA CON RESULTADOS (campo 'pnl'). ESPERADO: RECHAZADA en la puerta.
       LO HARIA FALLAR: que se juzgue.
-  C5  VENTAJA EN UN SOLO REGIMEN (q = 0,75 solo en sesiones del tercil alto, moneda en el resto).
-      Publicado: juez_regimen.py, el tercil alto tiene piso $118,61 contra $2,29 del bajo; la
+  C5  VENTAJA EN UN SOLO REGIMEN (q = 0,75 solo en sesiones del tercil alto EX-ANTE -volatilidad
+      de la sesion anterior, que un candidato SI puede conocer-, moneda en el resto). Publicado:
+      juez_regimen_exante.py, el tercil alto ex-ante tiene piso $105,34 contra $5,07 del bajo; la
       ventaja global va a ser grande y solo un tercil la sostiene. ESPERADO: APUESTA AL REGIMEN.
       LO HARIA FALLAR: SUPERA (no distingue el regimen) o NO SUPERA (no ve la ventaja).
   C6  EL ATAQUE A1: solo-largo restringido a 2017. Publicado: salida_cortes.txt, 2017 largo
@@ -175,8 +176,8 @@ def main():
     resultados["C4"] = (v == "RECHAZADA", v)
 
     # ---------------------------------------------------------------- C5 un solo regimen
-    print(f"\nC5  VENTAJA SOLO EN EL TERCIL ALTO (q={Q5}). Esperado APUESTA AL REGIMEN.")
-    terc_op = m["tercil"][m["ses_de"][idx]]
+    print(f"\nC5  VENTAJA SOLO EN EL TERCIL ALTO EX-ANTE (sesion anterior; q={Q5}). Esperado APUESTA AL REGIMEN.")
+    terc_op = m["tercil_exante"][m["ses_de"][idx]]
     alto = terc_op == 2
     acierta5 = rng.random(len(idx)) < Q5
     lado5 = np.where(alto, np.where(acierta5, mejor_largo, ~mejor_largo), rng.random(len(idx)) < 0.5)

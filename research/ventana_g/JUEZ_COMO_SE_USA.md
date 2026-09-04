@@ -88,8 +88,12 @@ ganadoras y el sesgo de supervivencia, en vez de evitables.
 - **Error por permutación, nunca binomial.** El binomial se muestra al lado con el factor "ganado".
 - **La resolución**, siempre: ±33% de la ventaja con ~5.000 operaciones. *"No detectó nada"* no es
   *"no hay nada"*.
-- **Por régimen**: terciles de volatilidad de sesión (eje verificado en `juez_regimen.py`: el piso va
-  de $2,29 a $118,61 entre el tercil bajo y el alto). La ventaja tiene que aguantar en los tres:
+- **Por régimen**: terciles de volatilidad de la **sesión anterior** — un eje **conocible al entrar**
+  (verificado en `juez_regimen_exante.py`: el piso va de $5,07 a $105,34 entre el tercil bajo y el
+  alto, 20,8×, monótono). Con ese eje se **juzga**. La volatilidad de la sesión *entera* incluye lo
+  que pasó después de cada entrada; ese eje se llama **hindsight**, sólo **describe** el piso
+  (`juez_regimen.py`, $2,29 a $118,61) y se imprime aparte con ese nombre. La ventaja tiene que
+  aguantar en los tres terciles ex-ante:
   positiva y a **≥ 1,5 desvíos** contra la nula de signo dentro del tercil (un tercil sin datos
   —menos de 20 sesiones— cuenta como no verificado y bloquea SUPERA). Ese umbral es permisivo a
   propósito, porque cada tercil tiene un tercio de las sesiones; un tercil nulo lo cruza por ruido
