@@ -81,7 +81,7 @@ def trades_por_dia(D_pt):
 
 def sim_bracket(target, dd, trail, N, S_ticks, T_ticks, c1=C1, dll=None, min_days=0,
                  qual_days=0, qual_amt=0.0, max_days=250, npaths=150_000, lock_off=0.0,
-                 trades_per_day=None, rng=None, p_win=None):
+                 trades_per_day=None, rng=None, p_win=None, exceso_pt=0.0):
     """Devuelve (P_exito, trades_medios_hasta_resolver, fraccion_sin_resolver).
     trades_per_day=None -> se deriva del terreno segun S_ticks/4 (ver trades_por_dia).
     p_win=None -> SIN VENTAJA: la tasa de acierto es la del paseo sin drift, S/(S+T).
@@ -92,7 +92,10 @@ def sim_bracket(target, dd, trail, N, S_ticks, T_ticks, c1=C1, dll=None, min_day
         trades_per_day = trades_por_dia(round(S_ticks / 4))
     c = c1 * N
     win = T_ticks * TICK * N - c
-    loss = S_ticks * TICK * N + c
+    # exceso_pt: deslizamiento MEDIDO por encima del stop nominal, en puntos. Va SOLO en la
+    # rama perdedora, que es donde ocurre: el exceso esta medido condicionado a que el stop
+    # fue tocado. Con exceso_pt=0 el comportamiento es identico al publicado.
+    loss = S_ticks * TICK * N + c + exceso_pt * 5.0 * N
     if p_win is None:
         p_win = S_ticks / (S_ticks + T_ticks)
 

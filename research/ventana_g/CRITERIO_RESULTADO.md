@@ -240,3 +240,117 @@ mediana, p95, p99 y máximo. Esa es la medición que falta para convertir (b) en
 Tras reconectar los filtros corregidos, la aritmética no se movió: Tradeify 20pt:10pt sigue en
 **34,1%**, y la celda publicada en `BRACKET_RESULTADO.md` reproduce (P(eval) 0,232 vs 0,231;
 vara 1,173 vs 1,181). Solo cambió el veredicto de factibilidad, que es lo que debía cambiar.
+
+---
+
+# CIERRE CON LA MEDIA MEDIDA (2026-09-04)
+
+**No gasta cartucho. K = 261.** La media del exceso es un estadístico descriptivo sobre una muestra
+ya recogida (ES 1-min Databento 2016-2019, P-escalera 971 — **control de población reproducido
+exacto**). No hay hipótesis ni α.
+
+## Las dos preguntas, que estaban mezcladas
+
+> **La media gobierna la ESPERANZA. La cola gobierna la PROBABILIDAD DE TOCAR EL LÍMITE.**
+
+El filtro de ayer usaba el p95 para las dos, y el p95 es la respuesta correcta a la segunda y la
+equivocada a la primera. `terreno_stop_resultado.md` §4 nunca publicó la media: su `dist()` sólo
+calculaba percentiles. La calculé reusando su misma `touches()`, sin reimplementar nada.
+
+## 1 — La media, por stop
+
+| stop | n | **media** | p50 | p95 | media/p95 | no modelado |
+|---|---|---|---|---|---|---|
+| 4pt | 733 | **0,596** | 0,25 | 2,10 | 0,28 | +0,346pt |
+| 10pt | 449 | **0,722** | 0,25 | 2,50 | 0,29 | +0,472pt |
+| 20pt | 208 | **0,982** | 0,50 | 3,82 | 0,26 | +0,732pt |
+
+La media es el **26–29% del p95** en toda la tabla. Ayer usé el p95 para juzgar la esperanza: eso
+sobreestimaba el daño por un factor de 3 a 4. **Mi conclusión de ayer era demasiado pesimista.**
+
+Por hora la media varía 4× a 14× (detalle en `PENDIENTE_hora.md`, hipótesis no abierta).
+
+## 2 — El criterio recalculado con la media
+
+El exceso se carga **sólo en la rama perdedora**, que es donde ocurre (está medido condicionado a que
+el stop fue tocado).
+
+| bracket | moneda | req (modelo) | req (media medida) | ventaja pedida | margen |
+|---|---|---|---|---|---|
+| **5pt:10pt** | 66,7% | 69,3% | **70,3%** | +3,6 | **+1,7** |
+| 10pt:10pt | 50,0% | 51,6% | 52,6% | +2,6 | +0,7 |
+| 5pt:20pt | 80,0% | 80,9% | 81,4% | +1,4 | +0,4 |
+| 20pt:10pt | 33,3% | 34,1% | 34,9% | +1,5 | +0,1 |
+| 10pt:20pt | 66,7% | 67,1% | 67,6% | +0,9 | −0,1 |
+
+**El margen existe.** Con la media medida adentro, la celda 5pt:10pt deja +1,7 puntos. La celda que
+daba el titular de ayer (20pt:10pt) deja +0,1: prácticamente nada.
+
+## 3 — La cola, que es la otra pregunta
+
+Pérdida de UNA operación, N=10 micros, contra el drawdown de $2.000:
+
+| stop | nominal | con p95 | con p99 | con máx | máx / dd |
+|---|---|---|---|---|---|
+| 4pt | $200 | $305 | $472 | $1.762 | **88%** |
+| 10pt | $500 | $625 | $851 | $1.762 | **88%** |
+| 20pt | $1.000 | $1.191 | $1.474 | $1.775 | **89%** |
+
+El peor llenado observado en cuatro años se come el 88–89% del drawdown entero en una operación. No
+lo rompe solo — pero el drawdown es **trailing**: después de cualquier ganancia el piso sube y ese
+margen ya no está. Esto no se responde con la media, y no entra en el criterio de esperanza.
+
+## 4 — ¿Hay criterio publicable? NO, y ahora cierra con un número
+
+Medido el deslizamiento, el único término del costo que sigue sin medir es la **comisión**:
+
+| comisión $/micro | c1 | requerido (5pt:10pt) | sobre la moneda |
+|---|---|---|---|
+| 0,00 | 1,25 | 68,6% | +2,0 |
+| **1,25** | **2,50** | **70,3%** | +3,6 ← supuesto |
+| 2,50 | 3,75 | 71,9% | +5,3 |
+| 3,75 | 5,00 | 73,6% | +6,9 |
+
+**El requerido se mueve 4,9 puntos con la comisión; el margen entero es +1,7.** La incertidumbre
+restante es 2,9 veces el margen. Sigue sin haber criterio publicable — pero ya no por vaguedad: por
+**un número identificado y faltante**, la comisión real por micro leída de una fuente oficial. Con
+ese dato, la celda 5pt:10pt queda decidida en un sentido o en el otro.
+
+## 5 — Qué significa exactamente el 34,1%
+
+**Es (ii): el umbral para tener esperanza positiva de PASAR la evaluación**, con barrera de drawdown
+y número limitado de operaciones adentro. **No es (i)**, el equilibrio por operación.
+
+| | 20pt:10pt, N=10, costo $2,50 |
+|---|---|
+| (i) equilibrio POR OPERACIÓN tras costos | **35,0%** |
+| (ii) umbral de esperanza positiva de pasar | **34,1%** ← el 34,1% |
+| moneda sin ventaja | 33,3% |
+
+Y **(ii) < (i)**. A 34,1% de acierto la operación **pierde $13 cada vez** (gana $975 / pierde $525).
+El intento igual conviene porque es una entrada barata a un premio grande: $83 contra $1.350. **No es
+«el nivel para ser rentable operando». Es «el nivel para que el billete valga la pena».** Quien use
+34,1% como objetivo de trading estaría apuntando a una estrategia perdedora.
+
+### La reconciliación con la vara de 1,181×
+
+Las dos cifras son correctas y **no están en las mismas unidades**:
+
+| magnitud | sin ventaja | en el umbral | cociente |
+|---|---|---|---|
+| acierto **por operación** | 33,3% | 34,1% | **1,024** |
+| P(pasar **la cadena**) | 5,156% | 6,151% | **1,193** |
+
+`vara = equilibrio / P(sin ventaja) = 6,148% / 5,156% = 1,192` (publicada 1,181; la diferencia es
+ruido de Monte Carlo).
+
+La conversión entre 1,024 y 1,193 es la **elasticidad de la barrera: +1% relativo de acierto por
+operación produce +7,9% relativo de probabilidad de pasar.** Aplicada, 1,024 → 1,193, que es la vara.
+Cierra. La barrera amplifica ~8×, y por eso una diferencia de 0,8 puntos de acierto se ve como un 18%
+de diferencia en probabilidad de pasar.
+
+## Verificación
+
+Tras agregar `exceso_pt` al modelo, la aritmética no se movió: Tradeify 20pt:10pt sigue en **34,1%** y
+la celda de `BRACKET_RESULTADO.md` reproduce (P(eval) 0,232 vs 0,231; vara 1,173 vs 1,181). El control
+de población de `media_exceso.py` reprodujo las 971 sesiones exactas.
