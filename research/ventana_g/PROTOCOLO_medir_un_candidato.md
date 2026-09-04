@@ -136,3 +136,115 @@ rechazar te cuesta una oportunidad; este te cuesta plata puesta en algo que no f
 *Medido en `linea_base.py` y `censura_regla.py`. Salidas en `salida_linea_base.txt` y
 `salida_censura_regla.txt`. Control: bracket de 23pt a cada lado → ambigüedad 0,000% y tasa pooled
 exactamente 50,0%.*
+
+---
+
+# SEGUNDA PARTE — EL MÉTODO: dólares por sesión, no tasas de acierto
+
+**Escrito 2026-09-04, después de medirlo. Activo permanente.** Esto no es un anexo: es el mismo
+problema de la primera parte visto una vez más, y la solución que lo cierra. **La censura era un
+síntoma. La enfermedad era medir en tasas.**
+
+## Por qué se abandona el marco de tasas
+
+Medir una estrategia por su tasa de acierto obliga a compararla contra una tasa «sin ventaja». Esa
+tasa nula **no es una constante**: depende de cuatro cosas, todas medidas en esta ventana, y
+**ninguna de ellas es una propiedad de la estrategia.**
+
+| perilla | cuánto mueve la nula | dónde se midió |
+|---|---|---|
+| **horizonte y trato de las no resueltas** (censura) | hasta **6,08 puntos** | `salida_linea_base.txt` |
+| **estructura serial** del precio (agrupamiento de volatilidad) | **1,3–2,9 puntos** | `salida_bloques.txt` |
+| **forma asimétrica de la barra** | **0,34–0,78 puntos** | `salida_sep_nula.txt` |
+| **sobrepaso de barrera** | **0,5–1,1 puntos** | `salida_sintetico.txt` |
+
+**El efecto que se buscaba era 1,2 puntos.** Tres de las cuatro perillas son de ese tamaño o más
+grandes. Por eso el marco de tasas no podía dar una respuesta estable: cada vez que se medía mejor
+una perilla, la conclusión se movía.
+
+## El marco nuevo, en tres reglas
+
+**1. Se suman DÓLARES, no aciertos.** Cada operación aporta su resultado en dinero, con la comisión
+medida y el deslizamiento medido ya adentro.
+
+**2. Ninguna operación se descarta. La que sigue abierta al corte se marca a mercado** y ese número
+entra en la suma. Es la regla de la primera parte de este protocolo, ahora obligatoria y no
+opcional.
+
+**3. La unidad de tiempo es la SESIÓN**, que es además la unidad en la que las firmas miden el
+drawdown, el objetivo y los días mínimos. Las operaciones van **secuenciales**: una por vez, la
+siguiente se abre después de que cerró la anterior.
+
+## Qué arregla, con número
+
+- **Las cuatro perillas desaparecen.** No hay tasa nula que calibrar: el punto de comparación es
+  cero dólares.
+- **No hay censura**, por la regla 2.
+- **El error estándar se vuelve honesto.** Las operaciones secuenciales **no se pisan**, así que
+  cada sesión es una observación independiente de verdad. Verificado: el error entre sesiones de una
+  serie contra la dispersión entre 10 series independientes da cociente **1,29 y 0,73**. En el marco
+  de tasas ese mismo cociente llegaba a **5,3**.
+
+## Lo que NO arregla, y hay que restarlo
+
+**El marco nuevo tiene UN sesgo propio, y está medido.** El control lo destapó: sobre datos sin
+ventaja y costo cero da −$10,77 y +$5,75 por sesión en vez de cero.
+
+Es **sobrepaso de barrera de contabilidad**: el precio *cruza* la barrera, no la toca, pero se anota
+exactamente `+T` o `−S`. Por paro opcional el sesgo por operación vale `o·(1−2p)` con
+`p = S/(S+T)`. Medido con cinco brackets de igual span:
+
+**`o = 0,0642 puntos = 0,26 ticks = $3,21 por operación por mini`**, con `R² = 0,986` y ordenada al
+origen `−0,0004`.
+
+**Cómo se usa:** el sesgo se calcula con la fórmula, se resta, y listo. **La diferencia con las
+cuatro perillas del marco viejo es que éste es UNO, se calcula desde la geometría del bracket, tiene
+signo predecible y es chico frente al efecto** (19% en 5pt:20pt, 5% en 20pt:10pt).
+
+*Corrección a mí mismo: dije que este marco «no tiene nula que calibrar, cero es cero». **Es falso.**
+Tiene una, chica y computable. La afirmación correcta es: pasa de cuatro perillas incontrolables a
+un término que se resta.*
+
+## La combinación antitética: para qué sirve y para qué no
+
+Promediar largo y corto reduce el desvío **5,0× y 8,4×** porque los dos lados están
+anticorrelacionados. **Sirve para medir la esperanza de una entrada al azar.** **No sirve para
+dimensionar a un candidato direccional**, que elige lado y enfrenta el desvío de un lado solo
+(≈$1.050 y ≈$1.072 por sesión, contra $210 y $128 del combinado).
+
+**Hay que decir siempre cuál de las dos se está usando.** Cambia la MDE por un factor de 5.
+
+## La receta, para pegar al lado de cualquier candidato
+
+1. Replay **secuencial** sobre la muestra, una posición por vez.
+2. Resuelta → `±T` o `−(S + exceso medido)`. **Abierta al corte → marca a mercado.** Siempre menos
+   la comisión medida.
+3. Sumar por **sesión**. Media y desvío **entre sesiones**.
+4. **Restar el sesgo del marco:** `o·(1−2p)·$50·(operaciones por sesión)`, con `o = 0,0642`.
+5. Comparar contra **cero**. No hay otra nula.
+6. Declarar si la varianza es **antitética** o **de un lado**, y calcular la MDE con la que
+   corresponda.
+7. **Control obligatorio**, y tiene que poder fallar *y* poder pasar: correr lo mismo sobre
+   bootstrap sin drift con costo cero. Debe dar cero dentro de su error. Para demostrar que el
+   control discrimina, correrlo también con el defecto viejo puesto a propósito (descartar las
+   abiertas): **ése tiene que fallar**. Si pasan los dos, el control no mide nada.
+
+## Los números de referencia, ES 2016-2019, 1 mini
+
+Entradas **al azar**, o sea sin ventaja ninguna. Neto de comisión y deslizamiento medidos, con el
+sesgo del marco ya restado:
+
+| celda | $/sesión | operaciones/sesión | $/operación | piso que hay que superar |
+|---|---|---|---|---|
+| 5pt:20pt | **−44,64** | 5,53 | −10,00 | **+$44,64 por sesión** |
+| 20pt:10pt | **−71,71** | 3,13 | −21,87 | **+$71,71 por sesión** |
+
+Y el detalle por lado, que el combinado esconde:
+
+| celda | largo | corto |
+|---|---|---|
+| 5pt:20pt | −$2,36 (−0,1 errores) | −$108,23 (−3,3 errores) |
+| 20pt:10pt | −$3,29 (−0,1 errores) | −$133,44 (−3,9 errores) |
+
+**Procedencia:** `dolares_por_tiempo.py`, `sesgo_marco.py`, `dolares_lados.py`. Salidas en
+`salida_dolares.txt`, `salida_sesgo_marco.txt`, `salida_dolares_lados.txt`.
