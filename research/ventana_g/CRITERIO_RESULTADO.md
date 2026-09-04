@@ -726,3 +726,89 @@ de un orden de magnitud distinto al que existe en el mercado medido.
 Efecto potencial: se sumaría al costo por operación y subiría el equilibrio, igual que la comisión
 antes de medirla. Es irrelevante para este veredicto —la compuerta se cierra por riesgo, no por
 costo— pero queda escrito por si la rama se reabre alguna vez con una cuenta mayor.
+
+---
+
+# CENSO DE INSTRUMENTOS — ¿existe alguno donde $2.000 sea MUCHO? (2026-09-04)
+
+**No gasta cartucho. K = 261.** Es un censo de instrumentos contra una restricción de cuenta ya
+medida: no hay hipótesis sobre el mercado, no hay estadístico contra un α, no se elige entre
+candidatas por resultado.
+
+**CONTROL, y reproduce exacto:** la fórmula nueva sobre ES devuelve el drawdown equivalente a **40
+puntos** y las tres frecuencias de quiebre de la Compuerta 1 — **5,55% / 8,38% / 5,03%**, al centésimo.
+
+## La pregunta que nunca se hizo
+
+La Compuerta 1 murió por **tamaño**, no por ventaja. Y todo este proyecto midió ES y NQ: los dos
+futuros de índice más grandes y volátiles que existen. Nunca se preguntó si hay un contrato donde
+$2.000 sea mucho.
+
+Dos razones, las dos en la misma unidad (movimientos típicos de una sesión, **un** contrato micro):
+
+- **HOLGURA** = $2.000 ÷ movimiento adverso típico → cuántos golpes malos aguantás
+- **ESFUERZO** = $3.000 ÷ movimiento favorable típico → cuántos buenos necesitás
+
+## La tabla, ordenada por holgura
+
+Diarios 2016-2019. Specs oficiales: apextraderfunding.com, pestaña «Micro Futures», 2026-09-04.
+**Todo el cuadro: permiso de Tradeify NO VERIFICADO** (las specs son del exchange y valen; la lista de
+instrumentos permitidos es de la firma y no está leída).
+
+| instrumento | $/pt | adv $ | fav $ | **HOLGURA** | **ESFUERZO** | vs ES |
+|---|---|---|---|---|---|---|
+| E-Micro Gold (MGC) | 10,00 | 28,00 | 28,00 | **71,4** | 107,1 | solo holgura |
+| Micro Dow (MYM) | 0,50 | 38,50 | 47,75 | 51,9 | 62,8 | solo holgura |
+| Micro Russell (M2K) | 5,00 | 40,50 | 45,50 | 49,4 | 65,9 | solo holgura |
+| **Micro S&P (MES)** | 5,00 | 43,75 | 51,25 | 45,7 | 58,5 | — |
+| Micro Nasdaq (MNQ) | 2,00 | 56,75 | 67,00 | 35,2 | 44,8 | solo esfuerzo |
+| Micro Crude (MCL) | 100,00 | 59,00 | 62,00 | 33,9 | 48,4 | solo esfuerzo |
+
+**Ninguno domina a ES.** Cada uno es mejor en una razón y peor en la otra, sin excepción.
+
+## Por qué ninguno domina — y esto es lo que cierra la rama
+
+No es mala suerte del muestreo: **las dos razones no son independientes.** `holgura = 2000/adv$` y
+`esfuerzo = 3000/fav$` son **las dos** `1/(tamaño del movimiento)`. Un instrumento que se mueve menos
+en dólares compra holgura y paga esfuerzo **en la misma proporción**. Lo único que puede romper el
+empate es la asimetría entre excursión favorable y adversa, y casi no varía:
+
+| instrumento | adv/fav | holgura/esfuerzo | vs ES |
+|---|---|---|---|
+| Micro Dow (MYM) | 0,806 | **0,827** | **1,06×** |
+| Micro Nasdaq (MNQ) | 0,847 | 0,787 | 1,01× |
+| Micro S&P (MES) | 0,854 | 0,781 | 1,00× |
+| Micro Russell (M2K) | 0,890 | 0,749 | 0,96× |
+| Micro Crude (MCL) | 0,952 | 0,701 | 0,90× |
+| E-Micro Gold (MGC) | 1,000 | 0,667 | 0,85× |
+
+**El mejor es 1,24× el peor, y solo 1,06× el de ES.** No hay un instrumento estructuralmente
+distinto: hay seis versiones del mismo problema a distinta escala.
+
+## La lectura, sin suavizar
+
+**El problema no es el instrumento: es la relación entre el tamaño de la cuenta y cualquier futuro
+operable.** Ninguno de los seis alcanza. El mejor intercambio disponible (Micro Dow) es **6% mejor que
+ES**, y la cuenta necesitaba un orden de magnitud, no un 6%. Elegir instrumento mueve la escala del
+problema, no su forma.
+
+Si se quisiera holgura de verdad, el camino no es cambiar de contrato: es un drawdown mayor — y la
+Compuerta 1 ya midió que **ninguna de las ocho firmas ofrece uno que alcance**.
+
+## Lo que falta — vale tanto como la tabla
+
+**A. Micro que la firma lista, spec oficial leída, SIN precio en el repo:**
+
+| símbolo | instrumento | $/pt | dato que falta | de dónde saldría |
+|---|---|---|---|---|
+| SIL | E-Micro Silver | $5 | diario de SI (plata COMEX) | Databento GLBX/COMEX |
+| M6A | E-Micro AUD/USD | $10.000 | diario de 6A | Databento GLBX o proveedor de FX futures |
+| M6E | E-Micro EUR/USD | $12.500 | diario de 6E | Databento GLBX o proveedor de FX futures |
+
+**B. Candidato con precio en el repo pero SIN spec oficial leída:** **MBT (Micro Bitcoin)** —
+`BTC_F_daily.csv` existe, pero el micro no figura en la pestaña oficial leída. Falta la
+especificación del contrato. **No se completó la fila.**
+
+**C. Para toda la tabla:** la lista de instrumentos que **Tradeify** permite y su límite por
+contrato. Saldría de la página oficial de Tradeify o su help center, igual que se leyeron las
+comisiones. Hoy **NO VERIFICADO**.
