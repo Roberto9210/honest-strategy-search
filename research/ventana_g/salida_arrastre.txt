@@ -1,0 +1,32 @@
+====================================================================================================
+EL ARRASTRE DEL DES-DRIFT SOBRE EL POOLED - efecto o ruido?
+NO GASTA CARTUCHO. K = 261.
+====================================================================================================
+
+   5 sesiones de horizonte, 30,000 rutas por lado, 6 factores.
+   Numeros aleatorios comunes: las mismas entradas en todos los factores.
+
+     factor   10:10 pool   10:10 sep   20:10 pool   20:10 sep    5:20 pool    5:20 sep
+       0.00       +0.000       +5.67       -2.146       +5.67       +1.517       +3.68
+       0.20       +0.000       +2.74       -1.977       +3.08       +1.240       +1.91
+       0.40       +0.000       +0.19       -2.025       +0.59       +1.210       +0.56
+       0.60       +0.000       -2.11       -2.063       -1.89       +1.209       -0.96
+       0.80       +0.000       -3.91       -1.953       -3.95       +1.141       -2.40
+       1.00       +0.000       -6.18       -1.649       -6.56       +0.915       -4.00
+
+====================================================================================================
+LA FORMA - se ajusta una recta al pooled contra el factor
+   QUE HARIA FALLAR LA LECTURA 'es un efecto': que el residuo de la recta sea del
+   tamano del recorrido, o que el recorrido entero quepa dentro del error de
+   Monte Carlo. Cualquiera de las dos cosas lo convierte en ruido con nombre.
+====================================================================================================
+
+       bracket   recorrido   pendiente       R2   resid max   error MC  resid/err     lectura
+     10pt:10pt      +0.000      +0.000      nan       0.000      0.214       0.00       RUIDO
+     20pt:10pt      +0.497      +0.360    0.620       0.140      0.202       0.69       MIXTO
+      5pt:20pt      -0.601      -0.472    0.837       0.107      0.169       0.63       MIXTO
+
+   'recorrido' = pooled(1,00) - pooled(0,00), en puntos porcentuales.
+   'error MC' = error estandar binomial de una celda, derivado del n de esa celda.
+   Con numeros aleatorios comunes el error de la DIFERENCIA es bastante menor que
+   ese, asi que 'error MC' es una cota generosa: si algo no lo supera, es ruido.
