@@ -1,0 +1,41 @@
+================================================================================================
+ES LA VOLATILIDAD EL EJE DEL REGIMEN?  verificacion previa a los terciles del juez
+NO GASTA CARTUCHO. K = 261. La caja sellada no se toca.
+================================================================================================
+
+   1,006 sesiones reales. Volatilidad de sesion = rango medio de barra (pt).
+   cortes de tercil: 0.4615 y 0.6610 pt   (bajo <= 0.461 < medio <= 0.661 < alto)
+
+(1) PISO ANUAL PUBLICADO contra RANGO MEDIO DE BARRA DEL ANIO. n = 4: NO decide solo.
+     anio  rango medio  piso 5:20  piso 20:10  % ses tercil alto
+     2016       0.6172      13.56       59.39                25%
+     2017       0.4018       3.49       27.52                 1%
+     2018       0.8669     106.03      119.97                57%
+     2019       0.7348      48.56       84.76                50%
+   celda 5pt:20pt: r = +0.909 sobre 4 puntos; el ORDEN de los anios coincide entre rango y piso.
+   celda 20pt:10pt: r = +0.989 sobre 4 puntos; el ORDEN de los anios coincide entre rango y piso.
+   Lectura: cuatro puntos no establecen nada; el test que decide es el (2).
+
+(2) PISO POR TERCIL DE VOLATILIDAD, calculado directo con entradas al azar.
+   CONDICION DE FALLA (escrita antes): eje correcto si el piso crece con el tercil sin
+   cruzarse Y el cociente alto/bajo es >= 3. Si no, la volatilidad no es el eje.
+
+   celda 5pt:20pt
+     tercil  sesiones   $/sesion   error  op/ses      PISO   2016   2017   2018   2019
+       bajo       336      -6.20    1.41    2.03     +2.29     77    205     31     23
+      medio       335     -14.51    3.25    3.37     +8.01    113     44     78    100
+       alto       335    -139.36   19.06   10.78   +118.61     64      2    144    125
+   monotono: SI   cociente alto/bajo: 51.8x   -> EJE CORRECTO
+
+   celda 20pt:10pt
+     tercil  sesiones   $/sesion   error  op/ses      PISO   2016   2017   2018   2019
+       bajo       336     -20.38    1.18    1.33    +21.81     77    205     31     23
+      medio       335     -44.33    2.51    1.99    +46.45    113     44     78    100
+       alto       335    -144.48    9.50    5.79   +150.68     64      2    144    125
+   monotono: SI   cociente alto/bajo: 6.9x   -> EJE CORRECTO
+
+================================================================================================
+VEREDICTO: la volatilidad de sesion en terciles ES el eje del regimen. El juez la usa.
+   Aviso de independencia: los terciles mezclan anios (ver columnas), asi que el
+   contraste entre terciles NO es el contraste entre anios y no hereda su n = 4.
+================================================================================================
