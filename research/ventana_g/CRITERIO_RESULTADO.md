@@ -920,3 +920,75 @@ La colisión se rompió y **ninguna conclusión cambia**: 6.875 sigue siendo ~27
 necesarios: **falta un factor de 4,5**.
 
 **La palanca de parámetros queda cerrada entera: ni instrumento, ni bracket, ni firma.**
+
+---
+
+# REVISIÓN HACIA ATRÁS Y CAMINO 3 (2026-09-04)
+
+**No gasta cartucho. K = 261.**
+
+## Revisión hacia atrás — verificada, no asumida
+
+**¿Alguna conclusión publicada de esta ventana se apoya en una tasa medida sobre operaciones
+resueltas dentro de la sesión? NO.** Verificado en el código, no supuesto:
+
+- `bracket.py:101` — `p_win` sale de `S_ticks/(S_ticks+T_ticks)`. Es una **fórmula**, no una medición.
+- Ninguna de las tasas empíricas medidas hoy (85,2%, 72,7%, 68,2%…) aparece como entrada en ningún
+  cálculo publicado. La medición de hoy fue la **primera** vez que esa tasa se observó, y se hizo
+  para auditar el supuesto, no para alimentarlo.
+
+**Pero el modelo tiene el defecto espejo, y hay que decirlo.** `sim_bracket` no tiene estado «sin
+resolver» a nivel operación: cada operación es `win` o `−loss`, binaria. **El modelo supone
+resolución del 100%**, cuando entre el 7% y el 35% no resuelve en una sesión.
+
+**Dirección del error:** las operaciones que el modelo no representa son exactamente las que quedan
+abiertas al cierre, y la Compuerta 1 midió que aguantarlas mata la cuenta entre el 42% y el 68% en
+diez noches. **El modelo omite una categoría de resultado que es letal, así que es optimista.** Las
+conclusiones publicadas son todas negativas: si están corridas, están corridas hacia ser **menos**
+negativas que la realidad. **Ninguna conclusión se da vuelta; varias se refuerzan.**
+
+## Camino 3 — la parte aritmética, antes de gastar
+
+Con los pisos ya calculados y los `n` corregidos:
+
+| bracket | equilibrio $/op | piso n=1.000 | piso n=3.000 | op/día | meses n=1.000 | meses n=3.000 | **meses criterio** |
+|---|---|---|---|---|---|---|---|
+| 5pt:10pt | 17,79 | 29,06 | 16,73 | 3,5 | **13m** | 40m | 37m |
+| 10pt:10pt | 23,81 | 41,20 | 23,67 | 1,0 | 48m | 143m | 143m |
+| 20pt:10pt | 29,83 | 58,43 | 33,58 | 1,0 | 48m | 143m | 179m |
+| 5pt:20pt | 15,58 | 40,83 | 23,49 | 3,5 | 13m | 40m | 93m |
+| 10pt:20pt | 22,13 | 57,27 | 32,96 | 1,0 | 48m | 143m | 324m |
+
+**a) Efecto mínimo:** un hallazgo en datos de flujo tiene que mover la esperanza **$29 a $58 por
+operación** para ser detectable con 1.000 operaciones, y **$17 a $34** con 3.000.
+
+**b) Meses de datos:** **13 meses** en el mejor caso (5pt:10pt, 3,5 op/día) y **48 meses** en el peor,
+para 1.000 operaciones. Para demostrar el criterio mismo: de **37 a 324 meses**.
+
+*El backtest no va más rápido que la estrategia: si toma una posición por vez, un mes de datos rinde
+un mes de operaciones. **Comprar datos no compra velocidad, compra el pasado** — que es real y es lo
+único que lo justifica.*
+
+**c) ¿Determinista o estadístico? Casi todo lo medible con `mbp-1` es ESTADÍSTICO**, y hay que
+decirlo porque cambia la decisión de compra. Pero la clasificación útil no es esa: es **a qué ritmo
+llegan las observaciones**.
+
+- **Mediciones de COSTO** (spread, calidad de llenado, deslizamiento de entrada): estadísticas, pero
+  su unidad de observación es la **actualización de cotización** — millones por mes. El muro de las
+  miles de operaciones **no aplica**. Con un mes de datos se mide el deslizamiento de entrada medio
+  con varios decimales. **Este es el uso que justifica la compra**, y es exactamente el número que
+  esta ventana declaró faltante y acotó en «1,25 ticks duplican la ventaja pedida».
+- **Afirmaciones de VENTAJA** (el flujo predice el próximo movimiento): el pago se realiza a nivel
+  operación, así que **el muro aplica entero**. Podés estimar la señal con millones de observaciones
+  y aun así necesitás miles de operaciones para probar que la estrategia gana, porque la conversión
+  de señal a dólares pasa por la misma aritmética de barreras.
+
+**Conclusión de compra: los datos sirven para cerrar el agujero de costo, no para escapar del muro
+de la ventaja.**
+
+**d) ¿Hay alguna medición sobre flujo que SÍ sea determinista? Sí, una: la prioridad de cola.** El
+motor de matching es una **regla**, no una tendencia: con `mbo` se observa la posición exacta en la
+cola, y bajo FIFO un llenado es consecuencia mecánica del volumen que pasa por delante, no una
+probabilidad estimada. Se verifica con pocos casos. **Dos advertencias:** que ES use FIFO puro no
+está verificado en este proyecto (algunos productos de CME usan pro-rata), y —lo importante— eso
+**acota un costo, no produce una ventaja**. Refuerza la clasificación de (c).
