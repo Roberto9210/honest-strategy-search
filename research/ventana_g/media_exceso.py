@@ -85,6 +85,18 @@ def main():
                       f"{r['media']/r['p95']:>11.2f}")
         del fr
 
+    # Volcado de la MUESTRA cruda del exceso, no solo sus resumenes. Hace falta para la
+    # pregunta de la cola: con que probabilidad UN llenado malo mata la cuenta. Eso no se
+    # contesta con la media ni con un percentil; hay que remuestrear la distribucion.
+    fr23 = window_frame(df, idx, None, None)
+    for D in D_HORA:
+        m = pd.Series(touches(fr23, "largo", D)["exc_same"]).dropna()
+        m.to_csv(os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                              f"exceso_muestra_T23_largo_D{D}.csv"), index=False,
+                 header=["exc_same_pt"])
+        print(f"  volcada muestra T23/largo D={D}: n={len(m)}")
+    del fr23
+
     print("\n" + "=" * 96)
     print("2. MEDIA DEL EXCESO POR HORA DE ENTRADA (tenencia de 1 hora, lado largo)")
     print("   La seccion 3 del terreno mostro que la frecuencia de toque cambia 20x con la hora.")

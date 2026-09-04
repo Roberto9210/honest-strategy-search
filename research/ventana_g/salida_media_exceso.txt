@@ -73,6 +73,9 @@ CONTROL de poblacion: 971 sesiones (esperado 971) -> OK
   M15    corto    15     12    1.354    1.25    3.25    3.25     3.25       0.42
   M15    corto    20      3    3.250    2.50    5.88    6.17     6.25       0.55
   M15    corto    30      1    6.750    6.75    6.75    6.75     6.75       1.00
+  volcada muestra T23/largo D=4: n=733
+  volcada muestra T23/largo D=10: n=449
+  volcada muestra T23/largo D=20: n=208
 
 ================================================================================================
 2. MEDIA DEL EXCESO POR HORA DE ENTRADA (tenencia de 1 hora, lado largo)

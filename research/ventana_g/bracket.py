@@ -81,7 +81,8 @@ def trades_por_dia(D_pt):
 
 def sim_bracket(target, dd, trail, N, S_ticks, T_ticks, c1=C1, dll=None, min_days=0,
                  qual_days=0, qual_amt=0.0, max_days=250, npaths=150_000, lock_off=0.0,
-                 trades_per_day=None, rng=None, p_win=None, exceso_pt=0.0):
+                 trades_per_day=None, rng=None, p_win=None, exceso_pt=0.0,
+                 exceso_muestra=None, diag=None):
     """Devuelve (P_exito, trades_medios_hasta_resolver, fraccion_sin_resolver).
     trades_per_day=None -> se deriva del terreno segun S_ticks/4 (ver trades_por_dia).
     p_win=None -> SIN VENTAJA: la tasa de acierto es la del paseo sin drift, S/(S+T).
@@ -128,7 +129,20 @@ def sim_bracket(target, dd, trail, N, S_ticks, T_ticks, c1=C1, dll=None, min_day
             act = alive & ~blocked
             if not act.any():
                 break
-            step = np.where(rng.random(npaths) < p_win, win, -loss)
+            gana = rng.random(npaths) < p_win
+            if exceso_muestra is None:
+                step = np.where(gana, win, -loss)
+                bal_medio = None
+            else:
+                # Deslizamiento ESTOCASTICO: cada perdida saca un exceso de la muestra
+                # empirica en vez de usar la media. Es la unica forma de contestar con que
+                # probabilidad UN llenado malo mata la cuenta; con la media, por
+                # construccion, ningun llenado individual es peor que el promedio.
+                sorteo = exceso_muestra[rng.integers(0, len(exceso_muestra), npaths)]
+                perdida_var = S_ticks * TICK * N + c + sorteo * 5.0 * N
+                step = np.where(gana, win, -perdida_var)
+                bal_medio = bal + np.where(gana, win, -loss)   # contrafactual con la media
+            bal_prev_medio = bal_medio
             bal = np.where(act, bal + step, bal)
             trades += act.astype(np.int32)
             peak = np.maximum(peak, bal)
@@ -141,6 +155,12 @@ def sim_bracket(target, dd, trail, N, S_ticks, T_ticks, c1=C1, dll=None, min_day
                 floor = np.full(npaths, -dd)
 
             breach = act & (bal <= floor)
+            if diag is not None and bal_prev_medio is not None:
+                # Muerte ATRIBUIBLE al llenado: rompio con el exceso sorteado, pero con el
+                # exceso MEDIO se habria mantenido por encima del piso.
+                atrib = breach & (bal_prev_medio > floor)
+                diag["muertes"] = diag.get("muertes", 0) + int(breach.sum())
+                diag["por_llenado"] = diag.get("por_llenado", 0) + int(atrib.sum())
             alive &= ~breach
             resolver(act & ~breach)
 

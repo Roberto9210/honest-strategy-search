@@ -354,3 +354,108 @@ de diferencia en probabilidad de pasar.
 Tras agregar `exceso_pt` al modelo, la aritmética no se movió: Tradeify 20pt:10pt sigue en **34,1%** y
 la celda de `BRACKET_RESULTADO.md` reproduce (P(eval) 0,232 vs 0,231; vara 1,173 vs 1,181). El control
 de población de `media_exceso.py` reprodujo las 971 sesiones exactas.
+
+---
+
+# CIERRE CON EL COSTO MEDIDO (2026-09-04, segunda vuelta)
+
+**No gasta cartucho. K = 261.**
+
+## 1 — La comisión, medida. Deuda saldada.
+
+`https://help.tradeify.co/en/articles/10468315-trading-commission-fees`, leída 2026-09-04. Ida y
+vuelta por contrato, y la página declara que **ya incluye exchange, NFA, clearing y comisión** — es el
+costo total de ejecución:
+
+| | ida y vuelta |
+|---|---|
+| micros (MES, MNQ, MYM, M2K) | **$1,82** |
+| minis (ES, NQ, YM, RTY) | **$5,76** |
+
+`aritmetica.py` pasa de $2,50 HIPÓTESIS a $1,82 **MEDIDO** con procedencia. **La banda de 4,9 puntos
+que ayer bloqueaba el criterio desaparece**: el costo ya no tiene rango, es un número.
+
+Queda una residual honesta: esto **no incluye deslizamiento de entrada**. El terreno midió el exceso
+en el stop, no en la entrada. No medido.
+
+## 2 — 1 mini contra 10 micros. Verificado, no condicional.
+
+La misma página: *"If you're trading micro contracts in multiples of 10, you should trade the
+corresponding mini contract instead to save on fees."*
+
+| vía | $/operación | contra el límite |
+|---|---|---|
+| 10 micros | $18,20 | usa 10 de los 40 micros |
+| **1 mini** | **$5,76** | usa 1 de los 4 minis |
+
+**$12,44 menos por operación, 68%, misma exposición exacta.**
+
+**VERIFICADO**, no supuesto: el límite del 50K Growth es **«4 minis/40 micros»** (`datos_crudos.md`,
+leído de la página oficial 2026-09-03). Los minis están permitidos y **1 mini cuenta como 10 micros**.
+
+| bracket | moneda | 10 micros | ventaja | **1 mini** | **ventaja** |
+|---|---|---|---|---|---|
+| 5pt:10pt | 66,7% | 69,8% | +3,2 | 68,3% | +1,6 |
+| 10pt:10pt | 50,0% | 52,4% | +2,4 | 51,3% | +1,3 |
+| 20pt:10pt | 33,3% | 34,9% | +1,5 | 34,2% | +0,9 |
+| 5pt:20pt | 80,0% | 80,9% | +0,9 | 80,0% | −0,0 |
+| 10pt:20pt | 66,7% | 67,4% | +0,7 | 66,9% | +0,3 |
+
+El mini baja el requerido entre 0,5 y 1,6 puntos según la celda. **Es el cambio más grande que
+produjo cualquier corrección de esta ventana, y no es una hipótesis: es elegir el contrato correcto.**
+
+## 3 — Qué era la columna «margen», y por qué se la cambió
+
+Era `(requerido_modelo − moneda) − (requerido_media − requerido_modelo)`: la ventaja que pedía el
+modelo viejo, **menos cuánto se movió esa exigencia al corregir el deslizamiento**. Es decir, una
+prueba de robustez — «¿sobrevive la exigencia al tamaño del error que acabo de encontrar?» — **no un
+margen**. El nombre no describía lo que calculaba. **Retirada.** En su lugar, **ventaja pedida =
+requerido − moneda**, que es lo que el candidato tiene que aportar, y nada más.
+
+## 4 — La cola, cuantificada y ya dentro del cálculo
+
+Antes el exceso entraba como una constante (la media), y por construcción ningún llenado individual
+podía ser peor que el promedio. Ahora cada operación perdedora **sortea su exceso de la muestra
+empírica** (n=208 a 20pt, volcada por `media_exceso.py`).
+
+- P(pasar la cadena) baja de **6,236% a 6,122%** — un **1,8% relativo**.
+- **El 5,1% de todas las muertes son atribuibles a un solo llenado malo**: rompieron el piso con el
+  exceso sorteado, y con el exceso medio se habrían mantenido arriba. Es la muerte que la media no ve.
+- **Es material justo en el margen**: el equilibrio exige P ≥ 6,148% y con la cola adentro un
+  operador sin ventaja da 6,122%. La cola es la diferencia entre «gratis» y «hace falta algo».
+
+**Ya está dentro del cálculo**: la columna (ii) de abajo usa la cola remuestreada, no la media.
+
+## 5 — Los dos criterios, que no son el mismo
+
+| bracket | moneda | **(ii) intento** | **(i) operación** | ventaja para (i) |
+|---|---|---|---|---|
+| 5pt:10pt | 66,7% | 68,2% | 68,9% | +2,3 |
+| 10pt:10pt | 50,0% | 51,3% | 52,3% | +2,3 |
+| 20pt:10pt | 33,3% | 34,5% | 35,3% | +1,9 |
+| **5pt:20pt** | 80,0% | 80,1% | **81,2%** | **+1,2** |
+| 10pt:20pt | 66,7% | 67,0% | 68,1% | +1,4 |
+
+**(ii) < (i) en todas las celdas.** El intento conviene antes de que operar sea rentable. Un candidato
+que sólo cumpla (ii) **está perdiendo plata por operación** y viviendo del valor de opción de la
+cuota. Para una cuenta fondeada sostenible **el número que hay que exigir es (i)**.
+
+## Veredicto: ahora SÍ hay criterio
+
+Lo que ayer bloqueaba —una banda de 4,9 puntos por un costo no medido— ya no existe. El costo está
+medido, el deslizamiento medio está medido, la cola está cuantificada y metida en el cálculo, y la
+vía de ejecución correcta (mini) está verificada contra el límite de contratos.
+
+**Criterio: celda 5pt:20pt vía 1 mini, costo medido $5,76 ida y vuelta. Un candidato necesita
+81,2% de aciertos contra el 80,0% que da la moneda: +1,2 puntos de ventaja real.**
+
+Esa celda es además la que pasó los dos filtros de terreno **con margen** (deslizamiento 19,1% contra
+el corte de 25%, tenencia por encima del 50% en las dos ventanas), no al borde.
+
+### Lo que sigue sin estar
+
+- **Ruido de Monte Carlo**: ±0,3 puntos en los requeridos. El +1,2 es real pero no tiene tres cifras.
+- **Deslizamiento de entrada**: no medido. Sólo está medido el exceso en el stop.
+- **El filtro de tenencia sigue indeterminado para un candidato con ventaja** (conclusión del
+  2026-09-04, sin cambios): el candidato tiene que traer su propia distribución de tenencia.
+- **El terreno es 2016-2019.** La estructura de 2020+ está en la caja sellada.
