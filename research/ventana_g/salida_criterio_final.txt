@@ -1,0 +1,88 @@
+====================================================================================================
+A. EL COSTO, AHORA MEDIDO - y por que 1 mini no es lo mismo que 10 micros
+====================================================================================================
+   https://help.tradeify.co/en/articles/10468315-trading-commission-fees (2026-09-04)
+   Ida y vuelta por contrato, ya incluye exchange + NFA + clearing + comision.
+
+            via   $/operacion   $/micro-equiv    contra el limite 4 minis/40 micros
+      10 micros         18.20           1.820               usa 10 de los 40 micros
+         1 mini          5.76           0.576                  usa 1 de los 4 minis
+
+   Diferencia: $12.44 por operacion, 68% menos, MISMA exposicion.
+   VERIFICADO en fuente del proyecto: el limite del 50K Growth es '4 minis/40 micros'
+   (datos_crudos.md, leido de la pagina oficial 2026-09-03). O sea: los minis estan
+   permitidos y 1 mini cuenta como 10 micros. NO es supuesto.
+   Cita de la pagina de fees: "If you're trading micro contracts in multiples of 10,
+   you should trade the corresponding mini contract instead to save on fees."
+
+====================================================================================================
+B. EL CRITERIO CON EL COSTO MEDIDO - 10 micros contra 1 mini
+====================================================================================================
+   'ventaja pedida' = requerido - moneda. Es lo que el candidato tiene que aportar
+   por encima de lo que ya da un paseo sin ventaja. Nada mas que eso.
+   Deslizamiento medio medido cargado solo a la rama perdedora.
+
+       bracket   moneda10 micros req   ventaja   1 mini req   ventaja
+      5pt:10pt    66.7%        69.8%      +3.2        68.3%      +1.6
+     10pt:10pt    50.0%        52.4%      +2.4        51.3%      +1.3
+     20pt:10pt    33.3%        34.9%      +1.5        34.2%      +0.9
+      5pt:20pt    80.0%        80.9%      +0.9        80.0%      -0.0
+     10pt:20pt    66.7%        67.4%      +0.7        66.9%      +0.3
+
+   El mini baja el requerido en todas las celdas. La ventaja pedida es lo que
+   habria que demostrar; cuanto mas chica, mas alcanzable el criterio.
+
+====================================================================================================
+C. LA BANDA QUE AYER BLOQUEABA - antes 4,9 puntos de incertidumbre
+====================================================================================================
+   Ayer el costo era hipotesis y su rango plausible movia el requerido 4,9 puntos,
+   contra un margen de 1,7. Hoy el costo esta medido y no tiene rango: es un numero.
+   Lo que queda de incertidumbre en el costo es la diferencia entre las dos vias,
+   y esa es una ELECCION del operador, no una incognita.
+
+   5pt:10pt: 10 micros 69.8% -> 1 mini 68.3%   (elegir mini ahorra 1.6 puntos)
+   10pt:10pt: 10 micros 52.4% -> 1 mini 51.3%   (elegir mini ahorra 1.1 puntos)
+   20pt:10pt: 10 micros 34.9% -> 1 mini 34.2%   (elegir mini ahorra 0.6 puntos)
+   5pt:20pt: 10 micros 80.9% -> 1 mini 80.0%   (elegir mini ahorra 1.0 puntos)
+   10pt:20pt: 10 micros 67.4% -> 1 mini 66.9%   (elegir mini ahorra 0.5 puntos)
+
+   Menor ventaja pedida via mini: 5pt:20pt -> -0.0 puntos sobre la moneda.
+
+====================================================================================================
+D. LA COLA - probabilidad de morir por UN llenado malo antes de terminar la cadena
+====================================================================================================
+   celda 5pt:20pt via 1 mini, sin ventaja (p=80.0%), muestra empirica n=208
+   exceso: media 0.982pt  p95 3.82pt  max 15.50pt
+
+   media (deterministico)   P(pasar la cadena) = 6.236%
+   muestra (estocastico)    P(pasar la cadena) = 6.122%
+
+   Modelar la cola en vez de la media baja P(pasar) un 1.8% relativo.
+   Muertes atribuibles a UN llenado malo: 4,597 de 90,307 = 5.1%
+   (definicion: rompio el piso con el exceso sorteado, pero con el exceso MEDIO
+    se habria mantenido arriba. Es la muerte que la media no ve.)
+
+   El equilibrio se recalcula contra la P estocastica, no la deterministica:
+   equilibrio exige P >= 6.148%. Con la cola adentro P(sin ventaja) = 6.122%.
+   requerido con la media: 80.0%  (moneda 80.0%)
+
+====================================================================================================
+E. LOS DOS CRITERIOS, QUE NO SON EL MISMO - via 1 mini, costo medido
+====================================================================================================
+   (i)  equilibrio POR OPERACION: el acierto con el que operar deja de perder plata.
+   (ii) umbral del INTENTO: el acierto con el que la cuota de $83 vale la pena.
+   (ii) incluye la cola remuestreada de la muestra empirica, no la media.
+
+       bracket   moneda   (ii) intento   (i) operacion   ventaja p/ (i)
+      5pt:10pt    66.7%          68.2%           68.9%            +2.3
+     10pt:10pt    50.0%          51.3%           52.3%            +2.3
+     20pt:10pt    33.3%          34.5%           35.3%            +1.9
+      5pt:20pt    80.0%          80.1%           81.2%            +1.2
+     10pt:20pt    66.7%          67.0%           68.1%            +1.4
+
+   (ii) < (i) en todas: el intento conviene antes de que operar sea rentable.
+   Un candidato que solo cumpla (ii) esta perdiendo plata por operacion y
+   viviendo del valor de opcion de la cuota. Para una cuenta fondeada sostenible
+   el numero que hay que exigir es (i).
+
+   Menor ventaja pedida contra (i): 5pt:20pt -> 81.2% contra moneda 80.0% = +1.2 puntos.

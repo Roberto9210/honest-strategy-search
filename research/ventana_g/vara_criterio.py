@@ -66,7 +66,7 @@ N_TABLA = 10
 
 
 def p_pasar(firma, N, T_pt, S_pt, c1, p_win, npaths=NPATHS, semilla=SEMILLA,
-            extra_pt=0.0):
+            extra_pt=0.0, muestra=None):
     """Probabilidad de recorrer la cadena entera: evaluacion Y despues cuenta fondeada
     hasta el primer retiro."""
     f = FIRMAS[firma]
@@ -76,10 +76,10 @@ def p_pasar(firma, N, T_pt, S_pt, c1, p_win, npaths=NPATHS, semilla=SEMILLA,
     fu.setdefault("max_days", MAX_DAYS_FUND)
     p_ev, _, _ = sim_bracket(N=N, S_ticks=S_ticks, T_ticks=T_ticks, c1=c1, p_win=p_win,
                              npaths=npaths, rng=np.random.default_rng(semilla),
-                             exceso_pt=extra_pt, **ev)
+                             exceso_pt=extra_pt, exceso_muestra=muestra, **ev)
     p_fu, _, _ = sim_bracket(N=N, S_ticks=S_ticks, T_ticks=T_ticks, c1=c1, p_win=p_win,
                              npaths=npaths, rng=np.random.default_rng(semilla + 1),
-                             exceso_pt=extra_pt, **fu)
+                             exceso_pt=extra_pt, exceso_muestra=muestra, **fu)
     return p_ev * p_fu, p_ev, p_fu
 
 
@@ -88,16 +88,19 @@ def p_equilibrio(firma):
     return (f["precio"] + f["activacion"]) / (f["pago"] * f["split"])
 
 
-def acierto_requerido(firma, N, T_pt, S_pt, c1, npaths=NPATHS, tol=2e-4, extra_pt=0.0):
+def acierto_requerido(firma, N, T_pt, S_pt, c1, npaths=NPATHS, tol=2e-4, extra_pt=0.0,
+                       muestra=None):
     """Biseccion sobre la tasa de acierto por operacion. Devuelve p* en [0,1], o None si
     ni ganando siempre alcanza."""
     objetivo = p_equilibrio(firma)
-    if p_pasar(firma, N, T_pt, S_pt, c1, 1.0, npaths, extra_pt=extra_pt)[0] < objetivo:
+    if p_pasar(firma, N, T_pt, S_pt, c1, 1.0, npaths, extra_pt=extra_pt,
+               muestra=muestra)[0] < objetivo:
         return None
     lo, hi = 0.0, 1.0
     while hi - lo > tol:
         mid = (lo + hi) / 2
-        if p_pasar(firma, N, T_pt, S_pt, c1, mid, npaths, extra_pt=extra_pt)[0] < objetivo:
+        if p_pasar(firma, N, T_pt, S_pt, c1, mid, npaths, extra_pt=extra_pt,
+                   muestra=muestra)[0] < objetivo:
             lo = mid
         else:
             hi = mid
