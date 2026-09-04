@@ -1,0 +1,39 @@
+================================================================================================
+EL EJE DEL REGIMEN CONOCIBLE AL ENTRAR - pisos por tercil con tres ejes ex-ante
+NO GASTA CARTUCHO. K = 261. La caja sellada no se toca.
+================================================================================================
+
+   1,006 sesiones reales. Volatilidad = rango medio de barra (pt).
+
+(1) CUANTO PREDICE CADA EJE LA VOLATILIDAD DE LA SESION ENTERA (Spearman, y % de sesiones
+    cuyo tercil ex-ante coincide con el tercil de hindsight).
+   HINDSIGHT (sesion entera, referencia)        rho = +1.000   coincide 100.0%   (azar 33,3%)
+   ANTERIOR (sesion anterior)                   rho = +0.868   coincide  75.5%   (azar 33,3%)
+   HORA1 (primera hora, 17-18 CT)               rho = +0.735   coincide  63.3%   (azar 33,3%)
+   PREV4 (media de 4 sesiones anteriores)       rho = +0.851   coincide  76.4%   (azar 33,3%)
+
+(2) PISO POR TERCIL, entradas al azar, misma maquina (cortes_y_tramo.medir).
+    CONDICION (escrita antes): sirve si es monotono y alto/bajo >= 3x.
+
+   celda 5pt:20pt
+   eje                                              bajo    medio     alto  alto/bajo  monotono   sirve
+   HINDSIGHT (sesion entera, referencia)           +2.29    +8.01  +118.61      51.8x        SI      SI
+   ANTERIOR (sesion anterior)                      +5.07   +17.74  +105.34      20.8x        SI      SI
+   HORA1 (primera hora, 17-18 CT)                  +8.79   +14.56  +107.39      12.2x        SI      SI
+   PREV4 (media de 4 sesiones anteriores)          +6.01   +17.96  +104.18      17.3x        SI      SI
+
+   celda 20pt:10pt
+   eje                                              bajo    medio     alto  alto/bajo  monotono   sirve
+   HINDSIGHT (sesion entera, referencia)          +21.81   +46.45  +150.68       6.9x        SI      SI
+   ANTERIOR (sesion anterior)                     +27.31   +51.66  +139.87       5.1x        SI      SI
+   HORA1 (primera hora, 17-18 CT)                 +31.25   +51.84  +138.05       4.4x        SI      SI
+   PREV4 (media de 4 sesiones anteriores)         +27.75   +51.92  +139.18       5.0x        SI      SI
+
+================================================================================================
+VEREDICTO: el eje ex-ante EXISTE. El mejor es ANTERIOR (sesion anterior): pasa la vara en las dos celdas
+   con el mayor cociente minimo. El juez cambia a ese eje; el veredicto por regimen queda.
+   ANTERIOR (sesion anterior)                   PASA   5:20 20.8x  20:10 5.1x
+   HORA1 (primera hora, 17-18 CT)               PASA   5:20 12.2x  20:10 4.4x
+   PREV4 (media de 4 sesiones anteriores)       PASA   5:20 17.3x  20:10 5.0x
+   El eje de HINDSIGHT sigue sirviendo para DESCRIBIR el piso (juez_regimen.py), no para juzgar.
+================================================================================================
