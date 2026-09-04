@@ -1,0 +1,44 @@
+====================================================================================================
+COMPUERTA 1 - sobrevive la cuenta a una posicion de un cierre al siguiente?
+NO GASTA CARTUCHO. K = 261. Compuerta de factibilidad, no hipotesis de mercado.
+====================================================================================================
+
+(a) Drawdown 50K Growth: $2,000 TRAILING EOD (tradeify.co, 2026-09-03).
+    Un E-mini = $50/punto -> el drawdown entero son 40 PUNTOS de ES.
+    Micro E-mini NO elegible para TMAC: no se puede bajar de 1 contrato.
+
+(b) Movimientos cierre a cierre, ES 1-min Databento, 2016-01-05 -> 2019-12-31
+    (fuera de la caja sellada 2020-2026). n = 955 noches, solo pares con el mismo contrato.
+                      puntos   USD (1 ES)
+     mediana |mov|      8.75          438
+         p90 |mov|     32.75        1,638
+         p99 |mov|     71.81        3,590
+      maximo |mov|    118.75        5,938
+
+(c) Fraccion de noches SUELTAS que exceden el drawdown de 40 puntos:
+    cierre a cierre, en contra     5.55%   1 de cada 18 noches
+    excursion adversa, largo       8.38%   1 de cada 12 noches
+    excursion adversa, corto       5.03%   1 de cada 20 noches
+
+(d) Probabilidad de MORIR antes de completar N noches (trailing, lado al azar):
+       N   cierre IID   cierre hist   intradia IID   intradia hist
+       5        27.7%         23.6%          44.1%           34.9%
+      10        50.9%         42.2%          68.3%           54.9%
+      20        69.8%         62.6%          82.3%           73.4%
+
+CONTROL - con tamano de posicion CERO las cuatro medidas deben dar 0,00%
+    N= 5: 0.00%  0.00%  0.00%  0.00%   OK
+    N=10: 0.00%  0.00%  0.00%  0.00%   OK
+    N=20: 0.00%  0.00%  0.00%  0.00%   OK
+CONTROL PASADO
+
+QUE DRAWDOWN HARIA FALTA (la unica palanca: no se puede achicar el contrato)
+      drawdown   puntos  muerte en 10 noches, intradia hist
+    $    2,000       40                               54.9%
+    $    3,000       60                               34.8%
+    $    4,500       90                               18.7%
+    $    9,000      180                                3.7%
+    $   20,000      400                                0.0%
+    $   40,000      800                                0.0%
+    Referencia: el drawdown mas grande de las ocho firmas medidas es $4.500
+    (Topstep 150K). Ninguna cuenta del mercado medido llega a lo que haria falta.
