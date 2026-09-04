@@ -633,3 +633,96 @@ disponible. Y si lo que se quiere es *poder medir*, el bracket para probar ideas
 
 Es la misma tensión de siempre, ahora con número en las dos puntas: **el costo de la factibilidad es
 la verificabilidad.** La celda que el terreno deja usar es la que menos se puede comprobar.
+
+---
+
+# COMPUERTA 1 — LA RAMA DE EJECUCIÓN AL CIERRE SE CIERRA (2026-09-04)
+
+**No gasta cartucho. K = 261.** Es una **compuerta de factibilidad** sobre datos ya medidos: no se
+busca ninguna ventaja, no hay estadístico contra un α, no se elige entre candidatas. Se mide si una
+mecánica de ejecución cabe dentro de un límite de pérdida ya publicado. **Que nadie la cuente como
+test.** Verificación previa: la celda publicada reproduce (34,1% con costo viejo).
+
+## Por qué esta compuerta va primero
+
+TMAC/BTIC/TACO fijan el precio por fórmula, no por el libro. Ejecutar así significa **entrar en un
+cierre y salir en otro**: no hay objetivo ni stop intradiario, la posición queda expuesta toda la
+noche sin freno. Y **los Micro E-mini no son elegibles**, así que la unidad mínima es **un ES
+completo, $50/punto** — no se puede bajar el tamaño, que es la palanca habitual.
+
+## (a) El límite
+
+**$2.000, Trailing Max Drawdown (EOD)**, 50K Growth — widget oficial de tradeify.co leído 2026-09-03
+(`datos_crudos.md`). Es **trailing**: sube con las ganancias y no baja; se usó esa mecánica.
+
+A $50 el punto, **el drawdown entero son 40 puntos de ES.**
+
+*Valor del punto verificado, no asumido*: $50, tabla oficial de instrumentos de apextraderfunding.com
+(2026-09-03), consistente con MES $5 × 10 y con el límite «4 minis/40 micros» de Tradeify. La página
+de CME dio timeout al reverificar hoy; queda anotado.
+
+## (b) Los movimientos de cierre a cierre
+
+ES 1-min Databento, **2016-01-05 → 2019-12-31**, fuera de la caja sellada 2020-2026. **955 noches**,
+sólo pares con el mismo contrato (un roll no es una pérdida).
+
+| | puntos | USD (1 ES) |
+|---|---|---|
+| mediana \|mov\| | 8,75 | $438 |
+| p90 | 32,75 | $1.638 |
+| p99 | 71,81 | $3.590 |
+| **máximo** | **118,75** | **$5.938** |
+
+**El peor movimiento de una sola noche es tres veces el drawdown entero.**
+
+## (c) Noches sueltas que exceden el límite
+
+| | % | frecuencia |
+|---|---|---|
+| cierre a cierre, en contra | **5,55%** | 1 de cada 18 noches |
+| excursión adversa, largo | **8,38%** | 1 de cada 12 noches |
+| excursión adversa, corto | 5,03% | 1 de cada 20 noches |
+
+## (d) Probabilidad de morir antes de completar N noches
+
+Trailing, lado al azar cada noche, **sin ninguna estrategia**:
+
+| N noches | cierre IID | cierre histórico | intradía IID | **intradía histórico** |
+|---|---|---|---|---|
+| 5 | 27,7% | 23,6% | 44,1% | **34,9%** |
+| 10 | 50,9% | 42,2% | 68,3% | **54,9%** |
+| 20 | 69,8% | 62,6% | 82,3% | **73,4%** |
+
+**CONTROL: con tamaño de posición cero, las cuatro medidas dan 0,00% en los tres N. PASADO.**
+
+Una nota contra la intuición: **el histórico (con agrupamiento) da menos muerte que el IID**, no más.
+En este proyecto se viene diciendo que el agrupamiento vuelve optimistas los números; acá va en la
+dirección contraria, porque los tramos tranquilos son la mayoría y bloquear los preserva. Se dice
+como salió, no como se esperaba.
+
+## VEREDICTO — la rama se cierra
+
+**La rama de ejecución al cierre NO es viable para esta cuenta.** Sin ninguna estrategia, sólo por el
+salto nocturno, la cuenta muere entre el 42% y el 68% de las veces antes de completar diez noches — y
+la cadena de la evaluación necesita al menos eso. Una de cada doce noches, sola, se lleva el drawdown
+entero. Y no hay forma de achicar la apuesta: el micro no es elegible.
+
+**No se avanza a la Compuerta 2.**
+
+### Qué haría falta (la única palanca es un drawdown más grande)
+
+| drawdown | puntos | muerte en 10 noches |
+|---|---|---|
+| $2.000 (el de esta cuenta) | 40 | 54,9% |
+| $4.500 (Topstep 150K, el mayor medido) | 90 | 18,7% |
+| $9.000 | 180 | 3,7% |
+
+**Ninguna de las ocho firmas medidas ofrece un drawdown que alcance.** La rama necesitaría una cuenta
+de un orden de magnitud distinto al que existe en el mercado medido.
+
+### Deuda anotada, no estimada
+
+**¿TMAC cobra un cargo adicional sobre la comisión normal? NO MEDIDO.** No se buscó y no se estima.
+Efecto potencial: se sumaría al costo por operación y subiría el equilibrio, igual que la comisión
+antes de medirla. Es irrelevante para este veredicto —la compuerta se cierra por riesgo, no por
+costo— pero queda escrito por si la rama se reabre alguna vez con una cuenta mayor.
