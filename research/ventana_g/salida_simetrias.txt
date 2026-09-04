@@ -1,0 +1,46 @@
+====================================================================================================
+1. LAS SIMETRIAS SON IDENTIDADES - verificacion numerica sobre lo ya medido
+====================================================================================================
+
+   (a) tasas pooled publicadas (linea_base.py, 1 sesion):
+       20pt:10pt = 27.3%   +   10pt:20pt = 72.7%   =   100.0%
+       10pt:10pt = 50.0%   +   10pt:10pt = 50.0%   =   100.0%
+       Suman 100,0% clavado. Es la identidad, no una coincidencia del mercado.
+
+   (b) muestras de M2M, 20pt:10pt contra 10pt:20pt:
+       n iguales: True  (41,827 contra 41,827)
+       sort(M2M 20:10) == sort(-M2M 10:20):  True
+       media +3.3233 contra -3.3233   suma +0.00e+00
+
+   (c) el bracket simetrico 10pt:10pt es su propio espejo:
+       sort(M2M) == sort(-M2M):  True   media +0.00e+00
+
+   VEREDICTO: la hipotesis de Roberto se CONFIRMA. Las dos simetrias exactas son
+   identidades de la construccion -mismos niveles, mismas entradas, etiquetas
+   invertidas- y valdrian igual con drift o sin drift. NO informan nada del
+   mercado, y yo las reporte como si fueran hallazgos.
+
+   CONSECUENCIAS, que hay que decir:
+   - El residuo de la anomalia es UN numero, no dos brackets que se confirman.
+     20pt:10pt y 10pt:20pt son la misma medicion con el signo cambiado.
+   - El control 'pooled = 50,0% clavado' era VACIO. No podia dar otra cosa.
+     Lo que si medía algo era la SEPARACION largo/corto (54,6% / 45,4%), que es
+     donde vive el drift, y que el pooling destruye por construccion.
+
+====================================================================================================
+2. HISTOGRAMA DEL M2M - hay masa apilada contra las barreras?
+====================================================================================================
+   Sospecha propia: la distribucion del M2M de las abiertas esta truncada por
+   construccion en los dos bordes (nunca puede pasar de +objetivo ni de -stop).
+   Si hay masa APILADA justo adentro de los bordes, el promedio esconde una forma
+   bimodal y el remuestreo del modelo estaria mal repartido.
+
+       bracket  borde -  borde +       n  % en 10% inferior  % en 10% superior  % en el medio
+      5pt:10pt      -10        5   8,432               1.2%               2.0%          96.8%
+     10pt:10pt      -10       10  22,348               1.5%               1.5%          96.9%
+     20pt:10pt      -10       20  41,827               2.5%               1.3%          96.1%
+      5pt:20pt      -20        5  20,486               1.2%               3.8%          95.0%
+     10pt:20pt      -20       10  41,827               1.3%               2.5%          96.1%
+
+   Referencia: si el M2M fuera uniforme entre los bordes, cada franja del 10%
+   tendria el 10%. Muy por encima = masa apilada; muy por debajo = centro pesado.
