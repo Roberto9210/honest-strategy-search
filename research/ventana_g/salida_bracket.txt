@@ -1,0 +1,41 @@
+====================================================================================================
+CONTROL: costo=0 -> vara debe ser <=1,0 en cada celda factible. Si no, no se publica nada.
+====================================================================================================
+  79 celdas excluidas por inviables (ni ganando 5/5 llegan a los $150/dia que exige la etapa fondeada, aunque el costo sea cero)
+  peor celda factible (mas vara con costo cero): N,S,T=(4, 80, 80)  vara=0.9711
+CONTROL PASADO
+
+====================================================================================================
+FILTRO DE TERRENO por distancia del stop (S en ticks -> D en puntos ES/MES)
+====================================================================================================
+  S=  8 ticks (D=2pt): filtroA(deslizamiento)=None  filtroB(tenencia<sesion)=True  -> DESCARTADA  (exceso de deslizamiento p95 NO SE DETERMINA en D=2pt (no medido))
+  S= 16 ticks (D=4pt): filtroA(deslizamiento)=False  filtroB(tenencia<sesion)=True  -> DESCARTADA  (deslizamiento domina: exceso p95=2.1pt es 52% del stop de 4pt (>25%), fuente T23 largo)
+  S= 40 ticks (D=10pt): filtroA(deslizamiento)=True  filtroB(tenencia<sesion)=False  -> DESCARTADA  (tenencia excede la sesion: solo 46.2% de toque en T23 a D=10pt (<50%, la mayoria sigue abierta a las 23h))
+  S= 80 ticks (D=20pt): filtroA(deslizamiento)=True  filtroB(tenencia<sesion)=False  -> DESCARTADA  (tenencia excede la sesion: solo 21.4% de toque en T23 a D=20pt (<50%, la mayoria sigue abierta a las 23h))
+  S=120 ticks (D=30pt): filtroA(deslizamiento)=False  filtroB(tenencia<sesion)=False  -> DESCARTADA  (tenencia excede la sesion: solo 12.2% de toque en T23 a D=30pt (<50%, la mayoria sigue abierta a las 23h); deslizamiento domina: exceso p95=10.25pt es 34% del stop de 30pt (>25%), fuente 23h juntas (T23 no lo mide))
+
+==================================================================================================================================
+  N    S    T  k=T/S    p_ev    p_fu    P_tot trades_ev trades_fu arrastre$       E $    vara     terreno
+----------------------------------------------------------------------------------------------------------------------------------
+  (83 celdas de la grilla excluidas: inviables por diseno, no llegan a calificar $150/dia ni ganando siempre)
+
+ 10  120   60    0.5   0.303   0.304   0.0923       7.8       7.9       392     41.60   0.666          no
+  4  120  120    1.0   0.272   0.272   0.0739      18.4      18.5       368     16.73   0.832          no
+  4   80  160    2.0   0.247   0.245   0.0607      15.9      16.2       321     -1.03   1.013          no
+  4  120   60    0.5   0.244   0.243   0.0592      32.1      31.8       639     -3.03   1.038          no
+ 10   80   40    0.5   0.244   0.242   0.0590      13.1      13.0       653     -3.31   1.042          no
+  1  120  480    4.0   0.242   0.243   0.0588      53.0      52.9       265     -3.64   1.046          no
+ 10   40   80    2.0   0.231   0.226   0.0521      11.3      12.0       584    -12.70   1.181          no
+  4   80   80    1.0   0.223   0.222   0.0496      32.7      32.6       653    -16.08   1.240          no
+  4   40  160    4.0   0.221   0.220   0.0487      29.9      30.0       600    -17.31   1.264          no
+ 20   40   40    1.0   0.223   0.214   0.0478       7.3       7.9       761    -18.43   1.285          no
+ 10   80   80    1.0   0.223   0.214   0.0477       7.3       7.9       382    -18.67   1.290          no
+ 20   40   20    0.5   0.210   0.210   0.0443      12.8      12.9      1287    -23.25   1.389          no
+ 10   40   40    1.0   0.201   0.199   0.0401      22.1      22.1      1105    -28.92   1.535          no
+  4   80   40    0.5   0.179   0.179   0.0320      65.4      66.0      1314    -39.80   1.921          no
+  4   40   80    2.0   0.174   0.174   0.0304      58.6      58.5      1171    -42.01   2.025          no
+ 10   40   20    0.5   0.134   0.133   0.0179      43.8      43.6      2187    -58.82   3.432          no
+  4    8   16    2.0   0.000   0.000   0.0000       nan       nan         0    -83.00     inf          no
+
+MEJOR VARA DE TODA LA GRILLA (sin filtrar terreno): 0.666x en N=10 S=120 T=60 (sobrevive terreno: False)
+NINGUNA combinacion sobrevive los dos filtros de terreno a la vez.
