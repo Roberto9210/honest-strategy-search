@@ -248,3 +248,72 @@ Y el detalle por lado, que el combinado esconde:
 
 **Procedencia:** `dolares_por_tiempo.py`, `sesgo_marco.py`, `dolares_lados.py`. Salidas en
 `salida_dolares.txt`, `salida_sesgo_marco.txt`, `salida_dolares_lados.txt`.
+
+---
+
+# TERCERA PARTE — el piso es del CANDIDATO, y se saca por permutación
+
+**Escrito 2026-09-04. Activo permanente.** La segunda parte dejó un piso de referencia calculado
+con **entradas al azar**. Eso no es el piso de un candidato: un candidato entra condicionado y su
+piso es otro. Esta parte lo arregla y **reemplaza al paso 5 de la receta anterior**.
+
+## La regla
+
+**El piso de un candidato se calcula con las entradas del propio candidato, permutadas.** Nunca con
+entradas al azar, y nunca contra cero pelado.
+
+## Las dos nulas, y cuándo va cada una
+
+| nula | qué hace | qué conserva **exacto** | qué destruye | para qué sirve |
+|---|---|---|---|---|
+| **A — rotación** | corre `(ranuras, lados)` sobre la grilla | conteo, espaciado, secuencia de lados | **cuándo** | probar que el *momento* de entrada lleva información |
+| **B — signo** | da vuelta los lados al azar | ranuras, **tenencia**, **fracción abierta**, conteo | **qué lado** | probar que la *dirección* lleva información |
+
+**Van las dos, siempre.** Y hay que decir esto sin adornar: **para una señal que depende del precio
+es imposible conservar la tenencia bajo una permutación temporal**, porque la tenencia la produce
+el precio. Medido sobre un candidato de volatilidad baja: al rotar, la tenencia cae de **511 a 399
+barras** y las abiertas de **35,0% a 30,6%**. Si eso pasa, la nula que manda es la **B**.
+
+## Validado contra candidatos de propiedades conocidas
+
+- **Sin ventaja, con patrón distinto** (opera 3× menos, aguanta 30% más): ventaja hallada **+0,87
+  con desvío 12,49 — 0,1 desvíos**. Cero.
+- **Con ventaja inyectada**: recuperada al **100% y 101%, a 0,0 desvíos**.
+
+**Resolución del test: ±33% de la ventaja con 4.994 operaciones.** «Recupera» quiere decir «dentro
+de esa resolución».
+
+## Dos trampas, las dos ya pisadas
+
+**1. Comparar contra la esperanza en vez de contra lo realizado.** La ventaja *nominal* inyectada
+era $116,87/sesión; la *realizada en ese sorteo* fue $72,69. Comparando contra la nominal el test
+parecía recuperar el **62%** y fallar a −1,8 desvíos; contra la realizada recupera **100%**.
+**Siempre que se inyecte algo, calcular lo que se inyectó de verdad, no lo que se quería inyectar.**
+
+**2. Confundir cuál mitad del control informa.** Que la nula B recupere una inyección *direccional*
+está casi forzado por construcción, porque la inyección se define contra el promedio de los dos
+lados, que es lo que B estima. **La que informa es la A**, y que las dos den cero en los candidatos
+sin ventaja.
+
+## El piso no es un número: es un número por régimen
+
+Medido por año calendario sobre 5pt:20pt, el piso va de **$3,49 (2017) a $106,03 (2018)**: un
+factor de **30**. El $42,93 de referencia es el promedio de 2016-2019.
+
+**Cualquier piso que se publique tiene que decir sobre qué régimen de volatilidad se calculó.** Un
+candidato medido en un año tranquilo enfrenta un piso treinta veces más bajo que en uno agitado, y
+comparar los dos números sin la aclaración es un error.
+
+## Correcciones a las partes anteriores
+
+- **El paso 5 («comparar contra cero») queda reemplazado** por: comparar contra la nula de
+  permutación del propio candidato, con las dos nulas.
+- **Los cortes de sesión reales contra bloques fijos de 1.380 barras:** el piso se mueve **−$1,71 y
+  +$1,22** contra errores de $6,69 y $4,09. **Inocuo.** Igual, de acá en adelante van los cortes
+  reales; el piso de referencia es **+$42,93** (5pt:20pt) y **+$72,93** (20pt:10pt).
+- **Sobrepaso y deslizamiento de entrada NO son el mismo término.** Verificado inyectando un tick
+  entero de deslizamiento: la pendiente del sobrepaso se mueve **+0,0000** y la ordenada **−0,2500
+  exacto**. Se restan los dos, por separado, sin miedo a contar dos veces.
+
+**Procedencia:** `permutacion.py`, `doble_conteo.py`, `cortes_y_tramo.py`. Salidas en
+`salida_permutacion.txt`, `salida_doble_conteo.txt`, `salida_cortes.txt`.
