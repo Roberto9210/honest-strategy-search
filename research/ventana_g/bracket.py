@@ -82,7 +82,7 @@ def trades_por_dia(D_pt):
 def sim_bracket(target, dd, trail, N, S_ticks, T_ticks, c1=C1, dll=None, min_days=0,
                  qual_days=0, qual_amt=0.0, max_days=250, npaths=150_000, lock_off=0.0,
                  trades_per_day=None, rng=None, p_win=None, exceso_pt=0.0,
-                 exceso_muestra=None, diag=None):
+                 exceso_muestra=None, diag=None, p_abierta=0.0, m2m_muestra=None):
     """Devuelve (P_exito, trades_medios_hasta_resolver, fraccion_sin_resolver).
     trades_per_day=None -> se deriva del terreno segun S_ticks/4 (ver trades_por_dia).
     p_win=None -> SIN VENTAJA: la tasa de acierto es la del paseo sin drift, S/(S+T).
@@ -129,6 +129,16 @@ def sim_bracket(target, dd, trail, N, S_ticks, T_ticks, c1=C1, dll=None, min_day
             act = alive & ~blocked
             if not act.any():
                 break
+            # TERCER RESULTADO: la operacion puede quedar ABIERTA AL CORTE. No es win ni
+            # loss: se aplana a valor de mercado, y ese valor esta MEDIDO (m2m_muestra, en
+            # puntos, de abiertas_al_corte.py). Con p_abierta=0 no se consume ningun numero
+            # aleatorio extra y el camino es identico al publicado: por eso el control con
+            # horizonte largo tiene que reproducir exacto.
+            if p_abierta > 0.0 and m2m_muestra is not None:
+                abierta = rng.random(npaths) < p_abierta
+                m2m = m2m_muestra[rng.integers(0, len(m2m_muestra), npaths)] * 5.0 * N - c
+            else:
+                abierta = None
             gana = rng.random(npaths) < p_win
             if exceso_muestra is None:
                 step = np.where(gana, win, -loss)
@@ -142,6 +152,10 @@ def sim_bracket(target, dd, trail, N, S_ticks, T_ticks, c1=C1, dll=None, min_day
                 perdida_var = S_ticks * TICK * N + c + sorteo * 5.0 * N
                 step = np.where(gana, win, -perdida_var)
                 bal_medio = bal + np.where(gana, win, -loss)   # contrafactual con la media
+            if abierta is not None:
+                step = np.where(abierta, m2m, step)
+                if bal_medio is not None:
+                    bal_medio = np.where(abierta, bal + m2m, bal_medio)
             bal_prev_medio = bal_medio
             bal = np.where(act, bal + step, bal)
             trades += act.astype(np.int32)
