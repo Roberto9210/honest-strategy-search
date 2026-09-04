@@ -1,0 +1,68 @@
+====================================================================================================
+1. DESLIZAMIENTO DE ENTRADA - no medible con estos datos, pero acotable
+====================================================================================================
+   Se puede medir? NO. es_1min_databento.csv es ohlcv-1m: barras sin bid/ask ni
+   libro. Haria falta Databento GLBX.MDP3 schema mbp-1 o mbo, mismo periodo.
+
+   celda 5pt:20pt via 1 mini. gana $244.24 / pierde $1054.86
+   equilibrio hoy 81.20%, moneda 80.0%, ventaja pedida +1.20 puntos
+
+   Cada punto de deslizamiento de entrada sube el equilibrio 3.849 puntos de acierto.
+   Un TICK (0.25pt) lo sube 0.96 puntos, que es el 80% de la ventaja entera.
+
+        entrada   equilibrio   ventaja pedida
+       0.00 tk       81.20%           +1.20
+       0.50 tk       81.68%           +1.68
+       1.00 tk       82.16%           +2.16
+       1.25 tk       82.40%           +2.40
+       2.00 tk       83.12%           +3.12
+
+   ANULACION: 0.312 puntos = 1.25 ticks de entrada
+   agregan otros 1.2 puntos al requerido, o sea DUPLICAN la ventaja
+   que el candidato tiene que aportar. Un solo tick ya se lleva el 80%.
+
+====================================================================================================
+2. CUANTAS OPERACIONES PARA VERIFICAR A UN CANDIDATO
+====================================================================================================
+   alfa 0,05 una cola, potencia 80%. UNA muestra contra un valor conocido:
+   la moneda no se estima, es S/(S+T) exacto. Por eso NO es el n de dos muestras.
+
+       bracket   moneda  equilibrio   delta   n normal   n exacto  op/dia    anios
+      5pt:10pt    66.7%       68.9%    2.3      2,649      2,759       1     10.9
+     10pt:10pt    50.0%       52.3%    2.3      2,925      3,042       1     12.1
+     20pt:10pt    33.3%       35.3%    1.9      3,678      3,886       1     15.4
+      5pt:20pt    80.0%       81.2%    1.2      6,770      6,988       1     27.7
+     10pt:20pt    66.7%       68.1%    1.4      6,683      6,988       1     27.7
+
+   La celda elegida (5pt:20pt) necesita 6,988 operaciones: es la PEOR de
+   la tabla para verificar. La mejor es 5pt:10pt con 2,759.
+   A 1 operacion por dia -el ritmo que el terreno da para un stop de 20pt- son 28 anios.
+
+   HIPOTESIS DEL PEDIDO: '~17.000 operaciones'. REFUTADA EN MAGNITUD, CONFIRMADA
+   EN SUSTANCIA. 17.000 es el n de DOS muestras (2 x (za+zb)^2 p(1-p)/delta^2 =
+   17,442). Como la moneda es conocida y no
+   estimada, el test es de una muestra y el n es 6,988. Sigue siendo
+   inverificable en plazo humano: el orden de magnitud del problema no cambia.
+
+====================================================================================================
+3. SE PUEDE DECIDIR SIN ESAS OPERACIONES?
+====================================================================================================
+   (a) Medir el P&L en vez de la tasa de acierto: NO ayuda.
+       El P&L es funcion deterministica del resultado binario, asi que lleva la
+       misma informacion. n por P&L = 6,878 contra 6,988 por tasa: el mismo numero.
+
+   (b) Cambiar de bracket: SI ayuda, y mucho.
+       5pt:10pt necesita 2,759 operaciones a 1 op/dia = 10.9 anios.
+       10pt:10pt necesita 3,042 operaciones a 1 op/dia = 12.1 anios.
+       Pero esas celdas no sobreviven el terreno con margen. El costo de la
+       factibilidad es la verificabilidad, y hay que elegir.
+
+   (c) Medir el estadistico intermedio en vez del final: EN PRINCIPIO SI, con
+       una advertencia. Si el candidato expone una senal CONTINUA, contrastar la
+       correlacion de esa senal con el retorno futuro usa mucha mas informacion
+       por observacion que un resultado binario 80/20. Pero prueba OTRA hipotesis
+       -que la senal predice- y no esta: para pasar de habilidad de senal a
+       esperanza del bracket hay que volver a la misma aritmetica de barreras.
+       No es gratis, y exige que el candidato exponga la senal, no solo los trades.
+
+   CONCLUSION: con la tasa de acierto final del bracket elegido, no hay atajo.
