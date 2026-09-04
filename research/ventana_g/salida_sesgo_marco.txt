@@ -1,0 +1,31 @@
+====================================================================================================
+DE DONDE SALE EL SESGO DEL MARCO NUEVO - sobrepaso de barrera?
+NO GASTA CARTUCHO. K = 261. Prediccion escrita antes de correr, ver docstring.
+====================================================================================================
+
+   Bootstrap IID sin drift, 8 series de 1,357,785 barras, costo CERO,
+   con marca a mercado. Espan fijo de 25 puntos en las cinco celdas.
+
+         bracket      p    1-2p   sesgo pt/op    error  en errores  o despejado   ambiguo  op/serie
+        5pt:20pt   0.80   -0.60       -0.0374   0.0047        -7.9       0.0623    0.003%   5,903.0
+       10pt:15pt   0.60   -0.20       -0.0177   0.0025        -7.2       0.0884    0.002%   4,034.0
+   12.5pt:12.5pt   0.50    0.00       -0.0008   0.0005        -1.5          nan    0.006%   3,881.0
+       15pt:10pt   0.40    0.20       +0.0173   0.0026        +6.7       0.0865    0.002%   4,034.0
+        20pt:5pt   0.20    0.60       +0.0366   0.0047        +7.8       0.0610    0.003%   5,903.0
+
+====================================================================================================
+LA PRUEBA - el sesgo es lineal en (1-2p) y pasa por cero en el simetrico?
+====================================================================================================
+
+   recta ajustada:  sesgo = +0.0642 * (1-2p) -0.0004
+   pendiente = el sobrepaso o = 0.0642 pt = 0.26 ticks = $3.21
+   ordenada al origen -0.0004 pt   (tiene que ser ~0: es el simetrico)
+   R2 = 0.9856
+   o despejado por fila (sin el simetrico, que esta forzado a cero): 0.0623, 0.0884, 0.0865, 0.0610
+   dispersion de o: 0.0275 pt
+
+   PREDICCION SOSTENIDA
+
+   -> el sesgo del marco nuevo es sobrepaso de barrera de contabilidad,
+      vale 3.21 dolares por operacion por mini, tiene signo
+      predecible por el bracket y SE PUEDE RESTAR porque su nula se calcula.

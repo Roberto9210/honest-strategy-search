@@ -1610,3 +1610,127 @@ explicarlo.
 **Qué haría fallar esta lectura:** que la razón se hubiera quedado plana **y** `VR(k)` en 1. Ahí el
 rebote no explicaría nada y habría que buscar en otro lado desde cero. No fue el caso: el rebote
 existe, sólo que es chico.
+
+---
+
+# EL MARCO NUEVO A PRUEBA: EL SIGNO SE MUEVE (2026-09-04)
+
+**No gasta cartucho. K = 261.** Validación de un método de medición contra una conclusión ya
+publicada. La caja sellada (2020-01-02 → 2026-08-19) no se toca.
+
+## Qué conclusión se rehizo, y por qué ésa
+
+> **«Criterio: celda 5pt:20pt vía 1 mini, costo medido $5,76 ida y vuelta. Un candidato necesita
+> 81,2% de aciertos contra el 80,0% que da la moneda: +1,2 puntos de ventaja real.»**
+
+Se eligió ésa porque **es donde el marco de tasas trabajó más duro**: para llegar a ese número
+hicieron falta la bisección del acierto requerido, la separación de los dos criterios (i) por
+operación y (ii) por intento, la elasticidad de barrera de 7,9× que convierte 1,024 en 1,193, la
+media medida del exceso de deslizamiento, los dos filtros de terreno y la verificación de la vía de
+ejecución en minis. Y es la que se publicó como **el** entregable de la ventana. Si el marco
+contamina algo, contamina esto.
+
+## El resultado
+
+| | |
+|---|---|
+| **Marco de TASAS**, 5pt:20pt: equilibrio por operación | 81,2% |
+| entrada **al azar**, medida | 85,2% |
+| → la moneda **supera** el equilibrio por | **+4,0 puntos ⇒ POSITIVO** |
+| | |
+| **Marco de DÓLARES**, misma celda, mismas entradas al azar: bruto | +$11,28 / sesión |
+| neto de comisión medida | −$20,58 / sesión |
+| neto de comisión **y** deslizamiento medidos | **−$55,29 / sesión** (error $6,69, **−8,3**) |
+| ya restado el sesgo propio del marco | **−$44,64 / sesión ⇒ NEGATIVO** |
+
+**EL SIGNO SE MUEVE.** El marco de tasas decía que una entrada al azar bate el equilibrio; el marco
+de dólares dice que pierde cuarenta y cinco dólares por sesión, a ocho errores estándar.
+
+**El mecanismo es el mismo de siempre**: la tasa se calcula sobre las **resueltas**, y las que no
+resuelven —el 17,4%— son las que iban a la barrera lejana, o sea las perdedoras. El marco de tasas
+las borraba del denominador. El de dólares las marca a mercado y las cuenta.
+
+## El control FALLÓ, y era un control que podía fallar
+
+Condición declarada: sobre datos sin ventaja y costo cero, el marco nuevo debe dar cero.
+
+| celda | modo | $/sesión | error | en errores | veredicto |
+|---|---|---|---|---|---|
+| 5pt:20pt | **A**: con marca a mercado | −10,77 | 4,68 | −2,3 | cero (al borde) |
+| 5pt:20pt | **B**: descartando abiertas | **+232,86** | 4,97 | **+46,9** | sesgado |
+| 20pt:10pt | **A**: con marca a mercado | +5,75 | 1,67 | **+3,4** | **SESGADO** |
+| 20pt:10pt | **B**: descartando abiertas | **−157,55** | 4,27 | **−36,9** | sesgado |
+
+**El control A falla en 20pt:10pt.** Lo reporto porque la condición estaba escrita antes. Y **el
+control B —el mismo con el defecto viejo puesto a propósito— falla con 46,9 y 36,9 errores**, o sea
+cuarenta veces más fuerte: el control **discrimina**, no es decorativo. De paso mide en dólares el
+tamaño del error que este protocolo existe para evitar: **+$232,86 por sesión de ventaja fantasma**
+en 5pt:20pt.
+
+## Localizado: sobrepaso de barrera de contabilidad
+
+Los signos opuestos (−10,77 y +5,75) descartaban un error de conteo, que no sabe de brackets. La
+hipótesis: el precio **cruza** la barrera y yo anoto exactamente `±T`; por paro opcional el sesgo por
+operación vale `o·(1−2p)`.
+
+**Predicción escrita antes de correr:** a span fijo el sesgo tiene que ser lineal en `(1−2p)`.
+
+| bracket | p | 1−2p | sesgo pt/op | error | en errores | `o` despejado |
+|---|---|---|---|---|---|---|
+| 5pt:20pt | 0,80 | −0,60 | −0,0374 | 0,0047 | −7,9 | 0,0623 |
+| 10pt:15pt | 0,60 | −0,20 | −0,0177 | 0,0025 | −7,2 | 0,0884 |
+| 12,5:12,5pt | 0,50 | 0,00 | −0,0008 | 0,0005 | −1,5 | *(forzado)* |
+| 15pt:10pt | 0,40 | +0,20 | +0,0173 | 0,0026 | +6,7 | 0,0865 |
+| 20pt:5pt | 0,20 | +0,60 | +0,0366 | 0,0047 | +7,8 | 0,0610 |
+
+**`sesgo = +0,0642·(1−2p) − 0,0004`, `R² = 0,9856`.** Perfectamente antisimétrico. **PREDICCIÓN
+SOSTENIDA.** Ambigüedad de barra: 0,002–0,006%, descartada como causa.
+
+**`o = 0,0642 pt = 0,26 ticks = $3,21 por operación por mini.`** *(El punto del medio está forzado a
+cero por simetría y no informa: lo que informa es la pendiente y la antisimetría de los costados.)*
+
+**Corrijo lo que dije la vez pasada:** «dólares por unidad de tiempo no tiene nula que calibrar,
+cero es cero» **es falso**. Tiene una. La afirmación correcta: pasa de **cuatro perillas
+incontrolables de 0,3 a 6 puntos** a **un término de 0,06 puntos que se calcula desde la geometría
+del bracket y se resta**.
+
+## Dos errores míos que aparecieron al revisar la contabilidad
+
+1. **Factor 2 en la columna `$/operación`** de `dolares_por_tiempo.py`: divide dólares de un
+   contrato por operaciones de los **dos** lados. Los dólares por sesión están bien. Corregido en
+   `dolares_lados.py`: 5pt:20pt es **−$10,00** por operación, no −$5,00.
+2. **Una decisión de varianza tomada sin decirla.** Promediar largo y corto es una combinación
+   **antitética** y reduce el desvío **5,0× y 8,4×**. Está bien para medir la media; **no** para
+   dimensionar a un candidato direccional, que enfrenta ≈$1.050 por sesión y no $210.
+
+## El criterio nuevo, en dólares
+
+| celda | piso $/sesión | presupuesto | sesiones | MDE antitética | razón | MDE un lado | razón |
+|---|---|---|---|---|---|---|---|
+| 5pt:20pt | +44,64 | 250 op | 45 | $77,62 | 1,74 | $388,36 | 8,70 |
+| 5pt:20pt | +44,64 | 1.000 op | 181 | **$38,81** | **0,87** | $194,18 | 4,35 |
+| 5pt:20pt | +44,64 | 3.000 op | 542 | $22,41 | 0,50 | $112,11 | 2,51 |
+| 20pt:10pt | +71,71 | 250 op | 80 | $35,64 | 0,50 | $298,10 | 4,16 |
+| 20pt:10pt | +71,71 | 1.000 op | 320 | $17,82 | 0,25 | $149,05 | 2,08 |
+| 20pt:10pt | +71,71 | 3.000 op | 960 | $10,29 | 0,14 | $86,05 | 1,20 |
+
+**Razón < 1 = el equilibrio es demostrable con ese presupuesto.** Para un candidato **medible en los
+dos lados**, 1.000 operaciones alcanzan (0,87). Para uno **direccional**, no alcanzan ni 3.000
+(2,51).
+
+**No comparo esto con el «2,62×» del marco de tasas**, aunque tienta: aquel salía de un error
+binomial que hoy sabemos mal calculado. No son la misma medición y ponerlas una al lado de la otra
+sería fabricar una mejora.
+
+## Qué más hay que rehacer
+
+**Las ocho afirmaciones del grupo A de `INVENTARIO_precision.md`** se apoyan en `p_win = S/(S+T)` y
+por lo tanto todas heredan el problema: el criterio, la vara 1,181× y la elasticidad 7,9×, la tabla
+34,1%/35,0%/33,3%, los dos criterios por bracket, los pisos de rentabilidad, las razones
+detectabilidad÷rentabilidad, la tabla de 48 celdas y el +$10.
+
+**Pero hay que decir la otra mitad, y es la que importa:** el marco de dólares hace la esperanza por
+operación **más negativa**, no menos. Entonces `P(pasar)` baja y la esperanza del intento baja.
+**La respuesta a la pregunta de la ventana —la evaluación tiene esperanza negativa en las 8 firmas y
+los 3 tamaños— sobrevive y se refuerza.** Lo que no sobrevive es **el criterio**, y ése queda
+reemplazado por los dos pisos en dólares de la tabla de arriba.

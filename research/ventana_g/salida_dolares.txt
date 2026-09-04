@@ -1,0 +1,79 @@
+====================================================================================================
+EL MARCO NUEVO A PRUEBA - dolares por sesion contra tasas de acierto
+NO GASTA CARTUCHO. K = 261. La caja sellada no se toca.
+====================================================================================================
+
+   ES 1-min 2016-2019, 1,357,785 barras, 983 sesiones de 1380 barras.
+   1 mini ES = $50/punto. Comision MEDIDA $5.76/ida y vuelta.
+   Exceso de deslizamiento MEDIDO: {10: 0.722, 20: 0.982} puntos segun distancia del stop.
+
+====================================================================================================
+CONTROL A - datos SIN ventaja, costo CERO, con marca a mercado: debe dar $0
+   QUE LO HARIA FALLAR: esperanza sistematicamente distinta de cero.
+CONTROL B - el mismo, con el defecto viejo puesto de nuevo: descartar las no
+   resueltas en vez de marcarlas. ESTE TIENE QUE FALLAR, y si no falla el
+   control A no discrimina y hay que tirarlo.
+====================================================================================================
+
+        celda                  modo   $/sesion    error  en errores  $/operacion  op/sesion  abiertas  veredicto
+     5pt:20ptA: con marca a mercado     -10.77     4.68        -2.3       -1.029      12.02     16.6%       CERO
+     5pt:20ptB: descartando abiertas    +232.86     4.97       +46.9       19.599      12.02     16.6%    SESGADO
+    20pt:10ptA: con marca a mercado      +5.75     1.67        +3.4        0.665       6.70     29.7%    SESGADO
+    20pt:10ptB: descartando abiertas    -157.55     4.27       -36.9      -24.973       6.70     29.7%    SESGADO
+
+   CONTROL A (debe dar cero):        FALLADO
+   CONTROL B (debe dar sesgado):     PASADO
+   -> el control NO DISCRIMINA: pasa con el metodo bueno y falla con el defecto viejo puesto a proposito.
+
+====================================================================================================
+EL ERROR ESTANDAR DEL MARCO NUEVO ES HONESTO? (la comprobacion que destapo el 5x)
+   Se compara el error ENTRE SESIONES de una serie contra la dispersion ENTRE
+   K series independientes. Si coinciden, el error es honesto.
+   QUE LO HARIA FALLAR: que el de entre sesiones sea mucho menor que el de entre
+   series, como pasaba con el binomial en el marco de tasas.
+====================================================================================================
+
+        celda   entre sesiones   entre series   cociente  veredicto
+     5pt:20pt            3.63$          4.68$       1.29         OK
+    20pt:10pt            2.30$          1.67$       0.73         OK
+
+   HONESTO: en el marco de tasas este cociente llegaba a 5,3.
+
+====================================================================================================
+LA CONCLUSION REHECHA - celda 5pt:20pt sobre ES REAL
+====================================================================================================
+
+        celda                     costo   $/sesion    error  en errores  $/operacion  op/sesion     signo
+     5pt:20pt         bruto (sin costo)     +11.28     4.93        +2.3         1.02      11.06  POSITIVO
+     5pt:20pt     neto, comision medida     -20.58     5.32        -3.9        -1.86      11.06  NEGATIVO
+     5pt:20pt  neto, comision + desliz.     -55.29     6.69        -8.3        -5.00      11.06  NEGATIVO
+    20pt:10pt         bruto (sin costo)      +4.47     3.39        +1.3         0.71       6.25  POSITIVO
+    20pt:10pt     neto, comision medida     -13.54     3.22        -4.2        -2.17       6.25  NEGATIVO
+    20pt:10pt  neto, comision + desliz.     -68.37     4.09       -16.7       -10.93       6.25  NEGATIVO
+
+====================================================================================================
+SE MUEVE EL SIGNO?
+====================================================================================================
+
+   MARCO DE TASAS, celda 5pt:20pt:
+      equilibrio por operacion .......... 81.2%
+      entrada AL AZAR, medida ........... 85.2%
+      -> la moneda SUPERA el equilibrio por +4.0 puntos: POSITIVO
+
+   MARCO DE DOLARES, la misma celda, las mismas entradas al azar:
+      bruto ............................. $+11.28 por sesion
+      neto de comision y deslizamiento .. $-55.29 por sesion (error $6.69, -8.3 errores)
+      por operacion ..................... $-5.00
+
+   EL SIGNO SE MUEVE.
+
+====================================================================================================
+EL CRITERIO NUEVO - que tiene que prometer un candidato, en dolares
+====================================================================================================
+
+        celda   hay que superar   error por sesion   MDE 250 ses  MDE 1.000 ses  MDE 3.000 ses
+     5pt:20pt           +55.29$              6.69        33.01$         16.51$          9.53$
+    20pt:10pt           +68.37$              4.09        20.16$         10.08$          5.82$
+
+   'hay que superar' = lo que un candidato tiene que agregar por sesion solo
+   para llegar a cero. MDE con alfa 0,05 una cola y potencia 80% (z 1,645+0,842).
