@@ -992,3 +992,127 @@ cola, y bajo FIFO un llenado es consecuencia mecánica del volumen que pasa por 
 probabilidad estimada. Se verifica con pocos casos. **Dos advertencias:** que ES use FIFO puro no
 está verificado en este proyecto (algunos productos de CME usan pro-rata), y —lo importante— eso
 **acota un costo, no produce una ventaja**. Refuerza la clasificación de (c).
+
+---
+
+# EL TERCER ESTADO, Y UNA CONCLUSIÓN QUE SÍ SE DA VUELTA (2026-09-04)
+
+**No gasta cartucho. K = 261.**
+
+## 1 — «Abierta al corte» ya está en el modelo. Y mi sospecha era falsa.
+
+`sim_bracket` suponía resolución del 100%. Ahora tiene el tercer estado, con el valor a mercado
+**medido** (no supuesto) de las operaciones que no resuelven.
+
+**Dos controles, los dos pasan:**
+- Con fracción abierta = 0, el modelo nuevo reproduce el viejo **idéntico a cuatro decimales** en los
+  cinco brackets.
+- **Control de consistencia** (agregado tras encontrar un error propio, abajo): una entrada al azar
+  debe dar esperanza ≈0 por operación antes de costo. Da entre −0,007 y +0,071 puntos.
+
+| bracket | abierta | M2M medio | **P vieja** | **P nueva** | dif rel |
+|---|---|---|---|---|---|
+| 5pt:10pt | 7,1% | −2,005 | 3,239% | 3,927% | **+21,3%** |
+| 10pt:10pt | 18,9% | 0,000 | 4,402% | 4,381% | −0,5% |
+| 20pt:10pt | 35,4% | +3,323 | 5,114% | 5,295% | +3,5% |
+| **5pt:20pt** | 17,4% | −5,798 | 6,236% | **6,892%** | **+10,5%** |
+| 10pt:20pt | 35,4% | −3,323 | 6,088% | 6,713% | +10,3% |
+
+**Yo había dicho que sospechaba que las P(pasar) bajarían. Suben.** La corrección tiene dos partes
+que tiran en sentidos opuestos: la tasa medida entre las resueltas es **más alta** que la asumida
+para los brackets de objetivo cercano (85,2% contra 80,0% en 5pt:20pt), y el M2M de las abiertas es
+**negativo**. Gana la primera.
+
+### El error que casi publico
+
+La primera corrida mezcló la tasa de resueltas **asumida** con el M2M **medido**, y dio 20pt:10pt
+subiendo **+199,6%**, por encima del equilibrio. Es imposible: una entrada al azar no puede tener
+esperanza positiva. Chequeada la esperanza por operación antes de costo, esa mezcla fabricaba hasta
+**±1,18 puntos** de ventaja fantasma. **Las piezas medidas y las supuestas no se pueden combinar.**
+Quedó como control mecánico para que no vuelva a pasar.
+
+### La conclusión que se da vuelta
+
+**Dos celdas cruzan el equilibrio** (6,148%): 5pt:20pt con 6,892% y 10pt:20pt con 6,713%. Para
+5pt:20pt eso es **E = +$10** en un intento de $83, con **cero ventaja**.
+
+**Hay que decirlo sin suavizar: el titular «negativa en 48 de 48 celdas» no sobrevive intacto** para
+esta celda bajo el modelo corregido. Pero el margen es **más chico que varias cosas conocidas y no
+modeladas**:
+- **Deslizamiento de entrada, no medido.** Un solo tick agrega +0,96 puntos al requerido; por la
+  elasticidad de barrera (~7,9) eso baja P a ~6,2%, al filo. **Dos ticks lo matan.**
+- **La regla de consistencia (35–40%) no está modelada** y solo puede restar.
+- **Los insumos medidos arrastran contaminación de drift** (ver la anomalía, abajo).
+- Y es el criterio **(ii)**, el del billete de lotería, no el **(i)** de operar rentable: a 5pt:20pt
+  la operación **pierde plata por vez**.
+
+**Las otras tres celdas siguen por debajo del equilibrio y se refuerzan.** No es una reversión del
+programa: es una celda marginal que pasa de −$X a +$10 y queda dentro del error de lo que falta medir.
+
+## 2 — La anomalía de las 5 sesiones SOBREVIVIÓ. No era ruido.
+
+Con 100.000 rutas (antes 20.000) el error **creció**: de 1,32 a **1,58**.
+
+| bracket | asim | sin resolver | sesgo medido | la regla predice | **residuo** |
+|---|---|---|---|---|---|
+| 20pt:10pt | +0,333 | 4,0% | **−2,24** | −0,66 | **+1,58** |
+| 10pt:20pt | −0,333 | 4,0% | **+2,24** | +0,66 | **−1,58** |
+| 5pt:20pt | −0,600 | 1,1% | +1,51 | +0,33 | −1,18 |
+
+A cinco sesiones el sin-resolver ya es solo 4%, así que la censura explica ±0,66 — y el sesgo medido
+es ±2,24. **Queda un residuo de ±1,58 puntos que no viene de la censura.** Es perfectamente
+antisimétrico entre 20pt:10pt y 10pt:20pt.
+
+**No lo explico con una historia.** Es un hallazgo abierto: a horizonte largo, con la censura casi
+extinguida, la tasa observada sigue apartada de `S/(S+T)` por más que el criterio entero que esta
+ventana quería validar. **La medición que lo resolvería:** re-correr la réplica sobre la serie
+**des-driftada** (restando el drift medio por barra). Si el residuo desaparece, es drift que no
+cancela entre largo y corto en brackets asimétricos; si no desaparece, es otra cosa. No se corrió.
+
+## 3 — Criterio permanente para decidir comprar datos
+
+> **La pregunta no es si un hallazgo es determinista o estadístico. Es a qué ritmo llegan las
+> observaciones que lo sostienen.**
+>
+> - **Si la unidad de observación es la actualización de cotización** (millones por mes): el muro de
+>   las miles de operaciones **no aplica**. Un mes de datos alcanza para fijar una constante con
+>   varios decimales. Acá viven las mediciones de **costo**: spread, calidad de llenado,
+>   deslizamiento de entrada, profundidad.
+> - **Si la unidad de observación es la operación** (1 a 3,5 por día): el muro **aplica entero**.
+>   Acá viven las afirmaciones de **ventaja**. Da igual con cuántos millones de tics estimaste la
+>   señal: probar que la estrategia gana sigue costando miles de operaciones, porque la conversión
+>   de señal a dólares pasa por la aritmética de barreras.
+>
+> **Regla: comprar datos de alta frecuencia se justifica para acotar costos, nunca para demostrar
+> una ventaja.**
+
+### La consecuencia, corrigiendo la premisa
+
+Me pediste escribir que «el costo ya se midió inmaterial, así que la compra no se justifica». **Eso
+está mal en una parte y es importante.** Lo medido inmaterial fue la **contaminación horaria** (0,0 a
+0,2 puntos) y lo medido de fuente oficial fue la **comisión** ($1,82/micro, $5,76/mini). Pero **el
+deslizamiento de entrada sigue sin medirse y es el término de costo más grande que queda**: un solo
+tick agrega +0,96 puntos al requerido, el 80% del criterio entero, y 1,25 ticks lo duplican.
+
+**Entonces la compra sí se justifica, pero con un alcance mucho más chico del que se estaba
+pensando:** uno o dos meses de `mbp-1` para fijar la constante de deslizamiento de entrada — no años
+de historia para demostrar una ventaja. Y con lo del punto 1 encima, esa constante es justo la que
+decide si la celda 5pt:20pt está arriba o abajo del equilibrio.
+
+## 4 — Prioridad de cola: qué verificación haría falta
+
+**No lo verifiqué: no es mi terreno.** Lo que hace falta, para que lo busques:
+
+- **Qué:** si el algoritmo de matching de ES en CME Globex es **FIFO puro** (prioridad estricta por
+  tiempo) o tiene componente **pro-rata** o asignación al primero que mejora precio.
+- **De dónde:** la ficha del producto en cmegroup.com declara el algoritmo de matching por contrato;
+  la fuente normativa es el **CME Rulebook** y el documento de **Globex Matching Algorithms**. Es un
+  dato publicado, no hay que inferirlo.
+
+**Si FIFO puro se confirmara, se podría acotar exactamente esto, que hoy no se puede:** con `mbo` se
+reconstruye la posición exacta en la cola, y bajo FIFO el llenado de una orden pasiva es
+**consecuencia mecánica** del volumen que pasa por delante — no una probabilidad estimada. Eso
+permite decidir, sin estadística, **si una entrada pasiva es alcanzable**: o sea si el deslizamiento
+de entrada se puede llevar a cero (entrando pasivo, a cambio de riesgo de no ejecutar) o hay que
+pagarlo sí o sí (cruzando el spread). **Hoy el modelo no distingue esas dos cosas y simplemente
+supone un costo.** Y por el punto 3, esa distinción es la que decide la compra.
