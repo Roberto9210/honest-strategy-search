@@ -24,10 +24,20 @@ TRADES_PER_DAY = 5
 # Comision ida y vuelta ~ $1,25 + deslizamiento de 1 tick $1,25  ->  c1 = $2,50 por micro.
 # Amplitud de la operacion: stop/objetivo de 10 puntos -> b1 = 10 * $5 = $50 por micro.
 # ---------------------------------------------------------------------------
-# DEUDA DECLARADA: la comision NUNCA se leyo de una fuente oficial -de ninguna firma ni de
-# ningun broker-. Los $2,50 son HIPOTESIS, no dato; solo la mitad de deslizamiento (1 tick)
-# tiene respaldo medido (terreno_stop_resultado.md seccion 4, mediana del exceso = 0,25pt).
-C1_POR_MICRO = 2.50
+# MEDIDO (2026-09-04), deuda saldada. Pagina oficial de Tradeify:
+#   https://help.tradeify.co/en/articles/10468315-trading-commission-fees
+# Costo IDA Y VUELTA por contrato, y la pagina declara que YA INCLUYE exchange fees, NFA
+# fees, clearing fees y comision: es el costo total de ejecucion, no solo la comision.
+#   micros (MES, MNQ, MYM, M2K): $1,82 por contrato ida y vuelta
+#   minis  (ES, NQ, YM, RTY):    $5,76 por contrato ida y vuelta
+# OJO: esto NO incluye deslizamiento. El deslizamiento esta medido aparte y se aplica solo
+# a la rama perdedora (media_exceso.py), que es donde ocurre.
+C1_POR_MICRO = 1.82
+C1_POR_MINI = 5.76
+# Un mini equivale exactamente a 10 micros de exposicion, y Tradeify lo confirma en el
+# limite de contratos del 50K: "4 minis/40 micros" (datos_crudos.md). Por micro-equivalente
+# el mini cuesta $0,576, un 68% menos que operar 10 micros sueltos.
+C1_POR_MICRO_VIA_MINI = C1_POR_MINI / 10.0
 B1_POR_MICRO = 50.0
 
 TAMANOS = {"5 micros": 5, "10 micros (1 mini)": 10, "20 micros (2 minis)": 20}

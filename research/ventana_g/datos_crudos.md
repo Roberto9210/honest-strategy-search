@@ -2,9 +2,13 @@
 Fecha de lectura de todo lo de abajo: 2026-09-03. Solo dominios oficiales de cada firma.
 Lo que no aparece aca es NO SE DETERMINA.
 
-DEUDA DECLARADA (2026-09-04): la COMISION por operacion nunca se leyo de una fuente oficial, ni de
-una firma ni de un broker. Los $2,50 por micro que usa toda la VENTANA G son HIPOTESIS heredada de
-aritmetica.py; solo la mitad de deslizamiento (1 tick) tiene respaldo medido.
+COSTO DE EJECUCION — MEDIDO 2026-09-04, deuda saldada.
+  https://help.tradeify.co/en/articles/10468315-trading-commission-fees
+  Ida y vuelta por contrato, y la pagina declara que ya incluye exchange, NFA, clearing y comision:
+    micros (MES, MNQ, MYM, M2K): $1,82     minis (ES, NQ, YM, RTY): $5,76
+  Cita textual de la misma pagina: "If you're trading micro contracts in multiples of 10, you should
+  trade the corresponding mini contract instead to save on fees."
+  No incluye deslizamiento; ese esta medido aparte (media_exceso.py) y se carga solo a la rama perdedora.
 
 ## APEX TRADER FUNDING  (apextraderfunding.com)
 Productos NUEVOS (posteriores al 2026-03-01). Los "legacy" son otro producto y no se miden aca.
