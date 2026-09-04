@@ -554,3 +554,82 @@ Y la celda elegida es **la peor de la tabla para verificar**: 6.988 contra 2.759
    35,3% de la más baja. **Se eligió por factibilidad de terreno, no por ser la más fácil.** Fue una
    **restricción**, no una preferencia: es la única celda que pasó los dos filtros con margen. Las
    celdas con requisitos mucho más bajos existen y están medidas, pero el terreno las descarta.
+
+---
+
+# LA ESPECIFICACIÓN PARA LA BÚSQUEDA (2026-09-04, cuarta vuelta)
+
+**No gasta cartucho. K = 261.**
+
+**Verificación de la inversión**: la directa da `n_exacto(80,0% → 81,2%) = 6.988` y la inversa
+devuelve **1,182 puntos** a ese n (esperado 1,200; el hueco de 0,018 es porque `n_exacto` avanza en
+pasos geométricos y devuelve un n algo mayor que el mínimo). Cierra dentro de 0,05 puntos.
+
+## 1 — Diferencia mínima detectable por presupuesto
+
+α 0,05 una cola, potencia 80%. La conversión a dólares es exacta y no depende de nada más:
+**ΔE = δ · (gana + pierde)**, porque `E(p) = p·gana − (1−p)·pierde` es lineal en p.
+
+El ritmo sale del terreno con las dos barreras: los brackets con objetivo de 5pt resuelven dentro de
+la rueda (3,5 op/día); los demás no cruzan el 50% ni en la sesión completa (1 op/día).
+
+| bracket | moneda | **n=250** | | **n=1.000** | | **n=3.000** | | op/día |
+|---|---|---|---|---|---|---|---|---|
+| | | pts | $/op | pts | $/op | pts | $/op | |
+| 5pt:10pt | 66,7% | 7,45 | $59 | 3,70 | **$29** | 2,13 | $17 | 3,5 |
+| 10pt:10pt | 50,0% | 8,02 | $83 | 3,98 | $41 | 2,28 | $24 | 1,0 |
+| 20pt:10pt | 33,3% | 7,89 | $121 | 3,80 | **$58** | 2,19 | $34 | 1,0 |
+| **5pt:20pt** | 80,0% | 6,03 | $78 | 3,14 | **$41** | 1,81 | $23 | 3,5 |
+| 10pt:20pt | 66,7% | 7,45 | $115 | 3,70 | $57 | 2,13 | $33 | 1,0 |
+
+**En tiempo:** 250 operaciones son 0,3 años (objetivo 5pt) o 1,0 año (el resto). 1.000 son 1,1 o 4,0
+años. 3.000 son 3,4 o 11,9 años.
+
+## 2 — El piso: qué tiene que prometer una idea para que valga la pena medirla
+
+**Hay dos pisos y manda el más alto.**
+
+- **Rentabilidad** — la ventaja que hace que operar deje de perder plata. Fija por bracket.
+- **Detectabilidad** — la ventaja mínima que el presupuesto puede distinguir de la moneda.
+
+| bracket | piso rentabilidad | | piso n=250 | piso n=1.000 | piso n=3.000 |
+|---|---|---|---|---|---|
+| | pts | $/op | $/op | $/op | $/op |
+| 5pt:10pt | 2,26 | $17,79 | $59 ✗ | $29 ✗ | **$17 ✓** |
+| 10pt:10pt | 2,30 | $23,81 | $83 ✗ | $41 ✗ | **$24 ✓** |
+| 20pt:10pt | 1,94 | $29,83 | $121 ✗ | $58 ✗ | $34 ✗ |
+| **5pt:20pt** | **1,20** | **$15,58** | $78 ✗ | $41 ✗ | $23 ✗ |
+| 10pt:20pt | 1,43 | $22,13 | $115 ✗ | $57 ✗ | $33 ✗ |
+
+**✗ = el presupuesto no alcanza ni para distinguir el punto de equilibrio.** Una idea exactamente
+rentable sería **invisible** ahí.
+
+- **Con 250 y con 1.000 operaciones, ningún bracket llega**: el equilibrio de cualquiera de ellos es
+  indemostrable.
+- **Con 3.000 recién aparecen dos**: 5pt:10pt y 10pt:10pt.
+- **La celda del criterio (5pt:20pt) no llega en ninguno de los tres.** Con 3.000 operaciones el MDE
+  es 1,81 puntos y su equilibrio está en 1,20.
+
+## 3 — La regla que sale de esto
+
+Una idea tiene que prometer **entre 1,6 y 2,6 veces el equilibrio de su propio bracket** para ser
+demostrable en 1.000 operaciones:
+
+| bracket | detectabilidad ÷ rentabilidad, n=1.000 |
+|---|---|
+| 5pt:10pt | **1,63×** ← el más medible |
+| 10pt:10pt | 1,73× |
+| 20pt:10pt | 1,96× |
+| 10pt:20pt | 2,59× |
+| **5pt:20pt** | **2,62×** ← el criterio, el menos medible |
+
+**El piso no es un número: depende del bracket.** Con el mismo presupuesto de 1.000 operaciones va de
+$29/op a $58/op. Por eso la tabla y no una cifra.
+
+**Consecuencia operativa para la búsqueda:** una idea que prometa menos que el piso de su bracket **se
+descarta antes de medirla** — no porque sea falsa, sino porque no es demostrable con el presupuesto
+disponible. Y si lo que se quiere es *poder medir*, el bracket para probar ideas es **5pt:10pt**
+($29/op, 1,1 años para 1.000 operaciones), no el del criterio.
+
+Es la misma tensión de siempre, ahora con número en las dos puntas: **el costo de la factibilidad es
+la verificabilidad.** La celda que el terreno deja usar es la que menos se puede comprobar.
