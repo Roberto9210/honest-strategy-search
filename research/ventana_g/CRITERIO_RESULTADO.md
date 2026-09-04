@@ -1116,3 +1116,131 @@ permite decidir, sin estadística, **si una entrada pasiva es alcanzable**: o se
 de entrada se puede llevar a cero (entrando pasivo, a cambio de riesgo de no ejecutar) o hay que
 pagarlo sí o sí (cruzando el spread). **Hoy el modelo no distingue esas dos cosas y simplemente
 supone un costo.** Y por el punto 3, esa distinción es la que decide la compra.
+
+---
+
+# TRES CORRECCIONES A MI PROPIO TRABAJO (2026-09-04)
+
+**No gasta cartucho. K = 261.**
+
+## 1 - Las «simetrias exactas» eran identidades de construccion. Roberto tenia razon.
+
+Reporte dos simetrias exactas como si fueran hallazgos. **No lo eran.** Para una entrada al precio p:
+
+```
+20pt:10pt LARGO  ->  niveles {p-10, p+20}, gana si toca +20 primero
+10pt:20pt CORTO  ->  niveles {p-10, p+20}, gana si toca -10 primero
+```
+
+**Son los mismos dos niveles con las etiquetas invertidas**, y como las entradas usan la misma
+semilla, son **los mismos caminos**. De ahi sale, para cualquier serie, con drift o sin el:
+
+```
+P_pooled(20:10) = 1 - P_pooled(10:20)        exacto
+P_pooled(10:10) = 1/2                         exacto
+```
+
+Verificado numericamente sobre lo ya medido: las tasas publicadas suman **100,0% clavado**, y
+`sort(M2M 20:10) == sort(-M2M 10:20)` da **True** elemento a elemento.
+
+**Dos consecuencias que hay que decir:**
+- **El residuo de la anomalia es UN numero, no dos brackets que se confirman.** 20pt:10pt y
+  10pt:20pt son la misma medicion con el signo cambiado.
+- **El control «pooled = 50,0% clavado» era VACIO.** No podia dar otra cosa. Lo que si medía algo era
+  la **separacion largo/corto** (54,6% / 45,4%), que es donde vive el drift y que el pooling destruye.
+
+## 2 - El residuo SOBREVIVE al des-drift. No es drift ni censura.
+
+Mi primer des-drift **sobre-corrigio**: la separacion largo/corto no se cerro, se dio vuelta
+(+5,67 -> -6,18). Restar a cada contrato su tendencia completa no es restar el drift del mercado.
+Calibrado contra la separacion del bracket simetrico (que por identidad es drift puro), el factor
+correcto es **0,425**.
+
+| factor | 10:10 sep | 20:10 sep | 20:10 pooled | 5:20 pooled |
+|---|---|---|---|---|
+| 0,00 | +5,67 | +5,67 | -2,15 | +1,52 |
+| 0,50 | -1,00 | -0,66 | -2,05 | +1,21 |
+| 1,00 | -6,18 | -6,56 | -1,65 | +0,92 |
+
+**El drift vive casi enteramente en la separacion largo/corto y casi nada en el pooled**: la
+separacion barre 12 puntos mientras el pooled se mueve medio punto.
+
+En el factor calibrado (separacion ~ 0):
+
+| bracket | pooled | censura predice | **RESIDUO** |
+|---|---|---|---|
+| 10pt:10pt | +0,00 | -0,00 | +0,00 |
+| 20pt:10pt | -2,03 | -0,71 | **-1,32** |
+| 5pt:20pt | +1,19 | +0,41 | **+0,78** |
+
+**El residuo sobrevive.** Era 1,58 con drift; des-driftado queda **1,32**. No es censura y no es drift.
+
+### Lo que eso obliga a decir
+
+**El modelo de barreras sin drift no describe este mercado.** `S/(S+T)` esta corrido por ~1,3 puntos
+por algo que no esta identificado. **Todo esto se apoya en el:**
+
+- La columna «moneda sin ventaja» de **todas** las tablas de criterio (66,7% / 50,0% / 33,3% / 80,0%).
+- La «ventaja pedida» = requerido - moneda, y por lo tanto **el criterio de +1,2 puntos**.
+- La vara de 1,181x y todo lo derivado.
+- Los pisos de medibilidad y las MDE, que miden delta contra `p0 = S/(S+T)`.
+- El calculo de potencia (n = 6.875 y compania), que usa `S/(S+T)` como la nula conocida.
+- La tabla de 48 celdas, via el `p_win` por defecto de `sim_bracket`.
+
+**El residuo (1,3) es del mismo tamano que el criterio (1,2).** No invalida el signo de las
+conclusiones negativas -esas tienen margen- pero **si invalida cualquier afirmacion al nivel de un
+punto porcentual**, que es exactamente el nivel del criterio.
+
+## 3 - El positivo de +$10 esta muerto tres veces
+
+| presion | umbral que lo anula | disponible |
+|---|---|---|
+| **(a) deslizamiento de entrada** | **0,28 ticks** ($3,47/op) | cruzar el spread cuesta >= 1 tick |
+| **(b) caida de la tasa de acierto** | **0,32 puntos** | el residuo sin explicar es **0,78** (2,4x) |
+| **(c) precio de la cuota** | $83 -> $93 | **la lista es $165**, ahi E = **-$72** |
+
+**(a)** Corrijo lo que dije antes («un tick al filo, dos lo matan»): lo mata **un cuarto de tick**.
+Era optimista por ~3,5x. Y el minimo que se paga cruzando el spread es un tick entero.
+
+**(c)** Auditados los dos insumos: el **cobro de $1.350** = $1.500 x 90%, los dos MEDIDOS de fuente
+oficial (help.tradeify.co, 2026-09-03) - **solido**. La **cuota de $83 es el precio promocional con
+codigo SEP**; el de lista es **$165**, del mismo widget oficial. Los dos estan medidos pero **no son
+la misma clase de numero: el cupon caduca.** A precio de lista el positivo no existe.
+
+### (d) Es plausible que una entrada al azar gane contra la evaluacion?
+
+**No, y no lo descarto por incomodo sino porque tres cosas medidas lo matan y una cuarta lo hace
+implausible a priori.**
+
+Si el producto fuera estructuralmente +EV para gente que tira monedas, seria arbitrable: comprar mil
+evaluaciones. **La firma limita a 5 cuentas por trader** (`datos_crudos.md`) - un limite que existe
+precisamente para eso. Y el margen es de $10 sobre $83, dentro del error de lo que falta.
+
+**Mi lectura: falta un termino, y puedo nombrar cuales.** La regla de consistencia (35-40%) no esta
+modelada y solo puede restar. El deslizamiento de entrada no esta medido y un cuarto de tick lo mata.
+El residuo de 1,3 puntos no esta explicado y es 2,4x lo necesario. **El +$10 es el tamano del error
+del modelo, no una oportunidad.** Lo que si quedo demostrado es otra cosa, y es util: **el signo de
+esta celda depende de terminos que no medimos**, asi que ningun numero de esta ventana debe usarse al
+nivel del punto porcentual.
+
+## 4 - El histograma del M2M: mi sospecha era falsa
+
+Sospeche masa apilada contra las barreras. **No hay.** Con la franja del 10% exterior a cada lado:
+
+| bracket | 10% inferior | 10% superior | medio |
+|---|---|---|---|
+| 5pt:10pt | 1,2% | 2,0% | 96,8% |
+| 20pt:10pt | 2,5% | 1,3% | 96,1% |
+| 5pt:20pt | 1,2% | 3,8% | 95,0% |
+
+Contra el 10% que daria una uniforme, los bordes tienen **1,2% a 3,8%**: la distribucion es de centro
+pesado, no bimodal. **El remuestreo del modelo esta bien repartido.** Negativo limpio.
+
+## 5 - FIFO, actualizado
+
+ES y NQ usan FIFO, ordenes en espera por estricta prioridad temporal - **fuente SECUNDARIA**
+(databento.com/blog/cme-matching-algorithms-explained). **Falta la ficha oficial del producto; no se
+trata como primario.** Consecuencia si se confirmara: la entrada pasiva es posible en principio, y el
+deslizamiento de entrada podria ser cero o negativo **a cambio de riesgo de no ejecucion y de
+seleccion adversa** - dos terminos que este modelo tampoco tiene. Dado el punto 3(a), **esa es la
+medicion que mas mueve el signo de todo.**

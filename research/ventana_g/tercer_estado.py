@@ -39,10 +39,10 @@ def m2m(T, S):
     return np.load(os.path.join(AQUI, f"m2m_{T}_{S}.npy"))
 
 
-def cadena(T, S, p_abierta=0.0, muestra=None, npaths=NPATHS, p_win=None):
+def cadena(T, S, p_abierta=0.0, muestra=None, npaths=NPATHS, p_win=None, c1=None):
     f = FIRMAS[FIRMA]
     ev = dict(f["eval"]); fu = dict(f["fund"]); fu.setdefault("max_days", MAX_DAYS_FUND)
-    kw = dict(N=N, S_ticks=S * 4, T_ticks=T * 4, c1=C1,
+    kw = dict(N=N, S_ticks=S * 4, T_ticks=T * 4, c1=C1 if c1 is None else c1,
               p_win=acierto_sin_ventaja(T, S) if p_win is None else p_win,
               exceso_pt=MEDIA_EXCESO[S],
               npaths=npaths, p_abierta=p_abierta, m2m_muestra=muestra)
