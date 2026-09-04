@@ -1,0 +1,64 @@
+========================================================================================================
+CONTROL - la formula nueva tiene que reproducir lo ya medido sobre ES
+========================================================================================================
+   (1) drawdown / valor del punto de ES completo = $2,000 / $50 = 40 puntos   OK
+   (2) cierre a cierre      5.55%  esperado 5.55%   OK
+   (2) adversa largo        8.38%  esperado 8.38%   OK
+   (2) adversa corto        5.03%  esperado 5.03%   OK
+   CONTROL PASADO
+
+========================================================================================================
+CENSO - holgura y esfuerzo por instrumento micro
+drawdown $2,000 | objetivo $3,000 | UN contrato micro | diarios 2016-01-01 a 2019-12-31
+TODA la tabla: permiso de Tradeify NO VERIFICADO (specs si, del exchange)
+========================================================================================================
+   instrumento                  $/pt   adv pt   adv $   fav $   HOLGURA  ESFUERZO     vs ES
+   E-Micro Gold                10.00     2.80   28.00   28.00      71.4     107.1   holgura
+   Micro E-Mini Dow Jones       0.50    77.00   38.50   47.75      51.9      62.8   holgura
+   Micro E-Mini Russell 2000    5.00     8.10   40.50   45.50      49.4      65.9   holgura
+   Micro E-Mini S&P 500         5.00     8.75   43.75   51.25      45.7      58.5          
+   Micro E-Mini Nasdaq-100      2.00    28.38   56.75   67.00      35.2      44.8  esfuerzo
+   Micro Crude Oil            100.00     0.59   59.00   62.00      33.9      48.4  esfuerzo
+
+   HOLGURA = cuantos movimientos adversos tipicos entran en el drawdown.
+   ESFUERZO = cuantos movimientos favorables tipicos hacen falta para el objetivo.
+   'DOMINA' = mejor que ES en LAS DOS razones.
+
+========================================================================================================
+POR QUE NINGUNO DOMINA - las dos razones no son independientes
+========================================================================================================
+   holgura = 2000/adv$ y esfuerzo = 3000/fav$: LAS DOS son 1/(tamano del
+   movimiento). Un instrumento que se mueve menos en dolares compra holgura y
+   paga esfuerzo en la misma proporcion. Lo unico que puede romper el empate es
+   la ASIMETRIA entre excursion favorable y adversa, y casi no varia:
+
+   instrumento                 adv/fav   holgura/esfuerzo    vs ES
+   Micro E-Mini Dow Jones        0.806              0.827    1.06x
+   Micro E-Mini Nasdaq-100       0.847              0.787    1.01x
+   Micro E-Mini S&P 500          0.854              0.781    1.00x
+   Micro E-Mini Russell 2000     0.890              0.749    0.96x
+   Micro Crude Oil               0.952              0.701    0.90x
+   E-Micro Gold                  1.000              0.667    0.85x
+
+   Rango de holgura/esfuerzo en los seis: 0.667 a 0.827. El mejor es 1.24x el peor,
+   y solo 1.06x el de ES. No hay un instrumento
+   estructuralmente distinto: hay seis versiones del mismo problema a distinta escala.
+
+========================================================================================================
+LO QUE FALTA - candidatos sin dato. No se estiman.
+========================================================================================================
+   A. Micro que la firma lista, con especificacion oficial leida, SIN precio en el repo:
+      SIL  E-Micro Silver         $      5.00/pt   falta: diario de SI (plata COMEX)
+           de donde saldria: Databento GLBX/COMEX o el mismo proveedor diario que el resto
+      M6A  E-Micro AUD/USD        $ 10,000.00/pt   falta: diario de 6A
+           de donde saldria: Databento GLBX o proveedor de FX futures
+      M6E  E-Micro EUR/USD        $ 12,500.00/pt   falta: diario de 6E
+           de donde saldria: Databento GLBX o proveedor de FX futures
+
+   B. Candidato con precio en el repo pero SIN especificacion oficial leida:
+      MBT  Micro Bitcoin          BTC_F_daily.csv (hay precio)
+           falta: especificacion oficial del contrato micro; no figura en la pestana leida
+
+   C. Falta para TODA la tabla: la lista de instrumentos que Tradeify permite y su
+      limite por contrato. Saldria de la pagina oficial de Tradeify o de su help
+      center, igual que se leyeron las comisiones. Hoy NO VERIFICADO.
