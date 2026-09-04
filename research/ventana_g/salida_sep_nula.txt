@@ -1,0 +1,30 @@
+====================================================================================================
+DESVIO DE LA NULA PARA LA SEPARACION LARGO/CORTO, POR HORIZONTE
+NO GASTA CARTUCHO. K = 261.
+====================================================================================================
+
+   Nula IID (remuestreo de barras reales, media cero), 20 series de 1,357,785 barras,
+   30,000 rutas por lado. Sin drift por construccion: la separacion verdadera es CERO.
+
+====================================================================================================
+HORIZONTE 1 SESION
+====================================================================================================
+       bracket  nula media  nula desvio   binomial  subestima  sep REAL  en desvios               lectura
+      5pt:10pt      -0.780        1.051      0.385       2.7x     +3.70        +4.3          se distingue
+     10pt:10pt      -0.511        1.769      0.409       4.3x     +5.20        +3.2          se distingue
+     20pt:10pt      -0.341        1.889      0.397       4.8x     +2.60        +1.6  NO se distingue de 0
+      5pt:20pt      -0.550        1.050      0.328       3.2x     +1.20        +1.7  NO se distingue de 0
+     10pt:20pt      -0.341        1.889      0.397       4.8x     +2.60        +1.6  NO se distingue de 0
+
+====================================================================================================
+HORIZONTE 5 SESIONES
+====================================================================================================
+       bracket  nula media  nula desvio   binomial  subestima  sep REAL  en desvios               lectura
+      5pt:10pt      -0.757        1.262      0.386       3.3x         -           -                     -
+     10pt:10pt      -0.448        1.926      0.408       4.7x         -           -                     -
+     20pt:10pt      -0.453        2.051      0.386       5.3x         -           -                     -
+      5pt:20pt      -0.548        1.276      0.331       3.9x         -           -                     -
+     10pt:20pt      -0.453        2.051      0.386       5.3x         -           -                     -
+
+   CONTROL (el desvio de 10pt:10pt no puede ser cero): PASADO
+   Desvio del desvio con K=20: 16.2%

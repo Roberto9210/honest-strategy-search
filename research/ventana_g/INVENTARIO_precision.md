@@ -106,3 +106,97 @@ control. Tres categorías.
 dieciséis no medían lo que yo decía que medían. Los nueve válidos incluyen cuatro que efectivamente
 fallaron, y cada falla encontró un error real — que es la única evidencia de que la categoría
 «válido» está bien asignada.
+
+---
+
+# E — LA CORRECCIÓN DEL 5×, APLICADA (2026-09-04)
+
+**Marca, no corrige.** Mi idea (c3) del reporte anterior —«toda barra de error de esta ventana que
+involucre una diferencia largo/corto está ~5× chica, no sólo las que revisé»— ahora está **medida**,
+en `sep_nula.py`, con 20 series independientes por horizonte.
+
+## La regla, con número
+
+No es un 5× parejo. Depende del bracket y del horizonte, y **crece con los dos**, porque los dos
+alargan el tiempo de resolución y por lo tanto el pisado entre rutas.
+
+| desvío de la nula para la **separación largo/corto** | binomial | real | subestima |
+|---|---|---|---|
+| 5pt:10pt, 1 sesión | 0,385 | 1,051 | 2,7× |
+| 5pt:20pt, 1 sesión | 0,328 | 1,050 | 3,2× |
+| 10pt:10pt, 1 sesión | 0,409 | 1,769 | 4,3× |
+| 20pt:10pt, 1 sesión | 0,397 | 1,889 | 4,8× |
+| 20pt:10pt, 5 sesiones | 0,386 | 2,051 | **5,3×** |
+
+**A quién se le aplica y a quién no.** El binomial falla cuando las rutas se pisan **y** el
+estadístico no se beneficia de la cancelación del *pooling*:
+
+- ***pooled*** de rutas que se pisan → **×1,2 a ×1,4**. Poco.
+- **diferencia largo/corto** de rutas que se pisan, una sola serie → **×2,7 a ×5,3**. Mucho.
+- **diseños con observaciones que NO se pisan** —una por noche, una por sesión, una por día— **el 5×
+  NO se aplica**. Eso deja afuera, y por lo tanto **intactos**: la compuerta nocturna (una
+  observación por noche), el censo de instrumentos (una por día) y las medias de exceso de
+  deslizamiento (una por sesión). Lo digo explícito porque aplicar el 5× ahí sería exagerar el error
+  y borrar cosas que sí están.
+
+## Qué cambia de estado
+
+| afirmación | valor | ¿se distingue de cero con el error bueno? | ¿cambia de estado? |
+|---|---|---|---|
+| separación 5pt:10pt, 1 sesión | +3,70 | **+4,3 desvíos** — sí | no |
+| separación 10pt:10pt, 1 sesión | +5,20 | **+3,2 desvíos** — sí, apenas | **sí: pasa de «clavado» a «apenas»** |
+| separación 20pt:10pt, 1 sesión | +2,60 | +1,6 desvíos — **no** | **SÍ: pasa a indistinguible de cero** |
+| separación 10pt:20pt, 1 sesión | +2,60 | +1,6 desvíos — **no** | **SÍ: pasa a indistinguible de cero** |
+| separación 5pt:20pt, 1 sesión | +1,20 | +1,7 desvíos — **no** | **SÍ: pasa a indistinguible de cero** |
+| separación 10pt:10pt, 5 sesiones (`+5,67`) | +5,67 | +2,9 desvíos — al borde | ya marcado en B3 |
+| factor de des-drift | 0,425 | ±0,16 desde la separación de 10:10 | ya marcado en B4 |
+| control ancho 23pt: 54,6% / 45,4% (sep 9,2) | +9,2 | **no medido**: su nula pide un bracket de 23pt y no se corrió. Por la tendencia (más ancho → más desvío) su desvío es ≥ 2,05, o sea ≤ 4,5 desvíos | **sí: se publicó SIN ninguna barra de error** |
+
+**Tres de las cinco separaciones por bracket que publiqué en `salida_linea_base.txt` no se distinguen
+de cero.** No es que estén mal medidas: es que nunca tuvieron una barra de error al lado, y con la
+buena no alcanzan.
+
+## Una identidad más, que hay que anotar
+
+`20pt:10pt` y `10pt:20pt` dan **exactamente la misma separación** (+2,60) y **exactamente el mismo
+desvío nulo** (1,889). No es coincidencia, es la identidad de construcción otra vez:
+
+Por la identidad, `sesgo_largo(T:S) = −sesgo_corto(S:T)` y `sesgo_corto(T:S) = −sesgo_largo(S:T)`.
+Restando, `sep(T:S) = sep(S:T)` **exacto**. Los reporté como dos brackets; **son un número solo**. Es
+la tercera vez en esta ventana que la misma identidad convierte dos mediciones en una.
+
+## Y un hallazgo lateral que no buscaba
+
+**La media de la nula de la separación NO es cero: va de −0,34 a −0,78.** En series construidas sin
+drift, con las marginales exactas de la barra de ES, el lado corto sale sistemáticamente medio punto
+mejor que el largo. Eso no puede ser drift —lo saqué por construcción— así que es **asimetría de la
+forma de la barra**: las mechas de ES no son simétricas y el bracket lo nota. Consecuencia práctica:
+**parte de la separación real es forma de barra, no dirección**, y por eso todas las cifras de la
+tabla de arriba se comparan contra la media de la nula y no contra cero.
+
+---
+
+# F — CORRECCIÓN DE ESTE MISMO DOCUMENTO (2026-09-04, más tarde)
+
+Este inventario se escribió unas horas antes que el bootstrap por bloques apareado. **Dos de sus
+entradas quedaron obsoletas por esa medición y no se borran: se marcan acá.**
+
+| entrada | qué decía | qué corresponde hoy |
+|---|---|---|
+| **B2** | «residuo −1,32 y +0,98 contra la nula: la corrección los agranda» | los números son correctos **contra la nula IID**, que no estaba apareada en la tasa de sin-resolver. Contra la nula **apareada** el residuo queda en **−1,9 y +1,4 desvíos**, y **a una sesión desaparece del todo** (+0,1 y +0,4). **El residuo no está establecido.** |
+| **B6** | «"el modelo de barreras sin drift NO describe este mercado" se mantiene y se refuerza» | **QUEDA SIN SOSTÉN.** Una serie **sin drift** con la estructura serial de ES —bloques de 4 sesiones— produce residuos del mismo signo y del mismo tamaño. Lo que el modelo no captura no es el drift: es la **estructura serial**, y con ella adentro el modelo describe lo que se observa. |
+| **«Por qué hace falta», punto 1** | «`S/(S+T)` está corrido sobre ES real … no es el replicador: es el mercado» | la primera mitad se mantiene: `S/(S+T)` **sí** está corrido y no hay que usarlo como línea de base. La segunda mitad hay que precisarla: el corrimiento es **censura más estructura serial**, las dos cosas reproducibles en una serie sin ventaja. **No es una propiedad explotable del mercado.** |
+
+**Lo que NO cambia de todo lo de arriba:** los grupos A y C quedan igual, y la razón es la misma por
+la que se escribieron — el problema con `S/(S+T)` como ancla **es el mismo o peor**, porque ahora
+sabemos que el corrimiento correcto es de **+4,5 puntos** en 5pt:20pt a una sesión, casi todo censura.
+La sección D (auditoría de controles) tampoco se toca, y se le suma una entrada:
+
+| control nuevo | categoría | por qué |
+|---|---|---|
+| «bloques sobre datos barajados reproducen la nula IID», fila 10pt:10pt | **VACÍO, y peor: rompe al revés** | su nula tiene varianza ~0 por la identidad de construcción, así que cualquier diferencia de 0,004 puntos da 4,4 desvíos y el control «falla» siempre. Un control cuya nula no tiene varianza no se puede juzgar con un cociente z |
+
+Esa última fila es la lección nueva de hoy: **hasta acá venía marcando controles que no podían
+fallar; este es uno que no podía pasar.** Las dos fallas son la misma — un control sin varianza en su
+nula no mide nada — y las dos se detectan con la misma pregunta: *¿qué resultado distinto de éste era
+posible?*
