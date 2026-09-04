@@ -2,6 +2,10 @@
 Fecha de lectura de todo lo de abajo: 2026-09-03. Solo dominios oficiales de cada firma.
 Lo que no aparece aca es NO SE DETERMINA.
 
+DEUDA DECLARADA (2026-09-04): la COMISION por operacion nunca se leyo de una fuente oficial, ni de
+una firma ni de un broker. Los $2,50 por micro que usa toda la VENTANA G son HIPOTESIS heredada de
+aritmetica.py; solo la mitad de deslizamiento (1 tick) tiene respaldo medido.
+
 ## APEX TRADER FUNDING  (apextraderfunding.com)
 Productos NUEVOS (posteriores al 2026-03-01). Los "legacy" son otro producto y no se miden aca.
 

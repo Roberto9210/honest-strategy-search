@@ -24,6 +24,9 @@ TRADES_PER_DAY = 5
 # Comision ida y vuelta ~ $1,25 + deslizamiento de 1 tick $1,25  ->  c1 = $2,50 por micro.
 # Amplitud de la operacion: stop/objetivo de 10 puntos -> b1 = 10 * $5 = $50 por micro.
 # ---------------------------------------------------------------------------
+# DEUDA DECLARADA: la comision NUNCA se leyo de una fuente oficial -de ninguna firma ni de
+# ningun broker-. Los $2,50 son HIPOTESIS, no dato; solo la mitad de deslizamiento (1 tick)
+# tiene respaldo medido (terreno_stop_resultado.md seccion 4, mediana del exceso = 0,25pt).
 C1_POR_MICRO = 2.50
 B1_POR_MICRO = 50.0
 
