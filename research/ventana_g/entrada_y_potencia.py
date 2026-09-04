@@ -89,15 +89,29 @@ def n_necesario(p0, p1, alfa=0.05, potencia=0.80):
     return (num / (p1 - p0)) ** 2
 
 
-def n_exacto(p0, p1, alfa=0.05, potencia=0.80, tope=200_000):
-    """Binomial exacta: menor n cuyo test de una cola alcanza la potencia pedida."""
-    n = 100
-    while n < tope:
-        k = stats.binom.ppf(1 - alfa, n, p0)          # valor critico
-        if stats.binom.sf(k, n, p1) >= potencia:      # P(rechazar | p1)
-            return int(n)
-        n = int(n * 1.05) + 1
-    return None
+def n_exacto(p0, p1, alfa=0.05, potencia=0.80, tope=60_000):
+    """Binomial exacta: menor n a partir del cual la potencia se SOSTIENE por encima del
+    objetivo para todo n mayor. Es el ULTIMO CRUCE, no el primero.
+
+    CORREGIDO 2026-09-04, y hubo que corregirlo dos veces:
+      (1) La version original avanzaba en pasos geometricos (n = n*1.05 + 1) y devolvia un
+          n cuantizado HACIA ARRIBA hasta un 5%. Dos brackets distintos podian caer en el
+          mismo escalon, que es exactamente lo que paso con 5pt:20pt y 10pt:20pt, los dos
+          publicados con 6.988.
+      (2) El primer arreglo uso busqueda binaria, pero la potencia binomial exacta NO es
+          monotona en n -oscila porque el valor critico salta de a enteros- y la binaria
+          caia adentro de un rizo, devolviendo a veces un n MAYOR que el original.
+    La definicion de ultimo cruce no supone monotonia y es la conservadora: por debajo de
+    ese n la potencia vuelve a caer bajo el objetivo en algun punto."""
+    n = np.arange(10, tope + 1)
+    k = stats.binom.ppf(1 - alfa, n, p0)
+    pot = stats.binom.sf(k, n, p1)
+    debajo = np.flatnonzero(pot < potencia)
+    if len(debajo) == 0:
+        return int(n[0])
+    if debajo[-1] == len(n) - 1:
+        return None                                   # no alcanza dentro del tope
+    return int(n[debajo[-1] + 1])
 
 
 def seccion2():

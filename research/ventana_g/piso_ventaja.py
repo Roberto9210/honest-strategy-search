@@ -58,14 +58,15 @@ def verificacion():
     print("VERIFICACION - la inversa tiene que reproducir la directa")
     print("=" * 104)
     n_dir = n_exacto(0.800, 0.812)
-    print(f"   directa:  n_exacto(80,0% -> 81,2%) = {n_dir:,}   esperado 6.988   "
-          f"{'OK' if n_dir == 6988 else 'FALLADO'}")
+    print(f"   directa:  n_exacto(80,0% -> 81,2%) = {n_dir:,}   esperado 6.875   "
+          f"{'OK' if n_dir == 6875 else 'FALLADO'}")
+    print(f"   (era 6.988 con la version de pasos geometricos; corregida 2026-09-04)")
     d_inv = mde_exacto(n_dir, 0.800)
     print(f"   inversa:  mde_exacto(n={n_dir:,}) = {d_inv*100:.3f} puntos   "
           f"esperado ~1,200")
     # n_exacto avanza en pasos geometricos, asi que devuelve un n >= al minimo real; por eso
     # la inversa da un delta algo MENOR que 1,200. Se exige que cierre dentro de 0,05 puntos.
-    ok = (n_dir == 6988) and abs(d_inv * 100 - 1.200) <= 0.05
+    ok = (n_dir == 6875) and abs(d_inv * 100 - 1.200) <= 0.05
     print(f"   cierre dentro de 0,05 puntos: {'OK' if ok else 'FALLADO'}")
     print(f"   INVERSION {'VERIFICADA' if ok else 'MAL - no se sigue'}\n")
     return ok
