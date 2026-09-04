@@ -150,3 +150,93 @@ resolverla: no hay costo alcanzable, ni siquiera imposible, que baje la vara de 
 - El terreno es ES 2016-2019, la mitad de violento que el período completo.
 - **Ninguna celda de la tabla es factible.** Los números son la vara que habría que saltar en un
   terreno que ya se midió que no está.
+
+---
+
+# RECONCILIACIÓN (2026-09-04) — no hay criterio publicable todavía
+
+**No gasta cartucho. K = 261.**
+
+Cerré el informe anterior con dos frases mías que no se sostienen juntas: «34,1% es el número contra
+el que se mide todo candidato» y «ninguna celda es factible, incluida esa». **Me quedo con (b): no
+existe todavía un criterio publicable.** El 34,1% queda retirado. Abajo, el porqué, que resultó más
+fuerte que «los cortes están al borde».
+
+## Los dos filtros no son la misma clase de cosa
+
+Tu hipótesis se sostiene, y la confirmo separada en `factibilidad.py`:
+
+- **Deslizamiento — propiedad del mercado, NO NEGOCIABLE.** Está medido *condicionado a que el stop
+  ya fue tocado*: describe cuánto se pasa el mercado una vez que atraviesa ese nivel. Una ventaja
+  cambia cuántas veces te tocan, no cuánto se pasa cuando te toca. Vale igual con ventaja o sin ella.
+  *Salvedad*: no es invariante a la elección de **hora** — el propio terreno (§3) muestra que a D=8
+  las 23:00 CT tocan 1,2% contra 24,0% de la apertura, y el p95 que uso es de la población mezclada.
+- **Tenencia — comportamiento del azar, CONDICIONADO al candidato.** Medido sobre entradas pasivas
+  sin ventaja. Frente a un candidato con ventaja **no rechaza: queda indeterminado.** El terreno no
+  puede decir hacia dónde se mueve, porque nunca se midió sobre entradas con ventaja.
+
+**Donde tu lectura no llega:** de ahí no se sigue que las celdas se reabran a favor. Pasan de
+«rechazadas» a «sin decidir», que no es lo mismo. Y para el bracket que daba el mejor número
+(20pt:10pt) la ventaja empuja la resolución hacia la barrera *lejana* — el objetivo a 20pt — así que
+podría empeorar la tenencia, no mejorarla. La dirección no es deducible del dato que tengo.
+
+## Un error mío, independiente de la ventaja
+
+El filtro de tenencia usó **una sola barrera**: qué tan seguido te tocan el stop, como si eso fuera
+la probabilidad de que la operación se resuelva. Una operación también se resuelve tocando el
+objetivo. El terreno tiene los dos lados y usé uno:
+
+    terreno_tenencia_resultado.md — lado largo = open − min(low)   → ADVERSA de un largo
+                                    lado corto = max(high) − open  → FAVORABLE de un largo
+
+Corregido a dos barreras (`P(resolver) = P(A ∪ B) ≥ máx(P(A), P(B))`, cota rigurosa), los veredictos
+cambian: 10pt:10pt pasa de 46,2% (rechazo) a cota inferior 51,8% en T23. La reapertura estaba
+justificada — pero por mi error, no por el argumento de la ventaja.
+
+| bracket | mercado | azar T23 | azar RTH | veredicto |
+|---|---|---|---|---|
+| 5pt:10pt | pasa (25,0%, al borde) | pasa 70,5% | pasa 60,0% | pasa ambos, al borde |
+| 10pt:10pt | pasa (25,0%, al borde) | pasa 51,8% | indeterminado | sin decidir |
+| 20pt:10pt | pasa (25,0%, al borde) | indeterminado | indeterminado | sin decidir |
+| 5pt:20pt | pasa (19,1%, con margen) | pasa 70,5% | pasa 60,0% | pasa ambos |
+| 10pt:20pt | pasa (19,1%, con margen) | pasa 51,8% | indeterminado | sin decidir |
+| 20pt:20pt | pasa (19,1%) | rechaza al azar | rechaza al azar | sin decidir |
+| 8pt:4pt | **RECHAZA (52,5%)** | pasa | pasa | **INFACTIBLE (mercado)** |
+
+## Por qué igual es (b): el deslizamiento es más grande que la ventaja que pido
+
+El filtro normalizaba el exceso contra el **stop**, pero lo que paga es el **objetivo**. En la unidad
+del criterio — puntos de tasa de acierto que el deslizamiento agrega al equilibrio,
+`p = (S+e)/(S+e+T)` — y descontando la mediana de 1 tick que el costo del modelo **ya** cuenta:
+
+| bracket | moneda | requerido | ventaja pedida | p95 no modelado | veces |
+|---|---|---|---|---|---|
+| 20pt:10pt | 33,3% | 34,1% | **+0,8** | **+4,6** | 6,0× |
+| 10pt:10pt | 50,0% | 51,6% | +1,6 | +4,9 | 3,1× |
+| 10pt:20pt | 66,7% | 67,1% | +0,4 | +3,5 | 8,1× |
+| 5pt:10pt | 66,7% | 69,3% | +2,6 | +4,2 | 1,6× |
+| 5pt:20pt | 80,0% | 80,9% | +0,9 | +2,5 | 2,7× |
+
+**En las cinco celdas, el tramo de deslizamiento que el modelo no captura es de 1,6 a 8,1 veces más
+grande que la ventaja entera que el criterio le pide al candidato.** Esto no depende de ningún corte
+escrito a mano: son dos cantidades calculadas comparadas entre sí. Un criterio que pide +0,8 puntos
+sobre la moneda, apoyado en un modelo cuyo error de deslizamiento conocido es de +4,6 puntos, no es
+un criterio: es ruido con dos decimales.
+
+Lo que decidiría el punto es **la media del exceso**, y **no está medida**: el terreno publicó
+mediana, p95, p99 y máximo. Esa es la medición que falta para convertir (b) en (a).
+
+## Qué falta, concretamente, para que haya criterio
+
+1. La **media** del exceso sobre el stop por distancia (el terreno tiene los datos crudos; publicó
+   percentiles, no la media).
+2. La **comisión real** leída de una fuente oficial — hoy es hipótesis (ver deuda declarada).
+3. La distribución de **tenencia del candidato**, que reemplaza al filtro de azar: ese filtro no se
+   le puede aplicar a una estrategia con ventaja, tiene que traer la suya.
+4. Cortes **derivados** para deslizamiento y resolución, no los 25% y 50% escritos a mano.
+
+## Verificación
+
+Tras reconectar los filtros corregidos, la aritmética no se movió: Tradeify 20pt:10pt sigue en
+**34,1%**, y la celda publicada en `BRACKET_RESULTADO.md` reproduce (P(eval) 0,232 vs 0,231;
+vara 1,173 vs 1,181). Solo cambió el veredicto de factibilidad, que es lo que debía cambiar.
