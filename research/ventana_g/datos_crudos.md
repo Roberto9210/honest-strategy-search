@@ -262,3 +262,33 @@ AUTOMATIZACION — cita VERBATIM completa, https://help.tradeify.co/en/articles/
   quien ejecuta la operacion).
   MISMO BOT EN OTRA FIRMA: NO, EXPLICITO. "using it across multiple firms is against Tradeify's policy.
   The bot should be solely for your own use within Tradeify."
+
+
+## LO QUE (B) TAMBIEN CUESTA — capital propio, 1 micro. Leido 2026-09-04. Solo paginas oficiales.
+Para la comparacion de vehiculo (vehiculo.py). Lo que no se pudo leer es NO MEDIDO y NO se estimo.
+
+COMISION MINORISTA POR MICRO (MES), POR LADO — https://ninjatrader.com/pricing/
+  Free: $0,39 | Monthly: $0,29 (plan de $99/mes) | Lifetime: $0,09 (pago unico de $1.499)
+  Ida y vuelta: $0,78 | $0,58 | $0,18
+  Cita textual: "Exchange, clearing, and NFA fees apply on top of these commissions, as they do at
+  every regulated U.S. futures broker." La pagina NO da el monto de esas tarifas.
+  https://www.tradovate.com/pricing/ (mismo grupo): mismas tres comisiones, misma frase.
+TARIFA DE EXCHANGE + CLEARING + NFA POR MICRO: NO MEDIDO.
+  cmegroup.com/company/clearing-fees.html: la pagina remite a PDFs de "Fee Schedule effective
+  14 September 2026" y a un "Non-Member Fee Finder" que exige registrarse con nombre, correo y
+  empresa (no se completo). nfa.futures.org: 403 en dos rutas. Se deja la fila incompleta: el
+  costo real de B por micro ida y vuelta esta ENTRE $0,78 (solo comision Free) y algo mas. Como
+  referencia superior se usa $1,82, la tarifa de micro "todo incluido" de Tradeify (ya en este
+  archivo), que es de la plataforma de una firma y no de un broker minorista.
+MARGEN INTRADIA MES — https://ninjatrader.com/pricing/ : "$50 Margins" para Micro E-mini S&P 500.
+  Horario en que rige el margen intradia (si cubre la noche de Globex o no): NO MEDIDO
+  (ninjatrader.com/futures/margins y support.ninjatrader.com dieron 404).
+  tradovate.com/pricing: "$25" de day-trading margin para micros estandar; MES no listado ahi.
+MARGEN DE MANTENIMIENTO DE EXCHANGE, MES — https://www.cmegroup.com/markets/equities/sp/micro-e-mini-sandp-500.margins.html
+  (cargada en el navegador; WebFetch dio ECONNRESET/timeout en tres intentos)
+  Leido 2026-09-04 04:52 PM CT. Tabla OUTRIGHTS: MES 09/2026 MAINTENANCE LONG 2,608 USD |
+  MAINTENANCE SHORT 2,340 USD. (12/2026: 2,625 / 2,354.) Se usa el mayor: $2.608.
+COSTO DE OPORTUNIDAD DEL CAPITAL PROPIO: NO MEDIDO (no se leyo ninguna tasa oficial).
+DESLIZAMIENTO: el del stop esta MEDIDO en media_exceso.py y es el mismo para A y B (es del
+  mercado, no del producto). El de entrada se trata como cero en los dos caminos, igual que en
+  toda la ventana.

@@ -1,0 +1,295 @@
+====================================================================================================
+ES LA EVALUACION EL VEHICULO CORRECTO? (A) evaluaciones contra (B) capital propio, 1 micro
+NO GASTA CARTUCHO. K = 261. Participante SIN ventaja. La caja sellada no se toca.
+====================================================================================================
+
+   ES 1-min 2016-2019, 1,357,785 barras, 1,006 sesiones reales, 4 anios calendario (= observaciones independientes de regimen).
+   Horizonte de comparacion: 250 sesiones (un anio). Replicas de lado al azar: 4.
+
+   (A) Tradeify Growth (50K): cuota $83.00 (cupon; lista $165.00), objetivo $3,000, DD $2,000 trailing EOD con piso en el saldo inicial,
+       fondeada: objetivo $3,000, 5 dias de >= $150, primer pago $1,500 al 90% = $1,350. Solo el PRIMER pago (cota inferior de A).
+       objetivo confirmado al cierre de sesion; drawdown roto en tiempo real (la combinacion realista, Apex lo dice explicito).
+       ESTRUCTURA DEL PRODUCTO, no medicion. Consistencia 35% al pago: NO modelada (solo puede bajar A).
+   (B) 1 micro, comision minorista por ida y vuelta y margen como piso: ver bloque 4.
+
+####################################################################################################
+CELDA 5pt:20pt   (exceso medio en el stop 0.982 pt, MEDIDO; sesgo del marco -0.0385 pt/op restado)
+####################################################################################################
+
+1) (B) 1 MICRO, DOLARES POR SESION. MEDIDO sobre el flujo. Error = entre sesiones.
+                                 costo ida y vuelta      lado  $/sesion   desvio   error  en err  op/ses  abiertas
+                               costo CERO (control)     largo     +5.25   107.29    3.38    +1.6    5.49     18.1%
+                               costo CERO (control)     corto     -7.63   104.27    3.29    -2.3    5.29     18.8%
+                               costo CERO (control)      azar     -1.30   103.36    3.26    -0.4    5.39     18.5%
+
+                                   NinjaTrader Free     largo     +0.97   107.72    3.40    +0.3    5.49     18.1%
+                                   NinjaTrader Free     corto    -11.75   103.07    3.25    -3.6    5.29     18.8%
+                                   NinjaTrader Free      azar     -5.51   102.96    3.25    -1.7    5.39     18.5%
+
+                     NinjaTrader Monthly (+$99/mes)     largo     +2.06   107.59    3.39    +0.6    5.49     18.1%
+                     NinjaTrader Monthly (+$99/mes)     corto    -10.69   103.35    3.26    -3.3    5.29     18.8%
+                     NinjaTrader Monthly (+$99/mes)      azar     -4.43   103.03    3.25    -1.4    5.39     18.5%
+
+                     NinjaTrader Lifetime (+$1.499)     largo     +4.26   107.37    3.39    +1.3    5.49     18.1%
+                     NinjaTrader Lifetime (+$1.499)     corto     -8.58   103.97    3.28    -2.6    5.29     18.8%
+                     NinjaTrader Lifetime (+$1.499)      azar     -2.27   103.24    3.26    -0.7    5.39     18.5%
+
+          referencia todo incluido (Tradeify micro)     largo     -4.74   108.70    3.43    -1.4    5.49     18.1%
+          referencia todo incluido (Tradeify micro)     corto    -17.25   101.92    3.21    -5.4    5.29     18.8%
+          referencia todo incluido (Tradeify micro)      azar    -11.12   102.86    3.24    -3.4    5.39     18.5%
+
+2) (A) UN INTENTO, por tamano N (micros). Arranque en CADA sesion x 4 replicas = 4,024 intentos.
+   $/sesion = E[$ intento] / E[sesiones intento] (tasa de renovacion: lo que cuesta por sesion repitiendo).
+      N  comision  P(pasa ev)  P(pago|f)  P(pago)   E ses  med ses   E $/int  $/sesion  indep.  P(tiempo)
+      1      1.82       0.000        nan   0.0000   147.2      138    -83.00    -0.564       7      0.230
+      2      3.64       0.000        nan   0.0000    62.5       49    -83.00    -1.328      16      0.022
+      3      5.46       0.000      0.000   0.0000    31.0       25    -83.00    -2.677      32      0.000
+      4      7.28       0.000      0.000   0.0000    18.6       16    -83.00    -4.468      54      0.000
+      5      9.10       0.000      0.000   0.0000    13.0       11    -83.00    -6.377      77      0.000
+     10      5.76       0.049      0.020   0.0010     8.7        6    -81.66    -9.392     116      0.000
+
+   'indep.' = sesiones / E[sesiones]: cuantos intentos NO solapados caben en la muestra por replica.
+   'P(tiempo)' = intentos que se acaban por tope de dias (250 eval / 500 fondeada): cuentan como -cuota.
+   N mas favorable para A en $/sesion: N = 1. Se usa ese para la curva (A en su mejor version).
+
+   Por anio de arranque (N=1):   [4 observaciones de regimen]
+       anio  intentos  P(pago)   E ses   E $/int  $/sesion
+       2016     1,016   0.0000   230.7    -83.00    -0.360
+       2017     1,004   0.0000   150.4    -83.00    -0.552
+       2018     1,012   0.0000    82.5    -83.00    -1.007
+       2019       992   0.0000   124.7    -83.00    -0.666
+
+3) CONTROL: costo cero y sin reglas -> A y B tienen que dar la misma esperanza por micro y sesion.
+   LO HARIA FALLAR: diferencia > 3 errores. Y el defecto viejo (A sin abiertas) TIENE que fallar.
+   A con marca a mercado (debe PASAR)       A -1.3022  B -1.3022  dif +0.0000  error 0.0852  +0.0 err  -> IGUALES
+   A descartando abiertas (debe FALLAR)     A +22.0705  B -1.3022  dif +23.3727  error 0.0865  +270.1 err  -> DIFIEREN
+   CONTROL PASADO: discrimina
+
+4) LO QUE (B) TAMBIEN CUESTA. Fuente oficial o NO MEDIDO. Nada se estima.
+   comision broker, micro, ida y vuelta: Free $0,78 | Monthly $0,58 (+$99/mes) | Lifetime $0,18 (+$1.499)
+      fuente ninjatrader.com/pricing y tradovate.com/pricing, leidas 2026-09-04. MEDIDO.
+   exchange + clearing + NFA por micro: la pagina dice que aplican 'on top'. Monto: NO MEDIDO
+      (cmegroup.com sin respuesta x3, nfa.futures.org 403). La fila queda INCOMPLETA: el costo real
+      de B esta ENTRE $0,78 y algo mas; la referencia superior usada es $1,82 (micro de Tradeify, todo incluido).
+   margen intradia MES: $50 (ninjatrader.com/pricing). Horario en que aplica: NO MEDIDO.
+   margen de mantenimiento de exchange, MES 09/2026: $2.608 largo / $2.340 corto (cmegroup.com, 2026-09-04). MEDIDO.
+      La sesion replicada (17:00 -> 16:00 CT) incluye la noche: si el intradia del broker no rige de noche,
+      el piso de capital de B es el de exchange. Por eso la curva lleva LOS DOS pisos.
+   deslizamiento en el stop: MEDIDO (media_exceso.py), igual en A y B. Deslizamiento de entrada: cero en los dos (no medido).
+   costo de oportunidad del capital C: NO MEDIDO. Crece con C y solo puede empeorar B.
+   sin objetivo ni drawdown impuesto: ESTRUCTURA, no tiene precio; no obliga a operar ni a parar.
+
+5) EL TECHO DE PERDIDA. En A el peor caso por intento es -$83 por construccion.
+   En B no hay techo: se mide la cola del acumulado de B sobre el MISMO horizonte que dura un intento.
+   'valor del techo' = E[(perdida de B - cuota)+] = lo que costaria asegurar B a la altura de la cuota.
+   horizonte = E[sesiones por intento] = 147 sesiones; y tambien 250.
+    horizonte  tamano B   costo    media      p50        p5        p1      peor  P(perd>cuota)  valor techo
+          147   1 micro    0.78     -810     -733     -3505     -5210     -5676          0.703       923.80
+          147   1 micro    1.82    -1635    -1443     -4648     -6610     -7073          0.866      1616.40
+          147  1 micros    0.78     -810     -733     -3505     -5210     -5676          0.703       923.80
+          147  1 micros    1.82    -1635    -1443     -4648     -6610     -7073          0.866      1616.40
+          250   1 micro    0.78    -1378    -1221     -4910     -6968     -9037          0.773      1428.77
+          250   1 micro    1.82    -2780    -2630     -6807     -9044    -11364          0.923      2693.05
+          250  1 micros    0.78    -1378    -1221     -4910     -6968     -9037          0.773      1428.77
+          250  1 micros    1.82    -2780    -2630     -6807     -9044    -11364          0.923      2693.05
+   (en 250 sesiones la 'cuota' de referencia es la cuota por el numero medio de intentos que caben: $141)
+
+6) LA CURVA: capital propio C, horizonte 250 sesiones. A con N=1; B con 1 micro.
+   A: se juega mientras la caja alcance la cuota; los pagos reponen. B: ruina al caer al margen.
+   'ruina' en A = se quedo sin caja para la proxima cuota antes de que se acaben las sesiones.
+   Columnas de B: costo ida y vuelta @ piso de margen. E$ = resultado medio del anio, P(ruina).
+
+         C|   A: E$     p5   peor P(ruina) P(gana) intent pagos|       B 0.78@50  P(ru)|    B 0.78@2,608  P(ru)|       B 1.82@50  P(ru)|    B 1.82@2,608  P(ru)|  domina E
+        50|      +0     +0     +0    1.000   0.000    0.0  0.00|             -32  0.989|     no factible       |             -44  0.997|     no factible       |   A/A/A/A
+        83|     -83    -83    -83    0.768   0.000    1.0  0.00|             -48  0.981|     no factible       |             -65  0.993|     no factible       |   B/A/B/A
+       100|     -83    -83    -83    0.768   0.000    1.0  0.00|             -54  0.974|     no factible       |             -78  0.991|     no factible       |   B/A/B/A
+       250|    -180   -249   -249    0.114   0.000    2.2  0.00|            -173  0.949|     no factible       |            -214  0.978|     no factible       |   B/A/A/A
+       500|    -193   -332   -498    0.000   0.000    2.3  0.00|            -342  0.891|     no factible       |            -434  0.952|     no factible       |   A/A/A/A
+     1,000|    -193   -332   -498    0.000   0.000    2.3  0.00|            -647  0.764|     no factible       |            -853  0.869|     no factible       |   A/A/A/A
+     2,000|    -193   -332   -498    0.000   0.000    2.3  0.00|           -1038  0.458|     no factible       |           -1579  0.719|     no factible       |   A/A/A/A
+     3,000|    -193   -332   -498    0.000   0.000    2.3  0.00|           -1164  0.211|            -303  0.902|           -2106  0.507|            -382  0.958|   A/A/A/A
+     5,000|    -193   -332   -498    0.000   0.000    2.3  0.00|           -1312  0.065|           -1140  0.362|           -2558  0.167|           -1843  0.636|   A/A/A/A
+    10,000|    -193   -332   -498    0.000   0.000    2.3  0.00|           -1378  0.000|           -1369  0.009|           -2774  0.007|           -2723  0.041|   A/A/A/A
+    25,000|    -193   -332   -498    0.000   0.000    2.3  0.00|           -1378  0.000|           -1378  0.000|           -2780  0.000|           -2780  0.000|   A/A/A/A
+    50,000|    -193   -332   -498    0.000   0.000    2.3  0.00|           -1378  0.000|           -1378  0.000|           -2780  0.000|           -2780  0.000|   A/A/A/A
+   cruce en esperanza, B a $0.78 con piso $50: C >= $83
+   cruce en esperanza, B a $0.78 con piso $2,608: NO CRUZA en la grilla: A pierde menos a todo capital
+   cruce en esperanza, B a $1.82 con piso $50: C >= $83
+   cruce en esperanza, B a $1.82 con piso $2,608: NO CRUZA en la grilla: A pierde menos a todo capital
+   Detalle de B (p5, peor) por capital, costo $1,82, piso intradia:
+      C=     50: E -44  p50 -39  p5 -107  p1 -107  peor -107  P(ruina) 0.997
+      C=     83: E -65  p50 -64  p5 -111  p1 -132  peor -140  P(ruina) 0.993
+      C=    100: E -78  p50 -83  p5 -132  p1 -149  peor -156  P(ruina) 0.991
+      C=    250: E -214  p50 -227  p5 -286  p1 -302  peor -306  P(ruina) 0.978
+      C=    500: E -434  p50 -478  p5 -536  p1 -552  peor -556  P(ruina) 0.952
+      C=  1,000: E -853  p50 -974  p5 -1036  p1 -1051  peor -1056  P(ruina) 0.869
+      C=  2,000: E -1579  p50 -1966  p5 -2032  p1 -2052  peor -2056  P(ruina) 0.719
+      C=  3,000: E -2106  p50 -2951  p5 -3027  p1 -3050  peor -3056  P(ruina) 0.507
+      C=  5,000: E -2558  p50 -2630  p5 -5003  p1 -5038  peor -5056  P(ruina) 0.167
+      C= 10,000: E -2774  p50 -2630  p5 -6807  p1 -9044  peor -10055  P(ruina) 0.007
+      C= 25,000: E -2780  p50 -2630  p5 -6807  p1 -9044  peor -11364  P(ruina) 0.000
+      C= 50,000: E -2780  p50 -2630  p5 -6807  p1 -9044  peor -11364  P(ruina) 0.000
+
+7) LA APUESTA REPETIDA. n intentos de A, independientes (sorteo de intentos medidos), N=1.
+   La esperanza es lineal en n: el signo NO cambia nunca. Lo que cambia es P(terminar arriba).
+       n   E total    peor  P(arriba)  E sesiones  costo prestamo/ses
+       1       -83     -83      0.000         147                0.56
+       2      -166    -166      0.000         294                0.56
+       3      -249    -249      0.000         442                0.56
+       5      -415    -415      0.000         736                0.56
+       8      -664    -664      0.000        1178                0.56
+      10      -830    -830      0.000        1472                0.56
+      15     -1245   -1245      0.000        2209                0.56
+      20     -1660   -1660      0.000        2945                0.56
+      30     -2490   -2490      0.000        4417                0.56
+      50     -4150   -4150      0.000        7362                0.56
+     100     -8300   -8300      0.000       14724                0.56
+   P(arriba) maxima en n = 1 (0.000); baja de 10%: n = 2
+   El prestamo: $83 por intento compran $2,000 de drawdown a 1 micros durante 147.2 sesiones = $0.56/sesion = 4.2% por intento, 7% anualizado sobre los $2,000.
+
+8) (B') AUTOFINANCIAR LA MISMA EXPOSICION QUE A: 1 micros, capital $2,000 + margen, durante 147 sesiones (lo que dura un intento).
+   costo 0.78, piso intradia $50 (capital $2,050): E $-717  p5 $-2064  peor $-2105  P(ruina) 0.258   contra A: E $-83.00, peor -$83
+   costo 0.78, piso exchange $2.608 (capital $4,608): E $-717  p5 $-2064  peor $-2105  P(ruina) 0.258   contra A: E $-83.00, peor -$83
+   costo 1.82, piso intradia $50 (capital $2,050): E $-1259  p5 $-2075  peor $-2107  P(ruina) 0.455   contra A: E $-83.00, peor -$83
+   costo 1.82, piso exchange $2.608 (capital $4,608): E $-1259  p5 $-2075  peor $-2107  P(ruina) 0.455   contra A: E $-83.00, peor -$83
+
+####################################################################################################
+CELDA 20pt:10pt   (exceso medio en el stop 0.722 pt, MEDIDO; sesgo del marco +0.0214 pt/op restado)
+####################################################################################################
+
+1) (B) 1 MICRO, DOLARES POR SESION. MEDIDO sobre el flujo. Error = entre sesiones.
+                                 costo ida y vuelta      lado  $/sesion   desvio   error  en err  op/ses  abiertas
+                               costo CERO (control)     largo     +1.35   105.51    3.33    +0.4    3.00     33.3%
+                               costo CERO (control)     corto    -12.44   104.61    3.30    -3.8    3.08     32.5%
+                               costo CERO (control)      azar     -4.30   108.73    3.43    -1.3    3.05     32.7%
+
+                                   NinjaTrader Free     largo     -0.99   106.33    3.35    -0.3    3.00     33.3%
+                                   NinjaTrader Free     corto    -14.84   104.90    3.31    -4.5    3.08     32.5%
+                                   NinjaTrader Free      azar     -6.68   109.64    3.46    -1.9    3.05     32.7%
+
+                     NinjaTrader Monthly (+$99/mes)     largo     -0.39   106.11    3.35    -0.1    3.00     33.3%
+                     NinjaTrader Monthly (+$99/mes)     corto    -14.22   104.82    3.30    -4.3    3.08     32.5%
+                     NinjaTrader Monthly (+$99/mes)      azar     -6.07   109.40    3.45    -1.8    3.05     32.7%
+
+                     NinjaTrader Lifetime (+$1.499)     largo     +0.81   105.69    3.33    +0.2    3.00     33.3%
+                     NinjaTrader Lifetime (+$1.499)     corto    -12.99   104.67    3.30    -3.9    3.08     32.5%
+                     NinjaTrader Lifetime (+$1.499)      azar     -4.85   108.94    3.43    -1.4    3.05     32.7%
+
+          referencia todo incluido (Tradeify micro)     largo     -4.10   107.55    3.39    -1.2    3.00     33.3%
+          referencia todo incluido (Tradeify micro)     corto    -18.04   105.43    3.32    -5.4    3.08     32.5%
+          referencia todo incluido (Tradeify micro)      azar     -9.86   110.97    3.50    -2.8    3.05     32.7%
+
+2) (A) UN INTENTO, por tamano N (micros). Arranque en CADA sesion x 4 replicas = 4,024 intentos.
+   $/sesion = E[$ intento] / E[sesiones intento] (tasa de renovacion: lo que cuesta por sesion repitiendo).
+      N  comision  P(pasa ev)  P(pago|f)  P(pago)   E ses  med ses   E $/int  $/sesion  indep.  P(tiempo)
+      1      1.82       0.000        nan   0.0000   148.4      145    -83.00    -0.559       7      0.231
+      2      3.64       0.004      0.000   0.0000    66.2       49    -83.00    -1.253      15      0.005
+      3      5.46       0.014      0.000   0.0000    37.6       26    -83.00    -2.210      27      0.000
+      4      7.28       0.019      0.000   0.0000    25.0       17    -83.00    -3.322      40      0.000
+      5      9.10       0.018      0.000   0.0000    16.2       12    -83.00    -5.117      62      0.000
+     10      5.76       0.127      0.143   0.0181     9.6        6    -58.51    -6.087     105      0.000
+
+   'indep.' = sesiones / E[sesiones]: cuantos intentos NO solapados caben en la muestra por replica.
+   'P(tiempo)' = intentos que se acaban por tope de dias (250 eval / 500 fondeada): cuentan como -cuota.
+   N mas favorable para A en $/sesion: N = 1. Se usa ese para la curva (A en su mejor version).
+
+   Por anio de arranque (N=1):   [4 observaciones de regimen]
+       anio  intentos  P(pago)   E ses   E $/int  $/sesion
+       2016     1,016   0.0000   201.4    -83.00    -0.412
+       2017     1,004   0.0000   175.7    -83.00    -0.472
+       2018     1,012   0.0000    84.6    -83.00    -0.981
+       2019       992   0.0000   131.4    -83.00    -0.632
+
+3) CONTROL: costo cero y sin reglas -> A y B tienen que dar la misma esperanza por micro y sesion.
+   LO HARIA FALLAR: diferencia > 3 errores. Y el defecto viejo (A sin abiertas) TIENE que fallar.
+   A con marca a mercado (debe PASAR)       A -4.3016  B -4.3016  dif -0.0000  error 0.1006  -0.0 err  -> IGUALES
+   A descartando abiertas (debe FALLAR)     A -18.2735  B -4.3016  dif -13.9719  error 0.0970  -144.0 err  -> DIFIEREN
+   CONTROL PASADO: discrimina
+
+4) LO QUE (B) TAMBIEN CUESTA. Fuente oficial o NO MEDIDO. Nada se estima.
+   comision broker, micro, ida y vuelta: Free $0,78 | Monthly $0,58 (+$99/mes) | Lifetime $0,18 (+$1.499)
+      fuente ninjatrader.com/pricing y tradovate.com/pricing, leidas 2026-09-04. MEDIDO.
+   exchange + clearing + NFA por micro: la pagina dice que aplican 'on top'. Monto: NO MEDIDO
+      (cmegroup.com sin respuesta x3, nfa.futures.org 403). La fila queda INCOMPLETA: el costo real
+      de B esta ENTRE $0,78 y algo mas; la referencia superior usada es $1,82 (micro de Tradeify, todo incluido).
+   margen intradia MES: $50 (ninjatrader.com/pricing). Horario en que aplica: NO MEDIDO.
+   margen de mantenimiento de exchange, MES 09/2026: $2.608 largo / $2.340 corto (cmegroup.com, 2026-09-04). MEDIDO.
+      La sesion replicada (17:00 -> 16:00 CT) incluye la noche: si el intradia del broker no rige de noche,
+      el piso de capital de B es el de exchange. Por eso la curva lleva LOS DOS pisos.
+   deslizamiento en el stop: MEDIDO (media_exceso.py), igual en A y B. Deslizamiento de entrada: cero en los dos (no medido).
+   costo de oportunidad del capital C: NO MEDIDO. Crece con C y solo puede empeorar B.
+   sin objetivo ni drawdown impuesto: ESTRUCTURA, no tiene precio; no obliga a operar ni a parar.
+
+5) EL TECHO DE PERDIDA. En A el peor caso por intento es -$83 por construccion.
+   En B no hay techo: se mide la cola del acumulado de B sobre el MISMO horizonte que dura un intento.
+   'valor del techo' = E[(perdida de B - cuota)+] = lo que costaria asegurar B a la altura de la cuota.
+   horizonte = E[sesiones por intento] = 148 sesiones; y tambien 250.
+    horizonte  tamano B   costo    media      p50        p5        p1      peor  P(perd>cuota)  valor techo
+          148   1 micro    0.78     -989     -924     -3565     -4845     -5543          0.710      1123.32
+          148   1 micro    1.82    -1459    -1345     -4245     -5527     -6350          0.798      1495.59
+          148  1 micros    0.78     -989     -924     -3565     -4845     -5543          0.710      1123.32
+          148  1 micros    1.82    -1459    -1345     -4245     -5527     -6350          0.798      1495.59
+          250   1 micro    0.78    -1671    -1497     -4775     -5287     -5983          0.791      1694.19
+          250   1 micro    1.82    -2465    -2182     -5790     -6351     -7196          0.893      2390.58
+          250  1 micros    0.78    -1671    -1497     -4775     -5287     -5983          0.791      1694.19
+          250  1 micros    1.82    -2465    -2182     -5790     -6351     -7196          0.893      2390.58
+   (en 250 sesiones la 'cuota' de referencia es la cuota por el numero medio de intentos que caben: $140)
+
+6) LA CURVA: capital propio C, horizonte 250 sesiones. A con N=1; B con 1 micro.
+   A: se juega mientras la caja alcance la cuota; los pagos reponen. B: ruina al caer al margen.
+   'ruina' en A = se quedo sin caja para la proxima cuota antes de que se acaben las sesiones.
+   Columnas de B: costo ida y vuelta @ piso de margen. E$ = resultado medio del anio, P(ruina).
+
+         C|   A: E$     p5   peor P(ruina) P(gana) intent pagos|       B 0.78@50  P(ru)|    B 0.78@2,608  P(ru)|       B 1.82@50  P(ru)|    B 1.82@2,608  P(ru)|  domina E
+        50|      +0     +0     +0    1.000   0.000    0.0  0.00|             -27  0.993|     no factible       |             -34  0.998|     no factible       |   A/A/A/A
+        83|     -83    -83    -83    0.767   0.000    1.0  0.00|             -39  0.989|     no factible       |             -52  0.997|     no factible       |   B/A/B/A
+       100|     -83    -83    -83    0.767   0.000    1.0  0.00|             -43  0.986|     no factible       |             -59  0.995|     no factible       |   B/A/B/A
+       250|    -183   -249   -249    0.187   0.000    2.2  0.00|            -163  0.951|     no factible       |            -201  0.981|     no factible       |   B/A/A/A
+       500|    -200   -332   -415    0.000   0.000    2.4  0.00|            -365  0.894|     no factible       |            -428  0.953|     no factible       |   A/A/A/A
+     1,000|    -200   -332   -415    0.000   0.000    2.4  0.00|            -688  0.798|     no factible       |            -835  0.868|     no factible       |   A/A/A/A
+     2,000|    -200   -332   -415    0.000   0.000    2.4  0.00|           -1120  0.517|     no factible       |           -1466  0.642|     no factible       |   A/A/A/A
+     3,000|    -200   -332   -415    0.000   0.000    2.4  0.00|           -1413  0.310|            -318  0.906|           -1909  0.455|            -376  0.960|   A/A/A/A
+     5,000|    -200   -332   -415    0.000   0.000    2.4  0.00|           -1719  0.109|           -1271  0.425|           -2395  0.185|           -1679  0.544|   A/A/A/A
+    10,000|    -200   -332   -415    0.000   0.000    2.4  0.00|           -1671  0.000|           -1671  0.000|           -2465  0.000|           -2466  0.002|   A/A/A/A
+    25,000|    -200   -332   -415    0.000   0.000    2.4  0.00|           -1671  0.000|           -1671  0.000|           -2465  0.000|           -2465  0.000|   A/A/A/A
+    50,000|    -200   -332   -415    0.000   0.000    2.4  0.00|           -1671  0.000|           -1671  0.000|           -2465  0.000|           -2465  0.000|   A/A/A/A
+   cruce en esperanza, B a $0.78 con piso $50: C >= $83
+   cruce en esperanza, B a $0.78 con piso $2,608: NO CRUZA en la grilla: A pierde menos a todo capital
+   cruce en esperanza, B a $1.82 con piso $50: C >= $83
+   cruce en esperanza, B a $1.82 con piso $2,608: NO CRUZA en la grilla: A pierde menos a todo capital
+   Detalle de B (p5, peor) por capital, costo $1,82, piso intradia:
+      C=     50: E -34  p50 -44  p5 -56  p1 -56  peor -56  P(ruina) 0.998
+      C=     83: E -52  p50 -56  p5 -81  p1 -87  peor -89  P(ruina) 0.997
+      C=    100: E -59  p50 -56  p5 -97  p1 -104  peor -106  P(ruina) 0.995
+      C=    250: E -201  p50 -222  p5 -251  p1 -255  peor -256  P(ruina) 0.981
+      C=    500: E -428  p50 -470  p5 -501  p1 -504  peor -506  P(ruina) 0.953
+      C=  1,000: E -835  p50 -968  p5 -1001  p1 -1005  peor -1006  P(ruina) 0.868
+      C=  2,000: E -1466  p50 -1959  p5 -2000  p1 -2004  peor -2005  P(ruina) 0.642
+      C=  3,000: E -1909  p50 -2285  p5 -2998  p1 -3004  peor -3005  P(ruina) 0.455
+      C=  5,000: E -2395  p50 -2182  p5 -4985  p1 -5001  peor -5005  P(ruina) 0.185
+      C= 10,000: E -2465  p50 -2182  p5 -5790  p1 -6351  peor -7196  P(ruina) 0.000
+      C= 25,000: E -2465  p50 -2182  p5 -5790  p1 -6351  peor -7196  P(ruina) 0.000
+      C= 50,000: E -2465  p50 -2182  p5 -5790  p1 -6351  peor -7196  P(ruina) 0.000
+
+7) LA APUESTA REPETIDA. n intentos de A, independientes (sorteo de intentos medidos), N=1.
+   La esperanza es lineal en n: el signo NO cambia nunca. Lo que cambia es P(terminar arriba).
+       n   E total    peor  P(arriba)  E sesiones  costo prestamo/ses
+       1       -83     -83      0.000         148                0.56
+       2      -166    -166      0.000         297                0.56
+       3      -249    -249      0.000         445                0.56
+       5      -415    -415      0.000         742                0.56
+       8      -664    -664      0.000        1187                0.56
+      10      -830    -830      0.000        1484                0.56
+      15     -1245   -1245      0.000        2225                0.56
+      20     -1660   -1660      0.000        2967                0.56
+      30     -2490   -2490      0.000        4451                0.56
+      50     -4150   -4150      0.000        7418                0.56
+     100     -8300   -8300      0.000       14835                0.56
+   P(arriba) maxima en n = 1 (0.000); baja de 10%: n = 2
+   El prestamo: $83 por intento compran $2,000 de drawdown a 1 micros durante 148.4 sesiones = $0.56/sesion = 4.2% por intento, 7% anualizado sobre los $2,000.
+
+8) (B') AUTOFINANCIAR LA MISMA EXPOSICION QUE A: 1 micros, capital $2,000 + margen, durante 148 sesiones (lo que dura un intento).
+   costo 0.78, piso intradia $50 (capital $2,050): E $-786  p5 $-2043  peor $-2054  P(ruina) 0.291   contra A: E $-83.00, peor -$83
+   costo 0.78, piso exchange $2.608 (capital $4,608): E $-786  p5 $-2043  peor $-2054  P(ruina) 0.291   contra A: E $-83.00, peor -$83
+   costo 1.82, piso intradia $50 (capital $2,050): E $-1095  p5 $-2047  peor $-2056  P(ruina) 0.407   contra A: E $-83.00, peor -$83
+   costo 1.82, piso exchange $2.608 (capital $4,608): E $-1095  p5 $-2047  peor $-2056  P(ruina) 0.407   contra A: E $-83.00, peor -$83
