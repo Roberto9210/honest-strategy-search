@@ -812,3 +812,111 @@ especificación del contrato. **No se completó la fila.**
 **C. Para toda la tabla:** la lista de instrumentos que **Tradeify** permite y su límite por
 contrato. Saldría de la página oficial de Tradeify o su help center, igual que se leyeron las
 comisiones. Hoy **NO VERIFICADO**.
+
+---
+
+# LA LÍNEA DE BASE, MEDIDA (2026-09-04) — y mi hipótesis era falsa
+
+**No gasta cartucho. K = 261.** Medición de una constante del modelo, no prueba de una hipótesis.
+
+## 1 — La ambigüedad era 0,00%. Me equivoqué.
+
+Dije que el supuesto más débil era que `S/(S+T)` estuviera corrido porque, con barras de un minuto,
+no se sabe qué barrera se tocó primero cuando las dos caen adentro de la misma barra. **Lo medí y es
+falso.** El rango máximo de una barra de un minuto en ES 2016-2019 es 36pt, pero la mediana es
+0,50pt y el p99 3,25pt: la barra que resuelve casi nunca es un monstruo.
+
+**Fracción ambigua: 0,00% en los cinco brackets. Ancho de banda: 0,00 puntos.**
+
+**CONTROL PASADO.** Bracket de 23pt a cada lado (46pt de separación, más que cualquier barra
+observada): ambigüedad 0,000%, y la tasa *pooled* dio **exactamente 50,0%**. De paso midió el drift
+de 2016-2019 limpio: largo 54,6% contra corto 45,4%, ±4,6 puntos que se cancelan al promediar lados.
+
+## 2 — Pero la línea de base SÍ está corrida, y encontré por qué
+
+| bracket | asumido | observado (1 sesión) | **sesgo** | sin resolver |
+|---|---|---|---|---|
+| 5pt:10pt | 66,7% | 68,2% | **+1,58** | 7,2% |
+| 10pt:10pt | 50,0% | 50,0% | **+0,00** | 19,0% |
+| 20pt:10pt | 33,3% | 27,3% | **−6,08** | 35,6% |
+| **5pt:20pt** | 80,0% | 85,2% | **+5,17** | 17,4% |
+| 10pt:20pt | 66,7% | 72,7% | **+6,08** | 35,6% |
+
+La causa **no** es la ambigüedad: es **censura por horizonte**. Las operaciones que no resuelven no
+se pierden al azar — se pierden las que iban a la barrera **lejana**. Confirmado alargando el
+horizonte a cinco sesiones:
+
+| bracket | asumido | 1 sesión | 5 sesiones | sin resolver |
+|---|---|---|---|---|
+| 5pt:10pt | 66,7% | 68,2% | **67,2%** | 7,2% → 0,0% |
+| 20pt:10pt | 33,3% | 27,3% | **31,2%** | 35,6% → 4,0% |
+| 5pt:20pt | 80,0% | 85,2% | **81,6%** | 17,4% → 1,1% |
+| 10pt:20pt | 66,7% | 72,7% | **68,8%** | 35,6% → 4,0% |
+
+Todas convergen hacia `S/(S+T)`. El bracket simétrico nunca estuvo sesgado, porque ahí la censura es
+simétrica.
+
+**Conclusión: `S/(S+T)` es correcto como límite de horizonte infinito, y equivocado a cualquier
+horizonte realista.** El modelo supone que toda operación resuelve alguna vez; entre el 7% y el 36%
+no resuelve en una sesión.
+
+### La pregunta que decide
+
+**El +1,2 del criterio es MÁS CHICO que el sesgo de su propia línea de base.** En la celda del
+criterio (5pt:20pt) el sesgo a una sesión es **+5,17 puntos: 4,3 veces el criterio**. Incluso a cinco
+sesiones queda **+1,6**, todavía por encima de 1,2.
+
+**El criterio no se distingue de la incertidumbre de su propio cero** — pero por censura de
+horizonte, no por la ambigüedad que yo había señalado.
+
+Y las dos cosas se enganchan: **las operaciones censuradas son exactamente las que quedan abiertas al
+cierre**, y la Compuerta 1 ya midió que aguantar de un cierre al siguiente mata la cuenta entre el
+42% y el 68% de las veces en diez noches. El «bonus» aparente en la tasa de acierto **es** el costo
+que la compuerta 1 midió por separado.
+
+## 3 — Contaminación horaria: real en la constante, inmaterial en el criterio
+
+**Esto NO declara ninguna regla de operación.** Son dos constantes, medidas, puestas al lado.
+
+| D | media TODAS | media SIN 17:00 | cambio | peso de 17:00 en n |
+|---|---|---|---|---|
+| 4pt | 0,5556 | 0,5341 | −3,9% | 2,8% |
+| 10pt | 0,9499 | 0,9140 | −3,8% | 2,7% |
+| 20pt | 1,6931 | 1,5283 | **−9,7%** | 4,8% |
+
+La reapertura pesa 2,7–4,8% de la muestra y mueve la media hasta 9,7%: es un outlier, no un sesgo
+general. **Efecto sobre el requerido: entre −0,0 y −0,2 puntos.** Inmaterial.
+
+*Aviso:* la constante del modelo sale de la ventana T23, y en T23 no se registró la hora del toque,
+así que no se puede desglosar con lo medido. Lo de arriba es una **sensibilidad del mismo tamaño**
+que la contaminación, no una remedición.
+
+## 4 — Mi error en la tabla publicada, corregido
+
+`n_exacto` avanzaba en pasos geométricos (`n*1,05+1`) y devolvía un n cuantizado hacia arriba hasta
+5%; por eso 5pt:20pt y 10pt:20pt daban los dos 6.988. **Hubo que corregirlo dos veces**: la búsqueda
+binaria falló porque la potencia binomial exacta **no es monótona en n**. La versión final usa el
+**último cruce**.
+
+| bracket | publicado | corregido | cambio |
+|---|---|---|---|
+| 5pt:20pt | 6.988 | **6.875** | −1,6% |
+| 10pt:20pt | 6.988 | **7.053** | +0,9% |
+| 5pt:10pt | 2.759 | **2.865** | +3,8% |
+| 10pt:10pt | 3.042 | **3.002** | −1,3% |
+| 20pt:10pt | 3.886 | **3.569** | −8,2% |
+
+La colisión se rompió y **ninguna conclusión cambia**: 6.875 sigue siendo ~27 años a 1 op/día.
+
+## 5 — La última palanca de parámetros: cerrada
+
+| firma | objetivo | drawdown | obj/dd |
+|---|---|---|---|
+| Apex, Topstep, Lucid, BluSky, TPT, **Tradeify**, MFFU | 3.000 | 2.000 | **1,500** |
+| FundedNext Flex | 2.500 | 1.500 | 1,667 |
+
+**Siete de ocho son idénticas.** El rango entero es 11%, y la única distinta es peor. La escala
+(drawdown absoluto) va de $1.500 a $2.000, contra los **$9.000** que la Compuerta 1 midió como
+necesarios: **falta un factor de 4,5**.
+
+**La palanca de parámetros queda cerrada entera: ni instrumento, ni bracket, ni firma.**
