@@ -459,3 +459,98 @@ el corte de 25%, tenencia por encima del 50% en las dos ventanas), no al borde.
 - **El filtro de tenencia sigue indeterminado para un candidato con ventaja** (conclusión del
   2026-09-04, sin cambios): el candidato tiene que traer su propia distribución de tenencia.
 - **El terreno es 2016-2019.** La estructura de 2020+ está en la caja sellada.
+
+---
+
+# LO QUE EL CRITERIO NO PUEDE CONTESTAR SOLO (2026-09-04, tercera vuelta)
+
+**No gasta cartucho. K = 261.** Verificación previa: la celda publicada reproduce (Tradeify
+20pt:10pt con costo viejo $2,50 → 34,1%). El modelo no se tocó para esto.
+
+## 1 — Deslizamiento de entrada: NO medible acá, pero acotado
+
+**No se puede medir con los datos del proyecto.** `es_1min_databento.csv` es schema **ohlcv-1m**
+(así lo declara `data/data_quality_es_1min_databento.md`): barras OHLCV, sin bid/ask y sin libro.
+Todo lo medido hasta acá es la **salida** — el exceso por encima del stop, dentro de la barra que lo
+toca.
+
+**Qué haría falta:** Databento GLBX.MDP3 schema **`mbp-1`** (tope de libro) o `mbo`, mismo símbolo y
+mismo período. Con eso se mide el spread y el llenado contra el medio en la entrada.
+
+**La acotación, que sirve igual.** El deslizamiento de entrada pega en **las dos ramas** — se paga al
+entrar, se gane o se pierda — a diferencia del de salida, que sólo pega en la perdedora. Como sale de
+una rama y entra en la otra, la suma gana+pierde no cambia y el efecto es exactamente lineal:
+
+| entrada | equilibrio | ventaja pedida |
+|---|---|---|
+| 0 | 81,20% | +1,20 |
+| 0,5 tick | 81,68% | +1,68 |
+| **1 tick** | **82,16%** | **+2,16** |
+| **1,25 ticks** | **82,40%** | **+2,40** |
+
+**Cada punto de entrada sube el equilibrio 3,849 puntos de acierto. Un solo tick lo sube 0,96 puntos
+— el 80% de la ventaja entera. A 1,25 ticks la ventaja pedida se duplica.**
+
+Dicho al revés: el +1,2 de ventaja **ya es el equilibrio**, no un excedente. Cualquier deslizamiento
+de entrada positivo lo vuelve insuficiente. Y en un objetivo de 5 puntos —20 ticks— un tick es el 5%
+del bruto.
+
+## 2 — Cuántas operaciones para verificar a un candidato
+
+**Tu hipótesis (~17.000): refutada en magnitud, confirmada en sustancia.**
+
+17.442 es el n de **dos muestras**. Pero acá la moneda no se estima: es `S/(S+T) = 20/25` **exacto,
+conocido analíticamente**. Entonces es una prueba de **una** muestra contra un valor conocido, y el n
+cae por un factor de ~2,5.
+
+α 0,05 una cola, potencia 80%:
+
+| bracket | moneda | equilibrio | δ | n exacto | op/día | **años** |
+|---|---|---|---|---|---|---|
+| 5pt:10pt | 66,7% | 68,9% | 2,3 | 2.759 | 1 | 10,9 |
+| 10pt:10pt | 50,0% | 52,3% | 2,3 | 3.042 | 1 | 12,1 |
+| 20pt:10pt | 33,3% | 35,3% | 1,9 | 3.886 | 1 | 15,4 |
+| **5pt:20pt** | 80,0% | 81,2% | **1,2** | **6.988** | 1 | **27,7** |
+| 10pt:20pt | 66,7% | 68,1% | 1,4 | 6.988 | 1 | 27,7 |
+
+**6.988 operaciones, no 17.000. A 1 operación por día — el ritmo que el terreno da para un stop de
+20pt — son 28 años.** El orden de magnitud del problema no cambia: **el criterio existe y no se puede
+comprobar sobre ningún candidato en un plazo humano.**
+
+Y la celda elegida es **la peor de la tabla para verificar**: 6.988 contra 2.759 de 5pt:10pt.
+
+### ¿Hay atajo?
+
+- **(a) Medir el P&L en vez de la tasa de acierto: NO.** El P&L es función determinística del
+  resultado binario, así que lleva la misma información. n = 6.878 contra 6.988: el mismo número.
+- **(b) Cambiar de bracket: SÍ, pero cuesta.** 5pt:10pt baja a 2.759 (11 años). Pero esas celdas no
+  sobreviven el terreno con margen. **El costo de la factibilidad es la verificabilidad.**
+- **(c) Medir el estadístico intermedio: en principio sí, con advertencia.** Si el candidato expone
+  una señal **continua**, contrastar su correlación con el retorno futuro usa mucha más información
+  por observación que un binario 80/20. Pero prueba **otra** hipótesis —que la señal predice— y para
+  pasar de ahí a la esperanza del bracket hay que volver a la misma aritmética de barreras. Exige que
+  el candidato exponga la señal, no sólo los trades.
+
+**Con la tasa de acierto final del bracket elegido, no hay atajo.**
+
+## 3 — La forma del bracket, en palabras
+
+**5 puntos de objetivo contra 20 de stop es ganar poco y seguido, y perder mucho de golpe.**
+
+- Una ganada paga **$244**. Una perdida cuesta **$1.055**. Hacen falta **4,3 ganadas para pagar una
+  perdida**.
+- Al 80% —lo que da la moneda— acertás **4 de cada 5**, y la quinta se lleva las cuatro.
+- **El 5,1% de las muertes las causa un solo llenado malo**, no una racha.
+- El peor llenado observado en cuatro años se come el **89% del drawdown entero en una operación**, y
+  el drawdown es *trailing*: después de cualquier ganancia ese margen ya no está.
+
+**Tres lecturas que hay que evitar, dichas antes de que alguien las haga:**
+
+1. **81,2% es el PISO donde la esperanza es cero, no la meta.** A exactamente ese nivel **no se gana
+   nada**. Es el punto donde operar deja de perder plata, no donde empieza a ganarla.
+2. **P(pasar) al criterio es 6,1%.** Contra una cuota de $83 y un premio de $1.350, eso es
+   **exactamente empate**. No es una oportunidad: es una moneda justa después de pagar todo.
+3. **La celda elegida es la de MAYOR tasa de acierto requerida de toda la tabla** — 81,2% contra
+   35,3% de la más baja. **Se eligió por factibilidad de terreno, no por ser la más fácil.** Fue una
+   **restricción**, no una preferencia: es la única celda que pasó los dos filtros con margen. Las
+   celdas con requisitos mucho más bajos existen y están medidas, pero el terreno las descarta.
