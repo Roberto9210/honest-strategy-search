@@ -1,6 +1,6 @@
 # D10 — La trampa de profundidad: cuántos niveles del libro del ES ve cada uno. **Para la VENTANA G.**
 
-**VENTANA L. NO MIDE NADA. K sigue en 261.**
+**VENTANA L. NO MIDE CANDIDATAS; corre CONTROLES DEL INSTRUMENTO desde el 2026-09-05 (rol ampliado por Roberto, ver `INDICE`). K sigue en 261.**
 
 **Por qué es urgente y por qué es para G:** el Hecho 3 de `H01` dice que el canal público del E-mini
 publica **cinco** niveles. La VENTANA G está reconstruyendo el libro con datos `mbo` y estudiando la
