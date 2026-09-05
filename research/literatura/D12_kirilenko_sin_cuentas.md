@@ -1,6 +1,6 @@
 # D12 — Kirilenko sin cuentas: qué se puede observar de la orden que nos pegó, en un `mbo` sin identificador. **Para la VENTANA G.**
 
-**VENTANA L. NO MIDE NADA. K sigue en 261.**
+**VENTANA L. NO MIDE CANDIDATAS; corre CONTROLES DEL INSTRUMENTO desde el 2026-09-05 (rol ampliado por Roberto, ver `INDICE`). K sigue en 261.**
 
 **Roberto corrigió el descarte:** dije que sin cuenta la definición de Kirilenko no se puede aplicar.
 **Es cierto para clasificar CUENTAS y no hace falta clasificar cuentas.** La pregunta de G es *"cuando
