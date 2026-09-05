@@ -353,3 +353,44 @@ faltante. Es un descarte, y el motivo correcto es "la pieza no existe", no "la t
 nosotros".
 
 **El inventario de híbridas está en [HIBRIDAS.md](HIBRIDAS.md).**
+
+---
+
+# F11 — CUÁNTO ESFUERZO MERECE UNA CANDIDATA QUE SÓLO SIRVE PARA ENTENDER
+
+**Regla permanente. Decidida por Roberto el 2026-09-05.**
+
+> ## **UNA CANDIDATA QUE SÓLO SIRVE PARA ENTENDER MERECE ESFUERZO SI SU RESULTADO CAMBIA LO QUE HACEMOS DESPUÉS. SI NO LO CAMBIA, NO.**
+
+## Por qué hizo falta escribirla
+
+**El objetivo del inventario se corrió de "encontrar una ventaja" a "entender la literatura", y se
+corrió solo.** Las dos mejores pruebas que produje —L08 y L07— son **explícitamente no operables**, y
+la de L07 la propongo sabiendo que los propios autores dicen que su retorno no cubre el diferencial
+de compra y venta.
+
+Puede ser el movimiento correcto dado que ninguna candidata es medible como ventaja. **Pero estaba
+pasando de hecho en vez de por decisión, y sin límite.** Ahora está decidido y tiene límite.
+
+## Cómo se aplica, en una pregunta
+
+**Antes de gastar esfuerzo en una candidata que no se puede operar, hay que escribir qué haríamos
+distinto según cada resultado posible. Si las dos ramas llevan al mismo lugar, no se gasta.**
+
+## Los tres casos del inventario, resueltos con la regla
+
+| candidata | ¿qué cambia su resultado? | **¿merece esfuerzo?** |
+|---|---|---|
+| **L07** | contesta si las reglas publicadas por terceros transfieren fuera de su muestra, por el precio más bajo del inventario. **Un negativo baja el valor esperado de la prueba agrupada; un positivo lo sube.** Las dos ramas cambian qué se hace después | **SÍ** |
+| **L08** | aporta el 54 % de la potencia de la prueba agrupada. Sin ella la agrupada no se corre | **SÍ**, pero como insumo de la agrupada, no por sí misma |
+| **L05** | reconstruir la gamma cuesta semanas, y `M02` ya propone una prueba de una tarde que decide si hace falta. **Hasta que M02 se corra, el esfuerzo en L05 no cambia nada** | **NO TODAVÍA** |
+
+## El límite que la regla impone, y es el que importa
+
+**El esfuerzo en candidatas no operables se justifica por lo que habilita, nunca por lo interesante
+que sea el resultado.** Una prueba de mecanismo que sale positiva y no cambia el orden de trabajo,
+ni el presupuesto, ni la decisión sobre un cartucho, **es curiosidad pagada con tiempo del
+proyecto**.
+
+**Y la regla corta para el otro lado también: si el resultado sí cambia lo que hacemos, entonces el
+esfuerzo se justifica aunque la candidata no se pueda operar nunca.** Eso es lo que salva a L07.
