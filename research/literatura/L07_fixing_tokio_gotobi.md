@@ -2,6 +2,8 @@
 
 **VENTANA L. Ficha de literatura. NO MEDIDA. No gasta cartucho, K sigue en 261.**
 
+> **DESACTUALIZADA en un punto:** esta ficha dice grado **A−**. Tras corregir la contaminación de mirada hacia adelante, **es grado B**. Ver [F7](F7_EDAD_DE_LA_EVIDENCIA.md) y [A02](A02_pasada_de_coherencia.md).
+
 Ésta es la candidata con la **hora escrita más precisa** de todo el lote: no es un día del mes ni una
 ventana de media hora, es un minuto fijo de todas las ruedas.
 

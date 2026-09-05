@@ -1,8 +1,9 @@
 # P08 — L10, preparada hasta el borde. BORRADOR, NO REGISTRADO
 
 **VENTANA L. NO REGISTRADO. NO CORRIDO. K sigue en 261.**
-> ## FRÁGIL — las cifras de potencia de este documento dependen de números SIN MEDIR: **E1, E5 y E6**.
+> ## DESACTUALIZADO — el desvío usado acá (60 pb) fue MEDIDO en 82. Las cifras de potencia de abajo son viejas.
 > Ver [FRAGILIDAD.md](FRAGILIDAD.md). Las conclusiones cualitativas no dependen de ellos; **las tablas de potencia sí**.
+> **El veredicto NO cambia** —sigue siendo no registrarla sola— **pero el número sí: con σ = 82,8 y 46 eventos en vez de 48, `θ` mínimo pasa de 2,04 a 2,87.** Ver [A01](A01_auditoria_de_fechas.md).
 
 > Registrarlo gastaría el cartucho **263** si L11 se registrara primero, o el **262** si va sola.
 > **La aritmética de la sección 5 dice que tampoco conviene.**

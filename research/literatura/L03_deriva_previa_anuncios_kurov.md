@@ -2,6 +2,8 @@
 
 **VENTANA L. Ficha de literatura. NO MEDIDA. No gasta cartucho, K sigue en 261.**
 
+> **DESACTUALIZADA en un punto:** traduce magnitudes con un desvío de 60 pb; el medido es 82. **La conclusión de esta ficha es sobre número de eventos, no sobre potencia, y no cambia.** Ver [A02](A02_pasada_de_coherencia.md).
+
 ---
 
 ## 1. Cita completa

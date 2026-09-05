@@ -2,8 +2,29 @@
 
 **VENTANA L. NO CORRIDO. NO PRE-REGISTRADO TODAVÍA. K sigue en 261.**
 
-> ## FRÁGIL — las cifras de potencia de este documento dependen de números SIN MEDIR: **E1, E3, E5 y E6**.
-> Ver [FRAGILIDAD.md](FRAGILIDAD.md). Las conclusiones cualitativas no dependen de ellos; **las tablas de potencia sí**.
+> # ⛔ CERRADO — 2026-09-05. ESTA PRUEBA NO SE EJECUTA Y NO SE PRE-REGISTRA.
+>
+> **Con los desvíos MEDIDOS por la VENTANA G —82,0 y 82,8 puntos básicos, contra los 60 que yo había
+> estimado— el instrumento detecta `θ = 0,72`, y la hipótesis de este documento pide `θ ≥ 0,25`.**
+>
+> **La prueba no puede ver lo que busca.** Y el motivo por el que no se arregla corriéndola: bajo el
+> decaimiento típico que McLean y Pontiff documentan, el valor esperado es `θ = 0,42`, **que está
+> por debajo del umbral de detección de 0,72**. La prueba devolvería lo mismo si las reglas
+> transfirieron normalmente que si están muertas.
+>
+> **El cierre, con sus tres números, está en [D05](D05_la_pregunta_que_bloquea.md).** Las otras tres
+> salidas se descartaron ahí: hacen falta 401 fines de mes y el contrato E-mini sólo ha tenido unos
+> 348 en toda su historia; la normalización por volatilidad compra un 3 % y hace falta un 835 %; y
+> subir la hipótesis a 0,72 sería mover la vara después de ver la potencia.
+>
+> **Lo que sigue vivo de este documento: el criterio de inclusión, la estandarización declarada y los
+> ocho controles. Lo que se cierra es la EJECUCIÓN, no el diseño.**
+>
+> **K se queda en 261. El cartucho 262 no se gasta.**
+
+> ## FRÁGIL — las cifras de potencia originales de este documento usaban un desvío SIN MEDIR de 60 pb.
+> El valor medido es 82. Ver [FRAGILIDAD.md](FRAGILIDAD.md) y `D05`. **Las tablas de abajo están
+> desactualizadas y se conservan como registro de lo que se creía antes de medir.**
 
 > **ESTE DOCUMENTO NO GASTA CARTUCHO. CORRERLO SÍ.**
 > Sería el primer cartucho desde agosto y **K pasaría de 261 a 262**. La decisión es de Roberto y se

@@ -2,6 +2,8 @@
 
 **VENTANA L. Ficha de literatura. NO MEDIDA. No gasta cartucho, K sigue en 261.**
 
+> **DESACTUALIZADA en un punto:** su fuerza se apoyaba en la extensión de Ai, Bansal y Guo, cuya muestra **cubre 2016-2019**. Esa extensión existe, pero **ya no otorga grado A**. Ver [F7](F7_EDAD_DE_LA_EVIDENCIA.md).
+
 **RECUPERADA.** El filtro nocturno viejo la había matado. Con el filtro de ventana de exposición
 (`FILTROS.md`) sobrevive, y es **la candidata que menos lejos queda de ser medible** con lo que hay.
 
