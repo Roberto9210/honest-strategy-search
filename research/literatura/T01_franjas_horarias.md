@@ -32,11 +32,16 @@
 
 **Los cinco viven en picos. Ninguno vive en un valle.** Eso no es casualidad: los mecanismos que la
 literatura documenta son flujos —rebalanceo, cobertura, órdenes de clientes, publicaciones— y los
-flujos se concentran donde hay volumen.
+flujos se concentran donde hay volumen. *(Observación sobre cinco casos, no una ley. **Falla** en
+cuanto una candidata con flujo documentado viva en un valle; la primera la anula. Ver `A06`.)*
 
 > **Consecuencia para la corrección pendiente: el escalado uniforme SUBESTIMÓ el ruido de los cinco, y
 > los cinco márgenes van a BAJAR cuando llegue el perfil.** La única pregunta abierta es **cuánto cada
 > uno**, y eso decide el orden. **No se adelanta.**
+> *(Para L01, L03 y L10 ya bajaron: `D13`. Para L07 y L08 es una predicción sin medir: **falla** si el
+> desvío medido de su ventana resulta menor que el del escalado uniforme, 4,7 y 11,4 pb. Ver `A06`.)*
+
+**Veredictos absolutos con el perfil, sin orden:** [D13](D13_veredictos_absolutos.md).
 
 ## Qué perfil hace falta, exactamente, para que la corrección sea de diez minutos
 
