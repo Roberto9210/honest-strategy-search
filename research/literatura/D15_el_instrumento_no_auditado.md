@@ -1,6 +1,6 @@
 # D15 — Dos generadores, un resultado: el instrumento que nadie auditó. Con su condición de falla.
 
-**VENTANA L. NO MIDE NADA. K sigue en 261.**
+**VENTANA L. NO MIDE CANDIDATAS; corre CONTROLES DEL INSTRUMENTO desde el 2026-09-05 (rol ampliado por Roberto, ver `INDICE`). K sigue en 261.**
 
 > ## ENUNCIADO
 >
