@@ -11,7 +11,24 @@ candidatas fueron clasificadas **antes** de cualquier medición.
 | [F7_EDAD_DE_LA_EVIDENCIA.md](F7_EDAD_DE_LA_EVIDENCIA.md) | **¿el efecto todavía existe?**, aplicado a las once |
 | [F8_TAMANO_DE_CONTRATO.md](F8_TAMANO_DE_CONTRATO.md) | el eje de tamaño, y la corrección a lo que afirmé sobre el MES |
 | [PISO_Y_CONVERSION.md](PISO_Y_CONVERSION.md) | pisos, costos y conversión a dólares, definidos una sola vez |
-| **[P01_PREREGISTRO_prueba_agrupada.md](P01_PREREGISTRO_prueba_agrupada.md)** | **el borrador de pre-registro de la prueba agrupada. Correrla gastaría el cartucho 262** |
+| ~~[P01](P01_PREREGISTRO_prueba_agrupada.md)~~ | **⛔ CERRADO.** El instrumento detecta 0,72 y la hipótesis pide 0,25. Ver **[D05](D05_la_pregunta_que_bloquea.md)** |
+| **[D05](D05_la_pregunta_que_bloquea.md)** | **por qué se cierra, con las cuatro salidas descartadas y el número de cada una** |
+| [A01](A01_auditoria_de_fechas.md) y [A02](A02_pasada_de_coherencia.md) | la auditoría de fechas del CME, y la pasada de coherencia sobre los 39 documentos |
+
+> ## ⛔ LA PRUEBA AGRUPADA SE CERRÓ — 2026-09-05
+>
+> Con los desvíos **medidos** por la VENTANA G, 82,0 y 82,8 puntos básicos contra los 60 que yo
+> había estimado, el instrumento detecta `θ = 0,72` y la hipótesis pedía `θ ≥ 0,25`.
+>
+> **Bajo el decaimiento típico de la literatura el valor esperado es 0,42, que está por debajo del
+> umbral de detección: la prueba devolvería lo mismo si las reglas transfirieron normalmente que si
+> están muertas.**
+>
+> Las otras tres salidas también se descartaron con su número: **hacen falta 401 fines de mes y el
+> E-mini sólo tuvo unos 348 en toda su historia**; la normalización por volatilidad compra 3 % y
+> hace falta 835 %; y subir la hipótesis sería mover la vara después de ver la potencia.
+>
+> **K se queda en 261. Sigue vivo `P05`, con su desvío todavía sin medir.**
 | [P02](P02_REGLA_magnitud_objetivo.md) y [P03](P03_magnitudes_corregidas.md) | la regla de magnitud objetivo, y su aplicación. **Commiteadas en ese orden a propósito** |
 | **[P04_COMPRA_L08.md](P04_COMPRA_L08.md)** | **qué datos comprar, el mínimo que sirve, y el plan B escrito antes de saber el precio** |
 | [HIBRIDAS.md](HIBRIDAS.md) | las que necesitan una pieza nuestra, y si esa pieza se puede ajustar |
