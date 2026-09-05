@@ -162,9 +162,16 @@ def revisar_entrada(obj, ruta="candidato"):
 def validar(cand):
     revisar_entrada(cand)
     for campo in ("nombre", "instrumento", "regla_salida", "operaciones", "contratos",
-                  "limite_contratos", "variantes_probadas"):
+                  "limite_contratos", "variantes_probadas", "clase_ventaja"):
         if campo not in cand:
             extra = ""
+            if campo == "clase_ventaja":
+                extra = ("\n  De que CLASE es tu ventaja: 'direccional' (sabes de que lado) o 'timing'\n"
+                         "  (sabes CUANDO entrar, el lado te da igual). Se declara ANTES, en la entrada,\n"
+                         "  porque el juez usa una nula distinta para cada clase y elegirla despues de ver\n"
+                         "  el resultado seria elegir el test que te conviene. El juez MIDE la firma y\n"
+                         "  verifica que coincida con lo declarado; si no coincide es bandera roja y solo\n"
+                         "  aplica la regla estricta.")
             if campo == "variantes_probadas":
                 extra = ("\n  Cuantas variantes de esta idea se probaron ANTES de traer esta. El\n"
                          "  juez no puede verlo; por eso se DECLARA. Es inverificable, y por eso\n"
@@ -178,6 +185,9 @@ def validar(cand):
                       f"Hay comisiones medidas solo para {sorted(PUNTO)}.")
     if int(cand["variantes_probadas"]) < 1:
         raise Rechazo("ENTRADA RECHAZADA. variantes_probadas tiene que ser >= 1.")
+    if cand["clase_ventaja"] not in CLASES_VENTAJA:
+        raise Rechazo(f"ENTRADA RECHAZADA. clase_ventaja '{cand['clase_ventaja']}' no es "
+                      f"{sorted(CLASES_VENTAJA)}.")
     if int(cand["contratos"]) < 1 or int(cand["limite_contratos"]) < 1:
         raise Rechazo("ENTRADA RECHAZADA. contratos y limite_contratos tienen que ser >= 1.")
     r = cand["regla_salida"]
@@ -484,6 +494,10 @@ def juzgar_periodo(cand, m, idx, sgn, etiqueta, npermuta=NPERM, rotacion_global=
     # --- nula A: rotacion dentro del rango del candidato ------------------------------------
     rp = np.random.default_rng(20260904)
     medA = np.empty(npermuta)
+    # VA: la nula de rotacion POR SESION, igual que VB. Hace falta para el chequeo por REGIMEN de un
+    # candidato de clase timing: si el global omite la nula de signo por invalida, el por-regimen
+    # tambien tiene que hacerlo, o el punto ciego vuelve a entrar por la ventana del regimen.
+    VA = np.zeros((npermuta, n_ses))
     for i in range(npermuta):
         if rotacion_global:
             k = int(rp.integers(1, m["n"])); i2 = (idx + k) % m["n"]
@@ -494,7 +508,7 @@ def juzgar_periodo(cand, m, idx, sgn, etiqueta, npermuta=NPERM, rotacion_global=
             k = int(rp.integers(1, L)); i2 = lo_b + ((idx - lo_b + k) % L)
             v2 = np.bincount(m["ses_de"][i2] - ses_lo, weights=dolares(
                 resolver(m, i2, sgn, regla, exceso)[0], i2), minlength=n_ses)
-            medA[i] = v2.mean()
+            medA[i] = v2.mean(); VA[i] = v2
     # --- nula B: signo; se guardan los vectores por sesion para el regimen -----------------
     VB = np.empty((npermuta, n_ses))
     ses_rel = m["ses_de"][idx] - ses_lo
@@ -544,22 +558,40 @@ def juzgar_periodo(cand, m, idx, sgn, etiqueta, npermuta=NPERM, rotacion_global=
         vent = obs - mu
         filas[et] = (mu, sd, vent, vent / sd_tot if sd_tot else 0.0)
     z_pas = (obs - pasiva) / sd_tot if sd_tot else 0.0
-    z_info = min(filas["A rotacion"][3], filas["B signo"][3], z_pas)
-    return dict(etiqueta=etiqueta, obs=obs, v_obs=v_obs, VB=VB, nulas=filas, pasiva=pasiva,
+    zA, zB = filas["A rotacion"][3], filas["B signo"][3]
+    # LA CLASE DE VENTAJA. El 'informativo' es el MINIMO de las nulas, y ese minimo esta para
+    # proteger del ataque A1 (ganarle a UNA nula explotando su debilidad): no se saca. Lo que se
+    # corrige es que la nula de SIGNO no es un test VALIDO para una ventaja de timing -no puede
+    # verla por construccion-, asi que para esa clase se la omite del minimo. El orden importa y
+    # evita la puerta trasera: el candidato DECLARA la clase en la entrada (antes de ver nada), el
+    # juez MIDE la firma, y la nula se omite SOLO si la firma confirma lo declarado. Declarar
+    # 'timing' sin tener la firma no relaja nada: se aplica igual el minimo de las tres.
+    clase_decl = cand["clase_ventaja"]
+    firma = firma_ventaja(zA, zB)
+    z_estricto = min(zA, zB, z_pas)
+    aplica_timing = (clase_decl == "timing" and firma == "timing")
+    z_info = min(zA, z_pas) if aplica_timing else z_estricto
+    discrepa = firma != "indefinida" and firma != clase_decl
+    return dict(etiqueta=etiqueta, obs=obs, v_obs=v_obs, VB=VB, VA=VA, nulas=filas, pasiva=pasiva,
                 z_pas=z_pas, z_rent=z_rent, z_info=z_info, sd_perm=sd_perm, sd_tot=sd_tot,
                 err_o_ses=err_o_ses, sd_binom=sd_binom, ganado=ganado, mde=mde, pisoB=pisoB,
                 resolucion=resolucion, n_op=len(idx), op_ses=op_ses, n_ses=n_ses,
                 ses_lo=ses_lo, ses_hi=ses_hi, rot_indep=rot_indep, expo_max=expo_max,
                 sesgo_pt=sesgo_pt, p=p, avisos=avisos, no_cubre=no_cubre, pts=pts, idx=idx,
-                sgn=sgn, ten=ten, exceso=exceso, punto=punto, contratos=contratos, c1=c1)
+                sgn=sgn, ten=ten, exceso=exceso, punto=punto, contratos=contratos, c1=c1,
+                clase_declarada=clase_decl, firma=firma, aplica_timing=aplica_timing,
+                discrepa=discrepa, z_estricto=z_estricto)
 
 
-def regimen(r, m, eje="tercil_exante"):
-    """Ventaja por tercil de volatilidad con la nula B (conserva la sesion exacta).
+def regimen(r, m, eje="tercil_exante", usar=None):
+    """Ventaja por tercil de volatilidad. La nula por defecto es la B (signo), que conserva la sesion
+    exacta. Para un candidato de clase TIMING con firma confirmada se usa la A (rotacion): la de signo
+    no puede ver una ventaja de CUANDO, y si el global la omite el por-regimen tambien debe omitirla.
     eje='tercil_exante' (sesion anterior) es el que JUZGA; eje='tercil_hindsight' (sesion
     entera) solo DESCRIBE y se imprime aparte con ese nombre."""
     ses = np.arange(r["ses_lo"], r["ses_hi"] + 1)
     terc = m[eje][ses]
+    V = r["VA"] if (usar or ("A" if r.get("aplica_timing") else "B")) == "A" else r["VB"]
     out = []
     for t, nom in ((0, "bajo"), (1, "medio"), (2, "alto")):
         mk = terc == t
@@ -567,7 +599,7 @@ def regimen(r, m, eje="tercil_exante"):
         if n < SES_MIN_TERCIL:
             out.append(dict(nombre=nom, n=n, verificable=False)); continue
         o = float(r["v_obs"][mk].mean())
-        nb = r["VB"][:, mk].mean(axis=1)
+        nb = V[:, mk].mean(axis=1)
         mu, sd = float(nb.mean()), float(nb.std(ddof=1))
         z = (o - mu) / sd if sd else 0.0
         out.append(dict(nombre=nom, n=n, verificable=True, obs=o, nula=mu, sd=sd,
@@ -598,7 +630,22 @@ def cadena_pasar(r, m, n_micros=None):
                 E=float((-CADENA["cuota"] + (res == 2) * CADENA["pago"]).mean()), N=N)
 
 
+CLASES_VENTAJA = {"direccional", "timing"}
 REQUIERE_MEDICION = "REQUIERE MEDICION PASIVA POR CANDIDATO"
+
+
+def firma_ventaja(zA, zB):
+    """De que CLASE es la ventaja, segun que nula la ve. MEDIDO en juez_formas_ventaja.py: una
+    ventaja de timing pura da rotacion 98% / signo -1%; una direccional da las dos altas.
+      timing      - la rotacion la ve y el signo NO (el signo conserva las ranuras: no puede ver
+                    una ventaja de CUANDO). La nula de signo NO es un test valido para esta clase.
+      direccional - las dos la ven.
+      indefinida  - ninguna la ve con fuerza: no hay nada que contradecir."""
+    if zA >= Z_BASE and abs(zB) < 1.0:
+        return "timing"
+    if zA >= Z_BASE and zB >= Z_BASE:
+        return "direccional"
+    return "indefinida"
 
 
 def techo_pasivo(v, pasivo):
@@ -740,6 +787,7 @@ def juzgar(cand, m, permitir_caja=False, prerregistro=None, verificar=False, npe
                               z_info=round(r["z_info"], 3), z_rent=round(r["z_rent"], 3),
                               n_op=r["n_op"], variantes_declaradas=variantes,
                               familia_declarada=fam_decl, instrumento=cand["instrumento"],
+                              clase_declarada=r["clase_declarada"], firma_medida=r["firma"],
                               regla=cand["regla_salida"], **firmas))
 
     # --- periodo reservado --------------------------------------------------------------------
@@ -795,18 +843,25 @@ def _bloque_periodo(A, r, s):
     A("")
     A(f"   RENTABLE (dolares > 0):                  {r['z_rent']:+.1f} desvios contra {r['z_req']:.2f} exigidos   {'SI' if r['rentable'] else 'no'}")
     A(f"   INFORMATIVO (bate rotacion, signo y pasiva): {r['z_info']:+.1f} desvios contra {r['z_req']:.2f} exigidos   {'SI' if r['informativo'] else 'no'}")
-    # FIRMA DE VENTAJA DE TIMING: la rotacion la ve y el signo no. El juez la descarta POR
-    # CONSTRUCCION; que el candidato se entere en vez de recibir un NO SUPERA mudo.
+    # LA CLASE DE VENTAJA: declarada contra medida, y que nula se aplico.
     zA = r["nulas"]["A rotacion"][3]; zB = r["nulas"]["B signo"][3]
-    if r.get("veredicto") == "NO SUPERA" and zA >= Z_BASE and abs(zB) < 1.0:
+    A("")
+    A(f"   CLASE DE VENTAJA declarada: {r['clase_declarada'].upper()}   |   FIRMA MEDIDA: "
+      f"{r['firma'].upper()}   (rotacion {zA:+.1f} desvios, signo {zB:+.1f})")
+    if r["aplica_timing"]:
+        A(f"   -> la firma CONFIRMA lo declarado: se omite la nula de SIGNO, que no es un test valido")
+        A(f"      para una ventaja de CUANDO. Informativo = min(rotacion, pasiva) = {r['z_info']:+.1f}.")
+        A(f"      Con el minimo de las TRES habria dado {r['z_estricto']:+.1f} (la de signo no la ve por construccion).")
+    if r["discrepa"]:
         A("")
         A("#" * 96)
-        A(f"#  FIRMA DE VENTAJA DE TIMING: la rotacion la ve a {zA:+.1f} desvios y el signo a {zB:+.1f}.")
-        A(f"#  Este juez la DESCARTA POR CONSTRUCCION -el informativo es el MINIMO de las tres nulas-,")
-        A(f"#  NO porque no exista. Punto ciego MEDIDO: una ventaja de timing pura de +$403/sesion,")
-        A(f"#  recuperada al 98% por rotacion, tambien da NO SUPERA (juez_formas_ventaja.py).")
-        A(f"#  Si tu ventaja es de CUANDO y no de QUE LADO, este veredicto no la juzga: le falta el")
-        A(f"#  instrumento. No lo leas como 'no sirve'.")
+        A(f"#  BANDERA ROJA: declaraste '{r['clase_declarada']}' y la firma medida es '{r['firma']}'.")
+        A(f"#  No coinciden. El juez NO aplica la regla de la clase declarada: usa el minimo de las TRES")
+        A(f"#  nulas (el estricto). Declarar una clase no relaja nada; la relajacion se GANA con la firma.")
+        if r["firma"] == "timing":
+            A(f"#  Tu ventaja tiene firma de TIMING (rotacion {zA:+.1f}, signo {zB:+.1f}) y la declaraste")
+            A(f"#  direccional: si de verdad es de CUANDO, declarala asi y volve a correr -pero la")
+            A(f"#  declaracion queda en el registro, y cambiarla despues de ver el resultado se ve-.")
         A("#" * 96)
     A("")
     A(f"   POR REGIMEN, EJE EX-ANTE (tercil de volatilidad EN BPS -rango/precio- de la sesion ANTERIOR,")
@@ -902,12 +957,11 @@ def informe(s):
     for c in [
         f"LA BUSQUEDA ANTERIOR: el juez no puede ver cuantas variantes se probaron antes de esta. "
         f"Supone {s['variantes_total']}; si fueron mas, no vale. Es inverificable por construccion.",
-        "FALSO NEGATIVO ESTRUCTURAL, AHORA MEDIDO (juez_formas_ventaja.py): una ventaja de TIMING pura "
-        "-saber CUANDO entrar, con el lado al azar- de +$403/sesion, recuperada al 98% por la nula de "
-        "rotacion (+22 desvios), igual da NO SUPERA, porque la nula de SIGNO la ve al -1% y el "
-        "'informativo' es el MINIMO de las tres. El punto ciego NO es chico: es TOTAL para una ventaja "
-        "de timing pura, del tamano que sea. En cambio una ventaja de TAMANO (arriesgar mas cuando se "
-        "acierta) SI se ve: recuperada al 91-95% por las dos nulas, veredicto SUPERA.",
+        "CLASES DE VENTAJA: el juez juzga bien la DIRECCIONAL y la de TAMANO (medido: recuperadas al "
+        "91-95% por las dos nulas). La de TIMING solo se juzga si se DECLARA como tal y la firma lo "
+        "confirma; declarada como direccional da NO SUPERA aunque sea real (medido: +$403/sesion "
+        "recuperada al 98% por rotacion y al -1% por signo). Una ventaja de SALIDA -cuando cerrar- no "
+        "se puede ni expresar: la regla de salida se declara y se aplica igual a todas las operaciones.",
         "DESLIZAMIENTO DE ENTRADA: MEDIDO y cobrado (medio-spread ~0,13 pt por operacion, por "
         "regimen; microestructura_tbbo.py). Supone ENTRADA POR MERCADO (cruza). Un candidato que "
         "entra PASIVO no lo paga pero enfrenta no-ejecucion y seleccion adversa, que este juez NO "

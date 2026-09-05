@@ -1,5 +1,5 @@
 """
-CONTROLES DEL JUEZ - siete, cada uno con condicion de falla escrita contra un resultado PUBLICADO,
+CONTROLES DEL JUEZ - diez, cada uno con condicion de falla escrita contra un resultado PUBLICADO,
 y todos tienen que poder salir de las dos formas.
 
 NO GASTA CARTUCHO. K = 261. Construir la herramienta no es usarla: los candidatos de aca son
@@ -55,6 +55,19 @@ este mal (me paso con "A domina a TODO capital", que contradecia mi propia curva
       los tres terciles en el borde) y no se fija; el invariante robusto es NO SUPERA. La conversion
       SUPERA->REQUIERE MEDICION la ejercita C2, que tiene ventaja grande y SUPERA firme en cruce.
       LO HARIA FALLAR: que devuelva SUPERA en cualquiera de los dos modos.
+
+  C9  VENTAJA DE TIMING declarada BIEN (sabe CUANDO, lado al azar; el mejor tercio de ranuras DENTRO
+      de cada tercil de volatilidad, para que el timing quede repartido por regimen y el control aisle
+      una sola propiedad). Publicado en juez_formas_ventaja.py: una ventaja de timing pura la recupera
+      la rotacion al 98% y la de signo al -1%. Como la nula de signo NO es un test valido para esa
+      clase, si el candidato la DECLARA y la firma lo confirma, se la omite del minimo.
+      ESPERADO: SUPERA (o REQUIERE MEDICION en pasivo).
+      LO HARIA FALLAR: que siga dando NO SUPERA -el punto ciego no se arreglo-.
+      MEDIDO de paso: con seleccion GLOBAL (no estratificada) el mismo candidato da APUESTA AL REGIMEN
+      -el juez SI ve la ventaja, pero la ventaja vive en un regimen-.
+  C10 LA PUERTA TRASERA: candidato SIN ventaja que declara 'timing'. ESPERADO: NO SUPERA igual, de
+      plano. La declaracion no compra nada: la relajacion se gana con la FIRMA medida, no con decirlo.
+      LO HARIA FALLAR: que declarar una clase falsa lo mueva de NO SUPERA.
 
 REGLA DE MODO PASIVO: el juez NUNCA devuelve SUPERA en modo pasivo (la cota optimista solo rechaza).
 Cuando superaria la cota devuelve REQUIERE MEDICION PASIVA POR CANDIDATO. Verificado en los ocho.
@@ -115,10 +128,11 @@ def ambos_lados(m, idx):
     return pL, pS
 
 
-def candidato(nombre, m, idx, largo_mask, variantes=1, familia=None):
+def candidato(nombre, m, idx, largo_mask, variantes=1, familia=None, clase="direccional"):
     ops = [dict(ts=str(m["ts"][i]), lado=("largo" if L else "corto")) for i, L in zip(idx, largo_mask)]
     c = dict(nombre=nombre, instrumento="ES", contratos=1, limite_contratos=12,
-             variantes_probadas=variantes, regla_salida=dict(CELDA), operaciones=ops)
+             variantes_probadas=variantes, clase_ventaja=clase,
+             regla_salida=dict(CELDA), operaciones=ops)
     if familia:
         c["familia"] = familia
     return c
@@ -162,7 +176,7 @@ def correr(pasivo, m):
     global MODO_PASIVO
     MODO_PASIVO = pasivo
     print("=" * 100)
-    print(f"CONTROLES DEL JUEZ - siete, con condicion de falla contra lo publicado   "
+    print(f"CONTROLES DEL JUEZ - diez, con condicion de falla contra lo publicado   "
           f"[MODO {'PASIVO' if pasivo else 'CRUCE'}]")
     print(f"NO GASTA CARTUCHO. K = 261. Permutaciones por nula: {NPERM}. La caja sellada no se toca.")
     print("=" * 100)
@@ -302,6 +316,43 @@ def correr(pasivo, m):
     NO_APRUEBA = {"NO SUPERA", "APUESTA AL REGIMEN", J.REQUIERE_MEDICION}
     resultados["C8"] = (v in NO_APRUEBA, v)
 
+    # ------------------------------------------------- C9/C10 la clase de ventaja y la puerta trasera
+    prom = (dL + dS) / 2.0
+    # el mejor tercio de ranuras DENTRO DE CADA TERCIL de volatilidad: asi la ventaja de timing queda
+    # repartida por regimen y el control aisla el timing puro, sin mezclarlo con concentracion de
+    # regimen. (Con seleccion GLOBAL el mismo candidato da APUESTA AL REGIMEN: la ventaja existe y el
+    # juez la ve, pero vive en un regimen. Son dos propiedades distintas y este control mide una.)
+    terc_op = m["tercil_exante"][m["ses_de"][idx]]
+    sel = np.zeros(len(idx), bool)
+    for t in (0, 1, 2):
+        mk = terc_op == t
+        if mk.any():
+            sel |= mk & (prom >= np.quantile(prom[mk], 2 / 3))
+    print(f"\nC9  VENTAJA DE TIMING declarada BIEN (lado al azar, mejor tercio DENTRO de cada tercil).")
+    print(f"    Esperado: SUPERA / REQUIERE MEDICION. La nula de signo no puede verla y se omite si la firma confirma.")
+    lado9 = rng.random(int(sel.sum())) < 0.5
+    c9c = candidato("C9_timing_declarado", m, idx[sel], lado9, clase="timing")
+    v, s = juzgar("C9", c9c, m, registro_nuevo("c9"))
+    if s:
+        resumen(s)
+        r9 = s["periodos"]["trabajo"]
+        print(f"      clase declarada {r9['clase_declarada']} / firma medida {r9['firma']}   "
+              f"omite signo: {r9['aplica_timing']}   z_info {r9['z_info']:+.1f} (estricto seria {r9['z_estricto']:+.1f})")
+    resultados["C9"] = (v in ("SUPERA", J.REQUIERE_MEDICION), v)
+
+    print(f"\nC10 LA PUERTA TRASERA: candidato SIN ventaja que declara 'timing'. Esperado NO SUPERA igual.")
+    print(f"    Falla si declarar una clase falsa lo hace pasar.")
+    c10c = candidato("C10_nulo_declara_timing", m, idx, moneda, clase="timing")
+    v, s = juzgar("C10", c10c, m, registro_nuevo("c10"))
+    if s:
+        resumen(s)
+        r10 = s["periodos"]["trabajo"]
+        print(f"      clase declarada {r10['clase_declarada']} / firma medida {r10['firma']}   "
+              f"omite signo: {r10['aplica_timing']}   z_info {r10['z_info']:+.1f}")
+    # estricto a proposito: un candidato NULO tiene que ser rechazado de plano, declare lo que declare.
+    # Si declarar 'timing' lo moviera aunque sea a APUESTA, la declaracion estaria comprando algo.
+    resultados["C10"] = (v == "NO SUPERA", v)
+
     # ---------------------------------------------------------------- demostracion: contador
     print("\nDEMOSTRACION (no es control): el contador de familia.")
     reg = registro_nuevo("contador")
@@ -340,13 +391,16 @@ def main():
     print("candidato en el borde (C8) que cruce NO SUPERA puede volverse REQUIERE MEDICION -nunca SUPERA-.")
     print("LO HARIA FALLAR: que cualquier corrida en PASIVO devuelva SUPERA.")
     print("#" * 100)
-    print(f"   {'control':>10}{'CRUCE':>28}{'PASIVO':>32}")
+    # ancho fijo >= el veredicto mas largo ("REQUIERE MEDICION PASIVA POR CANDIDATO", 38): con 28 las
+    # dos columnas se pegaban y la tabla mentia sobre donde termina una y empieza la otra.
+    W = max(len(v[1]) for v in list(res_cruce.values()) + list(res_pas.values())) + 2
+    print(f"   {'control':>8}  {'CRUCE':<{W}}{'PASIVO':<{W}}")
     hay_supera_pasivo = False
     for k in res_cruce:
         vc = res_cruce[k][1]; vp = res_pas[k][1]
         if vp == "SUPERA":
             hay_supera_pasivo = True
-        print(f"   {k:>10}{vc:>28}{vp:>32}")
+        print(f"   {k:>8}  {vc:<{W}}{vp:<{W}}")
     nc = sum(1 for ok, _ in res_cruce.values() if ok)
     npa = sum(1 for ok, _ in res_pas.values() if ok)
     print(f"\n   controles pasados: CRUCE {nc}/{n}   PASIVO {npa}/{n}")
