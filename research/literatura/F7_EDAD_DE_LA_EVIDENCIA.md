@@ -294,3 +294,121 @@ una pregunta de literatura, no de datos, y ninguna de las respuestas requirió t
 **No detecta la muerte silenciosa.** La deriva nocturna murió en 2021 y se documentó en 2026: hubo
 cinco años en los que la búsqueda habría devuelto grado A. **El grado A significa "nadie publicó
 todavía que se murió", no "está vivo".**
+
+---
+
+# REPESAJE — por lo reciente de los DATOS, no de la publicación
+
+El grado de arriba mide **si alguien miró**. Este repesaje mide **qué tan vieja es la evidencia más
+nueva**. Son riesgos distintos y no se sustituyen.
+
+## Hasta dónde llegan los datos que sostienen cada candidata
+
+| candidata | datos del paper original | **datos más recientes que la sostienen** | fuente de esos datos |
+|---|---|---|---|
+| **L10** | 2023 | **2023** | el propio paper |
+| **L11** | 2009 | **2023** | Ai, Bansal y Guo, extensión de terceros |
+| L05 | 2020 | 2023 | Dim, Eraker y Vilkov, **contradiciendo** |
+| L06 | ≈ 2021 | ≈ 2021 | el propio paper |
+| L01 | mayo de 2020 | mayo de 2020 | el propio paper |
+| L07 | 2013 | **2020** | Bessho, Sugimoto y Suzuki, arXiv |
+| L03 | marzo de 2014 | ≈ 2019, **otro mercado** | Kurov et al. 2022, sobre datos británicos |
+| L09 | 2018 | 2018 | el propio paper |
+| L08 | 2012 | ≈ 2016 | Ito y Yamada sobre la reforma |
+| L04 | 2014 | 2014 | Ivanov y Lenkey. La revisión de 2024 no trae datos nuevos |
+| L02 | 2013 | 2013 | el propio paper |
+
+## El orden nuevo, y qué cambia
+
+| # | por edad de los datos | # anterior, por grado | movimiento |
+|---|---|---|---|
+| 1 | **L11** (2023, con confirmación de terceros) | 1 | **=** |
+| 2 | **L10** (2023, sin confirmación) | 4 | ↑ 2 |
+| 3 | L06 (≈ 2021) | 6 | ↑ 3 |
+| 4 | L01 (2020) | 5 | ↑ 1 |
+| 5 | L07 (2020) | 2 | ↓ 3 |
+| 6 | L03 (2019, otro mercado) | 8 | ↑ 2 |
+| 7 | L09 (2018) | 7 | = |
+| 8 | L08 (2016) | 3 | **↓ 5** |
+| 9 | L04 (2014) | 9 | = |
+| 10 | L02 (2013) | 10 | = |
+| 11 | L05 (eje, no regla) | 11 | = |
+
+**Seis de once cambian de posición. El primer puesto NO cambia.**
+
+## Cómo hay que leer los dos órdenes juntos
+
+**L11 queda primera en los dos**, y por motivos independientes: tiene confirmación de terceros **y**
+esa confirmación llega a 2023. Es la única del inventario que gana en las dos dimensiones.
+
+**L08 es el desacuerdo más grande, y hay que entenderlo antes de usarlo:** es tercera por grado
+—tiene confirmación publicada de que el mecanismo sobrevivió a la reforma— y octava por edad, porque
+esa confirmación es sobre datos de alrededor de 2016. **Está confirmada, con datos viejos.** Las dos
+cosas son ciertas y ninguna anula a la otra.
+
+**Y hay una convergencia que sí decide: L04 y L02 son novena y décima en los dos órdenes.** Una
+candidata que pierde en las dos dimensiones no tiene defensa por ningún lado. **Ése es el uso
+correcto de tener dos órdenes: no promediarlos, sino mirar dónde coinciden.**
+
+**No reemplazo el orden del índice.** El del índice sigue siendo el de grado, porque "alguien lo
+verificó" es evidencia más dura que "los datos son recientes". Este repesaje va como segunda
+dimensión y como advertencia sobre las que ganan en una sola.
+
+---
+
+# CRITERIO GENERAL — antes de descartar por muerto, preguntar si se MUDÓ
+
+**Éste es un criterio permanente del filtro, no una nota de una tanda.**
+
+El caso que lo obliga está en la entrada de L03. Kurov, Sancetta y Wolfe (2022) no reportaron sólo
+que la deriva previa se debilitó cuando se cortó el acceso anticipado. Reportaron **las dos mitades**:
+
+> la deriva previa se debilita con el fin del acceso anticipado, **y —consistente con menos comercio
+> informado antes de los anuncios— la reacción del mercado en el momento oficial de la publicación
+> se hace MÁS GRANDE.**
+
+**La información no dejó de entrar al precio. Entró más tarde y de golpe.** El movimiento no
+desapareció: **cambió de ventana.**
+
+## Por qué importa para todo el inventario
+
+Un efecto se puede apagar de dos maneras muy distintas, y **el filtro de edad las confunde si no se
+lo obliga a separarlas**:
+
+| | qué pasó | qué queda |
+|---|---|---|
+| **MUERTE** | el mecanismo dejó de operar, o el flujo que lo causaba se secó | nada |
+| **MUDANZA** | el mecanismo sigue, pero cambió el momento, el instrumento o el horizonte | **el efecto, en otra ventana** |
+
+La deriva nocturna del E-mini es una **muerte**: los propios autores midieron que la causa se secó,
+la dispersión del volumen firmado de cierre cayó de 6,5 % a 2,9 %. **No se mudó: se apagó la fuente.**
+
+La deriva previa a los anuncios es una **mudanza**: la fuente —el acceso anticipado— se cortó, y el
+ajuste de precio se corrió a la ventana siguiente.
+
+## La pregunta que hay que hacerse, y en qué orden
+
+**Antes de mandar una candidata a `DESCARTADAS.md` por grado D, hay que contestar tres cosas:**
+
+1. **¿Se secó la CAUSA, o se movió el MOMENTO?** Si el paper que reporta la desaparición también
+   reporta que el ajuste aparece en otro lado, es mudanza.
+2. **¿La regla original sigue describiendo lo mismo?** Una mudanza deja la regla vieja apuntando a
+   una ventana vacía. Eso se lee como muerte y no lo es.
+3. **¿La ventana nueva es operable?** Una mudanza a una ventana de segundos alrededor de una
+   publicación es peor que inútil para este proyecto, aunque el efecto sea más grande que antes.
+
+**El punto 3 es el que evita el entusiasmo:** que un efecto se haya mudado y hasta agrandado no
+significa que sirva. La deriva de L03 se mudó de una ventana de treinta minutos —operable— a un salto
+en el instante de la publicación —no operable con lo que hay—. **Es un efecto más grande en un lugar
+peor.**
+
+## Consecuencia para la clasificación
+
+Se agrega una etiqueta al grado, no un grado nuevo:
+
+- **C-mudada** — el efecto se debilitó en su ventana original y hay evidencia publicada de que el
+  ajuste apareció en otra. **L03 es C-mudada.**
+- **D-muerta** — la causa se secó y no hay ventana de reemplazo. **La deriva nocturna es D-muerta.**
+
+**La diferencia práctica: una C-mudada sigue siendo un buen sujeto para un test de mecanismo, porque
+la pregunta "¿dónde está ahora?" tiene respuesta. Una D-muerta no.**
