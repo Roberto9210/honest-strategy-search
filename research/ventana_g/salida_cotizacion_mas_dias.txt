@@ -1,0 +1,31 @@
+====================================================================================================
+PIEZA 5 - DIAS ADICIONALES DE ORDER FLOW DEL ES: COTIZACION. NO SE DESCARGA NADA.
+K = 261, no gasta cartucho. Dinero comprometido en esta corrida: $0.
+====================================================================================================
+
+   Ya en disco: 6 dias con mbo + tbbo (13 archivos, 781 MB). El plan de compra esta COMPLETO.
+   Credito declarado restante: USD 98.92 (calculado, NO leido de la cuenta).
+
+   fecha        para que             mbo USD  tbbo USD   dia USD       MB    registros
+   2017-08-10   candidato bajo          0.50      0.42      0.92      314    5,526,953
+   2018-02-08   candidato alto          1.19      1.35      2.54      763   13,345,278
+   2019-01-03   candidato alto          1.04      1.12      2.16      666   11,656,168
+   2019-10-02   candidato medio         0.87      0.68      1.55      548    9,640,565
+
+   PRECIO POR DIA (mbo + tbbo, dia UTC entero): USD 1.79   [rango de la muestra, 4 dias]
+   Solo mbo: USD 0.90 por dia.
+
+    dias extra   costo USD  total dias   credito que queda
+             3        5.38           9               93.54
+             6       10.76          12               88.16
+            12       21.53          18               77.39
+            24       43.05          30               55.87
+            48       86.11          54               12.81
+
+   COMPUERTAS: tope por item USD 3.00 (un dia cuesta USD 1.79, pasa);
+               tope total USD 25.00 -> caben 13 dias sin pedir autorizacion nueva.
+
+   NO SE DESCARGO NADA. Este script no tiene modo --comprar por diseno. La compra, si
+   Roberto la aprueba, va por databento_comprar_microestructura.py, que tiene la
+   compuerta de $3 por item y $25 total en el codigo, y exige pregunta escrita por item.
+====================================================================================================
