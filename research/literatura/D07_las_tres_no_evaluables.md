@@ -1,6 +1,6 @@
 # D07 — Las tres NO EVALUABLES, resueltas con cotas recuperadas
 
-**VENTANA L. NO MIDE NADA. K sigue en 261.**
+**VENTANA L. NO MIDE CANDIDATAS; corre CONTROLES DEL INSTRUMENTO desde el 2026-09-05 (rol ampliado por Roberto, ver `INDICE`). K sigue en 261.**
 
 **La técnica es la de hoy:** de Baltussen saqué 25 puntos básicos por sesión a partir de un 3,96 %
 anual que el paper no reporta en esas unidades. **Se aplica lo mismo a L04, L05 y L09.**
