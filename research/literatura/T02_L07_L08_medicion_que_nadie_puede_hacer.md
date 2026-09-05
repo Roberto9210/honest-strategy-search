@@ -1,6 +1,6 @@
 # T02 — L07 y L08: la corrección que el perfil del ES NO les hace, y quién podría hacérsela
 
-**VENTANA L. NO MIDE NADA. K sigue en 261. EL RANKING SIGUE CONGELADO.**
+**VENTANA L. NO MIDE CANDIDATAS; corre CONTROLES DEL INSTRUMENTO desde el 2026-09-05 (rol ampliado por Roberto, ver `INDICE`). K sigue en 261. EL RANKING SIGUE CONGELADO.**
 
 **Roberto lo vio en la tabla de `T01` y yo no saqué la consecuencia:** el perfil de volatilidad
 intradiaria del ES descongela a **tres** candidatas —L01, L03, L10—, no a cinco. **L07 vive en el
