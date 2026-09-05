@@ -59,6 +59,68 @@ ellos** y no como nos convenga.
   `√(23/4) ≈ 2,4` veces el de ellos; **si su `t` es menor que ~5, el control B no tiene potencia y no
   se corre**: se declara "sin potencia" y listo.
 
+# 3b. CTRL01-B — CERRADO SIN GASTAR, 2026-09-05
+
+**Roberto fue al paper.** BLW p. 26, textual: *"Panel (b) extends the regression to include the previous 12
+lagged hours of RSVt for the night hours. Most of the point estimates in the table are insignificant.
+However, focusing on the highlighted purple diagonal estimates we find economically large and
+statistically significant return predictability arising from order imbalances at close of regular U.S.
+trading hours. More specifically, the point estimates are large at exactly the opening of Tokyo and
+European regular market opening times, even after controlling for all imbalances subsequent to U.S.
+close."* Y del panel (a): *"There is only one significant hour between 23:00 – 24:00 and the sign is
+positive not negative."*
+
+**El estadístico `t` exacto de la Tabla VIII no se pudo extraer** —Roberto lo dice así en vez de
+estimarlo, y así queda—. **La compuerta sellada era `t ≥ 5` para que B tuviera potencia con nuestro
+error estándar 2,4 veces mayor.** El texto describe la mayoría de las estimaciones como no
+significativas y las significativas concentradas en una diagonal: **con eso, B no pasa la compuerta y
+no se corre. Los ~$30-40 no se gastan.**
+
+**Lo que sí trae, y va a la casa:** p. 27, *"ex-ante volatility has a strong amplification effect on the
+relationship between order imbalance and overnight returns between 2:00 – 3:00."* **Es el eje de régimen
+de G —volatilidad ex-ante— confirmado desde afuera como el eje correcto para un fenómeno del ES.** Ver
+`L12` §9 para cómo cuenta.
+
+# 3c. CTRL01-A — CORRIDO, 2026-09-05, por instrucción de Roberto. **REPRODUCE, en las dos ventanas.**
+
+Código: `ctrl01_deriva_nocturna.py` (esta carpeta), salida: `salida_ctrl01.txt`. Datos: ES 1-min
+2016-2019 por el cargador de G (`razon_escalas.cargar_con_sesion`, leído, no tocado): 1.007 sesiones
+limpias, 1.357.785 barras. **La caja no se tocó.** Criterios sellados en el encabezado del script antes
+de correr, en unidades de desvío porque la tabla en pb de BLW no estaba disponible.
+
+**Chequeo de reloj, primero:** los tres minutos del este con mayor |retorno| medio de un minuto son
+**15:59, 09:31 y 09:35** — el cierre de contado y la apertura de contado, en hora del este, con el horario
+de verano manejado fecha por fecha. **El reloj está bien.**
+
+| ventana | n | media | desvío | **t** | t esperada si estacionario | `θ_obs` | `θ_pub` | intervalo sellado | **veredicto** |
+|---|---|---|---|---|---|---|---|---|---|
+| **2:00-3:00 ET** | 1.006 | **+0,785 pb** | 12,24 pb | **+2,03** | 2,20 | **0,0641** | 0,0693 | [0,006; 0,132] | **REPRODUCE** |
+| **1:30-3:30 ET** | 1.006 | **+1,409 pb** | 19,71 pb | **+2,27** | 2,60 | **0,0715** | 0,0819 | [0,019; 0,145] | **REPRODUCE** |
+
+**Por año, 2:00-3:00:** 2016 +1,80 pb (t 1,80) · 2017 +0,43 (1,31) · 2018 +1,30 (1,49) · **2019 −0,41
+(−0,57)**. La deriva no es pareja: 2019 es negativa. Es lo que se espera de un promedio de 23 años que
+incluye años flojos; se anota, no se interpreta.
+
+## Lo que el control dice, en su tamaño exacto
+
+> ## **El instrumento de la casa —los datos, el cargador, el reloj y la aritmética— reproduce un resultado publicado sobre el ES por otro equipo, con la potencia que se declaró antes (t 2,0 contra 2,2 esperada) y con el punto estimado a un 8 % del publicado (0,064 contra 0,069).** Es la primera reproducción de un resultado externo sobre nuestro instrumento en 22 rondas.
+
+**Y lo que NO dice, con la misma dureza:**
+- **El criterio era débil por diseño**: el intervalo ±2 errores estándar admitía desde 0,006 hasta
+  0,132. Que el punto haya caído a 8 % del publicado es más de lo que el criterio exigía, y es un dato,
+  no una prueba de precisión.
+- **Las dos ventanas no son independientes**: una contiene a la otra.
+- **No cambia ningún veredicto de candidata.** L12 sigue ciega y fuera de F17: t = 2,0 antes de costos,
+  y después de costos su propio paper dice 0,3 de Sharpe.
+- **No es evidencia sobre el mercado**: 2016-2019 está adentro de la muestra de BLW.
+- **Lo que sí cambia**: `D15` §3.1 tenía "mal calibrado, falsado por los controles inyectados"; ahora
+  tiene además "reproduce un resultado publicado en el mismo instrumento". **El instrumento ve lo que
+  hay cuando lo que hay es del tamaño que puede ver.**
+
+**El desvío de la ventana 2:00-3:00, medido: 12,24 pb.** Mi estimación desde las cajas de G con ρ = 0
+(`L12` §4) era 11,3: la correlación entre medias horas vecinas no es cero. Anotado como corrección de
+un FRÁGIL por un medido.
+
 # 4. Lo que el control NO es, escrito para que nadie lo convierta
 
 - **No es una prueba de L12**: L12 está ciega y fuera de F17. Un control que reproduce no la resucita.
