@@ -119,7 +119,9 @@ ventana final, no un único print.**
 | ¿es el número al que el mercado marca? | **sí** | **sí** |
 
 **El riesgo real es otro: cuando no hay operaciones en el rango, un comité fija el precio.** Eso pasa
-en contratos ilíquidos, **y el futuro del S&P 500 era de los más líquidos que existían.**
+en contratos ilíquidos, **y el futuro del S&P 500 era de los más líquidos que existían.** *(Afirmación
+mía sin fuente: **FRÁGIL**. **Falla** si las estadísticas de volumen del CME de 1987-1996 lo ponen por
+debajo de otros contratos que tuvieron precio fijado por comité. Ver `A06`.)*
 
 **La incertidumbre que agrega el rango se suma a `ε`, y `ε` tiene un factor 6,5 de holgura.**
 
