@@ -19,6 +19,28 @@ de desvio porque la tabla en pb de BLW no esta disponible):
   -no estacionario en 2016-2019, o el instrumento no lo ve- SIN ELEGIR.
 Ventana: precio a las HH:MM del este = cierre de la ultima barra de un minuto que abre antes de
 HH:MM, hora de America/New_York manejada fecha por fecha (horario de verano incluido).
+
+PRIMERA CORRIDA, 2026-09-05: REPRODUCE en las dos ventanas (t = +2,03 y +2,27; theta 0,064 y 0,072).
+Salida commiteada en salida_ctrl01.txt.
+
+--------------------------------------------------------------------------------------------------
+TEST DE REGRESION DEL INSTRUMENTO (aceptado por Roberto, ronda 23). LEER ANTES DE ASUSTARSE.
+--------------------------------------------------------------------------------------------------
+Este script se vuelve a correr CADA VEZ que cambie el cargador (razon_escalas / terreno_tenencia),
+el reloj (zona horaria, manejo del horario de verano, definicion de sesion) o el conjunto de datos
+(otro proveedor, otro esquema, o el corte de formato de marzo de 2017 que encontro D19). Se exige el
+mismo veredicto: REPRODUCE en las dos ventanas.
+
+ADVERTENCIA ESCRITA ADENTRO, para quien lo corra dentro de seis meses: el efecto que se reproduce
+tiene t ~ 2. Un efecto de t ~ 2 falla el criterio por AZAR una de cada veinte veces sin que nada haya
+cambiado. Por eso el criterio del test es:
+   - UN solo REPRODUCE fallido NO significa nada: se anota y se vuelve a correr sobre el mismo dato.
+   - DOS fallos seguidos sobre el mismo dato SI significan algo: entonces hay que buscar que cambio,
+     y lo primero que se mira es el reloj (el chequeo de arriba: 15:59, 09:31, 09:35 del este).
+   - Si el conjunto de datos cambio de verdad (otra epoca, otro proveedor), un fallo puede ser del
+     mercado y no del instrumento: se reportan las dos lecturas, sin elegir, como en CTRL01 seccion 3.
+El primer reejecucion prevista: cuando se separen los datos anteriores y posteriores al corte de
+formato de 2017 (D19), correr sobre cada lado y exigir REPRODUCE en los dos.
 """
 import os
 import sys
