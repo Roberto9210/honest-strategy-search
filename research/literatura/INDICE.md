@@ -18,6 +18,12 @@ candidatas fueron clasificadas **antes** de cualquier medición.
 | **[F15](F15_regla_de_la_ventana.md)** | **la regla de la ventana: qué forma debe tener una candidata antes de que exista** |
 | [F14](F14_fuente_fiscalizacion.md) | la fuente de fiscalización, con su filtro y su registro de descarte |
 | [A03](A03_variables_tratadas_como_constantes.md) | dónde tratamos una variable como constante |
+| [A04](A04_domicilio_de_L05.md) | el domicilio de L05, y la cuarta pregunta de A02: ¿los conteos suman? |
+| **[D08](D08_L10_fuera_de_muestra.md)** y **[D09](D09_calidad_de_datos_del_piso.md)** | **L10 fuera de muestra: existe desde 1987, los datos del piso no lo matan, y mi margen estaba inflado por dos. El correo, listo y sin enviar** |
+| **[H01](H01_hechos_del_regulador.md)** | **hechos medidos por los economistas del regulador: cinco documentos, cinco hechos con número, uno muerto por instrumento** |
+| **[D10](D10_trampa_de_profundidad.md)** | **para G: el ES publica diez niveles hoy y publicaba cinco en 2013-2016. Lo que ve la plataforma de Roberto se cuenta, no se busca** |
+| **[R01](R01_regla_atipicos_1987.md)** | **regla sellada antes de mirar: un evento fuera del dominio del eje de régimen se excluye por regla, y octubre de 1987 no es el mismo objeto** |
+| **[T01](T01_franjas_horarias.md)** | **ranking congelado: en qué franja vive cada sobreviviente, para aplicar el perfil en diez minutos. Los cinco viven en picos** |
 
 > ## ESTADO DE LAS ONCE — 2026-09-05, por la balanza ciega
 >
@@ -72,6 +78,7 @@ candidatas fueron clasificadas **antes** de cualquier medición.
 > ## ORDEN VIGENTE — 2026-09-05, tras corregir la contaminación de F7
 >
 > **L11 · L10 · L07 · L01 · L08 · L06 · L09 · L03 · L04 · L02 · L05**
+> **CONGELADO el 2026-09-05.** Los cinco márgenes de los sobrevivientes salen del escalado uniforme que `A03` marcó como equivocado. **No se recalcula, no se reordena, no se promueve ni se baja a nadie** hasta que la VENTANA G mida el perfil de volatilidad intradiaria. Ver `T01` y la pregunta 6b de `FILTROS.md`.
 >
 > **La tabla de más abajo quedó vieja en la columna de grado y en el orden.**
 >
