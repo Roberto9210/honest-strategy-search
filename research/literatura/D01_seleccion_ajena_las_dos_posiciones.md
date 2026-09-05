@@ -76,6 +76,19 @@ hoy tapa una parte de él.
 
 ## 2. Y peor: filtramos por MAGNITUD, que es filtrar por resultado
 
+> **CORREGIDO el 2026-09-05, después del veredicto. Ver [D03](D03_recorte_harvey_liu.md).**
+>
+> **Este argumento es más flojo de lo que lo escribí.** Harvey y Liu establecen que el recorte por
+> multiplicidad es **no lineal**: las magnitudes altas se penalizan poco porque son las que más
+> probablemente son descubrimientos verdaderos. Calculado sobre nuestras propias candidatas, la de
+> `t` más alto pierde 16 % y la de `t` más bajo pierde 40 %.
+>
+> **Nuestro filtro `F4`, que descarta lo chico, selecciona hacia el lado que el recorte castiga
+> menos.** El argumento no es nulo —seguimos seleccionando sobre una variable de resultado— pero es
+> **de segundo orden, no de los fuertes**.
+>
+> **No cambia el veredicto de `D02`**, que se apoyó en el argumento 4, el de las fechas de muestra.
+
 **`F4` descarta candidatas cuya magnitud declarada esté por debajo del piso.** Eso es **seleccionar
 sobre la variable de resultado**.
 

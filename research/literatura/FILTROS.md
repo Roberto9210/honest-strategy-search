@@ -394,3 +394,53 @@ proyecto**.
 
 **Y la regla corta para el otro lado también: si el resultado sí cambia lo que hacemos, entonces el
 esfuerzo se justifica aunque la candidata no se pueda operar nunca.** Eso es lo que salva a L07.
+
+---
+
+# F12 — ANTES DE DISCUTIR UN CAMBIO DE MÉTODO, CALCULAR SI CAMBIARÍA ALGÚN VEREDICTO
+
+**Regla permanente. Decidida por Roberto el 2026-09-05.**
+
+> ## **ANTES DE DISCUTIR UN CAMBIO DE MÉTODO, CALCULÁ SI CAMBIARÍA ALGÚN VEREDICTO ACTUAL. SI NO CAMBIA NINGUNO, NO SE DISCUTE.**
+
+## Por qué es la versión correcta, y no la que yo había propuesto
+
+Yo propuse un disparador con esta forma: *"cuando un cambio metodológico rescataría material que hoy
+no pasa, escribir las dos posiciones antes del veredicto"*. **Y señalé su defecto en la misma frase:
+"¿esto rescataría el inventario?" es un juicio, y alguien motivado contesta que no y se saltea el
+ejercicio.**
+
+**`F12` no depende de ningún juicio. Es una cuenta.** Se toman los veredictos vigentes, se recalculan
+con la regla nueva, y se compara. **Un motivado puede mentir sobre una intuición; le cuesta mucho más
+mentir sobre una tabla que otro puede rehacer.**
+
+## Mi propio caso es el que la justifica
+
+Discutí durante una tanda entera si el castigo por multiplicidad debía tratar distinto a la selección
+ajena. **La cuenta que `F12` habría exigido son cinco minutos:**
+
+| | vara 4,0 | vara 3,0 | ¿cambia el veredicto? |
+|---|---|---|---|
+| L11 sola | θ ≥ 1,86 | θ ≥ 1,40 | **no**, sigue arriba de 1 |
+| L10 sola | θ ≥ 2,04 | θ ≥ 1,53 | **no** |
+| prueba agrupada `P01` | ya usa 3,0 | ya usa 3,0 | **no la toca** |
+| L07 sola `P05` | ya usa 3,0 | ya usa 3,0 | **no la toca** |
+
+**Ningún veredicto cambiaba. El debate no se debería haber abierto.**
+
+**Y hay que decir lo que el debate sí produjo, para no leer la regla como que fue tiempo perdido:**
+descubrió una contaminación de mirada hacia adelante en `F7` que invalidaba el orden del inventario.
+**Ese hallazgo fue un subproducto, no el objetivo, y `F12` lo habría impedido.** Es el costo conocido
+de la regla y se acepta: **una regla que evita muchos debates inútiles también evita algunos
+hallazgos laterales.**
+
+## Cómo se aplica
+
+1. Listar los veredictos vigentes.
+2. Recalcular cada uno **con la regla propuesta**.
+3. Si ninguno cambia, **se anota la cuenta y se cierra**. No se discute el fondo.
+4. Si alguno cambia, **entonces sí** se abre el debate, y ahí entra la disciplina de escribir las dos
+   posiciones antes del veredicto y commitearlas por separado.
+
+**El paso 3 no es "la idea es mala": es "la idea no es decidible con lo que tenemos hoy".** Puede
+volver cuando el inventario cambie, y entonces la cuenta dará distinto.
