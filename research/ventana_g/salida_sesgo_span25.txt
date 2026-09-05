@@ -1,0 +1,42 @@
+====================================================================================================
+TAREA 1 - CONVERGENCIA DEL SPAN 25: el 15% es ruido o es otra cosa?
+NO GASTA CARTUCHO. K = 261. Dinero: $0. La caja sellada no se toca.
+====================================================================================================
+
+   PREDICCION NULA, POR COMPONENTE (escrita antes de correr):
+   (i)   si era ruido: al subir K el valor se mueve hacia 0.0642
+   (ii)  si es real: se queda en 0.0546 con error chico, y hay algo distinto
+   (iii) el error tiene que bajar como raiz(K) en los dos casos
+
+   Span 25, 3 celdas, 40 series de bootstrap (contra 6 de la tabla anterior).
+
+         bracket    1-2p   sesgo pt/op     error   o despejado   o con K=6
+            5:20   -0.60       -0.0351   0.00145        0.0584            
+       12.5:12.5    0.00       -0.0007   0.00022           nan           -
+            20:5    0.60       +0.0345   0.00146        0.0575            
+
+----------------------------------------------------------------------------------------------------
+   (iii) EL ERROR BAJA COMO RAIZ(K)?  o despejado usando las primeras k series
+----------------------------------------------------------------------------------------------------
+     k series   o despejado   error de o   error x raiz(k)
+            3        0.0598      0.01964           0.03402
+            6        0.0546      0.00985           0.02412
+           10        0.0591      0.00624           0.01974
+           20        0.0626      0.00381           0.01702
+           40        0.0579      0.00243           0.01536
+
+====================================================================================================
+   LA RESPUESTA
+====================================================================================================
+   o con K=40: 0.0579 +- 0.0024   (con K=6 daba 0.0546)
+   publicado en sesgo_marco.py: 0.0642
+   distancia al publicado: -2.6 errores
+
+   (ii) NO CONVERGE: se queda donde estaba, con error chico. Hay algo distinto entre esta
+   corrida y la original y NO es ruido. Candidatos, sin elegir uno: la semilla (uso
+   20260907 contra 20260904), las celdas (tres contra cinco) o el numero de series.
+
+   Y LO QUE ESTO LE HACE A LOS SPANS CORTOS: si el span 25 sube a 0.0642, el
+   cociente o_corto/o_25 pasa de ~0,48 a ~0.41. La conclusion NO cambia
+   -o sigue siendo la mitad o menos en brackets estrechos- pero el factor exacto si.
+====================================================================================================
