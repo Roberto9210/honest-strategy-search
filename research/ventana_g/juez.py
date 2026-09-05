@@ -424,6 +424,11 @@ def juzgar_periodo(cand, m, idx, sgn, etiqueta, npermuta=NPERM, rotacion_global=
     veredicto. rotacion_global=True quita la defensa del rango (SOLO para el control que
     demuestra que la defensa hace falta; nunca para juzgar)."""
     inst = cand["instrumento"]; contratos = int(cand["contratos"])
+    # TERCERA CERRADURA, dentro del calculo. La compuerta de la ficha (validar) puede abrirse sola el
+    # dia que alguien complete la ficha de 6E, y este calculo seguiria cobrando el medio-spread, el
+    # exceso en el stop, la constante de sobrepaso y el markout DEL ES. La plomeria por instrumento
+    # esta NO IMPLEMENTADA y marcada: ver instrumentos.py, seccion LA PLOMERIA.
+    INS.exigir_plomeria(inst)
     punto = PUNTO[inst]; c1 = COMISION[inst] * contratos
     regla = cand["regla_salida"]
     avisos, no_cubre = [], []
