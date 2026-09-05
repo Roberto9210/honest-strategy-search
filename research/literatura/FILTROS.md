@@ -502,6 +502,15 @@ cambia un número, y esta carpeta ya tiene treinta.
 **La forma mínima que sí se puede sostener: todo documento que publique un número de potencia lista
 sus dependencias en el encabezado.** Eso está aplicado desde hoy en los míos.
 
+## Séptima pregunta, agregada el 2026-09-05, adoptada de la VENTANA G
+
+> **7. ¿Esta frase GENERALIZA más allá de lo que se midió? Si sí, ¿lleva su condición de falla escrita
+> al lado, como un control?**
+
+**Una generalización sin condición de falla es un error del mismo tipo que un número mal calculado.**
+G la descubrió en su propia frase sobre los factores del perfil; la pasada sobre mis documentos está en
+`A06`: cinco frases, las cinco corregidas en su lugar.
+
 ## Sexta pregunta, en dos partes, agregada el 2026-09-05 después de fallar TRES veces
 
 > **6a. ¿Esta afirmación CONTRADICE un hallazgo propio de otra ronda?**
