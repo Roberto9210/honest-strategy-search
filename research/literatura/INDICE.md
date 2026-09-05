@@ -16,6 +16,24 @@ candidatas fueron clasificadas **antes** de cualquier medición.
 | **[P04_COMPRA_L08.md](P04_COMPRA_L08.md)** | **qué datos comprar, el mínimo que sirve, y el plan B escrito antes de saber el precio** |
 | [HIBRIDAS.md](HIBRIDAS.md) | las que necesitan una pieza nuestra, y si esa pieza se puede ajustar |
 | [F10_CUANTA_GENTE_ADENTRO.md](F10_CUANTA_GENTE_ADENTRO.md) | ¿ya lo está operando alguien? Cinco de once con producto encontrado |
+| **[P05_L07_sola.md](P05_L07_sola.md)** | **la prueba más barata del inventario: un símbolo, diez minutos por día** |
+| [P06_si_sale_positivo.md](P06_si_sale_positivo.md) | qué pasa si sale positivo. El procedimiento, sin un solo umbral |
+
+## Lo que el juez puede juzgar HOY, tal como está
+
+El juez acepta `ES` y `MES` y trabaja con barras. **Dos candidatas pasan por esa puerta sin que haya
+que extenderlo, y son las dos que recuperó el filtro de exposición corregido.**
+
+| | instrumento | qué le falta | costo de lo que falta |
+|---|---|---|---|
+| **[L11](L11_prima_dias_anuncio_savor_wilson.md)** | ES | el calendario de anuncios 2016-2019 | **gratis**, medio día de recolección |
+| **[L10](L10_rebalanceo_institucional_harvey.md)** | ES | una serie diaria de retornos de bonos | **gratis**, pública |
+
+**Las dos entran como salida por tiempo de una sesión, así que arrastran la pregunta de tamaño de
+`F8` y la dependencia externa sin resolver sobre el límite de tiempo de la evaluación.**
+
+L01, L02 y L04 también son de ES y barras, pero están cortas por factores de doce a catorce y con
+grado B o C. **Se pueden juzgar; no conviene.**
 | [ORDEN_DE_TRABAJO.md](ORDEN_DE_TRABAJO.md) | **los ocho tests de mecanismo por potencia. El orden de trabajo real** |
 | [M01_test_de_mecanismo.md](M01_test_de_mecanismo.md) | probar el mecanismo en vez de la ventaja |
 | [M02_eje_barato_contra_eje_caro.md](M02_eje_barato_contra_eje_caro.md) | la prueba de una tarde, sin comprar nada |
