@@ -47,8 +47,15 @@ los signos es el peor lugar posible para tenerlo.*
   clase. **Llegaron dos.** Queda anotado como conteo, en revisión, y **no** se concluye todavía.
 - **Y el patrón que sí aparece, con tres casos (4', 6, y la mitad del 3):** los tres errores míos de
   esta ronda son *la pregunta correcta contestada al revés por no mirar dónde se consume el número*.
-  Eso es más específico y más buscable que "escalado por tiempo", y sugiere el chequeo:
-  **antes de firmar un signo, escribir los lugares donde el número entra en una cuenta.**
+  Eso es más específico y más buscable que "escalado por tiempo", y de ahí sale el paso obligatorio
+  de la Parte 1 bis.
+
+### Qué queda abierto, explícitamente
+
+La afirmación *"no hace falta buscar sesgo psicológico: hay que auditar los escalados"* **queda sin
+sostén en este documento** — llegaron los dos errores de otra clase que mi propia condición pedía.
+**Y no se reemplaza por la contraria.** No hay evidencia de sesgo de deseo y tampoco hay ya evidencia
+suficiente contra él. Queda **abierto**, y el conteo se sigue llevando.
 
 ### La corrección del error 4, en detalle, porque es mía y es instructiva
 
@@ -85,6 +92,30 @@ verificar qué se escala— que produjo tres errores en cuatro rondas, en las do
 
 *Lo que mataría la lectura que queda: que los próximos tres errores sean de clases todas distintas y
 sin patrón de escalado. Ahí no hay ni hábito técnico ni sesgo, sólo errores.*
+
+---
+
+## Parte 1 bis — EL PASO OBLIGATORIO QUE SALE DE TODO ESTO
+
+> **Antes de firmar un signo, escribir TODOS los lugares donde el número entra en una cuenta, y
+> derivar el signo desde ahí — no desde la intuición sobre qué clase de cosa es.**
+
+**El caso que lo enseña (entrada 6).** Traté una estimación de **RUIDO** como si fuera un **COSTO**.
+En un costo, **subestimar** es el lado fácil. En un ruido, **sobreestimar** es el lado conservador.
+Son signos opuestos, y la intuición no los distingue: hay que ir a ver dónde entra el número.
+
+Hecho bien, el paso es literalmente escribir la lista. Para el desvío de una caja de media hora:
+
+```
+(i)   denominador de la señal por evento    r = magnitud / σ      σ↑ → r↓ → menos potencia
+(ii)  ruido del umbral de detección         MDE = z·σ/√n          σ↑ → MDE↑ → más exigente
+(iii) factor para escalar sesión → ventana                        σ↑ → más ruido supuesto
+```
+
+Los tres apuntan igual ⇒ el signo es **difícil**. Sin la lista, dije "fácil".
+
+**Lo hice bien en A3 y mal en 4'.** La diferencia entre las dos veces no fue cuidado ni tiempo: fue
+haber escrito la lista.
 
 ---
 
