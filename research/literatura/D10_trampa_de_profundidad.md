@@ -34,6 +34,12 @@ PROMEDIO de ese paper sí depende, y no se transfiere a un día cualquiera.**
 
 ---
 
+> **ACTUALIZACIÓN 2026-09-05, del catálogo de Databento leído por Roberto:** el esquema **MBP-10**
+> existe para `GLBX.MDP3` → diez niveles confirmados por quien vende el dato. Y un borde de era que
+> este documento no tenía: **desde marzo de 2017 el feed publica cada orden en vez de la profundidad
+> agregada por precio.** El paso de cinco a diez niveles sigue sin fecha; marzo de 2017 lo acota. Ver
+> [D19](D19_el_feed_cambio_en_2017.md).
+
 # (b) Hay VARIOS canales, con profundidad y precio distintos. El costo va en la cuenta de la estrategia.
 
 | canal | profundidad | quién lo recibe |
