@@ -20,6 +20,13 @@ candidatas fueron clasificadas **antes** de cualquier medición.
 | [P06_si_sale_positivo.md](P06_si_sale_positivo.md) | qué pasa si sale positivo. El procedimiento, sin un solo umbral |
 | **[P07](P07_L11_borrador.md)** y **[P08](P08_L10_borrador.md)** | **L11 y L10 preparadas hasta el borde. BORRADORES, NO REGISTRADOS** |
 | [P09_verificar_caneria.md](P09_verificar_caneria.md) | pedido a la VENTANA G: probar el formato sin correr el juicio |
+| [P10_medir_el_desvio.md](P10_medir_el_desvio.md) | pedido a la VENTANA G: medir el desvío del que cuelgan cinco documentos |
+| **[D01](D01_seleccion_ajena_las_dos_posiciones.md)** y **[D02](D02_veredicto_seleccion_ajena.md)** | **el debate sobre la selección ajena. Las dos posiciones y el veredicto, commiteados en ese orden** |
+
+> **Resultado del debate: la idea de bajar la vara para reglas de terceros SE RETIRA.** El argumento
+> decisivo es que el fuera de muestra que exigía no existe para las dos candidatas que rescataría.
+> Y la literatura ya tenía la respuesta: el remedio para un resultado preseleccionado es **recortar
+> la magnitud objetivo, no la vara**. **En la práctica no cambiaba nada de todos modos.**
 
 > ## ORDEN ACTUALIZADO — 2026-09-05
 >
