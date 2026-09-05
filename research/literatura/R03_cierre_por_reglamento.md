@@ -75,6 +75,47 @@ razón.**
 
 ---
 
+# EJECUCIÓN — 2026-09-05, con las respuestas leídas por Roberto en `help.tradeify.co`
+
+**Hecho medido por la casa (`F16` en acción):** Roberto leyó las páginas oficiales de la firma el
+2026-09-05. Lo que encontró, y el veredicto de cada rama **aplicando el documento tal como se selló,
+sin reinterpretarlo**:
+
+| rama | lo que dice la firma | veredicto sellado que aplica |
+|---|---|---|
+| **1 — 6J y 6E** | **están en la tabla de tarifas**: 6J $6,20, 6E $6,20, M6E $1,60 ida y vuelta. Operables, y no sólo los micros | **"Si SÍ están permitidos": L07 y L08 VIVAS, NO MEDIBLES HOY.** La fila 10 de `F16` (comisión de divisas) queda resuelta: $6,20 |
+| **2 — publicaciones** | **sin ninguna restricción**, texto literal *"free reign"*; Roberto verificó la política completa, no el resumen | **"Si NO hay restricción: todo sigue igual."** L03 sigue ciega por 0,86 (`D13`); `D11` sigue como costo nombrado |
+| **3 — noche** | **PROHIBIDO.** Todo cerrado a las 16:45 del este, 12:59 en cierre temprano; lo cierran ellos, sin penalidad | **"NO se puede mantener de noche": L11 MUERTA en su forma publicada.** L10 publicada: ya ciega, y además inoperable |
+
+> ## **Veredicto: la rama de la noche mata a L11 publicada. Ninguna otra rama mata a nadie. Coincide con la lectura de Roberto, y el veredicto sale del documento sellado, no de la lectura.**
+
+## Estado final de L07 y L08, con precisión
+
+> **L07 y L08 NO mueren por reglamento. Siguen bloqueadas por la plomería del juez que la VENTANA G
+> declaró NO IMPLEMENTADA, con un tercer candado que se niega aunque se complete la ficha.** Es una
+> limitación de medición, no una prohibición de operar. **Si algún día la plomería se habilita, las dos
+> vuelven al estado "requiere medición" de `D06` con sus márgenes sin corregir (1,72 y 1,33) y la
+> corrección pendiente de `T02`.**
+
+## Lo que el reglamento trajo y R03 no había previsto — dos agujeros, y uno le toca a L07
+
+1. **La sesión de la tarde-noche.** *"Todo cerrado a las 16:45"* es una regla sobre TENER posición al
+   cierre; **no dice si se pueden abrir y cerrar operaciones entre las 18:00 del este y las 16:45 del
+   día siguiente.** L07 opera a las **00:50-01:00 GMT = 19:50-20:00 o 20:50-21:00 del este**, diez
+   minutos, sin cruzar ningún cierre. **R03 no la puso en la rama 3 y debió ponerla.** Su operabilidad
+   depende de una línea que la lectura de Roberto no incluye. Queda como **fila 11 de `F16`**: *¿se
+   puede operar en la sesión de Globex de la tarde-noche, entre las 18:00 y las 16:45 del este?*
+2. **Consistencia** (ningún día > 35-40 % de la ganancia; 20 % en Lightning fondeada). Para una
+   candidata de 12 eventos al año, un solo evento puede ser más del 35 % de la ganancia de una
+   evaluación. **Toca a cualquier candidata de pocos eventos —L10 en una hora, ya cerrada por `D16`—
+   y es una razón más para `F17`.**
+
+**Y dos reglas nuevas que no tocan a las once y sí a lo que viene:** microscalping (tenencia > 10 s en
+más del 50 % de las operaciones y de la ganancia) y *"No High-Frequency Trading bots"* sin definición.
+Van adentro de `F17`.
+
+---
+
 # La lectura, fijada ahora
 
 - **Ninguna rama resucita a nadie.** Una regla de firma puede matar; no puede convertir una ciega en
