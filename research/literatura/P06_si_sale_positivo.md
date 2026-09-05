@@ -1,6 +1,6 @@
 # P06 — Qué pasa si sale positivo: el PROCEDIMIENTO, sin umbrales
 
-**VENTANA L. NO MIDE NADA. K sigue en 261.**
+**VENTANA L. NO MIDE CANDIDATAS; corre CONTROLES DEL INSTRUMENTO desde el 2026-09-05 (rol ampliado por Roberto, ver `INDICE`). K sigue en 261.**
 
 **Mi objeción era que armamos una máquina muy cuidadosa para producir un veredicto sin próximo paso
 escrito. Mi duda era que escribir el próximo paso ahora agrega un grado de libertad.**
