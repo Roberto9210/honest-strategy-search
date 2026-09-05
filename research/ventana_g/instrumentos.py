@@ -34,11 +34,18 @@ acepta '6E' usando el medio-spread del ES devuelve un numero con cara de veredic
 ESPEC, REGLA, MEDIDO, FALTA = "ESPEC", "REGLA", "MEDIDO", "FALTA"
 
 
-def C(valor, origen, fuente, n=None, reparto=None):
+def C(valor, origen, fuente, n=None, reparto=None, verif_resolucion=False):
     """n = sobre cuantas sesiones/dias descansa la medicion. reparto = 'repartido' (dias elegidos
     uno por regimen) o 'contiguo' (un tramo seguido). Los dos campos son parte del ORIGEN: una
-    constante MEDIDA sin decir sobre cuanto no es una constante medida, es un numero."""
-    return dict(valor=valor, origen=origen, fuente=fuente, n=n, reparto=reparto)
+    constante MEDIDA sin decir sobre cuanto no es una constante medida, es un numero.
+
+    verif_resolucion = si el script que produjo la constante trae una VERIFICACION DE RESOLUCION,
+    o sea si midio que el instrumento podia ver el efecto que reporta. Auditado en
+    REGLA_resolucion_del_instrumento.md: HOY NINGUNA LA TIENE, y por eso el defecto es False. No es
+    un descuido del campo, es el estado real, y ahora viaja en cada fila del registro del juez en
+    vez de vivir solo en un documento aparte."""
+    return dict(valor=valor, origen=origen, fuente=fuente, n=n, reparto=reparto,
+                verif_resolucion=verif_resolucion)
 
 
 # MUESTRA MINIMA por constante, medida y no inventada (cortes_tercil_muestra.py, bootstrap de los

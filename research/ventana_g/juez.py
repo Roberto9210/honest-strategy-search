@@ -76,6 +76,7 @@ REGISTRO_DEFECTO = os.path.join(AQUI, "REGISTRO_JUEZ.jsonl")
 # Los diccionarios de abajo se ARMAN desde las fichas: una sola fuente de verdad, y agregar un
 # instrumento es llenar una ficha en vez de tocar el juez.
 import instrumentos as INS  # noqa: E402
+import ledger_campos as LC  # noqa: E402
 
 COMISION = {k: INS.INSTRUMENTOS[k]["comision"]["valor"] for k in INS.COMPLETOS}
 PUNTO = {k: INS.INSTRUMENTOS[k]["punto"]["valor"] for k in INS.COMPLETOS}
@@ -881,7 +882,14 @@ def juzgar(cand, m, permitir_caja=False, prerregistro=None, verificar=False, npe
                               n_op=r["n_op"], variantes_declaradas=variantes,
                               familia_declarada=fam_decl, instrumento=cand["instrumento"],
                               clase_declarada=r["clase_declarada"], firma_medida=r["firma"],
-                              regla=cand["regla_salida"], **firmas))
+                              regla=cand["regla_salida"],
+                              # LEDGER EXTENDIDO: los campos que hacen auditable el veredicto hacia
+                              # adelante. La auditoria hacia atras de las 261 murio por no tenerlos.
+                              **LC.fila_extendida(r, cand, r["z_req"], v,
+                                                  INS.INSTRUMENTOS[cand["instrumento"]],
+                                                  INS.NECESARIO.get(cand["regla_salida"]["tipo"],
+                                                                    INS.NECESARIO["bracket"])),
+                              **firmas))
 
     # --- periodo reservado --------------------------------------------------------------------
     mk_v = ~mk_t
