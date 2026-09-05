@@ -1,6 +1,6 @@
 # F15 — LA REGLA DE LA VENTANA: qué forma debe tener una candidata antes de que exista
 
-**VENTANA L. NO MIDE NADA. K sigue en 261. Regla de DISEÑO, no de descarte.**
+**VENTANA L. NO MIDE CANDIDATAS; corre CONTROLES DEL INSTRUMENTO desde el 2026-09-05 (rol ampliado por Roberto, ver `INDICE`). K sigue en 261. Regla de DISEÑO, no de descarte.**
 
 > ## EL ENUNCIADO
 >
