@@ -795,6 +795,19 @@ def _bloque_periodo(A, r, s):
     A("")
     A(f"   RENTABLE (dolares > 0):                  {r['z_rent']:+.1f} desvios contra {r['z_req']:.2f} exigidos   {'SI' if r['rentable'] else 'no'}")
     A(f"   INFORMATIVO (bate rotacion, signo y pasiva): {r['z_info']:+.1f} desvios contra {r['z_req']:.2f} exigidos   {'SI' if r['informativo'] else 'no'}")
+    # FIRMA DE VENTAJA DE TIMING: la rotacion la ve y el signo no. El juez la descarta POR
+    # CONSTRUCCION; que el candidato se entere en vez de recibir un NO SUPERA mudo.
+    zA = r["nulas"]["A rotacion"][3]; zB = r["nulas"]["B signo"][3]
+    if r.get("veredicto") == "NO SUPERA" and zA >= Z_BASE and abs(zB) < 1.0:
+        A("")
+        A("#" * 96)
+        A(f"#  FIRMA DE VENTAJA DE TIMING: la rotacion la ve a {zA:+.1f} desvios y el signo a {zB:+.1f}.")
+        A(f"#  Este juez la DESCARTA POR CONSTRUCCION -el informativo es el MINIMO de las tres nulas-,")
+        A(f"#  NO porque no exista. Punto ciego MEDIDO: una ventaja de timing pura de +$403/sesion,")
+        A(f"#  recuperada al 98% por rotacion, tambien da NO SUPERA (juez_formas_ventaja.py).")
+        A(f"#  Si tu ventaja es de CUANDO y no de QUE LADO, este veredicto no la juzga: le falta el")
+        A(f"#  instrumento. No lo leas como 'no sirve'.")
+        A("#" * 96)
     A("")
     A(f"   POR REGIMEN, EJE EX-ANTE (tercil de volatilidad EN BPS -rango/precio- de la sesion ANTERIOR,")
     A(f"   conocible al entrar y comparable entre epocas; nula de signo, que conserva la sesion). Con esto se JUZGA:")
@@ -889,9 +902,12 @@ def informe(s):
     for c in [
         f"LA BUSQUEDA ANTERIOR: el juez no puede ver cuantas variantes se probaron antes de esta. "
         f"Supone {s['variantes_total']}; si fueron mas, no vale. Es inverificable por construccion.",
-        "FALSO NEGATIVO ESTRUCTURAL: un candidato cuya ventaja sea SOLO de sincronizacion (cuando "
-        "entrar, no de que lado) muere contra la nula de signo. Exigir las dos nulas lo mata aunque "
-        "sea real. Esta escrito para que el lector lo sepa.",
+        "FALSO NEGATIVO ESTRUCTURAL, AHORA MEDIDO (juez_formas_ventaja.py): una ventaja de TIMING pura "
+        "-saber CUANDO entrar, con el lado al azar- de +$403/sesion, recuperada al 98% por la nula de "
+        "rotacion (+22 desvios), igual da NO SUPERA, porque la nula de SIGNO la ve al -1% y el "
+        "'informativo' es el MINIMO de las tres. El punto ciego NO es chico: es TOTAL para una ventaja "
+        "de timing pura, del tamano que sea. En cambio una ventaja de TAMANO (arriesgar mas cuando se "
+        "acierta) SI se ve: recuperada al 91-95% por las dos nulas, veredicto SUPERA.",
         "DESLIZAMIENTO DE ENTRADA: MEDIDO y cobrado (medio-spread ~0,13 pt por operacion, por "
         "regimen; microestructura_tbbo.py). Supone ENTRADA POR MERCADO (cruza). Un candidato que "
         "entra PASIVO no lo paga pero enfrenta no-ejecucion y seleccion adversa, que este juez NO "

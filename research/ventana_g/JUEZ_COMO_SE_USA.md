@@ -177,6 +177,41 @@ q=0,56 sólo el 42% de las semillas caía en el borde y 5 de 12 quedaban **por e
 cruce); a **q=0,545** las 12 dan NO SUPERA en cruce y **9 de 12 (75%) cruzan hacia arriba** en pasivo,
 sin ninguna llegar a SUPERA. El suite usa una semilla dedicada para que el borde no dependa del sorteo.
 
+## El candado de 2019, ejercitado en las dos direcciones
+
+Era la única parte del juez **escrita pero nunca corrida**. Probada (`juez_verificar_prueba.py`), 4/4:
+
+| prueba | resultado |
+|---|---|
+| `--verificar` con registro limpio (trabajo NO anotado) | **se niega**, retiene 2019 |
+| sin `--verificar` | juzga trabajo, lo anota, retiene 2019 y dice cómo verlo |
+| `--verificar` con el trabajo ya anotado | **muestra 2019**, veredicto propio |
+| el informe de verificación | completo: veredicto, tabla de dólares, las tres nulas, régimen |
+
+Un candado probado sólo abriéndolo con la llave correcta no está probado; éste se probó cerrado y
+abierto. **"Escrito" y "alguna vez ejercitado" ya son el mismo número.**
+
+## El punto ciego, medido — no declarado
+
+Todos los controles inyectaban la misma forma de ventaja (elegir el lado). Se inyectaron dos formas
+nuevas (`juez_formas_ventaja.py`) y se midió qué recupera el instrumento:
+
+| forma | inyectada | rotación recupera | signo recupera | veredicto |
+|---|---|---|---|---|
+| **TIMING** (sabe cuándo, lado al azar) | +$403,04/sesión | **98%** (+22,2σ) | **−1%** (−0,2σ) | **NO SUPERA** |
+| **TAMAÑO** (acierta 50%, arriesga más al acertar) | +$559,75/sesión | 91% (+11,1σ) | 95% (+11,6σ) | **SUPERA** |
+
+**El punto ciego de timing es TOTAL, no parcial.** Una ventaja de timing de +$403/sesión, medida y
+recuperada al 98% por la nula de rotación, se descarta igual, porque el "informativo" es el **mínimo**
+de las tres nulas y la de signo la ve al −1%. Cualquier ventaja de timing pura, **del tamaño que sea**,
+recibe NO SUPERA. La de tamaño, en cambio, el juez la ve bien (91-95%).
+
+Por eso el juez ahora **detecta la firma** (rotación alta, signo ~0) y la imprime: un candidato con
+ventaja de timing recibe NO SUPERA **con el aviso de que le falta el instrumento**, no un rechazo mudo.
+
+No se agregó una tercera forma: la que faltaría es una ventaja de **salida** (cuándo cerrar), y el juez
+la prohíbe por construcción — la regla de salida se declara y se aplica igual a todas las operaciones.
+
 ## Los seis veredictos
 
 **SUPERA** (sólo cruce o medición por-candidato) · **APUESTA AL REGIMEN** · **NO SUPERA** ·
