@@ -1,0 +1,54 @@
+====================================================================================================
+SON SENSIBLES LOS CORTES DE TERCIL AL TAMANO DE MUESTRA?
+NO GASTA CARTUCHO. K = 261. La caja sellada no se toca.
+====================================================================================================
+
+   1,006 sesiones 2016-2019 con volatilidad ex-ante en bps.
+   Cortes del juez, calculados sobre todo el periodo: p33 = 1.814 bps, p66 = 2.622 bps
+   (verificacion: recalculados aca dan 1.814 y 2.622; tienen que coincidir)
+
+----------------------------------------------------------------------------------------------------
+   (1) BOOTSTRAP AL AZAR - solo varianza. Remuestreo n sesiones del periodo entero.
+----------------------------------------------------------------------------------------------------
+        n   p33 medio   sd p33   p66 medio   sd p66   % etiquetas mal  p95 de ese %
+        3       2.120    0.620       2.820    0.994            33.8%         59.5%
+       10       1.906    0.292       2.654    0.599            23.0%         47.9%
+       25       1.847    0.175       2.626    0.338            15.1%         32.2%
+       50       1.832    0.117       2.638    0.227            10.4%         21.5%
+      100       1.820    0.080       2.630    0.156             7.4%         15.8%
+      250       1.817    0.050       2.632    0.093             4.7%          9.7%
+      500       1.815    0.035       2.634    0.064             3.3%          7.1%
+
+----------------------------------------------------------------------------------------------------
+   (2) VENTANAS CONTIGUAS - varianza MAS sesgo. Es lo que pasa de verdad al comprar n dias
+       seguidos: no se sortean del periodo, se compra un tramo.
+----------------------------------------------------------------------------------------------------
+        n   p33 medio   sd p33   p66 medio   sd p66   % etiquetas mal  peor tramo
+        3       2.455    1.231       2.725    1.474            42.9%       66.4%
+       10       2.316    1.037       2.735    1.329            41.4%       65.1%
+       25       2.190    0.838       2.718    1.174            39.1%       64.2%
+       50       2.068    0.631       2.674    0.971            35.7%       62.6%
+      100       1.961    0.432       2.635    0.764            32.4%       61.0%
+      250       1.824    0.269       2.554    0.562            28.9%       54.8%
+      500       1.719    0.123       2.455    0.312            19.8%       33.2%
+
+====================================================================================================
+   LO QUE DECIDE
+====================================================================================================
+   Error de etiqueta al azar:  n=3 34%   n=50 10.4%   n=250 4.7%   n=500 3.3%
+   O sea que la etiqueta de regimen a n=50 se equivoca en 10% de las sesiones, a
+   n=250 en 5% y a n=3 en 34%: un tercio del periodo mal clasificado.
+
+   SI SON SENSIBLES, Y LA ANOTACION NO ES COSMETICA. El error de etiqueta cae 10x
+   entre n=3 y n=500. El veredicto por regimen exige que la ventaja aguante en LOS TRES
+   terciles, y una etiqueta equivocada mueve sesiones de un tercil a otro: con 34% de
+   etiquetas mal, 'aguanta en los tres' deja de significar lo que dice.
+   Donde ponerlo: a n=250 el error es 5% y a n=500 3%; el salto grande esta
+   abajo de 100 (7%) y se dispara abajo de 25 (15%).
+
+   Y LA PARTE QUE EL BOOTSTRAP NO VE, que es la que importa mas: las ventanas CONTIGUAS dan
+   peor que el sorteo al mismo n. El sorteo toma sesiones de los cuatro anos; comprar n dias
+   seguidos toma el regimen que habia esa semana. Ese error es SESGO y no baja remuestreando:
+   baja comprando dias REPARTIDOS por regimen, que es exactamente lo que ya se hizo con los
+   seis dias de microestructura del ES y hay que repetir en cualquier instrumento nuevo.
+====================================================================================================
