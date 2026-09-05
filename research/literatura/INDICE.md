@@ -11,6 +11,7 @@ candidatas fueron clasificadas **antes** de cualquier medición.
 | [F7_EDAD_DE_LA_EVIDENCIA.md](F7_EDAD_DE_LA_EVIDENCIA.md) | **¿el efecto todavía existe?**, aplicado a las once |
 | [F8_TAMANO_DE_CONTRATO.md](F8_TAMANO_DE_CONTRATO.md) | el eje de tamaño, y la corrección a lo que afirmé sobre el MES |
 | [PISO_Y_CONVERSION.md](PISO_Y_CONVERSION.md) | pisos, costos y conversión a dólares, definidos una sola vez |
+| **[P01_PREREGISTRO_prueba_agrupada.md](P01_PREREGISTRO_prueba_agrupada.md)** | **el borrador de pre-registro de la prueba agrupada. Correrla gastaría el cartucho 262** |
 | [ORDEN_DE_TRABAJO.md](ORDEN_DE_TRABAJO.md) | **los ocho tests de mecanismo por potencia. El orden de trabajo real** |
 | [M01_test_de_mecanismo.md](M01_test_de_mecanismo.md) | probar el mecanismo en vez de la ventaja |
 | [M02_eje_barato_contra_eje_caro.md](M02_eje_barato_contra_eje_caro.md) | la prueba de una tarde, sin comprar nada |
