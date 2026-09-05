@@ -63,6 +63,53 @@ tiempo, drawdown) NO está en la lista: es fuente primaria.** Lo que sigue, sí.
 
 > ## **Las filas 7 y 8 son las que más valen: cada una puede cerrar dos candidatas enteras, y ninguna requiere más que leer una página que Roberto ya tiene abierta al operar.**
 
+---
+
+# LA LISTA ORDENADA POR PODER DE CIERRE, y quién resuelve cada una
+
+**Resultado del ordenamiento, dicho primero: las diez se resuelven con Roberto mirando algo. Ninguna
+necesita investigación mía.** Eso no es una casualidad: es lo que la regla predice. Lo que me queda
+para investigar tiene poder de cierre **cero** y va al final.
+
+| orden | fila | hecho | **candidatas que puede cerrar** | quién |
+|---|---|---|---|---|
+| 1 | 8 | restricción alrededor de publicaciones | **hasta 2: L03 y L11** (`R03` rama 2) | **Roberto mira** |
+| 2 | 7 | 6J y 6E permitidos | **2: L07 y L08**, sin apelación (`R03` rama 1) | **Roberto mira** |
+| 3 | 9 | posición a través del corte y de noche | **1: L11** en su forma publicada (`R03` rama 3) | **Roberto mira** |
+| 4 | 6 | micros permitidos | 0; cambia la palanca de tamaño de `F8` para L10 y L11 | Roberto mira |
+| 5 | 10 | comisión de divisas | 0; condición para medir L07 y L08 | Roberto mira |
+| 6 | 5 | latencia del escalón 3 | 0 hoy; calidad de la salida de L03 (`D11`); bloquea candidatas futuras que reaccionen | Roberto mira su registro de órdenes |
+| 7 | 1, 2 | niveles del DOM, precios u órdenes | 0; el estudio de entrada pasiva de G | Roberto mira |
+| 8 | 3 | precio del Nivel 2 | 0; una línea del piso | Roberto mira |
+| 9 | 4 | proveedor del feed | 0; contexto de 5 y 7 | Roberto mira |
+
+**Investigación mía pendiente, ordenada por poder de cierre —que es cero en las dos—:** la fecha en que
+el canal público del ES pasó de cinco a diez niveles (`D10`), y los números de Andersen y Bollerslev
+que no pude extraer (`T02`). **Ninguna cierra nada; se hacen si sobra tiempo y no antes.**
+
+## Para pegarle a Roberto tal cual: dónde mirar y qué anotar
+
+1. **Publicaciones (fila 8).** En el centro de ayuda de la firma, la página de reglas para operadores
+   (la misma que G leyó el 2026-09-03 para la sección de bots) y cualquier página que diga *news*,
+   *high impact* o *economic releases*. **Anotar textual:** si prohíbe **tener posición** o **enviar
+   órdenes**; cuántos minutos antes y después; y **la lista** de publicaciones o el calendario que usa.
+   Mirar si aparecen ISM y ventas de viviendas.
+2. **6J y 6E (fila 7).** La lista de productos operables de la cuenta, en la plataforma o en la página
+   de productos de la firma. **Anotar:** si aparecen 6J, 6E, y si sólo aparecen los micros M6E.
+3. **Noche y corte (fila 9).** Misma página de reglas: *overnight*, *holding positions*, hora límite
+   para cerrar. **Anotar:** la hora exacta y si aplica en evaluación y en fondeada.
+4. **Micros (fila 6).** Misma lista de productos: cuáles de MES, MNQ, M2K, MYM, MGC, MCL aparecen.
+5. **Comisión de divisas (fila 10).** La página de comisiones (G leyó la de índices el 2026-09-04): la
+   fila de futuros de moneda, ida y vuelta.
+6. **Latencia (fila 5).** En el registro de órdenes de la plataforma, para cinco órdenes cualesquiera:
+   instante de envío e instante de confirmación. **Anotar** la diferencia en milisegundos.
+7. **DOM (filas 1 y 2).** A las 10:00 y a las 03:00 del este: **contar** las filas de precio a cada
+   lado del mejor precio, y anotar si cada fila muestra **un número** (precios agregados) o **varias
+   órdenes** con su tamaño.
+8. **Nivel 2 (fila 3).** La pantalla de suscripción de datos de la plataforma: si existe la línea
+   *Level 2* o *market depth* y su precio mensual.
+9. **Proveedor (fila 4).** La ventana de conexión: el nombre del proveedor de datos y de órdenes.
+
 **Costos:** dinero cero, cartuchos cero, K en 261. **Tiempo de Roberto: diez segundos en el DOM, dos
 minutos en la lista de instrumentos, cinco minutos en las guías de la firma.** Es la lista de
 verificación más barata del proyecto.
