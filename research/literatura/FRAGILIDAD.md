@@ -1,6 +1,6 @@
 # FRAGILIDAD — de cuántos números SIN MEDIR cuelga cada conclusión
 
-**VENTANA L. NO MIDE NADA. K sigue en 261.**
+**VENTANA L. NO MIDE CANDIDATAS; corre CONTROLES DEL INSTRUMENTO desde el 2026-09-05 (rol ampliado por Roberto, ver `INDICE`). K sigue en 261.**
 
 **Marcar "estimación" al lado de un número no alcanza cuando una cadena entera cuelga de él.** Este
 documento hace el inventario al revés: por conclusión, no por candidata.
