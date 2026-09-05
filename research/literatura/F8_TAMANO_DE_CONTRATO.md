@@ -42,10 +42,23 @@ el censo ya midió entre instrumentos, aplicado al mismo instrumento a un décim
 **Achicar el tamaño cambia un riesgo absorbente por un costo de tiempo.** Eso es un buen negocio **si
 el tiempo no está acotado**, y es un mal negocio si hay fecha límite.
 
-**Y ahí está el número que decide y que no tengo: ¿la evaluación de Tradeify tiene límite de
-tiempo?** La VENTANA G leyó el widget oficial el 2026-09-03 y tiene los datos crudos en
-`datos_crudos.md`. **Es una consulta, no un estudio, y decide si el eje de tamaño es una palanca real
-o sólo un cambio de unidades.**
+> ## DEPENDENCIA EXTERNA — NO RESUELTA
+>
+> **Pregunta: ¿la evaluación de Tradeify tiene límite de tiempo?**
+>
+> **Quién la contesta: la VENTANA G, no esta ventana.** Leyó el widget oficial de tradeify.co el
+> 2026-09-03 y tiene los datos crudos en `research/ventana_g/datos_crudos.md`.
+>
+> **Por qué decide:** achicar el contrato cambia un riesgo absorbente por un costo de tiempo.
+> Si el tiempo **no** está acotado, achicar es estrictamente mejor y el eje de tamaño es una palanca
+> real. Si **hay** fecha límite, es un intercambio con dos lados y el eje de tamaño es sólo un cambio
+> de unidades.
+>
+> **Estado: NO RESUELTA. Esta ventana sigue sin ella y lo dice en cada conclusión que la toca.**
+>
+> **Mientras no se resuelva, todo lo que este documento dice sobre la palanca del MES es una COTA
+> OPTIMISTA**, con el mismo estatus que la fila de entrada pasiva del piso: se puede usar para
+> ordenar, no para aprobar.
 
 **Sin ese dato, mi afirmación anterior queda como una cota optimista, exactamente igual que la fila
 de entrada pasiva del piso.**
