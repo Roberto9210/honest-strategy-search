@@ -2,6 +2,8 @@
 
 **VENTANA L. Ficha de literatura. NO MEDIDA. No gasta cartucho, K sigue en 261.**
 
+> **MUERTA POR REGLAMENTO — 2026-09-05.** La firma cierra toda posición a las 16:45 del este y prohíbe la noche; la prima de Savor y Wilson es cierre a cierre y necesita la noche. Aplicación de [R03](R03_cierre_por_reglamento.md) rama 3, sellada antes de leer el reglamento. Ya estaba CIEGA por 0,26 (`D06`); ahora además es inoperable.
+
 > **DESACTUALIZADA en un punto:** su fuerza se apoyaba en la extensión de Ai, Bansal y Guo, cuya muestra **cubre 2016-2019**. Esa extensión existe, pero **ya no otorga grado A**. Ver [F7](F7_EDAD_DE_LA_EVIDENCIA.md).
 
 **RECUPERADA.** El filtro nocturno viejo la había matado. Con el filtro de ventana de exposición
