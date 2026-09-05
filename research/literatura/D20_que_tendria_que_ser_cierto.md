@@ -1,6 +1,6 @@
 # D20 — Si el profesional gana sólo en el diferencial y nosotros no podemos cobrarlo, ¿queda alguna forma de candidata? La lista de lo que tendría que ser cierto, con lo medido y lo no medido.
 
-**VENTANA L. NO MIDE NADA. K sigue en 261.** Sin esperanza: la lista, y al lado de cada línea si está
+**VENTANA L. NO MIDE CANDIDATAS; corre CONTROLES DEL INSTRUMENTO desde el 2026-09-05 (rol ampliado por Roberto, ver `INDICE`). K sigue en 261.** Sin esperanza: la lista, y al lado de cada línea si está
 medida.
 
 ---
