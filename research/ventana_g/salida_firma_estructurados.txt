@@ -1,0 +1,68 @@
+====================================================================================================
+LA FIRMA DE TIMING CONTRA NULOS ESTRUCTURADOS - sobrevive la correlacion +0,91?
+NO GASTA CARTUCHO. K = 261. La caja sellada no se toca.
+====================================================================================================
+
+   tabla de desenlaces en 33s. CONTROL 0 contra J.resolver sobre 3,000 ranuras de los dos lados:
+      puntos identicos SI   tenencia identica SI   barras sin rellenar 0
+
+   10,000 candidatos por familia, 200 rotaciones y 200 signos cada uno.
+
+----------------------------------------------------------------------------------------------------
+   LA CORRELACION, QUE ES EL NUMERO QUE EXPLICA TODO LO DEMAS
+----------------------------------------------------------------------------------------------------
+   familia             n medibles   corr(zA,zB)   sd zA   sd zB  media zA  media zB
+   uniforme                 10000         0.910    0.99    0.91      0.00     -0.00
+   agrupado                 10000         0.548    1.08    0.61     -0.03     -0.00
+   rafaga                   10000         0.945    1.00    0.97      0.01      0.01
+   un_lado_tramo            10000         0.115    0.61    3.23      0.01     -0.00
+   un_lado_total            10000         0.105    0.73    3.56     -0.01      0.11
+   signo_en_bloques         10000         0.910    1.08    1.11     -0.01     -0.01
+
+----------------------------------------------------------------------------------------------------
+   LA TASA DE FIRMA, SOBRE LOS MEDIBLES (los que el juez NO rechaza de entrada)
+----------------------------------------------------------------------------------------------------
+   familia             medibles    zA>=3   FIRMA timing  IC95 arriba  FIRMA direcc  APROBARIA
+   uniforme               10000       15      0 = 0.000%       0.038%      5 = 0.05%          0
+   agrupado               10000       27     13 = 0.130%       0.222%      0 = 0.00%          0
+   rafaga                 10000       12      0 = 0.000%       0.038%      7 = 0.07%          0
+   un_lado_tramo          10000        0      0 = 0.000%       0.038%      0 = 0.00%          0
+   un_lado_total          10000        0      0 = 0.000%       0.038%      0 = 0.00%          0
+   signo_en_bloques       10000       31      0 = 0.000%       0.038%     11 = 0.11%          0
+
+   LOS RECHAZADOS DE ENTRADA (el juez les diria NO MEDIBLE, nunca llegan a veredicto):
+      uniforme                0 de 10,000   (-)
+      agrupado                0 de 10,000   (-)
+      rafaga                  0 de 10,000   (-)
+      un_lado_tramo           0 de 10,000   (-)
+      un_lado_total           0 de 10,000   (-)
+      signo_en_bloques        0 de 10,000   (-)
+
+----------------------------------------------------------------------------------------------------
+   BARRIDO DE REGLAS DE FIRMA. Por que la actual falla y cual la reemplaza.
+----------------------------------------------------------------------------------------------------
+   La regla actual es |zB| < 1,0 ABSOLUTO. En la familia 'agrupado' zB esta COMPRIMIDO
+   (sd 0,61), asi que |zB| < 1,0 se cumple casi siempre y el criterio deja de hacer trabajo:
+   la firma se reduce a zA >= 3 a secas. La regla tiene que mirar zB EN RELACION a zA, que es
+   lo que de verdad distingue 'la nula de signo no ve nada' de 'zB es chico porque todo es
+   chico'. Referencia de una ventaja de timing REAL (control C9): zA = +23,1, zB = +0,1, o sea
+   zB/zA = 0,004. Los falsos positivos de 'agrupado' viven en zB/zA ~ 0,3.
+
+   regla                               uniforme  agrupado    rafaga un_lado_t un_lado_t signo_en_   C9 real
+   |zB| < 1,0  (la actual)               0.000%    0.130%    0.000%    0.000%    0.000%    0.000%        SI
+   |zB| < min(1,0 ; 0.50*zA)             0.000%    0.130%    0.000%    0.000%    0.000%    0.000%        SI
+   |zB| < min(1,0 ; 0.30*zA)             0.000%    0.130%    0.000%    0.000%    0.000%    0.000%        SI
+   |zB| < min(1,0 ; 0.20*zA)             0.000%    0.070%    0.000%    0.000%    0.000%    0.000%        SI
+   |zB| < min(1,0 ; 0.15*zA)             0.000%    0.050%    0.000%    0.000%    0.000%    0.000%        SI
+   |zB| < min(1,0 ; 0.10*zA)             0.000%    0.030%    0.000%    0.000%    0.000%    0.000%        SI
+
+   Se elige la regla mas floja que deja TODAS las familias en 0 y sigue reconociendo la
+   ventaja de timing real. Mas estricta que eso solo perderia ventajas verdaderas.
+
+====================================================================================================
+   VEREDICTO
+====================================================================================================
+   La cota superior mas alta de firma 'timing' entre las 6 familias es 0.222%.
+   POR ENCIMA de la vara de 0,100%.
+   Nulos que llegarian a APROBACION declarando 'timing', sumando todas las familias: 0.
+====================================================================================================

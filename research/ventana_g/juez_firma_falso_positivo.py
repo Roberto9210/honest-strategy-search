@@ -124,8 +124,13 @@ def constantes(m, contratos=1, inst="ES"):
                 exceso=J.EXCESO_STOP[int(S)])
 
 
-def evaluar(m, K, idx, sgn, tab, rp, npermuta=NPERM):
-    """Devuelve (zA, zB, z_pas, obs). Replica juzgar_periodo en modo CRUCE, sin regimen ni cadena."""
+def evaluar(m, K, idx, sgn, tab, rp, npermuta=NPERM, detalle=False):
+    """Devuelve (zA, zB, z_pas, obs). Replica juzgar_periodo en modo CRUCE, sin regimen ni cadena.
+
+    detalle=True devuelve ademas sd_tot, n_ses y rot_indep, que hacen falta para aplicar las mismas
+    negativas que el juez (NO MEDIBLE por ventana angosta o por resolucion). Se agrego DESPUES de la
+    corrida de 20.000 y por eso es opcional: el camino por defecto queda identico y la salida
+    commiteada de A1 sigue siendo reproducible."""
     ptsL, ptsS, tenL, tenS = tab
     punto, contratos, c1 = K["punto"], K["contratos"], K["c1"]
     sesgo_pt = K["sesgo_pt"]
@@ -164,6 +169,10 @@ def evaluar(m, K, idx, sgn, tab, rp, npermuta=NPERM):
     sd_perm = max(medA.std(ddof=1), medB.std(ddof=1))
     err_o = K["error_o_pt"] * punto * contratos * (len(idx) / n_ses)
     sd_tot = math.sqrt(sd_perm ** 2 + err_o ** 2)
+    if detalle:
+        return dict(zA=(obs - medA.mean()) / sd_tot, zB=(obs - medB.mean()) / sd_tot,
+                    z_pas=(obs - pasiva) / sd_tot, obs=obs, sd_tot=sd_tot, n_ses=n_ses,
+                    n_op=len(idx), rot_indep=n_ses / J.L_ESTRELLA_SES)
     return ((obs - medA.mean()) / sd_tot, (obs - medB.mean()) / sd_tot,
             (obs - pasiva) / sd_tot, obs)
 

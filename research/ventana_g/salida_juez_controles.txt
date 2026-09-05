@@ -55,7 +55,7 @@ C6  ATAQUE A1: solo-largo restringido a 2017. Esperado NO SUPERA con la defensa.
       LECTURA: sin la defensa, la rotacion GLOBAL de un candidato de UN anio reparte sus entradas por cuatro anios de regimenes distintos y su desvio se dispara: el juez ni siquiera puede decidir. La nula global es ruido para un candidato de periodo corto; la defensa no solo cierra el ataque, tambien devuelve la resolucion.
 
 C7  VENTAJA SOLO EN TENDENCIAS BAJISTAS (mov. neto de las 20 sesiones anteriores < 0; q=0.9). Esperado APUESTA AL REGIMEN. Falla si SUPERA.
-   [C7] APUESTA AL REGIMEN   (7s)
+   [C7] APUESTA AL REGIMEN   (6s)
       obs +200.78  nulaA -38.70 (vent +239.48, +6.9sd)  nulaB -57.54 (vent +258.32, +7.5sd)  pasiva +1.12 (+5.8sd)  sd 34.57  z_req 3.00
       regimen: bajo=+56.6(+1.6sd)no  medio=+165.8(+3.7sd)SI  alto=+575.0(+11.1sd)SI
       cadena eval x fondeada (10 micros): P(pasa eval) 0.278  P(pago) 0.174  P(se acaba el rango) 0.013  E sesiones 8  E $/intento +152
@@ -65,7 +65,7 @@ C7  VENTAJA SOLO EN TENDENCIAS BAJISTAS (mov. neto de las 20 sesiones anteriores
 C8  CANDIDATO EN EL BORDE (q=0.545, entre el piso pasivo y el de cruce). Prueba la frontera
     entre modos, donde el desplazamiento de nivel podria hacer dano. Esperado: NO APRUEBA en
     ninguno de los dos modos (NO SUPERA / APUESTA / REQUIERE MEDICION), NUNCA SUPERA. Falla si SUPERA.
-   [C8] NO SUPERA   (7s)
+   [C8] NO SUPERA   (6s)
       obs +85.07  nulaA -40.18 (vent +125.26, +4.3sd)  nulaB -57.81 (vent +142.89, +4.9sd)  pasiva +0.32 (+2.9sd)  sd 29.38  z_req 3.00
       regimen: bajo=+84.0(+2.1sd)SI  medio=+195.1(+4.4sd)SI  alto=+158.5(+3.0sd)SI
       cadena eval x fondeada (10 micros): P(pasa eval) 0.108  P(pago) 0.001  P(se acaba el rango) 0.004  E sesiones 8  E $/intento -81
@@ -189,7 +189,7 @@ C8  CANDIDATO EN EL BORDE (q=0.545, entre el piso pasivo y el de cruce). Prueba 
 
 C9  VENTAJA DE TIMING declarada BIEN (lado al azar, mejor tercio DENTRO de cada tercil).
     Esperado: SUPERA / REQUIERE MEDICION. La nula de signo no puede verla y se omite si la firma confirma.
-   [C9] REQUIERE MEDICION PASIVA POR CANDIDATO   (3s)
+   [C9] REQUIERE MEDICION PASIVA POR CANDIDATO   (2s)
       obs +200.74  nulaA -1.84 (vent +202.57, +23.1sd)  nulaB +199.94 (vent +0.80, +0.1sd)  pasiva +0.33 (+22.8sd)  sd 8.78  z_req 3.00
       regimen: bajo=+136.7(+11.6sd)SI  medio=+209.0(+12.7sd)SI  alto=+270.0(+15.7sd)SI
       cadena eval x fondeada (10 micros): P(pasa eval) 0.993  P(pago) 0.987  P(se acaba el rango) 0.013  E sesiones 24  E $/intento +1249
@@ -207,7 +207,7 @@ C10 LA PUERTA TRASERA: candidato SIN ventaja que declara 'timing'. Esperado NO S
       clase declarada timing / firma medida indefinida   omite signo: False   z_info +1.4
 
 DEMOSTRACION (no es control): el contador de familia.
-   [C2 en registro limpio] REQUIERE MEDICION PASIVA POR CANDIDATO   (7s)
+   [C2 en registro limpio] REQUIERE MEDICION PASIVA POR CANDIDATO   (6s)
    [C1 despues, misma huella] NO SUPERA   (7s)
       hermanos detectados: 1   variantes totales: 2   umbral exigido: 3.21 desvios (base 3.0)
          C2_ventaja_inyectada  REQUIERE MEDICION PASIVA POR CANDIDATO  (huella 100% a 30 barras)

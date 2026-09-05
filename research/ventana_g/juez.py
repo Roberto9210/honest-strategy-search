@@ -659,14 +659,31 @@ CLASES_VENTAJA = {"direccional", "timing"}
 REQUIERE_MEDICION = "REQUIERE MEDICION PASIVA POR CANDIDATO"
 
 
+FIRMA_K = 0.10          # ver abajo: |zB| tiene que ser chico EN RELACION a zA, no en absoluto
+
+
 def firma_ventaja(zA, zB):
     """De que CLASE es la ventaja, segun que nula la ve. MEDIDO en juez_formas_ventaja.py: una
     ventaja de timing pura da rotacion 98% / signo -1%; una direccional da las dos altas.
       timing      - la rotacion la ve y el signo NO (el signo conserva las ranuras: no puede ver
                     una ventaja de CUANDO). La nula de signo NO es un test valido para esta clase.
       direccional - las dos la ven.
-      indefinida  - ninguna la ve con fuerza: no hay nada que contradecir."""
-    if zA >= Z_BASE and abs(zB) < 1.0:
+      indefinida  - ninguna la ve con fuerza: no hay nada que contradecir.
+
+    EL UMBRAL SUBIO, Y NO A OJO. La regla original era |zB| < 1,0 ABSOLUTO, y con nulos UNIFORMES la
+    tasa de falso positivo daba 0 sobre 20.000 (juez_firma_falso_positivo.py). Pero eso dependia
+    enteramente de que zA y zB estuvieran correlacionadas +0,91 bajo ese nulo. Con nulos
+    ESTRUCTURADOS la correlacion se cae -0,55 con entradas AGRUPADAS, 0,11 con solo-largo en un
+    tramo- y en la familia agrupada zB queda COMPRIMIDO (sd 0,61): entonces |zB| < 1,0 se cumple casi
+    siempre, el criterio deja de hacer trabajo y la firma se reduce a zA >= 3 a secas. Medido en
+    juez_firma_nulos_estructurados.py: 0,130% de firma 'timing' entre nulos agrupados, POR ENCIMA de
+    la vara de 0,1%.
+    La regla mira ahora zB EN RELACION a zA, que es lo que distingue 'la nula de signo no ve nada' de
+    'zB es chico porque todo es chico'. Barrido de k sobre las seis familias (agrupado es la unica
+    que da algo): k=0,50 -> 0,130%; 0,20 -> 0,070%; 0,15 -> 0,050%; 0,10 -> 0,030%. Se elige k=0,10,
+    el primero cuyo INTERVALO SUPERIOR (0,088%) cae debajo de la vara, no solo el punto. La ventaja
+    de timing real del control C9 tiene zB/zA = 0,1/23,1 = 0,004 y pasa con margen de 25x."""
+    if zA >= Z_BASE and abs(zB) < min(1.0, FIRMA_K * zA):
         return "timing"
     if zA >= Z_BASE and zB >= Z_BASE:
         return "direccional"
