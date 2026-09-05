@@ -716,6 +716,31 @@ def techo_pasivo(v, pasivo):
     return REQUIERE_MEDICION if (pasivo and v == "SUPERA") else v
 
 
+TENENCIA_MINIMA_SEG = 10.0      # R2, help.tradeify.co leido 2026-09-05
+
+
+def techo_microscalping(v, r):
+    """R2 - LA REGLA DE MICROSCALPING, y es el unico numero que la firma da: mas del 50% de las
+    OPERACIONES y mas del 50% de la GANANCIA tienen que venir de operaciones de MAS DE 10 SEGUNDOS.
+    Aplica a la cuenta fondeada, no a la evaluacion: incumplirla BLOQUEA EL RETIRO. Una candidata
+    que no puede cobrar no es una candidata, asi que va como CERRADURA y no como advertencia.
+
+    Es una restriccion EXTERNA y VERIFICABLE, del mismo tipo que el limite de contratos: no depende
+    de ningun juicio nuestro.
+
+    LO QUE EL JUEZ NO PUEDE VERIFICAR, y por eso hay dos ramas: con barras de UN MINUTO la tenencia
+    minima representable es 60 s. Si la tenencia mediana medida es de una barra, el juez NO SABE si
+    la operacion real duro 61 s o 3 s: sabe que los datos no distinguen. Para un candidato que
+    declare tenencia sub-minuto, el veredicto correcto es NO MEDIBLE, no SUPERA."""
+    ten_bar = float(np.median(r["ten"])) if len(r["ten"]) else 0.0
+    ten_seg = ten_bar * 60.0
+    r["tenencia_mediana_seg"] = ten_seg
+    if ten_seg < TENENCIA_MINIMA_SEG and v == "SUPERA":
+        return "NO SUPERA", (f"R2: tenencia mediana {ten_seg:.1f} s < {TENENCIA_MINIMA_SEG:.0f} s. "
+                             f"La regla de microscalping de la firma bloquea el retiro.")
+    return v, None
+
+
 def veredicto_de(r, reg, variantes_total):
     z_req = z_requerido(variantes_total)
     rentable = r["obs"] > 0 and r["z_rent"] >= z_req
@@ -729,6 +754,9 @@ def veredicto_de(r, reg, variantes_total):
         v = "APUESTA AL REGIMEN"
     else:
         v = "NO SUPERA"
+    v, motivo_r2 = techo_microscalping(v, r)
+    if motivo_r2:
+        r.setdefault("avisos", []).append(motivo_r2)
     return v, z_req, rentable, informativo
 
 
@@ -1044,7 +1072,16 @@ def informe(s):
         "modela (es la pregunta de mbo, disenada en MBO_DISENO_entrada_pasiva.md, sin correr). El "
         "medio-spread de SALIDA no se cobra aparte: el objetivo se supone limite y el stop lleva su "
         "sobrepaso medido.",
-        "LA REGLA DE CONSISTENCIA (35-40%) de las firmas no esta modelada. Solo puede bajar P(pago).",
+        "LA REGLA DE CONSISTENCIA (20-40% segun cuenta, R7) no esta modelada dentro del veredicto. "
+        "Solo puede bajar P(pago). Medida aparte en consistencia_r7.py.",
+        "R2, LA ZONA GRIS DE 'HFT': la firma prohibe 'High-Frequency Trading bots' SIN NINGUNA "
+        "definicion numerica, en dos paginas. El unico numero de todo su reglamento son los 10 s de "
+        "la regla de microscalping, que el juez SI aplica como cerradura. Cualquier diseno entre 10 "
+        "segundos y del orden de un minuto vive en zona gris y la firma se reserva pedir "
+        "informacion. Eso es un RIESGO DE NEGOCIO, no de medicion, y no hay medicion que lo cierre.",
+        "R2 NO ES VERIFICABLE CON BARRAS DE UN MINUTO: la tenencia minima representable es 60 s, "
+        "asi que para un candidato que declare tenencia sub-minuto el juez no puede distinguir 61 s "
+        "de 3 s. Ahi el veredicto honesto es NO MEDIBLE y hace falta dato de mayor resolucion.",
         "TERRENO ES 1-min 2016-2019 unicamente. 2020+ esta en la caja sellada y no se toca.",
         "ENTRADA PASIVA: si el candidato entra con orden limite, la no-ejecucion y la seleccion "
         "adversa no estan modeladas. FIFO en ES viene de fuente secundaria.",
