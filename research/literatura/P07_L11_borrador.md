@@ -1,6 +1,8 @@
 # P07 — L11, preparada hasta el borde. BORRADOR, NO REGISTRADO
 
 **VENTANA L. NO REGISTRADO. NO CORRIDO. K sigue en 261.**
+> ## FRÁGIL — las cifras de potencia de este documento dependen de números SIN MEDIR: **E1, E5 y E6**.
+> Ver [FRAGILIDAD.md](FRAGILIDAD.md). Las conclusiones cualitativas no dependen de ellos; **las tablas de potencia sí**.
 
 > **En este proyecto el cartucho se gasta al PRE-REGISTRAR, no al correr.** Este documento llega
 > hasta el borde y **no lo cruza**. Registrarlo gastaría el cartucho **262**.

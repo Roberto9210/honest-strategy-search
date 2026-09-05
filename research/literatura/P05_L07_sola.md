@@ -1,6 +1,8 @@
 # P05 — L07 sola: la prueba más barata y mejor apuntada del inventario
 
 **VENTANA L. NO CORRIDO. Borrador de pre-registro. K sigue en 261.**
+> ## FRÁGIL — las cifras de potencia de este documento dependen de números SIN MEDIR: **E1, E2, E3, E5 y E6**.
+> Ver [FRAGILIDAD.md](FRAGILIDAD.md). Las conclusiones cualitativas no dependen de ellos; **las tablas de potencia sí**.
 
 Al levantar el bloqueo de magnitud de L07 apareció algo que cambia el plan B de `P04`:
 **L07 no sustituye a L08 dentro de la prueba agrupada, porque la dominaría. Se corre sola, y así es

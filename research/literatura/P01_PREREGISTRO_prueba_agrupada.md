@@ -2,6 +2,9 @@
 
 **VENTANA L. NO CORRIDO. NO PRE-REGISTRADO TODAVÍA. K sigue en 261.**
 
+> ## FRÁGIL — las cifras de potencia de este documento dependen de números SIN MEDIR: **E1, E3, E5 y E6**.
+> Ver [FRAGILIDAD.md](FRAGILIDAD.md). Las conclusiones cualitativas no dependen de ellos; **las tablas de potencia sí**.
+
 > **ESTE DOCUMENTO NO GASTA CARTUCHO. CORRERLO SÍ.**
 > Sería el primer cartucho desde agosto y **K pasaría de 261 a 262**. La decisión es de Roberto y se
 > toma con este diseño en la mano. Mientras este documento no esté commiteado y la corrida no se
