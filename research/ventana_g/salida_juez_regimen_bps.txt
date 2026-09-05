@@ -1,0 +1,50 @@
+==================================================================================================
+EL EJE DEL REGIMEN EN PUNTOS BASICOS: era volatilidad o epoca disfrazada?
+NO GASTA CARTUCHO. K = 261. La caja sellada no se toca.
+==================================================================================================
+
+   1,006 sesiones. Eje ex-ante = volatilidad de la sesion ANTERIOR.
+   cortes en puntos:  bajo <= 0.4612 < medio <= 0.6613 < alto
+   cortes en bps:     bajo <= 1.814 < medio <= 2.622 < alto
+
+(a) PISO POR TERCIL, entradas al azar, misma maquina (cortes_y_tramo.medir).
+    'se sostiene' = monotono Y alto/bajo >= 3x en las dos celdas.
+
+   celda 5pt:20pt
+   eje                    bajo    medio     alto  alto/bajo  monotono  sostiene
+   PUNTOS (viejo)        +5.07   +17.74  +105.34      20.8x        SI        SI
+   BPS (nuevo)           +7.70   +19.45  +100.99      13.1x        SI        SI
+
+   celda 20pt:10pt
+   eje                    bajo    medio     alto  alto/bajo  monotono  sostiene
+   PUNTOS (viejo)       +27.31   +51.66  +139.87       5.1x        SI        SI
+   BPS (nuevo)          +30.37   +54.62  +133.86       4.4x        SI        SI
+
+(b) CAMBIO DE ETIQUETA puntos -> bps: 236 de 1005 sesiones (23%). Umbral 33%.
+      de\a bps    bajo   medio    alto   (fila = tercil en puntos)
+          bajo     271      64       0
+         medio      64     217      54
+          alto       0      54     281
+    -> los dos ejes miden CASI LO MISMO.
+
+(c) CONCENTRACION POR ANIO de cada tercil (% de las sesiones del tercil que caen en cada anio):
+
+   eje PUNTOS:
+     tercil    2016    2017    2018    2019  dispersion
+       bajo     23%     61%     10%      7%        0.50
+      medio     34%     13%     23%     30%        0.82
+       alto     19%      1%     43%     38%        0.62
+
+   eje BPS:
+     tercil    2016    2017    2018    2019  dispersion
+       bajo     11%     54%     17%     19%        0.61
+      medio     30%     20%     21%     29%        0.90
+       alto     34%      1%     37%     27%        0.67
+   dispersion: 1 = repartido parejo entre los 4 anios; 0 = concentrado en uno solo.
+
+==================================================================================================
+VEREDICTO: el factor SE SOSTIENE en bps (13.1x y 4.4x, contra la vara >= 3x). El eje era volatilidad, no epoca.
+   El juez pasa a bps IGUAL, porque es la unidad que viaja entre epocas y hace falta para
+   comparar 2017 contra 2026.
+   tercil alto en puntos que es 2018-2019: 80%   en bps: 64%
+==================================================================================================
