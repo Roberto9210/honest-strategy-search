@@ -63,6 +63,7 @@ El piso de rentabilidad tabulado arriba es de brackets con 3 a 5,4 operaciones p
 | entrada cruzando el spread | ≈ $6,50 | medio-spread ~0,13 pt, commit `bc2424f` |
 | salida a mercado a los 30 min | ≈ $6,50 | mismo medio-spread |
 | comisión ida y vuelta | ≈ $4 | help.tradeify.co, 2026-09-03 |
+| *nota 2026-09-05, sin resolver* | Roberto leyó **$5,76** el 2026-09-05 en la misma firma. Su explicación probable: $4 es la comisión sola y $5,76 el total con tasas de mercado, NFA y clearing —la página lo dice explícito: *"Total Round Trip Cost includes Exchange fees, NFA fees, Clearing fees, and Commissions"*—. **G usa $5,76 (`e288ffc`). Lo confirma G; esta ventana sólo lo anota** | help.tradeify.co, Roberto, 2026-09-05 |
 | **total aproximado** | **≈ $17 por sesión** | **suma mía de componentes publicados** |
 
 **Ese $17 es aritmética mía sobre números publicados, no una medición.** Lo dejo marcado como tal.
