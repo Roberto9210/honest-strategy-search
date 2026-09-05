@@ -1,6 +1,6 @@
 # A05 — El control externo de la VENTANA G sobre mi número de Baltussen: el 3,96 % ES un desvío, y el 25 pb queda en pie
 
-**VENTANA L. NO MIDE NADA. K sigue en 261.**
+**VENTANA L. NO MIDE CANDIDATAS; corre CONTROLES DEL INSTRUMENTO desde el 2026-09-05 (rol ampliado por Roberto, ver `INDICE`). K sigue en 261.**
 
 **La VENTANA G, en `salida_perfil_intradia.txt` (commit `7461919`), corrió un control externo contra
 mi derivación de "~25 pb por sesión" a partir de Baltussen, concluyó que "el control DISPARÓ", y
