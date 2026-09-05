@@ -1,0 +1,65 @@
+==================================================================================================
+C1 - LOS DOS SIGMA DE LA PRUEBA AGRUPADA DE LA VENTANA L, MEDIDOS SOBRE ES 2016-2019
+NO GASTA CARTUCHO. K = 261. La caja sellada no se toca.
+==================================================================================================
+
+   1,006 sesiones 2016-2019 con retorno cierre a cierre, en pb del nocional.
+
+--------------------------------------------------------------------------------------------------
+   EL PESO DE LA COLA EN ESTA SERIE (no en otra): |retorno| de sesion
+--------------------------------------------------------------------------------------------------
+   p99/mediana de |retorno| = 267.3/36.7 = 7.29    una normal daria 3.82    exceso de curtosis 6.4
+   Cola gorda, si. Y por eso el desvio comun es el estimador CORRECTO aca: es el que la
+   incluye. El robusto la descartaria y regalaria potencia que no existe.
+
+--------------------------------------------------------------------------------------------------
+   L11 - sigma INCONDICIONAL (cota optimista: no estan las 176 fechas de anuncio)
+--------------------------------------------------------------------------------------------------
+   desvio comun  82.00 pb        robusto (1,4826*MAD)  53.81 pb   -> la cola aporta 1.52x
+   por anio:  2016: 82.5 pb   2017: 40.7 pb   2018: 106.6 pb   2019: 83.7 pb
+   ESTIMADO por L: ~60,0 pb.   MEDIDO: 82.00 pb.   el estimado se queda CORTO por 37%
+
+--------------------------------------------------------------------------------------------------
+   L10 - sigma de SUS 48 eventos (ultimo dia habil del mes -> retorno de la sesion SIGUIENTE)
+--------------------------------------------------------------------------------------------------
+   47 eventos fechados dentro de 2016-2019 (el primero 2016-02-01, el ultimo 2019-12-02)
+
+   *** AVISO PARA LA VENTANA L, y no es un detalle de forma ***
+   El evento numero 48 de L10, tal como P01 lo especifica -ultimo dia habil de cada mes de
+   2016 a 2019, retorno del dia SIGUIENTE-, es el ultimo habil de dic-2019, y su dia
+   siguiente es el 2020-01-02: EL PRIMER DIA DE LA CAJA SELLADA. Corrida al pie de la letra,
+   la prueba agrupada toca la caja. Hay que declarar 47 eventos, o correr el conteo un mes
+   hacia atras (ultimo habil de dic-2015 a nov-2019). Es una decision de L, no mia; aca se
+   usan los 47 que caen dentro de 2016-2019 sin tocar nada.
+
+   desvio comun  82.82 pb        robusto  64.35 pb        n = 47, error relativo del propio sigma ~10%
+   ESTIMADO por L: ~60,0 pb.   MEDIDO: 82.82 pb.
+
+==================================================================================================
+   EL ESTADISTICO AGRUPADO, CON LOS SIGMA MEDIDOS
+==================================================================================================
+   j      m_j (pb)  sigma EST  sigma MED   n_j   n*r2 EST   n*r2 MED
+   L11        11.4       60.0      82.00   176       6.35       3.40
+   L10        17.0       60.0      82.82    48       3.85       2.02
+   L08   publicado          -          -   480      11.83      11.83
+                                           704      22.04      17.25
+
+   t(theta=1)          4.69  ->  4.15      (-12%)
+   theta min detectable a 3.0 desvios   0.64  ->  0.72
+   t que daria la hipotesis theta = 0.25       1.17  ->  1.04
+
+--------------------------------------------------------------------------------------------------
+   LO QUE ESTO DECIDE
+--------------------------------------------------------------------------------------------------
+   El 4.69 pasa a 4.15 y sigue POR ENCIMA de la vara de 3.0: la prueba
+   agrupada conserva resolucion. NO cae debajo de 3.
+   Pero la vara que importa no es esa. P01 fija la hipotesis en theta >= 0.25 y su
+   propia regla dice que hace falta t >= 3.0 PARA ESE theta, o sea t(theta=1) >= 12.
+   Con sigma medido t(theta=1) = 4.15: la prueba detecta theta = 0.72, no 0.25. Esa brecha
+   ya estaba en P01 (0.64 contra 0.25) y la medicion la agranda, no la crea.
+
+   Y LA ADVERTENCIA QUE NO SE ARREGLA MIDIENDO: con n = 48 y esta cola (p99/mediana 7.3
+   contra 3,8 de una normal), la aproximacion normal del propio estadistico es optimista.
+   Medir sigma bien no arregla que el teorema central del limite converja lento. El control
+   2 de P01 -el placebo de signo, mil veces- es lo que mide eso, y hay que leerlo asi.
+==================================================================================================
