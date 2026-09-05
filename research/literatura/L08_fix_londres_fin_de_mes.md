@@ -2,6 +2,8 @@
 
 **VENTANA L. Ficha de literatura. NO MEDIDA. No gasta cartucho, K sigue en 261.**
 
+> **ESTADO 2026-09-05: NO muere por reglamento —6E está en la tabla de tarifas de la firma, $6,20 ida y vuelta—. Sigue BLOQUEADA por la plomería del juez que G declaró NO IMPLEMENTADA con tercer candado. Limitación de medición, no prohibición de operar. Ver [R03](R03_cierre_por_reglamento.md) ejecución.**
+
 ---
 
 ## 1. Cita completa
