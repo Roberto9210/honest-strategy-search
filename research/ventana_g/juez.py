@@ -104,7 +104,16 @@ P_CARACTERIZADO = (0.15, 0.85)                  # S/(S+T) donde el sesgo esta me
 CAJA = ("2020-01-02", "2026-08-19")             # no se toca sin bandera y pre-registro commiteado
 TRABAJO_HASTA = 2018                            # trabajo 2016-2018, verificacion 2019
 NPERM = 200
-Z_BASE = 3.0                                    # desvios exigidos con UNA variante probada
+# LA VARA, SUBIDA 2026-09-06 POR DECISION DE ROBERTO (D2). Antes era 3,0, que corresponde a
+# alfa = 1,35e-03 a una cola y NO implementa la regla del programa. La contabilidad de la casa dice
+# alfa = 0,05/K con K = 262 (el proximo cartucho), o sea alfa = 1,908e-04 -> z = 3,5518 unilateral.
+# El juez estaba 7,1 veces mas permisivo en alfa. Y no era una divergencia contra una convencion en
+# prosa: el ledger de experimentos tiene una fila con linea_decision_t = 3,726, asi que la vara buena
+# ya se habia usado. Verificado y reproducido en vara_bonferroni.py.
+# Al subir Z_BASE, z_requerido() -que reparte sf_normal(Z_BASE) entre las variantes- compone
+# automaticamente las DOS correcciones: por cartuchos del programa y por variantes del candidato.
+ALFA_PROGRAMA = 0.05 / 262
+Z_BASE = 3.5518                                 # z tal que sf_normal(z) = ALFA_PROGRAMA
 Z_POTENCIA = 2.4865                             # alfa 0,05 una cola + potencia 80%
 N_MIN_OP = 200
 L_ESTRELLA_SES = 4                              # bloques.py: L* = 5.520 barras = 4 sesiones
@@ -400,6 +409,13 @@ def prerregistro_commiteado(ruta):
 # =========================================================================================
 def sf_normal(z):
     return 0.5 * math.erfc(z / math.sqrt(2.0))
+
+
+# Z_BASE esta escrito a mano arriba porque sf_normal todavia no existe ahi. Se verifica al importar:
+# si alguien lo toca sin recalcular el alfa, el juez no arranca.
+assert abs(sf_normal(Z_BASE) - ALFA_PROGRAMA) < 1e-6, (
+    f"Z_BASE={Z_BASE} da alfa={sf_normal(Z_BASE):.3e}, no {ALFA_PROGRAMA:.3e} (0,05/262). "
+    f"Si se cambia uno hay que recalcular el otro.")
 
 
 def z_requerido(variantes):

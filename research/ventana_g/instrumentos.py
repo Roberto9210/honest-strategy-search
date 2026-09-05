@@ -76,10 +76,18 @@ INSTRUMENTOS = {
         deslizamiento_entrada=C({0: 0.1267, 1: 0.1334, 2: 0.1330}, MEDIDO,
                                 "microestructura_tbbo.py, tbbo 2017-2019+2026, por tercil ex-ante",
                                 n=6, reparto="repartido"),
-        markout_pasivo=C({0: 0.0392, 1: 0.0073, 2: 0.0697}, MEDIDO,
-                         "mbo_entrada_pasiva.py, mbo, latencia 250 ms, muerte 1 tick",
+        # RECALIBRADAS 2026-09-06 (decision D1 de Roberto). Los valores anteriores
+        # -markout {0:+0.0392, 1:+0.0073, 2:+0.0697}, llenado {0:0.477, 1:0.514, 2:0.469}- salieron
+        # del libro que solo veia cambios de PRECIO, donde el tamano de cola que decide el llenado
+        # estaba congelado 669 ms en mediana. Con reconstruir(con_tamano=True) el markout CAMBIA DE
+        # SIGNO -cinco de seis terciles negativos- y el llenado baja 10-20%. El piso pasivo honesto
+        # pasa de $15,45 a $43,86 (5pt:20pt) y de $32,33 a $73,45 (20pt:10pt).
+        markout_pasivo=C({0: -0.0014, 1: -0.0027, 2: -0.0063}, MEDIDO,
+                         "mbo_entrada_pasiva.py con MBO_CON_TAMANO=1, mbo, latencia 250 ms, "
+                         "muerte 1 tick, epoca B (2017-2019)",
                          n=3, reparto="repartido"),
-        llenado_pasivo=C({0: 0.477, 1: 0.514, 2: 0.469}, MEDIDO, "mbo_entrada_pasiva.py",
+        llenado_pasivo=C({0: 0.451, 1: 0.423, 2: 0.423}, MEDIDO,
+                         "mbo_entrada_pasiva.py con MBO_CON_TAMANO=1, epoca B",
                          n=3, reparto="repartido"),
         exceso_stop=C({10: 0.722, 20: 0.982}, MEDIDO, "media_exceso.py, exceso medio en el stop",
                       n=1006, reparto="repartido"),
@@ -103,9 +111,11 @@ INSTRUMENTOS = {
                                 "HEREDADO del ES: mismo subyacente y mismo tick en puntos. "
                                 "Declarado como herencia, no medido sobre MES",
                                 n=6, reparto="repartido"),
-        markout_pasivo=C({0: 0.0392, 1: 0.0073, 2: 0.0697}, MEDIDO, "HEREDADO del ES, idem",
+        markout_pasivo=C({0: -0.0014, 1: -0.0027, 2: -0.0063}, MEDIDO,
+                         "HEREDADO del ES, idem (recalibrado 2026-09-06)",
                          n=3, reparto="repartido"),
-        llenado_pasivo=C({0: 0.477, 1: 0.514, 2: 0.469}, MEDIDO, "HEREDADO del ES, idem",
+        llenado_pasivo=C({0: 0.451, 1: 0.423, 2: 0.423}, MEDIDO,
+                         "HEREDADO del ES, idem (recalibrado 2026-09-06)",
                          n=3, reparto="repartido"),
         exceso_stop=C({10: 0.722, 20: 0.982}, MEDIDO, "HEREDADO del ES, idem",
                       n=1006, reparto="repartido"),
