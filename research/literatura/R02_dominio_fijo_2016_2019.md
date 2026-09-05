@@ -1,6 +1,6 @@
 # R02 — El dominio se fija sobre 2016-2019 POR CONSTRUCCIÓN. Cierra el agujero de marzo de 2020 antes de que se abra la caja. SELLADA.
 
-**VENTANA L. NO MIDE NADA. K sigue en 261.**
+**VENTANA L. NO MIDE CANDIDATAS; corre CONTROLES DEL INSTRUMENTO desde el 2026-09-05 (rol ampliado por Roberto, ver `INDICE`). K sigue en 261.**
 
 > ## SELLADO
 >
