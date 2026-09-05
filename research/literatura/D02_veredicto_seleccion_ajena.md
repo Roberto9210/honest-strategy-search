@@ -1,6 +1,6 @@
 # D02 — Veredicto sobre la selección ajena
 
-**VENTANA L. NO MIDE NADA. K sigue en 261.**
+**VENTANA L. NO MIDE CANDIDATAS; corre CONTROLES DEL INSTRUMENTO desde el 2026-09-05 (rol ampliado por Roberto, ver `INDICE`). K sigue en 261.**
 
 Las dos posiciones están en [D01](D01_seleccion_ajena_las_dos_posiciones.md), commiteado **antes** que
 este documento y sin conclusión. Ése es el orden y está en el historial.
