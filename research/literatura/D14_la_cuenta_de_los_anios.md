@@ -1,6 +1,6 @@
 # D14 — La cuenta que decide todo: ¿cuántos años necesitaría cada candidata, y esos años existen?
 
-**VENTANA L. NO MIDE NADA. K sigue en 261.** Aritmética sobre veredictos ya emitidos, corrida desde
+**VENTANA L. NO MIDE CANDIDATAS; corre CONTROLES DEL INSTRUMENTO desde el 2026-09-05 (rol ampliado por Roberto, ver `INDICE`). K sigue en 261.** Aritmética sobre veredictos ya emitidos, corrida desde
 `scratchpad/cuenta_anios.py` (el código va a un archivo). **El ranking sigue congelado: esta tabla no
 ordena, cuenta.**
 
