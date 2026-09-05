@@ -1,6 +1,6 @@
 # P03 — La regla P02, aplicada
 
-**VENTANA L. NO MIDE NADA. K sigue en 261.**
+**VENTANA L. NO MIDE CANDIDATAS; corre CONTROLES DEL INSTRUMENTO desde el 2026-09-05 (rol ampliado por Roberto, ver `INDICE`). K sigue en 261.**
 
 Aplicación de la regla escrita en [P02](P02_REGLA_magnitud_objetivo.md), que se commiteó **antes**
 que este documento y sin haber mirado ningún subperíodo. El orden está en el historial de git.
