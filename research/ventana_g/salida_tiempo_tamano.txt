@@ -1,0 +1,123 @@
+==================================================================================================
+C2 - LIMITE DE TIEMPO DE LA EVALUACION, Y LA ASIMETRIA DE ACHICAR EL CONTRATO
+NO GASTA CARTUCHO. K = 261. La caja sellada no se toca.
+==================================================================================================
+
+--------------------------------------------------------------------------------------------------
+   PARTE 1 - QUE DICEN LOS DATOS CRUDOS (datos_crudos.md, leidos 2026-09-03)
+--------------------------------------------------------------------------------------------------
+   APEX          'ONE-TIME FEE. NO REBILL. EVAL ACTIVE FOR 30 DAYS. WILL EXPIRE AFTER 30
+                 DAYS. NO RESETS.'  -> LIMITE DURO Y EXPLICITO: 30 dias.
+   TOPSTEP       Combine por suscripcion mensual ($49/mes en 50K). No expira, pero el tiempo
+                 CUESTA: cada mes extra es otra cuota. Limite BLANDO, y es dinero.
+   MYFUNDEDFUT.  'Charged once today. This plan does not renew and is not a subscription.'
+                 Minimo 2 dias. No se leyo vencimiento.
+   TRADEIFY      La ficha registra precio, objetivo, drawdown, reset, consistencia y
+                 activacion. NO registra plazo de vencimiento ni dias minimos.
+
+   RESPUESTA HONESTA, con la convencion del propio documento ('lo que no aparece aca es NO
+   SE DETERMINA'): para TRADEIFY el limite de tiempo NO ESTA DETERMINADO. No es lo mismo que
+   'no tiene'. Lo que SI esta determinado es que es pago unico sin activacion y sin cuota
+   mensual de la evaluacion, o sea que NO hay un reloj que cobre por mes como en Topstep.
+   Para APEX el limite existe y son 30 dias, medido y citado.
+   QUE LO CERRARIA: una lectura de los terminos de Tradeify buscando 'expire'/'time limit'.
+   Mientras tanto se miden las DOS ramas, porque la decision cambia entre una y otra.
+
+--------------------------------------------------------------------------------------------------
+   PARTE 2 - MEDIDO. Flujo SIN ventaja: 3,764 operaciones, 759 sesiones,
+   bracket 5pt:20pt, comision y deslizamiento cobrados. Cadena Tradeify Growth 50K:
+   drawdown $2,000 EOD trailing, objetivo $3,000, cuota $83,
+   pago esperado $1,350. Un intento por cada sesion de arranque.
+--------------------------------------------------------------------------------------------------
+
+   PLAZO DE LA EVALUACION: sin limite del producto (tope: el rango de datos)
+    N micros  P(pasa eval)  P(toca DD)  P(se acaba)  E sesiones  costo ejec.   P(pago)
+           1         0.000       0.582        0.418       145.5       1,785$     0.000
+           2         0.000       0.982        0.018        59.8       1,468$     0.000
+           3         0.000       0.995        0.005        23.6         870$     0.000
+           5         0.000       0.996        0.004         9.0         551$     0.000
+           7         0.000       0.999        0.001         5.3         451$     0.000
+          10         0.029       0.970        0.001         6.3         386$     0.000
+          14         0.000       0.999        0.001         3.0         326$     0.000
+          20         0.009       0.989        0.001         2.5         301$     0.000
+          30         0.000       0.999        0.001         1.7         303$     0.000
+          40         0.000       0.999        0.001         1.3         323$     0.000
+
+   PLAZO DE LA EVALUACION: 90 sesiones
+    N micros  P(pasa eval)  P(toca DD)  P(se acaba)  E sesiones  costo ejec.   P(pago)
+           1         0.000       0.178        0.822        80.2         984$     0.000
+           2         0.000       0.744        0.256        50.0       1,227$     0.000
+           3         0.000       0.995        0.005        23.6         870$     0.000
+           5         0.000       0.996        0.004         9.0         551$     0.000
+           7         0.000       0.999        0.001         5.3         451$     0.000
+          10         0.029       0.970        0.001         6.3         386$     0.000
+          14         0.000       0.999        0.001         3.0         326$     0.000
+          20         0.009       0.989        0.001         2.5         301$     0.000
+          30         0.000       0.999        0.001         1.7         303$     0.000
+          40         0.000       0.999        0.001         1.3         323$     0.000
+
+   PLAZO DE LA EVALUACION: 60 sesiones
+    N micros  P(pasa eval)  P(toca DD)  P(se acaba)  E sesiones  costo ejec.   P(pago)
+           1         0.000       0.072        0.928        57.0         699$     0.000
+           2         0.000       0.630        0.370        41.3       1,014$     0.000
+           3         0.000       0.986        0.014        23.6         869$     0.000
+           5         0.000       0.996        0.004         9.0         551$     0.000
+           7         0.000       0.999        0.001         5.3         451$     0.000
+          10         0.029       0.970        0.001         6.3         386$     0.000
+          14         0.000       0.999        0.001         3.0         326$     0.000
+          20         0.009       0.989        0.001         2.5         301$     0.000
+          30         0.000       0.999        0.001         1.7         303$     0.000
+          40         0.000       0.999        0.001         1.3         323$     0.000
+
+   PLAZO DE LA EVALUACION: 30 sesiones
+    N micros  P(pasa eval)  P(toca DD)  P(se acaba)  E sesiones  costo ejec.   P(pago)
+           1         0.000       0.000        1.000        29.4         361$     0.000
+           2         0.000       0.300        0.700        27.2         666$     0.000
+           3         0.000       0.743        0.257        20.0         737$     0.000
+           5         0.000       0.996        0.004         9.0         551$     0.000
+           7         0.000       0.999        0.001         5.3         451$     0.000
+          10         0.029       0.970        0.001         6.3         386$     0.000
+          14         0.000       0.999        0.001         3.0         326$     0.000
+          20         0.009       0.989        0.001         2.5         301$     0.000
+          30         0.000       0.999        0.001         1.7         303$     0.000
+          40         0.000       0.999        0.001         1.3         323$     0.000
+
+==================================================================================================
+   LA LECTURA
+==================================================================================================
+   1) SI, ES ASIMETRICO, Y SE VE EN LA COLUMNA 'P(se acaba)'.
+      AVISO SOBRE LA FILA 'sin limite': no es infinita. El intento no puede pasarse del
+      rango de datos, asi que ahi 'se acaba' significa 'se acabaron las sesiones que
+      tengo', no un plazo del producto. Por eso con 1 micro ya da 0.418: ese participante
+      tarda 145 sesiones y muchos arranques no llegan al final de la serie.
+      Con eso dicho, la comparacion es limpia porque el mismo tope corre en las cuatro filas:
+      1 micro pasa de 0.418 (tope del rango) a 1.000 con plazo de 30, y su P(toca DD)
+      se derrumba de 0.582 a 0.000: el plazo lo mata ANTES de que el drawdown lo alcance.
+      40 micros no se entera: 0.001 contra 0.001, porque resuelve en 1.3 sesiones.
+      El plazo SOLO castiga al chico. Confirmado: con limite, achicar cobra el objetivo.
+
+   2) PERO SIN LIMITE TAMPOCO ES GRATIS, Y ESTO NO ESTABA EN LA PREGUNTA.
+      El intento pasa de 1.3 sesiones con 40 micros a 145.5 con 1: 110x mas largo.
+      El costo de ejecucion pagado por intento va de $323 a $1,785: sube 5.5x.
+      Es el 1/N anunciado: menos por operacion, muchisimas mas operaciones. 'Sin limite no
+      te cobra el objetivo' es cierto para el PLAZO y falso para el BOLSILLO.
+
+   3) Y NO ES MONOTONO: el maximo esta en 10 micros (0.029), con 1 da 0.000 y con 40 da 0.000.
+      Y el maximo NO esta en cualquier lado: esta en 10 y el segundo en 20. Es el ESCALON
+      DE COMISION que la propia Tradeify publica -'if you're trading micro contracts in
+      multiples of 10, you should trade the corresponding mini instead to save on fees'-:
+      la ida y vuelta por micro-equivalente es $0,58 en multiplos de 10 y $1,82 fuera de
+      ellos, 3,2x. El optimo cae donde se cruzan tres cosas: comision barata (multiplo de
+      10), intento no tan largo que el costo lo desangre, y no tan grande que el drawdown
+      TRAILING lo saque en 1.3 sesiones. Sin costos y con piso FIJO la teoria daria 0.40
+      para cualquier N; lo que rompe la invariancia son las dos cosas que el producto
+      agrega: el costo por operacion y que el piso PERSIGUE al maximo.
+      RESOLUCION DE ESTA COLUMNA: 759 intentos, asi que 0.029 son 22 intentos. El
+      escalon de 10 y 20 contra el resto es estructural; el orden fino entre 30 y 40 no.
+
+   4) EL SIGNO DE TODO, para que no se lea al reves. P(pago) es 0.000 en
+      TODAS las filas y E $/intento es $-83 en todas: la cuota, y nada mas.
+      Con cero ventaja NADIE cobra a ningun tamano, asi que 'el tamano optimo' es el que
+      pierde mas despacio, no el que gana. Elegir tamano no es una palanca de esperanza:
+      es elegir con que velocidad se pierde la cuota.
+==================================================================================================
