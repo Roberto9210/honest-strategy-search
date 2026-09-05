@@ -1,6 +1,6 @@
 # D19 — El feed cambió de formato en marzo de 2017, en medio de nuestra muestra. **Para la VENTANA G.**
 
-**VENTANA L. NO MIDE NADA. K sigue en 261.**
+**VENTANA L. NO MIDE CANDIDATAS; corre CONTROLES DEL INSTRUMENTO desde el 2026-09-05 (rol ampliado por Roberto, ver `INDICE`). K sigue en 261.**
 
 **Fuente:** catálogo oficial de Databento, conjunto `GLBX.MDP3`, **leído por Roberto el 2026-09-05**
 (`F16` en acción: a esta ventana la página le devolvió sólo la palabra "Databento"). Tres frases
