@@ -1,6 +1,6 @@
 # D05 — La pregunta que bloquea: la respuesta es (D). P01 SE CIERRA.
 
-**VENTANA L. NO MIDE NADA. K sigue en 261.**
+**VENTANA L. NO MIDE CANDIDATAS; corre CONTROLES DEL INSTRUMENTO desde el 2026-09-05 (rol ampliado por Roberto, ver `INDICE`). K sigue en 261.**
 
 ---
 
