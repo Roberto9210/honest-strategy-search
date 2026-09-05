@@ -1,6 +1,6 @@
 # CTRL01 — CONTROL DEL INSTRUMENTO, no candidata: ¿nuestros datos reproducen la deriva nocturna publicada de Boyarchenko, Larsen y Whelan? **Diseño para la VENTANA G.**
 
-**VENTANA L. NO MIDE NADA. K sigue en 261.** **Esto es un CONTROL**, del mismo tipo que los diez del juez:
+**VENTANA L. NO MIDE CANDIDATAS; corre CONTROLES DEL INSTRUMENTO desde el 2026-09-05 (rol ampliado por Roberto, ver `INDICE`). K sigue en 261.** **Esto es un CONTROL**, del mismo tipo que los diez del juez:
 corre sobre datos ya mirados, no pre-registra nada, no produce una regla, y **no gasta cartucho**. Su
 única pregunta: **¿el instrumento de la casa ve un resultado publicado sobre el ES cuando ese resultado
 está adentro de los datos?** Es la primera vez que se probaría.
