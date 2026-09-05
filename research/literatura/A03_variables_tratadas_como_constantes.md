@@ -1,6 +1,6 @@
 # A03 — Dónde tratamos una variable como si fuera una constante
 
-**VENTANA L. NO MIDE NADA. K sigue en 261.**
+**VENTANA L. NO MIDE CANDIDATAS; corre CONTROLES DEL INSTRUMENTO desde el 2026-09-05 (rol ampliado por Roberto, ver `INDICE`). K sigue en 261.**
 
 **El hallazgo que originó esto:** la exposición de L10 es de **uno o de tres días** según en qué día
 de la semana cae el fin de mes, y nuestros filtros razonan sobre uno.
