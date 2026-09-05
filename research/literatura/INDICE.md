@@ -12,6 +12,10 @@ candidatas fueron clasificadas **antes** de cualquier medición.
 | [F8_TAMANO_DE_CONTRATO.md](F8_TAMANO_DE_CONTRATO.md) | el eje de tamaño, y la corrección a lo que afirmé sobre el MES |
 | [PISO_Y_CONVERSION.md](PISO_Y_CONVERSION.md) | pisos, costos y conversión a dólares, definidos una sola vez |
 | **[P01_PREREGISTRO_prueba_agrupada.md](P01_PREREGISTRO_prueba_agrupada.md)** | **el borrador de pre-registro de la prueba agrupada. Correrla gastaría el cartucho 262** |
+| [P02](P02_REGLA_magnitud_objetivo.md) y [P03](P03_magnitudes_corregidas.md) | la regla de magnitud objetivo, y su aplicación. **Commiteadas en ese orden a propósito** |
+| **[P04_COMPRA_L08.md](P04_COMPRA_L08.md)** | **qué datos comprar, el mínimo que sirve, y el plan B escrito antes de saber el precio** |
+| [HIBRIDAS.md](HIBRIDAS.md) | las que necesitan una pieza nuestra, y si esa pieza se puede ajustar |
+| [F10_CUANTA_GENTE_ADENTRO.md](F10_CUANTA_GENTE_ADENTRO.md) | ¿ya lo está operando alguien? Cinco de once con producto encontrado |
 | [ORDEN_DE_TRABAJO.md](ORDEN_DE_TRABAJO.md) | **los ocho tests de mecanismo por potencia. El orden de trabajo real** |
 | [M01_test_de_mecanismo.md](M01_test_de_mecanismo.md) | probar el mecanismo en vez de la ventaja |
 | [M02_eje_barato_contra_eje_caro.md](M02_eje_barato_contra_eje_caro.md) | la prueba de una tarde, sin comprar nada |
