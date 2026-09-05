@@ -23,12 +23,18 @@ candidatas fueron clasificadas **antes** de cualquier medición.
 >
 > | veredicto | cuántas | cuáles |
 > |---|---|---|
-> | **CIEGA, cerrada con número** | **6** | L02, L04, L06, L09, L10, L11 |
-> | **REQUIERE MEDICIÓN, bloqueada** | **4** | L01 y L03 esperan el perfil de volatilidad; L07 y L08 esperan una decisión de compra |
-> | **NO EVALUABLE COMO REGLA** | 1 | L05, con su contribución máxima acotada e insuficiente |
+> | **CERRADA con número** | **7** | L02, L04, **L05**, L06, L09, L10, L11 |
+> | **ABIERTA, bloqueada por terceros** | **4** | L01 y L03 esperan el perfil de volatilidad; L07 y L08 esperan una decisión de compra |
+> | | **11** | **siete más cuatro. Ver [A04](A04_domicilio_de_L05.md)** |
 >
-> **Ninguna candidata del inventario está disponible para trabajar hoy.** Las seis cerradas lo están
+> **Ninguna candidata del inventario está disponible para trabajar hoy.** Las siete cerradas lo están
 > con su número; las cuatro abiertas dependen de terceros.
+>
+> **Corrección del 2026-09-05:** reporté "seis y cuatro", que son diez sobre once. **L05 quedaba sin
+> domicilio y ahora está cerrada explícito.** Y sobre L10 hay una corrección mayor en
+> [D08](D08_L10_fuera_de_muestra.md): **su fuera de muestra SÍ existe** —177 fines de mes en
+> 1982-1996, con el mejor margen del inventario sobre el papel— **y está bloqueado por datos y por
+> mecanismo, no por potencia.**
 
 > ## ⛔ LA PRUEBA AGRUPADA SE CERRÓ — 2026-09-05
 >
