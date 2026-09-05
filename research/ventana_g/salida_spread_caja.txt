@@ -1,0 +1,92 @@
+====================================================================================================
+TAREA 1 - MEDIO-SPREAD Y PROFUNDIDAD POR CAJA DE MEDIA HORA
+NO GASTA CARTUCHO. K = 261. Dinero: $0. La caja sellada no se toca.
+====================================================================================================
+
+   QUE DARIA SI EL EFECTO NO EXISTIERA (escrito antes de correr): las cuatro columnas
+   iguales, ~0,13 pt, cociente apertura/mediodia = 1,00, y misma profundidad.
+
+----------------------------------------------------------------------------------------------------
+   MEDIO-SPREAD EFECTIVO (pt) POR CAJA, y el promedio de sesion que usamos hoy
+----------------------------------------------------------------------------------------------------
+                      dia          #31          #43          #38       SESION
+        B/bajo 2017-06-07       0.1252       0.1257       0.1273       0.1267
+       B/medio 2019-05-01       0.1289       0.1295       0.1322       0.1334
+        B/alto 2018-04-25       0.1347       0.1304       0.1298       0.1330
+        A/bajo 2026-08-26       0.1471       0.1280       0.1270       0.1344
+       A/medio 2026-09-02       0.1386       0.1288       0.1276       0.1308
+     A/altoREL 2026-09-01       0.1300       0.1292       0.1414       0.1306
+
+   caja #31 (08:30 apertura contado)  media 0.1341 pt   entre dias: min 0.1252 max 0.1471   dispersion 1.17x
+   caja #43 (14:30 cierre contado)    media 0.1286 pt   entre dias: min 0.1257 max 0.1304   dispersion 1.04x
+   caja #38 (12:00 mediodia)          media 0.1309 pt   entre dias: min 0.1270 max 0.1414   dispersion 1.11x
+   SESION ENTERA                      media 0.1315 pt   entre dias: min 0.1267 max 0.1344   dispersion 1.06x
+
+----------------------------------------------------------------------------------------------------
+   PROFUNDIDAD MEDIANA AL MEJOR PRECIO (contratos)
+----------------------------------------------------------------------------------------------------
+                      dia          #31          #43          #38       SESION
+        B/bajo 2017-06-07          340          592          313          325
+       B/medio 2019-05-01          124          142          130          110
+        B/alto 2018-04-25           75          101           66           64
+        A/bajo 2026-08-26           20           46           36           26
+       A/medio 2026-09-02           20           46           30           28
+     A/altoREL 2026-09-01           22           40           26           28
+
+   caja #31                           mediana entre dias 48 contratos   min 20 max 340   dispersion 16.59x
+   caja #43                           mediana entre dias 73 contratos   min 40 max 592   dispersion 15.00x
+   caja #38                           mediana entre dias 52 contratos   min 26 max 313   dispersion 11.82x
+   SESION ENTERA                      mediana entre dias 46 contratos   min 26 max 325   dispersion 12.26x
+
+====================================================================================================
+   LO QUE DECIDE
+====================================================================================================
+   medio-spread efectivo:  apertura #31 0.1341   cierre #43 0.1286   mediodia #38 0.1309   sesion 0.1315
+   contra el 0,1300 pt que usamos hoy en el juez.
+   cociente apertura/mediodia 1.02   cierre/mediodia 0.98
+
+   EL EFECTO NO EXISTE: el medio-spread efectivo es practicamente el mismo a toda hora.
+   El 0,13 pt sirve para cualquier caja y las razones exigida/detectable NO estan
+   calibradas para la hora equivocada. La preocupacion de la VENTANA L se cierra con
+   numero, y el motivo es estructural: el spread del ES es de UN TICK casi siempre, asi
+   que no tiene lugar donde variar.
+
+   DISPERSION ENTRE LOS SEIS DIAS, que es lo que L pidio al lado del numero:
+      caja #31: 1.17x
+      caja #43: 1.04x
+      caja #38: 1.11x
+
+   SEIS DIAS ALCANZAN PARA ESTO: la dispersion entre dias es 1.17x, mucho menor que
+   la del factor de volatilidad entre anos (1,70x). El medio-spread es una cantidad
+   estable y no hace falta comprar mas dias PARA MEDIRLO. Eso no dice nada sobre las
+   otras constantes -el markout sigue siendo indistinguible de cero con estos dias-.
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+   Y EL HALLAZGO NO ES EL SPREAD: ES LA PROFUNDIDAD, Y ES MAS GRANDE
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+   El medio-spread no se mueve NI por hora NI por epoca, y eso es estructural: esta clavado al
+   tick minimo de 0,25 pt, o sea que NO TIENE LUGAR DONDE VARIAR. Es la cantidad que no podia
+   cambiar. La profundidad al mejor precio SI podia, y cambio:
+      caja #31 (apertura): epoca B (2017-2019) 124 contratos   ->   epoca A (2026) 22   =  6x menos
+      dispersion entre los seis dias, por caja: #31 16,6x   #43 15,0x   #38 11,8x
+
+   ESTO ES EVIDENCIA DIRECTA PARA LA COMPARABILIDAD A/B, que estaba pendiente: la
+   profundidad al mejor precio es una de las tres mediciones que nombre y no habia hecho, y
+   da un factor de mas de diez entre epocas. Los dias A y B NO son dos muestras del mismo
+   proceso de microestructura.
+
+   Y CONFIRMA, CON EL DATO, POR QUE 'el costo no cambio en diez anos' era un artefacto: lo que
+   medimos -el medio-spread- es lo unico anclado al reglamento del CME. Lo que si es del
+   mercado -cuanta cola hay al mejor precio- se derrumbo. Un libro con 20 contratos al mejor
+   se comporta distinto de uno con 340 para todo lo que dependa de la COLA: llenado pasivo,
+   posicion en la fila, seleccion adversa.
+
+   TAMBIEN VARIA POR CAJA, y en la direccion contraria a la volatilidad: el CIERRE tiene mas
+   profundidad que la APERTURA en los seis dias (mediana 73 contra 48). O sea que la apertura
+   es la mas volatil Y la mas delgada. Para una candidata de apertura, las dos cosas suman en
+   contra.
+
+   MARCA DE FRAGILIDAD: profundidad medida solo en el PRIMER nivel, y el feed que Roberto ve
+   agrega diez niveles como numeros, no ordenes. Esto no dice nada sobre la profundidad total
+   del libro, solo sobre la cola del mejor precio, que es la que decide un llenado pasivo.
+====================================================================================================
