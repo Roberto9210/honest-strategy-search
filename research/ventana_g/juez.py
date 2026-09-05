@@ -508,6 +508,16 @@ def juzgar_periodo(cand, m, idx, sgn, etiqueta, npermuta=NPERM, rotacion_global=
         sesgo_pt = o_cons * signo_corr + sesgo_amb
         error_o_pt = o_span * O_ERROR_REL * abs(signo_corr) + abs(sesgo_amb) * 0.17
         if span < 20.0:
+            # ADVERTENCIA DE SEGURIDAD, 2026-09-07. Corridos los diez controles sobre 3pt:4pt dan
+            # 7/10, y el que falla en la direccion PELIGROSA es C7: aprobo (SUPERA) donde debia
+            # marcar APUESTA AL REGIMEN, o sea que dejo pasar una ventaja que vive en un solo
+            # regimen. C9 falla al reves (no vio una ventaja de timing real) y C5 tambien falla.
+            # Los tres estan calibrados contra 5pt:20pt y NO se trasladan al regimen estrecho.
+            avisos.append(
+                "*** NINGUN VEREDICTO DE APROBACION SOBRE UN BRACKET ESTRECHO (span < 20) ES "
+                "CONFIABLE. Los controles C5, C7 y C9 estan calibrados contra 5pt:20pt y sobre "
+                "3pt:4pt dan 7/10: C7 APRUEBA donde deberia marcar APUESTA AL REGIMEN. Un SUPERA "
+                "aca no esta respaldado por el suite de controles. Los rechazos SI valen. ***")
             avisos.append(
                 f"SPAN ESTRECHO ({span:g} pt). o(span) = {o_span:.4f}, no el {O_SOBREPASO:.4f} del "
                 f"rango 20-35: en brackets estrechos el sobrepaso es la MITAD. Y el termino de "

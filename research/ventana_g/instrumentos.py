@@ -113,7 +113,14 @@ INSTRUMENTOS = {
                      "sesgo_marco_spans_cortos.py, bootstrap IID, 6 series, 3 celdas por span. "
                      "SIMPLIFICACION MIA, no medicion: en 3-10 la falta de monotonia "
                      "(0,0310/0,0257/0,0237/0,0273/0,0242) es probablemente ruido de 6 series, y "
-                     "el juez interpola. Rango observado en 3-10: 0,0237 a 0,0310, media 0,0264",
+                     "el juez interpola. Rango observado en 3-10: 0,0237 a 0,0310, media 0,0264. "
+                     "INCERTIDUMBRE 2026-09-07: los o de esta tabla se midieron con TRES celdas por "
+                     "span. Con el span 25 se comprobo que tres celdas dan 0,0579 y cinco dan "
+                     "0,0686 (el publicado es 0,0642): una diferencia de 0,011 ABSOLUTA. Si esa "
+                     "diferencia es de configuracion y no de ruido, los o cortos estan bajos por lo "
+                     "mismo, y a o ~ 0,026 eso es hasta 40% RELATIVO. El +-15% que declare antes es "
+                     "demasiado optimista para spans cortos: usar +-40% hasta remedirlos con cinco "
+                     "celdas por span",
                      n=6, reparto="repartido"),
         tasa_ambigua_por_span=C({3.0: 0.01522, 4.0: 0.00733, 5.0: 0.00373, 7.0: 0.00168,
                                  10.0: 0.00051, 25.0: 0.00006}, MEDIDO,

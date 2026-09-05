@@ -6,14 +6,14 @@ NO GASTA CARTUCHO. K = 261. Permutaciones por nula: 200. La caja sellada no se t
    grilla 2016-2018: 3,764 ranuras cada 300 barras, celda 5pt:20pt, 1 ES.
 
 C1  SIN VENTAJA. Esperado NO SUPERA. Falla si SUPERA o APUESTA.
-   [C1] NO SUPERA   (7s)
+   [C1] NO SUPERA   (6s)
       obs -6.62  nulaA -48.33 (vent +41.71, +1.5sd)  nulaB -54.53 (vent +47.91, +1.7sd)  pasiva -1.30 (-0.2sd)  sd 28.11  z_req 3.55
       regimen: bajo=+71.6(+1.9sd)no  medio=+33.7(+0.7sd)no  alto=+35.3(+0.7sd)no
       cadena eval x fondeada (10 micros): P(pasa eval) 0.063  P(pago) 0.000  P(se acaba el rango) 0.003  E sesiones 7  E $/intento -83
       informativo = min(rotacion en rango, signo, pasiva) = -0.2sd; lo frena: rotacion en rango, signo, pasiva
 
 C2  VENTAJA INYECTADA q=0.62. Esperado SUPERA y recuperacion dentro de +-33% de la realizada.
-   [C2] SUPERA   (7s)
+   [C2] SUPERA   (6s)
       obs +196.79  nulaA -38.12 (vent +234.91, +7.9sd)  nulaB -56.67 (vent +253.46, +8.6sd)  pasiva +2.25 (+6.6sd)  sd 29.61  z_req 3.55
       regimen: bajo=+213.0(+6.2sd)SI  medio=+277.2(+6.6sd)SI  alto=+271.3(+5.0sd)SI
       cadena eval x fondeada (10 micros): P(pasa eval) 0.264  P(pago) 0.063  P(se acaba el rango) 0.004  E sesiones 11  E $/intento +2
@@ -65,7 +65,7 @@ C7  VENTAJA SOLO EN TENDENCIAS BAJISTAS (mov. neto de las 20 sesiones anteriores
 C8  CANDIDATO EN EL BORDE (q=0.545, entre el piso pasivo y el de cruce). Prueba la frontera
     entre modos, donde el desplazamiento de nivel podria hacer dano. Esperado: NO APRUEBA en
     ninguno de los dos modos (NO SUPERA / APUESTA / REQUIERE MEDICION), NUNCA SUPERA. Falla si SUPERA.
-   [C8] NO SUPERA   (7s)
+   [C8] NO SUPERA   (6s)
       obs +83.94  nulaA -41.32 (vent +125.26, +4.3sd)  nulaB -58.95 (vent +142.89, +4.9sd)  pasiva +0.32 (+2.8sd)  sd 29.37  z_req 3.55
       regimen: bajo=+84.0(+2.1sd)SI  medio=+195.1(+4.4sd)SI  alto=+158.5(+3.0sd)SI
       cadena eval x fondeada (10 micros): P(pasa eval) 0.108  P(pago) 0.001  P(se acaba el rango) 0.004  E sesiones 8  E $/intento -81
@@ -83,7 +83,7 @@ C9  VENTAJA DE TIMING declarada BIEN (lado al azar, mejor tercio DENTRO de cada 
 
 C10 LA PUERTA TRASERA: candidato SIN ventaja que declara 'timing'. Esperado NO SUPERA igual.
     Falla si declarar una clase falsa lo hace pasar.
-   [C10] NO SUPERA   (7s)
+   [C10] NO SUPERA   (6s)
       obs -6.62  nulaA -48.33 (vent +41.71, +1.5sd)  nulaB -54.53 (vent +47.91, +1.7sd)  pasiva -1.30 (-0.2sd)  sd 28.11  z_req 3.55
       regimen: bajo=+71.6(+1.9sd)no  medio=+33.7(+0.7sd)no  alto=+35.3(+0.7sd)no
       cadena eval x fondeada (10 micros): P(pasa eval) 0.063  P(pago) 0.000  P(se acaba el rango) 0.003  E sesiones 7  E $/intento -83
@@ -91,8 +91,8 @@ C10 LA PUERTA TRASERA: candidato SIN ventaja que declara 'timing'. Esperado NO S
       clase declarada timing / firma medida indefinida   omite signo: False   z_info -0.2
 
 DEMOSTRACION (no es control): el contador de familia.
-   [C2 en registro limpio] SUPERA   (7s)
-   [C1 despues, misma huella] NO SUPERA   (7s)
+   [C2 en registro limpio] SUPERA   (6s)
+   [C1 despues, misma huella] NO SUPERA   (6s)
       hermanos detectados: 1   variantes totales: 2   umbral exigido: 3.73 desvios (base 3.6)
          C2_ventaja_inyectada  SUPERA  (huella 100% a 30 barras)
       cadena antes de alterar: OK   despues de alterar: ROTA en linea 3
@@ -119,14 +119,14 @@ NO GASTA CARTUCHO. K = 261. Permutaciones por nula: 200. La caja sellada no se t
    grilla 2016-2018: 3,764 ranuras cada 300 barras, celda 5pt:20pt, 1 ES.
 
 C1  SIN VENTAJA. Esperado NO SUPERA. Falla si SUPERA o APUESTA.
-   [C1] NO SUPERA   (7s)
+   [C1] NO SUPERA   (6s)
       obs +11.44  nulaA -6.97 (vent +18.42, +1.5sd)  nulaB -9.55 (vent +20.99, +1.7sd)  pasiva -1.30 (+1.1sd)  sd 12.09  z_req 3.55
       regimen: bajo=+32.3(+1.9sd)no  medio=+14.3(+0.7sd)no  alto=+14.9(+0.7sd)no
       cadena eval x fondeada (10 micros): P(pasa eval) 0.063  P(pago) 0.000  P(se acaba el rango) 0.003  E sesiones 7  E $/intento -83
       informativo = min(rotacion en rango, signo, pasiva) = +1.1sd; lo frena: rotacion en rango, signo, pasiva
 
 C2  VENTAJA INYECTADA q=0.62. Esperado SUPERA y recuperacion dentro de +-33% de la realizada.
-   [C2] REQUIERE MEDICION PASIVA POR CANDIDATO   (7s)
+   [C2] REQUIERE MEDICION PASIVA POR CANDIDATO   (6s)
       obs +98.89  nulaA -2.53 (vent +101.43, +7.9sd)  nulaB -10.47 (vent +109.37, +8.5sd)  pasiva +2.25 (+7.6sd)  sd 12.80  z_req 3.55
       regimen: bajo=+96.1(+6.2sd)SI  medio=+117.3(+6.6sd)SI  alto=+114.7(+5.0sd)SI
       cadena eval x fondeada (10 micros): P(pasa eval) 0.264  P(pago) 0.063  P(se acaba el rango) 0.004  E sesiones 11  E $/intento +2
@@ -151,7 +151,7 @@ C4  ENTRADA CON RESULTADOS. Esperado RECHAZADA. Falla si se juzga.
       motivo: ENTRADA RECHAZADA. El campo 'pnl' aparece en candidato.operaciones[0] y es un RESULTADO.
 
 C5  VENTAJA SOLO EN EL TERCIL ALTO EX-ANTE (sesion anterior; q=0.75). Esperado APUESTA AL REGIMEN.
-   [C5] APUESTA AL REGIMEN   (7s)
+   [C5] APUESTA AL REGIMEN   (6s)
       obs +61.46  nulaA -3.95 (vent +65.42, +4.6sd)  nulaB -11.94 (vent +73.40, +5.2sd)  pasiva +0.46 (+4.3sd)  sd 14.19  z_req 3.55
       regimen: bajo=-21.0(-1.3sd)no  medio=+6.2(+0.3sd)no  alto=+247.0(+10.9sd)SI
       cadena eval x fondeada (10 micros): P(pasa eval) 0.195  P(pago) 0.082  P(se acaba el rango) 0.024  E sesiones 9  E $/intento +27
@@ -171,7 +171,7 @@ C6  ATAQUE A1: solo-largo restringido a 2017. Esperado NO SUPERA con la defensa.
       informativo = min(rotacion en rango, signo, pasiva) = -2.2sd; lo frena: rotacion en rango, signo, pasiva
 
 C7  VENTAJA SOLO EN TENDENCIAS BAJISTAS (mov. neto de las 20 sesiones anteriores < 0; q=0.9). Esperado APUESTA AL REGIMEN. Falla si SUPERA.
-   [C7] APUESTA AL REGIMEN   (7s)
+   [C7] APUESTA AL REGIMEN   (6s)
       obs +98.50  nulaA -3.30 (vent +101.81, +6.9sd)  nulaB -11.34 (vent +109.84, +7.4sd)  pasiva +1.12 (+6.6sd)  sd 14.84  z_req 3.55
       regimen: bajo=+25.5(+1.6sd)no  medio=+70.1(+3.7sd)SI  alto=+243.2(+11.1sd)SI
       cadena eval x fondeada (10 micros): P(pasa eval) 0.278  P(pago) 0.174  P(se acaba el rango) 0.013  E sesiones 8  E $/intento +152
@@ -181,7 +181,7 @@ C7  VENTAJA SOLO EN TENDENCIAS BAJISTAS (mov. neto de las 20 sesiones anteriores
 C8  CANDIDATO EN EL BORDE (q=0.545, entre el piso pasivo y el de cruce). Prueba la frontera
     entre modos, donde el desplazamiento de nivel podria hacer dano. Esperado: NO APRUEBA en
     ninguno de los dos modos (NO SUPERA / APUESTA / REQUIERE MEDICION), NUNCA SUPERA. Falla si SUPERA.
-   [C8] REQUIERE MEDICION PASIVA POR CANDIDATO   (7s)
+   [C8] REQUIERE MEDICION PASIVA POR CANDIDATO   (6s)
       obs +49.84  nulaA -3.90 (vent +53.74, +4.2sd)  nulaB -11.45 (vent +61.29, +4.8sd)  pasiva +0.32 (+3.9sd)  sd 12.65  z_req 3.55
       regimen: bajo=+37.9(+2.1sd)SI  medio=+82.5(+4.4sd)SI  alto=+67.1(+3.0sd)SI
       cadena eval x fondeada (10 micros): P(pasa eval) 0.108  P(pago) 0.001  P(se acaba el rango) 0.004  E sesiones 8  E $/intento -81
@@ -189,7 +189,7 @@ C8  CANDIDATO EN EL BORDE (q=0.545, entre el piso pasivo y el de cruce). Prueba 
 
 C9  VENTAJA DE TIMING declarada BIEN (lado al azar, mejor tercio DENTRO de cada tercil).
     Esperado: SUPERA / REQUIERE MEDICION. La nula de signo no puede verla y se omite si la firma confirma.
-   [C9] REQUIERE MEDICION PASIVA POR CANDIDATO   (3s)
+   [C9] REQUIERE MEDICION PASIVA POR CANDIDATO   (2s)
       obs +176.21  nulaA -3.31 (vent +179.52, +23.1sd)  nulaB +175.52 (vent +0.69, +0.1sd)  pasiva +0.33 (+22.6sd)  sd 7.78  z_req 3.55
       regimen: bajo=+129.4(+11.6sd)SI  medio=+172.1(+12.7sd)SI  alto=+242.8(+15.7sd)SI
       cadena eval x fondeada (10 micros): P(pasa eval) 0.993  P(pago) 0.987  P(se acaba el rango) 0.013  E sesiones 24  E $/intento +1249
@@ -199,7 +199,7 @@ C9  VENTAJA DE TIMING declarada BIEN (lado al azar, mejor tercio DENTRO de cada 
 
 C10 LA PUERTA TRASERA: candidato SIN ventaja que declara 'timing'. Esperado NO SUPERA igual.
     Falla si declarar una clase falsa lo hace pasar.
-   [C10] NO SUPERA   (7s)
+   [C10] NO SUPERA   (6s)
       obs +11.44  nulaA -6.97 (vent +18.42, +1.5sd)  nulaB -9.55 (vent +20.99, +1.7sd)  pasiva -1.30 (+1.1sd)  sd 12.09  z_req 3.55
       regimen: bajo=+32.3(+1.9sd)no  medio=+14.3(+0.7sd)no  alto=+14.9(+0.7sd)no
       cadena eval x fondeada (10 micros): P(pasa eval) 0.063  P(pago) 0.000  P(se acaba el rango) 0.003  E sesiones 7  E $/intento -83
@@ -207,8 +207,8 @@ C10 LA PUERTA TRASERA: candidato SIN ventaja que declara 'timing'. Esperado NO S
       clase declarada timing / firma medida indefinida   omite signo: False   z_info +1.1
 
 DEMOSTRACION (no es control): el contador de familia.
-   [C2 en registro limpio] REQUIERE MEDICION PASIVA POR CANDIDATO   (7s)
-   [C1 despues, misma huella] NO SUPERA   (8s)
+   [C2 en registro limpio] REQUIERE MEDICION PASIVA POR CANDIDATO   (6s)
+   [C1 despues, misma huella] NO SUPERA   (6s)
       hermanos detectados: 1   variantes totales: 2   umbral exigido: 3.73 desvios (base 3.6)
          C2_ventaja_inyectada  REQUIERE MEDICION PASIVA POR CANDIDATO  (huella 100% a 30 barras)
       cadena antes de alterar: OK   despues de alterar: ROTA en linea 3

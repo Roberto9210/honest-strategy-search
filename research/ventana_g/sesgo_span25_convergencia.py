@@ -36,8 +36,13 @@ from sesgo_marco import replay  # noqa: E402
 from sintetico import armar, bootstrap, tripletes  # noqa: E402
 
 K = int(os.environ.get("K_SERIES", "40"))
-SEMILLA = 20260907          # LA MISMA que uso sesgo_marco_spans_cortos.py, para que sea comparable
-CELDAS = [(5.0, 20.0), (12.5, 12.5), (20.0, 5.0)]
+# SEMILLA y CELDAS por entorno para poder cerrar la pregunta abierta: mi corrida usa TRES celdas y
+# semilla 20260907; el original de sesgo_marco.py usa CINCO y semilla 20260904. Si al igualar las dos
+# cosas el o converge a 0,0642, la brecha era el diseno del despeje y no el replay.
+SEMILLA = int(os.environ.get("SEMILLA", "20260907"))
+CINCO = os.environ.get("CINCO_CELDAS") == "1"
+CELDAS = ([(5.0, 20.0), (10.0, 15.0), (12.5, 12.5), (15.0, 10.0), (20.0, 5.0)] if CINCO
+          else [(5.0, 20.0), (12.5, 12.5), (20.0, 5.0)])
 O_PUBLICADO = 0.0642
 O_MIO_K6 = 0.0546
 
