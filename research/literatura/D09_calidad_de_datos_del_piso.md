@@ -199,5 +199,9 @@ proyecto ni del dinero, sin pedir datos ni código ni colaboración, cortés y c
 **Cuenta contra los criterios:** una pregunta, sí. Del proyecto y del dinero, nada. Datos, código,
 colaboración: no se piden. Cuatro renglones.
 
+> **CERRADO — 2026-09-05: el correo quedó DESCARTADO por decisión de Roberto. No sale. El borrador se
+> conserva como registro y no como pendiente.** La ventana 1987-1996 de L10 queda bloqueada por
+> mecanismo sin la respuesta de los autores, y L10 en una hora se cerró en `D16`.
+
 **Costos:** dinero **cero**. Cartuchos **cero**, no registra ninguna hipótesis. **Tiempo de Roberto:
 leerlo y decidir si sale.** **Regla de la casa: ningún correo sale sin su autorización.**
