@@ -1,6 +1,6 @@
 # INVENTARIO 2 — La búsqueda nueva, con F17 primero. Resultado: CERO, y es un cero distinto del anterior.
 
-**VENTANA L. NO MIDE NADA. K sigue en 261.** Catalogar es gratis. `F17` se commiteó antes de abrir esta
+**VENTANA L. NO MIDE CANDIDATAS; corre CONTROLES DEL INSTRUMENTO desde el 2026-09-05 (rol ampliado por Roberto, ver `INDICE`). K sigue en 261.** Catalogar es gratis. `F17` se commiteó antes de abrir esta
 búsqueda; el historial lo muestra.
 
 **Qué se buscó:** mecanismos publicados que produzcan **≥ 5 operaciones por día (línea por defecto de
