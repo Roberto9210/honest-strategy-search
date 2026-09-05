@@ -46,7 +46,7 @@ regla de `D06` es que la cota optimista rechaza y no aprueba, y así es comparab
 
 | instrumento | inicio de datos utilizables | fuente |
 |---|---|---|
-| ES, 1 minuto | **1997-09-09**, lanzamiento del contrato, en proveedores como PortaraCQG. **Databento GLBX: junio de 2010** *(de memoria: **FRÁGIL**; no pude abrir el catálogo hoy)* | `D09`; catálogo de Databento |
+| ES, 1 minuto | **1997-09-09**, lanzamiento del contrato, en proveedores como PortaraCQG. **Databento GLBX.MDP3: desde 2010-06-06** — *confirmado por Roberto en el catálogo oficial el 2026-09-05; deja de ser FRÁGIL*. **Y adentro de Databento hay tres épocas de dato**: hasta 2015-11-20 sellos de tiempo a milisegundo; hasta 2017-05-21 archivos planos FIX sin sellos de captura; **desde marzo de 2017 el feed pasó de profundidad agregada por precio a evento por orden**. Ver `D19` | `D09`; catálogo de Databento, leído por Roberto 2026-09-05 |
 | SP en el piso, 1 minuto | **1987** | `D09` |
 | 6J, 6E, 1 minuto | mismo Databento desde 2010 (FRÁGIL); los contratos existen desde 1972 y 1999 | — |
 | **caja sellada** | **2020-01-02 → 2026-08-19 = 6,63 años, un solo uso**, para todos | regla del programa |
