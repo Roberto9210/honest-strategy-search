@@ -1,0 +1,54 @@
+================================================================================================
+C8 SOBRE 12 SEMILLAS y 3 valores de q - centra en el borde? (150 perm)
+NO GASTA CARTUCHO. K = 261. La caja sellada no se toca.
+================================================================================================
+
+  q = 0.545:   semilla                 CRUCE                            PASIVO  en borde?
+             1             NO SUPERA                APUESTA AL REGIMEN         SI
+             2             NO SUPERA                         NO SUPERA         no
+             3             NO SUPERA                         NO SUPERA         no
+             4             NO SUPERA                         NO SUPERA         no
+             5             NO SUPERAREQUIERE MEDICION PASIVA POR CANDIDATO         SI
+             6             NO SUPERA                APUESTA AL REGIMEN         SI
+             7             NO SUPERA                APUESTA AL REGIMEN         SI
+             8             NO SUPERAREQUIERE MEDICION PASIVA POR CANDIDATO         SI
+             9             NO SUPERA                APUESTA AL REGIMEN         SI
+            10             NO SUPERAREQUIERE MEDICION PASIVA POR CANDIDATO         SI
+            11             NO SUPERA                APUESTA AL REGIMEN         SI
+            12             NO SUPERAREQUIERE MEDICION PASIVA POR CANDIDATO         SI
+     -> en el borde 9/12 = 75%   (por encima del borde / SUPERA en cruce: 0)
+
+  q = 0.55:   semilla                 CRUCE                            PASIVO  en borde?
+             1             NO SUPERA                APUESTA AL REGIMEN         SI
+             2             NO SUPERAREQUIERE MEDICION PASIVA POR CANDIDATO         SI
+             3             NO SUPERA                APUESTA AL REGIMEN         SI
+             4             NO SUPERA                APUESTA AL REGIMEN         SI
+             5                SUPERAREQUIERE MEDICION PASIVA POR CANDIDATO         no
+             6             NO SUPERAREQUIERE MEDICION PASIVA POR CANDIDATO         SI
+             7             NO SUPERA                APUESTA AL REGIMEN         SI
+             8                SUPERAREQUIERE MEDICION PASIVA POR CANDIDATO         no
+             9             NO SUPERA                APUESTA AL REGIMEN         SI
+            10                SUPERAREQUIERE MEDICION PASIVA POR CANDIDATO         no
+            11             NO SUPERA                APUESTA AL REGIMEN         SI
+            12             NO SUPERAREQUIERE MEDICION PASIVA POR CANDIDATO         SI
+     -> en el borde 9/12 = 75%   (por encima del borde / SUPERA en cruce: 3)
+
+  q = 0.56:   semilla                 CRUCE                            PASIVO  en borde?
+             1    APUESTA AL REGIMEN                APUESTA AL REGIMEN         no
+             2             NO SUPERAREQUIERE MEDICION PASIVA POR CANDIDATO         SI
+             3             NO SUPERAREQUIERE MEDICION PASIVA POR CANDIDATO         SI
+             4             NO SUPERA                APUESTA AL REGIMEN         SI
+             5                SUPERAREQUIERE MEDICION PASIVA POR CANDIDATO         no
+             6                SUPERAREQUIERE MEDICION PASIVA POR CANDIDATO         no
+             7    APUESTA AL REGIMEN                APUESTA AL REGIMEN         no
+             8                SUPERAREQUIERE MEDICION PASIVA POR CANDIDATO         no
+             9             NO SUPERA                APUESTA AL REGIMEN         SI
+            10                SUPERAREQUIERE MEDICION PASIVA POR CANDIDATO         no
+            11             NO SUPERAREQUIERE MEDICION PASIVA POR CANDIDATO         SI
+            12                SUPERAREQUIERE MEDICION PASIVA POR CANDIDATO         no
+     -> en el borde 5/12 = 42%   (por encima del borde / SUPERA en cruce: 5)
+
+================================================================================================
+   q mejor centrado en el borde: 0.545 (9/12 en borde)
+   SUPERA en modo PASIVO en alguna semilla/q (tiene que ser NO): no - OK (garantia estructural de techo_pasivo)
+================================================================================================

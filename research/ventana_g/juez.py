@@ -712,8 +712,12 @@ def juzgar(cand, m, permitir_caja=False, prerregistro=None, verificar=False, npe
                              f"huella {jmax:.0%} a {max(js, key=js.get)} barras"))
     variantes = int(cand["variantes_probadas"])
     variantes_total = variantes + len(hermanos)
+    # REQUIERE MEDICION previos SIN RESOLVER: como la medicion por-candidato (medir_pasivo_candidato)
+    # no existe todavia, NINGUNO esta resuelto. Se cuentan para que un REQUIERE MEDICION nuevo no se
+    # acumule como callejon sin salida ni se lea como pase blando: van en la cara de quien corre.
+    req_prev = [f for f in previos if f.get("veredicto") == REQUIERE_MEDICION]
     salida.update(hermanos=hermanos, variantes=variantes, variantes_total=variantes_total,
-                  familia_declarada=fam_decl, cadena_ok=cadena_ok)
+                  familia_declarada=fam_decl, cadena_ok=cadena_ok, req_prev=req_prev)
 
     # --- periodo de trabajo -------------------------------------------------------------------
     mk_t = anio_op <= TRABAJO_HASTA
@@ -834,6 +838,22 @@ def informe(s):
     A(f"ESTE NUMERO SUPONE QUE SE PROBARON {s['variantes_total']} VARIANTES ANTES DE LLEGAR ACA "
       f"({s['variantes']} declaradas + {len(s['hermanos'])} de la misma familia en el registro).")
     A(f"SI FUERON MAS, NO VALE. El umbral se ajusto a esa cifra: {r['z_req']:.2f} desvios en vez de {Z_BASE:.1f}.")
+    if r["veredicto"] == REQUIERE_MEDICION:
+        prev = s.get("req_prev", [])
+        n = len(prev) + 1
+        A("")
+        A("#" * 96)
+        A(f"#  REQUIERE MEDICION PASIVA numero {n} SIN RESOLVER. Esto NO es un pase: el modo pasivo no")
+        A(f"#  aprueba. Es una cota optimista superada, que solo dice que vale la pena la medicion real")
+        A(f"#  por-candidato (medir_pasivo_candidato), que todavia NO existe. NINGUNO de los {n} se midio.")
+        if prev:
+            A(f"#  REQUIERE MEDICION previos sin resolver:")
+            for f in prev[-8:]:
+                A(f"#     {f.get('cuando','?')}  {f.get('nombre','?'):<28} hash {str(f.get('hash_candidato',''))[:12]}")
+        if n >= 3:
+            A(f"#  YA HAY {n} ACUMULADOS SIN MEDIR. Antes de correr otro, correr la medicion real, o")
+            A(f"#  aceptar que se estan juntando cotas optimistas que nadie convirtio en veredicto firme.")
+        A("#" * 96)
     if s["hermanos"]:
         A("")
         A("#" * 96)

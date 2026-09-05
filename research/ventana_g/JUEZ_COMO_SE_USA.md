@@ -153,6 +153,64 @@ se corren en los **dos modos**, y se verifica que el modo pasivo nunca devuelve 
 
 ---
 
+# CIERRE — el juez está terminado
+
+**Versión final, 2026-09-04.** `juez.py` + `juez_controles.py` + `mbo_lib.py`. No queda trabajo
+pendiente **que no requiera un candidato real**.
+
+## Los ocho controles, en los dos modos (8/8 y 8/8)
+
+| control | qué prueba | CRUCE | PASIVO |
+|---|---|---|---|
+| C1 | sin ventaja | NO SUPERA | NO SUPERA |
+| C2 | ventaja inyectada, recupera la magnitud | **SUPERA** | **REQUIERE MEDICION** |
+| C3 | pocas operaciones | NO MEDIBLE | NO MEDIBLE |
+| C4 | entrada con resultados | RECHAZADA | RECHAZADA |
+| C5 | ventaja en un solo régimen | APUESTA AL REGIMEN | APUESTA AL REGIMEN |
+| C6 | el ataque A1 (solo-largo 2017) | NO SUPERA | NO SUPERA |
+| C7 | ventaja sólo bajista | APUESTA AL REGIMEN | APUESTA AL REGIMEN |
+| C8 | candidato en el **borde** entre modos | NO SUPERA | **REQUIERE MEDICION** |
+
+**Ningún control devuelve SUPERA en modo pasivo**, y no puede: `techo_pasivo` lo convierte por
+construcción. C8 quedó recalibrado con `c8_semillas.py` (12 semillas × 3 valores de ventaja): a
+q=0,56 sólo el 42% de las semillas caía en el borde y 5 de 12 quedaban **por encima** (SUPERA en
+cruce); a **q=0,545** las 12 dan NO SUPERA en cruce y **9 de 12 (75%) cruzan hacia arriba** en pasivo,
+sin ninguna llegar a SUPERA. El suite usa una semilla dedicada para que el borde no dependa del sorteo.
+
+## Los seis veredictos
+
+**SUPERA** (sólo cruce o medición por-candidato) · **APUESTA AL REGIMEN** · **NO SUPERA** ·
+**REQUIERE MEDICION PASIVA POR CANDIDATO** (sólo pasivo) · **NO MEDIBLE** · **RECHAZADA**.
+
+El registro **cuenta los REQUIERE MEDICION sin resolver** y el juez imprime, al emitir uno, cuántos
+lleva acumulados; a partir del tercero avisa que se están juntando cotas optimistas que nadie convirtió
+en veredicto firme.
+
+## Las tres deudas abiertas — las tres necesitan un candidato
+
+1. **El markout pasivo por-candidato.** Calibrado sobre entradas al azar; para un candidato direccional
+   puede darse vuelta.
+2. **El 53% no llenado por-candidato.** Se supone neutral (cierto al azar); para un candidato el
+   no-llenado está seleccionado por su señal.
+3. **El régimen alto de 2026 lo cubre sólo 2018.** Ningún día posterior a la caja cae en el tercil alto.
+
+Las tres las salda el mismo hook, `medir_pasivo_candidato`: el sim FIFO sobre las entradas **reales**
+de un candidato. No se puede correr contra nada inventado.
+
+## Lo que se podría mejorar sin candidato — nombrado, NO hecho
+
+Queda escrito para que Roberto decida si vale la pena, en vez de seguir puliendo:
+
+- **Comprar un día de régimen alto posterior a la caja** cuando exista (re-correr el auxiliar hasta que
+  una sesión supere 2,62 bps ex-ante, ~$1,70-2,50). Saldaría la deuda 3 sin candidato.
+- **Un segundo día por tercil** para saber cuánto varía el spread dentro de un mismo régimen (~$3,50).
+- **Cobrar también el cruce de salida** (hoy sólo se cobra la entrada); requiere medir si las salidas
+  en el objetivo se llenan por límite o cruzando.
+- **Barrer el umbral por tercil** (hoy 2,0σ) sobre semillas, como se hizo con C8, para saber con qué
+  frecuencia un tercil nulo lo cruza.
+
+---
+
 ## Estado final del juez
 
 **Qué mide.** Dólares por sesión, netos, de un candidato que entrega entradas y reglas (nunca

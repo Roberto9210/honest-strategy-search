@@ -45,7 +45,10 @@ este mal (me paso con "A domina a TODO capital", que contradecia mi propia curva
       tumbaba el obs global bajo 3sd y daba NO SUPERA (el costo mataba la ventaja concentrada antes
       de mirar el regimen). Se sube a 0,90 para aislar la maquinaria de regimen: rentable global, y
       el unico freno es que solo un tercil aguanta.
-  C8  CANDIDATO EN EL BORDE entre modos (q=0,56): obs cae JUSTO entre el piso pasivo y el de cruce.
+  C8  CANDIDATO EN EL BORDE entre modos (q=0,545, semilla dedicada 5): obs cae JUSTO entre el piso
+      pasivo y el de cruce. Recalibrado con c8_semillas.py: a q=0,56 solo 42% de las semillas caian
+      en el borde (5/12 quedaban POR ENCIMA, SUPERA en cruce); a q=0,545 las 12 dan NO SUPERA en
+      cruce y 9/12 cruzan hacia arriba en pasivo.
       Es el unico control que prueba la frontera donde el desplazamiento de nivel entre modos podria
       hacer dano. ESPERADO: NO APRUEBA en ninguno de los dos modos (NO SUPERA / APUESTA / REQUIERE
       MEDICION), NUNCA SUPERA. La categoria exacta de no-aprobacion depende del sorteo (que aguanten
@@ -80,11 +83,14 @@ Q2, Q5 = 0.62, 0.75
 # 0,90 para que el candidato SI sea rentable globalmente y el UNICO freno sea el regimen -> APUESTA.
 # El hecho de que a q=0,75 el costo solo lo tumbe queda anotado en el reporte.
 Q7 = 0.90
-# C8 (candidato en el BORDE entre modos): q=0,56 cae JUSTO entre el piso pasivo y el de cruce.
-# Calibrado en probe (NPERM 150): cruce z_rent 2,1 (NO SUPERA, 3/3 terciles) y pasivo z_rent 3,5
-# (seria SUPERA -> REQUIERE MEDICION, 3/3 terciles). Es el unico control que prueba la frontera donde
-# el desplazamiento de nivel entre modos podria hacer dano.
-Q8 = 0.56
+# C8 (candidato en el BORDE entre modos). RECALIBRADO con c8_semillas.py sobre 12 semillas x 3 q:
+# q=0,56 quedaba mal centrado (solo 42% en el borde, y 5/12 semillas POR ENCIMA -SUPERA en cruce-).
+# q=0,545 centra: 12/12 semillas dan NO SUPERA en cruce (ninguna por encima) y 9/12 cruzan a una
+# categoria mas alta en pasivo. Se usa una semilla DEDICADA (5), que en el barrido dio el caso limpio
+# NO SUPERA (cruce) -> REQUIERE MEDICION (pasivo), para que el suite principal muestre el borde
+# siempre y no dependa del sorteo compartido.
+Q8 = 0.545
+SEMILLA_C8 = 5
 NPERM = int(os.environ.get("JUEZ_NPERM", "200"))
 MODO_PASIVO = False              # lo togglea correr(); el helper juzgar() lo inyecta en J.juzgar
 SEMILLA = 20260904
@@ -283,7 +289,8 @@ def correr(pasivo, m):
     print(f"\nC8  CANDIDATO EN EL BORDE (q={Q8}, entre el piso pasivo y el de cruce). Prueba la frontera")
     print(f"    entre modos, donde el desplazamiento de nivel podria hacer dano. Esperado: NO APRUEBA en")
     print(f"    ninguno de los dos modos (NO SUPERA / APUESTA / REQUIERE MEDICION), NUNCA SUPERA. Falla si SUPERA.")
-    acierta8 = rng.random(len(idx)) < Q8
+    rng8 = np.random.default_rng(SEMILLA_C8)     # dedicada: el borde no puede depender del sorteo compartido
+    acierta8 = rng8.random(len(idx)) < Q8
     lado8 = np.where(acierta8, mejor_largo, ~mejor_largo)
     c8c = candidato("C8_borde", m, idx, lado8)
     v, s = juzgar("C8", c8c, m, registro_nuevo("c8"))
