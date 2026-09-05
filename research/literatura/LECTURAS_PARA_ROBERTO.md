@@ -54,6 +54,26 @@ hace.* **Los cinco quedan como NO ACCESIBLES POR SSRN, no como no existentes.**
 | 3 | **Chordia, Roll y Subrahmanyam 2005**, *JFE* 76 | del resumen: la frase con **el horizonte en minutos** al que la predictibilidad por desbalance de órdenes desaparece (buscar "minutes" y "converge") | página de Subrahmanyam (UCLA Anderson) o de Chordia (Emory) |
 | 4 | **Chordia, Roll y Subrahmanyam 2008**, *JFE* 87 | del resumen: la frase sobre **la tendencia** de la predictibilidad de corto plazo a lo largo del tiempo (buscar "predictability" y "declined") | idem |
 
+---
+
+# ESTADO — segunda vuelta, 2026-09-05. Tres salieron, tres no.
+
+| # | ítem | resultado |
+|---|---|---|
+| 6 | Menkveld 2013 | **LEÍDO** (Tinbergen DP 11-076): €0,88 por operación = €1,55 de diferencial − €0,68 de posición; pérdida de posición negativa en todas las acciones; Sharpe 9,35 → **`L13`, la lectura más importante de las diez** |
+| 5 | Brogaard, Hendershott y Riordan 2014 | **LEÍDO** (`HFT-PD.pdf`, Berkeley Haas): resumen completo textual → **`L14`**; `D18` §2 deja de ser de memoria en esa fila |
+| 10 | VPIN | **LEÍDO**, resumen del propio autor en quantresearch.org, **no el paper de la RFS**: *"direction"* no aparece; *"VPIN is not a volatility forecasting model"* → **`L15`, cerrada** |
+| 2 | Baron, Brogaard, Hagströmer y Kirilenko 2019 | **NO ACCESIBLE: sólo en SSRN, bloqueado** |
+| 3, 4 | Chordia, Roll y Subrahmanyam 2005 y 2008 | **NO ACCESIBLE: sin copia abierta en la página del autor ni en repositorio institucional** |
+
+**Sobre los tres que faltan, y si vale una tercera vuelta:** los tres son de acciones, no del ES, y por
+`F13` pesan menos, como dijo Roberto. **Ningún veredicto de la casa depende de ellos.** Lo único que
+afinarían: Baron et al. daría la ganancia por contrato de la alta frecuencia **en el E-mini** para la
+tabla de Sharpes de `L13` §7 —el único comparador que sería de nuestro instrumento—. **Si se intenta, la
+frase es una sola:** en el resumen o la introducción, la oración con *"per contract"* o *"profits"* que
+separe agresivos de pasivos; por el lado de la revista (*JFQA* 54(3), 2019) o de la página de
+Hagströmer. **Chordia no hace falta: `L14` ya cubre el mecanismo con texto.**
+
 **Lo que NO está en la lista y por qué:** Scholtus et al. lo conseguí por Tinbergen; Andersen y
 Bollerslev 1998 es un PDF escaneado que tampoco Roberto puede leer en texto; Kirilenko, Coughlan-Orlov,
 Fett-Haynes, Haynes-Roberts, Onur-Reiffen y los de latencia ya están en texto.
