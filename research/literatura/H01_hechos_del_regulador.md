@@ -88,13 +88,104 @@ cualitativa: la ventana de liquidación no es un momento neutro.**
 
 ---
 
-# BALANCE de la fuente, con dos de cinco documentos
+# HECHO 3 — Lo que un participante chico ve del libro del E-mini
+
+**Fuente:** Fett, Nicholas y Haynes, Richard, Oficina del Economista Jefe de la Comisión de Comercio
+de Futuros. *"Liquidity in Select Futures Markets"*.
+`cftc.gov/sites/default/files/idc/groups/public/@economicanalysis/documents/file/oce_liquidityfuturesmarkets.pdf`
+**Datos: E-mini del S&P 500, bono a diez años y crudo, de 2013 a mediados de 2016**, con el libro
+muestreado el **primer martes y el primer jueves de cada mes**.
+
+| hecho | número |
+|---|---|
+| niveles del libro que publica el canal público del **E-mini** | **cinco** mejores ofertas y demandas |
+| lo mismo para bono a diez años y crudo | **diez** |
+| ventana de su medida de profundidad | 8:00 a 16:00 hora de Chicago, tres mejores niveles |
+
+## Y el hecho que confirma nuestro modelo de costo
+
+**Los autores separan explícitamente por tamaño de operación:**
+
+> **para operaciones muy chicas** —que representan el interés de firmas pequeñas o de operadores
+> minoristas individuales— **el costo se representa mejor por el diferencial medio de compra y
+> venta**, porque una operación agresiva chica se ejecuta contra una orden **del tope del libro**.
+> La profundidad importa para operaciones que tienen que caminar el libro.
+
+> ## **Roberto opera de uno a cuatro contratos: está exactamente en la categoría "muy chica" que el regulador define. Su costo es el diferencial, no la profundidad. Eso confirma desde afuera el modelo de costo que la VENTANA G usa —medio diferencial por cruzar— y es la CUARTA confirmación externa de un número o un criterio de esta casa.**
+
+**Y observan que las reducciones de profundidad del período fueron **especialmente en el E-mini**, y
+que coinciden con episodios de volatilidad alta.
+
+## Lo que lo mataría
+
+**El período, 2013 a mediados de 2016.** Nuestro rango medible es 2016-2019, así que **se solapa
+apenas en el borde.** La afirmación sobre la categoría de tamaño es estructural y no depende del año;
+**las cifras de profundidad sí.**
+
+---
+
+# HUECO NOMBRADO — el tercer escalón de latencia, que nadie midió
+
+**Roberto corrigió mi lectura del Hecho 1 y la corrección importa.**
+
+**Yo escribí que los 9 segundos del operador manual describen a Roberto. No lo describen, y los 200
+milisegundos tampoco.**
+
+| escalón | quién | latencia | fuente |
+|---|---|---|---|
+| **1** | firmas algorítmicas por cuenta propia, con la máquina dentro del edificio del mercado | **menos de 200 ms**, mediana | Hecho 1, regulador |
+| **2** | operadores manuales por cuenta propia | **más de 9 s**, mediana | Hecho 1, regulador |
+| **3** | **NinjaTrader en una máquina de casa, pasando por el router de la firma de fondeo** | **SIN MEDIR** | **nadie** |
+
+> ## **El proyecto va a automatizar, así que no es el escalón 2. Y no está colocado, así que no es el 1. El escalón que le corresponde no está medido ni escrito en ningún lado.**
+
+**No lo mido yo: no es mi territorio. Queda como hueco nombrado para la VENTANA G.**
+
+## Qué candidatas dependerían de la respuesta
+
+**Y acá hay una buena noticia que conviene decir con el hueco:**
+
+| candidata | ¿depende de la latencia? |
+|---|---|
+| L01, L07, L08, L10 | **NO.** Entran y salen a **horas de reloj anunciadas de antemano**. No hay que reaccionar a nada |
+| **L03** | **PARCIALMENTE.** Su salida es el promedio ponderado de la ventana de 5 segundos a 1 minuto **después** de una publicación. La hora se conoce, pero **el mercado se mueve violentamente ahí y la calidad del llenado depende de la latencia** |
+
+> ## **El hueco es real y hoy no bloquea a ninguna candidata del inventario, porque todas entran a hora fija. Bloquearía a cualquier candidata futura que exija REACCIONAR a un evento.**
+
+**Ésa es la razón para medirlo antes de necesitarlo y no después: define qué clase de candidata puede
+entrar al inventario en el futuro.**
+
+---
+
+# CORRECCIÓN — la frontera del factor 25, resuelta por Roberto
+
+**Yo dejé el factor 25 como advertencia general. Roberto le puso la frontera correcta y la escribo
+acá porque es la regla, no el caso:**
+
+| pregunta | ponderación correcta | ¿aplica el factor 25? |
+|---|---|---|
+| **"qué me pasa a mí por evento"** | **por observación** | **NO** |
+| "qué hace el miembro típico de una población" | por participante | **SÍ** |
+
+**Nuestras mediciones de costo son del primer tipo.** Cuando la VENTANA G mide el *markout* posterior
+a un llenado nuestro, **cada llenado es una operación nuestra**, así que ponderar por llenado es lo
+correcto y el factor no aplica.
+
+**Dónde SÍ aplicaría: si alguna vez estimamos algo sobre la POBLACIÓN DE CONTRAPARTES** — por ejemplo
+qué fracción del flujo es informado. **Ahí la unidad es el participante y no la observación.**
+
+**Queda anotado con esa frontera y no como advertencia general.**
+
+---
+
+# BALANCE de la fuente, con tres de cinco documentos
 
 | | |
 |---|---|
-| **hechos con número extraídos** | **2**: la latencia de 200 ms y el factor 25 de ponderación |
+| **hechos con número extraídos** | **4**: latencia de 200 ms, factor 25 de ponderación, cinco niveles del libro del E-mini, y la categoría de tamaño que define el costo |
 | hechos cualitativos | 1: el diseño de la liquidación afecta el comportamiento en la ventana |
-| **confirmaciones externas de números de la casa** | **1**, y es la tercera del proyecto |
+| **confirmaciones externas de números de la casa** | **2**: la latencia y el modelo de costo. Son la **tercera y la cuarta** del proyecto |
+| huecos nombrados | **1**: el tercer escalón de latencia, que no bloquea a ninguna candidata actual |
 | candidatas producidas | **0**, como estaba previsto |
 
 **La fuente rinde para lo que Roberto la apuntó y no rinde para lo otro, exactamente como se
