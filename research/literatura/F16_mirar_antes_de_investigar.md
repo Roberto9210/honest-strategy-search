@@ -1,6 +1,6 @@
 # F16 — Antes de investigar un hecho sobre la configuración propia de Roberto, preguntar si Roberto puede simplemente MIRAR
 
-**VENTANA L. NO MIDE NADA. K sigue en 261.**
+**VENTANA L. NO MIDE CANDIDATAS; corre CONTROLES DEL INSTRUMENTO desde el 2026-09-05 (rol ampliado por Roberto, ver `INDICE`). K sigue en 261.**
 
 > ## **REGLA F16. Si el hecho que hace falta es sobre la plataforma, la cuenta, el feed, la latencia o el reglamento de la firma DE ROBERTO, no se investiga: se le pide que mire. Su configuración es observación directa. Investigarla en fuentes de terceros es reconstruir por afuera lo que él tiene adelante.**
 
