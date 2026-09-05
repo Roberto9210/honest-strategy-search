@@ -34,13 +34,17 @@ este mal (me paso con "A domina a TODO capital", que contradecia mi propia curva
       en 2017. ESPERADO: NO SUPERA con la defensa. Y se corre SIN defensa para mostrar que la
       defensa hace falta: ahi el 'informativo' tiene que subir.
       LO HARIA FALLAR: SUPERA o APUESTA con la defensa puesta.
-  C7  VENTAJA SOLO EN TENDENCIAS BAJISTAS (q = 0,75 en sesiones cuyo movimiento neto de las 20
+  C7  VENTAJA SOLO EN TENDENCIAS BAJISTAS (q = 0,90 en sesiones cuyo movimiento neto de las 20
       anteriores fue negativo, moneda en el resto). Nace de mi propio (c1): al cerrar el eje de
       direccion medi que las sesiones bajistas caen mayormente en el tercil ALTO de volatilidad
       (172 de 261 en juez_regimen_direccion.py), asi que una ventaja puramente bajista tiene que
       aparecer como ventaja concentrada en el regimen alto, no repartida. Es la prueba de que
       cerrar el eje de direccion NO dejo un agujero. ESPERADO: APUESTA AL REGIMEN.
       LO HARIA FALLAR: SUPERA (el juez no ve que la ventaja es de un solo regimen).
+      NOTA medida: a q=0,75 el deslizamiento de entrada -costo plano sobre todas las operaciones-
+      tumbaba el obs global bajo 3sd y daba NO SUPERA (el costo mataba la ventaja concentrada antes
+      de mirar el regimen). Se sube a 0,90 para aislar la maquinaria de regimen: rentable global, y
+      el unico freno es que solo un tercil aguanta.
 
 DEMOSTRACION (no es un control): el contador. C1 juzgado otra vez en el registro donde ya esta
 C2 (misma huella de entradas) tiene que disparar el aviso de familia y subir el umbral.
@@ -60,6 +64,12 @@ import juez as J  # noqa: E402
 PASO = 300
 CELDA = dict(tipo="bracket", objetivo_pt=5, stop_pt=20)
 Q2, Q5 = 0.62, 0.75
+# C7 inyecta ventaja SOLO en el 26% de las sesiones (bajistas). A q=0,75 el deslizamiento de entrada
+# -costo plano sobre TODAS las operaciones- tumbaba el obs global por debajo de 3sd y daba NO SUPERA:
+# el costo mataba la ventaja concentrada antes de que el juez llegara a mirar el regimen. Se sube a
+# 0,90 para que el candidato SI sea rentable globalmente y el UNICO freno sea el regimen -> APUESTA.
+# El hecho de que a q=0,75 el costo solo lo tumbe queda anotado en el reporte.
+Q7 = 0.90
 NPERM = int(os.environ.get("JUEZ_NPERM", "200"))
 SEMILLA = 20260904
 
@@ -167,6 +177,18 @@ def main():
         ok2 = (v == "SUPERA") and (0.67 <= rec <= 1.33)
     resultados["C2"] = (ok2, v)
 
+    # ---- barrido de TAMANO en la cadena (tu (b)): P(pasar) para el MISMO flujo de C2 a 1/4/10/40
+    # micro-equivalentes. El juez ya usa el tamano DECLARADO; esto muestra cuanto pesa esa decision.
+    if s:
+        r2 = s["periodos"]["trabajo"]
+        print("   BARRIDO DE TAMANO (mismo flujo de C2, cadena Tradeify 50K), P(pasar) por micro-equiv:")
+        print(f"      {'micros':>8}{'P(pasa ev)':>12}{'P(pago)':>10}{'E ses':>8}{'E $/intento':>13}")
+        for k in (1, 4, 10, 40):
+            c = J.cadena_pasar(r2, m, n_micros=k)
+            print(f"      {k:>8}{c['p_pasa']:>12.3f}{c['p_pago']:>10.3f}{c['e_ses']:>8.0f}{c['E']:>+13.0f}")
+        print("      -> el tamano es una decision del candidato tan importante como su ventaja: el mismo")
+        print("         flujo va de casi-nunca-cobra a cobrar seguido segun cuantos contratos ponga.")
+
     # ---------------------------------------------------------------- C3 pocas operaciones
     print("\nC3  POCAS OPERACIONES (80). Esperado NO MEDIBLE. Falla si da un numero.")
     sel = np.sort(rng.choice(len(idx), 80, replace=False))
@@ -216,12 +238,12 @@ def main():
 
     # ---------------------------------------------------------------- C7 ventaja solo bajista
     print(f"\nC7  VENTAJA SOLO EN TENDENCIAS BAJISTAS (mov. neto de las 20 sesiones anteriores < 0; "
-          f"q={Q5}). Esperado APUESTA AL REGIMEN. Falla si SUPERA.")
+          f"q={Q7}). Esperado APUESTA AL REGIMEN. Falla si SUPERA.")
     mov = np.array([m["cl"][b - 1] - m["cl"][a] for a, b in zip(m["ini"], m["fin"])])
     cum = np.concatenate([[0.0], np.cumsum(mov)])
     dir20 = np.array([np.sign(cum[k] - cum[k - 20]) if k >= 20 else 0.0 for k in range(m["nses"])])
     baja = dir20[m["ses_de"][idx]] < 0
-    acierta7 = rng.random(len(idx)) < Q5
+    acierta7 = rng.random(len(idx)) < Q7
     lado7 = np.where(baja, np.where(acierta7, mejor_largo, ~mejor_largo), rng.random(len(idx)) < 0.5)
     c7c = candidato("C7_solo_bajista", m, idx, lado7)
     v, s = juzgar("C7", c7c, m, registro_nuevo("c7"))

@@ -71,6 +71,13 @@ COMISION = {"ES": 5.76, "MES": 1.82}            # ida y vuelta por contrato, hel
 PUNTO = {"ES": 50.0, "MES": 5.0}
 MICROS_POR_CONTRATO = {"ES": 10, "MES": 1}
 EXCESO_STOP = {10: 0.722, 20: 0.982}            # media_exceso.py, media del exceso en el stop
+# DESLIZAMIENTO DE ENTRADA por tercil ex-ante (bps): medio-spread efectivo medio, en puntos, medido
+# en microestructura_tbbo.py sobre tbbo de ES 2017-2019 (el terreno que juzga el juez). Es el costo
+# de cruzar el spread UNA vez al entrar, relativo al punto medio. Casi no depende del regimen (el
+# spread de ES es ~1 tick siempre). El costo NO cambio contra 2026 (+6% bajo, -2% medio). Antes se
+# trataba como CERO; ahora se cobra por operacion segun el tercil de la sesion de entrada.
+DESLIZAMIENTO_ENTRADA = {0: 0.1267, 1: 0.1334, 2: 0.1330}
+DESLIZAMIENTO_ENTRADA_ERROR = 0.006             # dispersion entre los tres terciles/dias, en puntos
 O_SOBREPASO = 0.0642                            # sesgo_marco.py
 O_ERROR_REL = 0.076                             # +-7,6% entre corridas
 SPAN_CARACTERIZADO = (20.0, 35.0)               # (T+S) donde el sesgo esta medido
@@ -84,7 +91,9 @@ N_MIN_OP = 200
 L_ESTRELLA_SES = 4                              # bloques.py: L* = 5.520 barras = 4 sesiones
 ROT_INDEP_MIN = 15                              # rotaciones independientes minimas
 SES_MIN_TERCIL = 20                             # sesiones minimas por tercil para verificar
-Z_TERCIL = 1.5                                  # 'aguanta' en un tercil
+Z_TERCIL = 2.0                                  # 'aguanta' en un tercil. Subido de 1,5 a 2,0: tres
+#            veces un tercil de un candidato NULO cruzo 1,5sd por ruido (C1). Verificado que C5 y
+#            C7, que aguantan el alto a 6,9-10,9sd, siguen pasando.
 BUCKETS = (30, 240, 1380)                       # cubetas de la huella, en barras
 MINHASH_K = 128
 JACCARD_FAMILIA = 0.30
@@ -225,7 +234,10 @@ def cargar_mercado():
     p33, p66 = np.nanquantile(prev_bps, [1 / 3, 2 / 3])
     tercil_ex = np.where(np.isnan(prev_bps), -1,
                          np.where(prev_bps <= p33, 0, np.where(prev_bps <= p66, 1, 2)))
-    return dict(cl=clo, hi=hi, lo=lo, ts=ts, fin_de=fin_de,
+    # deslizamiento de entrada por sesion, en puntos, segun el tercil ex-ante (medio para la primera)
+    slip_ses_pt = np.array([DESLIZAMIENTO_ENTRADA.get(int(t), DESLIZAMIENTO_ENTRADA[1])
+                            for t in tercil_ex])
+    return dict(cl=clo, hi=hi, lo=lo, ts=ts, fin_de=fin_de, slip_ses_pt=slip_ses_pt,
                 ses_de=ses_de, ini=ini, fin=fin, nses=len(ini), n=n, anio_ses=anio[ini],
                 tercil_exante=tercil_ex, tercil_hindsight=tercil_hind,
                 cortes_exante_bps=(float(p33), float(p66)), cortes_hindsight_pt=(float(q33), float(q66)))
@@ -408,8 +420,11 @@ def juzgar_periodo(cand, m, idx, sgn, etiqueta, npermuta=NPERM, rotacion_global=
         avisos.append("Regla de TIEMPO: no hay barrera, asi que no hay sobrepaso ni deslizamiento "
                       "de stop que restar.")
 
-    def dolares(pts):
-        return (pts - sesgo_pt) * punto * contratos - c1
+    def dolares(pts, ii):
+        # comision (c1) + sesgo de sobrepaso (sesgo_pt) + deslizamiento de ENTRADA por regimen de la
+        # sesion de cada operacion (slip_ses_pt): antes era cero, ahora es el medio-spread medido.
+        slip = m["slip_ses_pt"][m["ses_de"][ii]] * punto * contratos
+        return (pts - sesgo_pt) * punto * contratos - c1 - slip
 
     # --- rango, sesiones, rotaciones independientes ----------------------------------------
     lo_b, hi_b = int(idx.min()), int(m["fin_de"][idx.max()] - 1)
@@ -431,7 +446,7 @@ def juzgar_periodo(cand, m, idx, sgn, etiqueta, npermuta=NPERM, rotacion_global=
     ptsS, tenS = resolver(m, idx, -np.ones(len(idx)), regla, exceso)
     largo = sgn > 0
     pts = np.where(largo, ptsL, ptsS); ten = np.where(largo, tenL, tenS)
-    dol = dolares(pts)
+    dol = dolares(pts, idx)
     v_obs = np.bincount(m["ses_de"][idx] - ses_lo, weights=dol, minlength=n_ses)
     obs = float(v_obs.mean()); op_ses = len(idx) / n_ses
     # A5: exposicion simultanea contra el limite declarado
@@ -452,17 +467,17 @@ def juzgar_periodo(cand, m, idx, sgn, etiqueta, npermuta=NPERM, rotacion_global=
         if rotacion_global:
             k = int(rp.integers(1, m["n"])); i2 = (idx + k) % m["n"]
             lo2 = int(m["ses_de"][i2.min()]); v2 = np.bincount(m["ses_de"][i2] - lo2, weights=dolares(
-                resolver(m, i2, sgn, regla, exceso)[0]), minlength=int(m["ses_de"][i2.max()]) - lo2 + 1)
+                resolver(m, i2, sgn, regla, exceso)[0], i2), minlength=int(m["ses_de"][i2.max()]) - lo2 + 1)
             medA[i] = v2.mean()
         else:
             k = int(rp.integers(1, L)); i2 = lo_b + ((idx - lo_b + k) % L)
             v2 = np.bincount(m["ses_de"][i2] - ses_lo, weights=dolares(
-                resolver(m, i2, sgn, regla, exceso)[0]), minlength=n_ses)
+                resolver(m, i2, sgn, regla, exceso)[0], i2), minlength=n_ses)
             medA[i] = v2.mean()
     # --- nula B: signo; se guardan los vectores por sesion para el regimen -----------------
     VB = np.empty((npermuta, n_ses))
     ses_rel = m["ses_de"][idx] - ses_lo
-    dL, dS = dolares(ptsL), dolares(ptsS)
+    dL, dS = dolares(ptsL, idx), dolares(ptsS, idx)
     for i in range(npermuta):
         flip = rp.random(len(sgn)) < 0.5
         d2 = np.where(largo ^ flip, dL, dS)
@@ -539,13 +554,17 @@ def regimen(r, m, eje="tercil_exante"):
     return out
 
 
-def cadena_pasar(r, m):
+def cadena_pasar(r, m, n_micros=None):
     """P(pasar) por la cadena eval x fondeada de Tradeify Growth 50K, con el flujo del
-    candidato. Arranque en cada sesion del rango; el intento no puede salir del rango."""
+    candidato. Arranque en cada sesion del rango; el intento no puede salir del rango.
+    El TAMANO viene de los contratos DECLARADOS por el candidato (1 ES = 10 micro-equiv,
+    1 MES = 1): P(pasar) es lo que la firma paga, y para un tamano que el candidato no eligio
+    seria un numero de otro candidato. n_micros fuerza el tamano (solo para el barrido 1/4/10)."""
     from vehiculo import matriz, simular
     inst_micros = MICROS_POR_CONTRATO["ES"] if r["punto"] == 50.0 else 1
-    N = inst_micros * r["contratos"]
-    rep = dict(ses=m["ses_de"][r["idx"]] - r["ses_lo"], pts=r["pts"] - r["sesgo_pt"],
+    N = n_micros if n_micros is not None else inst_micros * r["contratos"]
+    slip_pt = m["slip_ses_pt"][m["ses_de"][r["idx"]]]      # deslizamiento de entrada por regimen
+    rep = dict(ses=m["ses_de"][r["idx"]] - r["ses_lo"], pts=r["pts"] - r["sesgo_pt"] - slip_pt,
                ab=np.zeros(len(r["idx"]), int))
     M = matriz(rep, r["n_ses"])
     s0 = np.arange(r["n_ses"])
@@ -733,7 +752,9 @@ def _bloque_periodo(A, r, s):
       + "  ".join(partes))
     c = r["cadena"]
     A("")
-    A(f"   LA CADENA eval x fondeada (Tradeify Growth 50K, {c['N']} micros): P(pasa eval) {c['p_pasa']:.3f}   "
+    A(f"   LA CADENA eval x fondeada (Tradeify Growth 50K, {r['contratos']} "
+      f"{'ES' if r['punto'] == 50.0 else 'MES'} = {c['N']} micro-equiv, el TAMANO DECLARADO): "
+      f"P(pasa eval) {c['p_pasa']:.3f}   "
       f"P(pago) {c['p_pago']:.3f}   P(se acaba el rango) {c['p_tiempo']:.3f}   E sesiones {c['e_ses']:.0f}   E $/intento {c['E']:+.0f}")
     A(f"   (una media positiva con cola izquierda gorda fracasa igual: esto es lo que paga el producto)")
     vB = r["nulas"]["B signo"][2]
@@ -792,8 +813,12 @@ def informe(s):
         "FALSO NEGATIVO ESTRUCTURAL: un candidato cuya ventaja sea SOLO de sincronizacion (cuando "
         "entrar, no de que lado) muere contra la nula de signo. Exigir las dos nulas lo mata aunque "
         "sea real. Esta escrito para que el lector lo sepa.",
-        "DESLIZAMIENTO DE ENTRADA: NO MEDIDO. Se trata como CERO. Un cuarto de tick dio vuelta el "
-        "signo de una celda en esta ventana.",
+        "DESLIZAMIENTO DE ENTRADA: MEDIDO y cobrado (medio-spread ~0,13 pt por operacion, por "
+        "regimen; microestructura_tbbo.py). Supone ENTRADA POR MERCADO (cruza). Un candidato que "
+        "entra PASIVO no lo paga pero enfrenta no-ejecucion y seleccion adversa, que este juez NO "
+        "modela (es la pregunta de mbo, disenada en MBO_DISENO_entrada_pasiva.md, sin correr). El "
+        "medio-spread de SALIDA no se cobra aparte: el objetivo se supone limite y el stop lleva su "
+        "sobrepaso medido.",
         "LA REGLA DE CONSISTENCIA (35-40%) de las firmas no esta modelada. Solo puede bajar P(pago).",
         "TERRENO ES 1-min 2016-2019 unicamente. 2020+ esta en la caja sellada y no se toca.",
         "ENTRADA PASIVA: si el candidato entra con orden limite, la no-ejecucion y la seleccion "

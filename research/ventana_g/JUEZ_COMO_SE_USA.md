@@ -80,8 +80,11 @@ ganadoras y el sesgo de supervivencia, en vez de evitables.
 ## Qué devuelve, y en qué unidades
 
 - **Dólares por sesión, neto**, con comisión (help.tradeify.co, 2026-09-03), deslizamiento medio en
-  el stop (`media_exceso.py`) y la corrección de contabilidad aplicada **sólo en la dirección
-  conservadora** (`o = 0,0642 ± 7,6%`; nadie la cobra eligiendo el bracket) con su error propagado.
+  el stop (`media_exceso.py`), **deslizamiento de ENTRADA** —el medio-spread por cruzar, ~0,13 pt por
+  operación, medido por régimen en `microestructura_tbbo.py`, antes tratado como cero— y la corrección
+  de contabilidad aplicada **sólo en la dirección conservadora** (`o = 0,0642 ± 7,6%`; nadie la cobra
+  eligiendo el bracket) con su error propagado. Cobrar la entrada movió el piso de referencia
+  +$35/sesión (5pt:20pt) y +$20/sesión (20pt:10pt): es del orden de la comisión.
 - **Las dos nulas**: rotación (destruye *cuándo*; **sólo dentro del rango de fechas del candidato**)
   y signo (destruye *qué lado*; conserva las ranuras). Y un **tercer punto**: una posición pasiva de
   la misma exposición neta promedio sobre el mismo intervalo. Van las tres.
@@ -105,9 +108,12 @@ ganadoras y el sesgo de supervivencia, en vez de evitables.
   media positiva con cola izquierda gorda fracasa igual.
 - **La regla del vehículo**: si la ventaja medida supera el piso, avisa que a esa ventaja conviene
   capital propio y no la evaluación (el cruce cae en el propio piso, `vehiculo_ventaja.py`).
-- **LO QUE ESTE VEREDICTO NO CUBRE**, obligatorio. Entre otras: el deslizamiento de entrada se trata
-  como cero; la consistencia de las firmas no está modelada; y **el falso negativo estructural**: un
-  candidato cuya ventaja sea sólo de sincronización muere contra la nula de signo aunque sea real.
+- **LO QUE ESTE VEREDICTO NO CUBRE**, obligatorio. Entre otras: el deslizamiento de entrada ahora se
+  **cobra** (medio-spread por mercado), pero supone entrada por mercado —una entrada **pasiva** no lo
+  paga y en cambio corre no-ejecución y selección adversa, la pregunta de mbo diseñada sin correr en
+  `MBO_DISENO_entrada_pasiva.md`; la consistencia de las firmas no está modelada; y **el falso
+  negativo estructural**: un candidato cuya ventaja sea sólo de sincronización muere contra la nula de
+  signo aunque sea real.
 
 ## El registro y el contador
 
