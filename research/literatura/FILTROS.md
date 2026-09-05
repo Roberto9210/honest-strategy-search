@@ -283,3 +283,73 @@ La caja es ES diario 2020-01-02 → 2026-08-19, unas **1.660 sesiones**, un solo
 **Las dos recuperadas son las únicas del inventario que la caja volvería medibles.** Es un hecho
 aritmético sobre números publicados, no una recomendación: la caja tiene un solo uso, hay un
 protocolo escrito para abrirla, y esa decisión es de Roberto.
+
+---
+
+# F9 — LA PIEZA QUE FALTA: ¿SE PUEDE AJUSTAR?
+
+**Criterio permanente. Escrito 2026-09-05 porque yo mismo apliqué mal el criterio anterior.**
+
+## El criterio equivocado, y por qué lo era
+
+Al armar la prueba agrupada exigí que **fecha, signo y magnitud estuvieran todos en el paper**, y
+excluí a L03 —la de mejor magnitud del inventario— porque su signo no está publicado y lo
+tendríamos que poner nosotros.
+
+**Eso es demasiado estricto, y confunde dos cosas.** Nunca se pidió pureza. Se pidió **escapar de
+NUESTRO generador de hipótesis**, el que produjo 261 negativos. Cerrarle la puerta a una idea de
+afuera porque le falta una pieza nuestra no es lo mismo que evitar nuestro generador: es tirar la
+idea de afuera.
+
+## El criterio correcto
+
+**La pregunta no es "¿la pieza la ponemos nosotros?" sino "¿la pieza que agregamos tiene una decisión
+que se pueda AJUSTAR?"**
+
+| tipo de pieza | ejemplos | qué es | qué cuesta |
+|---|---|---|---|
+| **SIN grado de libertad** | una fórmula pública, un calendario oficial, una construcción especificada en el paper, quitar de una fórmula un término que exige información futura | **IMPLEMENTACIÓN** | nada. La idea sigue siendo de terceros |
+| **CON grado de libertad** | elegir entre dos definiciones defendibles, calibrar un umbral, seleccionar una variante entre varias, definir una línea de base | **HIPÓTESIS NUESTRA** | cartucho, y suma a `variantes_probadas` |
+
+## Por qué la línea está ahí y no en otro lado
+
+**Una pieza sin ajuste no puede convertir un negativo en positivo. Una pieza con ajuste sí.**
+
+Ése es todo el argumento y es suficiente. El peligro que el proyecto combate no es que toquemos la
+idea: es que la toquemos **hasta que dé**. Una pieza que no tiene perilla no se puede girar.
+
+## El ejemplo, para que dentro de seis meses nadie repita la exclusión
+
+**L03, la deriva previa a los anuncios macro.** El paper mide la deriva condicionando a la sorpresa
+que se publicó después, que no se conoce al entrar. Yo concluí que la regla operable la teníamos que
+inventar nosotros y la saqué.
+
+**Estaba mal por dos motivos, y los dos son generales:**
+
+1. **No busqué si la pieza ya estaba publicada.** Lo estaba: **Bernile, Hu y Tang (2016), *Journal of
+   Financial Economics* 121(3), 496-520** establecen que **el desbalance anormal de órdenes del
+   E-mini antes del anuncio va en la dirección de la sorpresa posterior y predice la reacción del
+   mercado**. El observable existe, está publicado y está medido en el instrumento del proyecto.
+2. **Aun sin ese paper, quitar de la fórmula de ganancia de Kurov et al. el término que exige la
+   sorpresa no es elegir entre alternativas: hay una sola forma de quitar un término
+   inobservable.** Eso es implementación, no hipótesis.
+
+**Regla de orden que sale de esto, y es la parte accionable: ANTES de armar la pieza uno mismo, hay
+que buscar si ya está publicada.** Cuesta lo mismo que el resto de la búsqueda de literatura y
+decide si la candidata gasta crédito nuestro o no.
+
+## Cómo se aplica
+
+1. Nombrar **exactamente** qué pieza falta.
+2. Preguntar si tiene grado de libertad, y **escribir por qué sí o por qué no**.
+3. Si lo tiene, **buscar la versión publicada** antes de construirla.
+4. Si sigue teniéndolo, la candidata no se descarta: se marca **HÍBRIDA CON AJUSTE**, la declaración
+   se hace **antes de correr**, y **suma a `variantes_probadas`**.
+5. Si no lo tiene, la candidata es **HÍBRIDA** y vuelve al inventario principal sin penalidad.
+
+**Y una distinción que hay que conservar, porque la confundí una vez:** una pieza que **no existe
+para nadie** —como el posicionamiento del manipulador en la liquidación del VIX— no es una pieza
+faltante. Es un descarte, y el motivo correcto es "la pieza no existe", no "la tendríamos que poner
+nosotros".
+
+**El inventario de híbridas está en [HIBRIDAS.md](HIBRIDAS.md).**
