@@ -97,8 +97,13 @@ AQUI = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, AQUI)
 import juez as J  # noqa: E402
 
-PASO = 300
-CELDA = dict(tipo="bracket", objetivo_pt=5, stop_pt=20)
+PASO = int(os.environ.get("CTRL_PASO", "300"))
+# La celda se puede cambiar por entorno para correr los diez controles sobre un bracket ESTRECHO,
+# que es lo que el rango extendido (span 3-35) permite desde 2026-09-07. Por defecto queda la de
+# siempre para que la salida commiteada sea reproducible.
+CELDA = dict(tipo="bracket",
+             objetivo_pt=float(os.environ.get("CTRL_T", "5")),
+             stop_pt=float(os.environ.get("CTRL_S", "20")))
 Q2, Q5 = 0.62, 0.75
 # C7 inyecta ventaja SOLO en el 26% de las sesiones (bajistas). A q=0,75 el deslizamiento de entrada
 # -costo plano sobre TODAS las operaciones- tumbaba el obs global por debajo de 3sd y daba NO SUPERA:
@@ -132,7 +137,12 @@ def grilla(m, anios):
 
 
 def ambos_lados(m, idx):
-    ex = J.EXCESO_STOP[CELDA["stop_pt"]]
+    # el mismo respaldo que usa el juez: EXCESO_STOP solo esta medido para stops de 10 y 20 pt, y
+    # con el rango de span extendido a 3-35 hay celdas con stop de 2 a 5. El juez sustituye por el
+    # medido mas cercano y lo declara; el arnes hacia KeyError y se caia. Ahora hacen lo mismo.
+    ex = J.EXCESO_STOP.get(CELDA["stop_pt"])
+    if ex is None:
+        ex = J.EXCESO_STOP[min(J.EXCESO_STOP, key=lambda k: abs(k - CELDA["stop_pt"]))]
     pL, _ = J.resolver(m, idx, np.ones(len(idx)), CELDA, ex)
     pS, _ = J.resolver(m, idx, -np.ones(len(idx)), CELDA, ex)
     return pL, pS
@@ -140,7 +150,12 @@ def ambos_lados(m, idx):
 
 def candidato(nombre, m, idx, largo_mask, variantes=1, familia=None, clase="direccional"):
     ops = [dict(ts=str(m["ts"][i]), lado=("largo" if L else "corto")) for i, L in zip(idx, largo_mask)]
-    c = dict(nombre=nombre, instrumento="ES", contratos=1, limite_contratos=12,
+    # limite_contratos por entorno: con celdas ESTRECHAS y entradas densas las posiciones se APILAN
+    # -medido: 19 simultaneas con paso 60 y bracket 3:4- y el juez rechaza. Eso no es un defecto del
+    # juez sino un hallazgo: la frecuencia y el limite de contratos de la cuenta (R6: 4 minis en
+    # 50K) interactuan, y la ventana operable es mas angosta de lo que decia mirando solo tenencia.
+    c = dict(nombre=nombre, instrumento="ES", contratos=1,
+             limite_contratos=int(os.environ.get("CTRL_LIMITE", "12")),
              variantes_probadas=variantes, clase_ventaja=clase,
              regla_salida=dict(CELDA), operaciones=ops)
     if familia:

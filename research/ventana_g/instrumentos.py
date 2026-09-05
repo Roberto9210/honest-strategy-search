@@ -100,6 +100,27 @@ INSTRUMENTOS = {
                       n=1006, reparto="repartido"),
         o_sobrepaso=C(0.0642, MEDIDO, "sesgo_marco.py, +-7,6% entre corridas",
                       n=1006, reparto="repartido"),
+        # EL SESGO DE CONTABILIDAD TIENE DOS TERMINOS, medido en sesgo_marco_spans_cortos.py:
+        #     sesgo_op = o(span) * (1 - 2p)  -  tasa_ambigua(span) * span * 0,5
+        # El primero es antisimetrico (sobrepaso de barrera); el segundo es un corrimiento parejo
+        # hacia abajo por las barras AMBIGUAS -las dos barreras tocadas en la misma barra de un
+        # minuto, que se cuentan como perdida-. Verificado: el intercepto medido coincide con el
+        # predicho por la ambiguedad a 1,03-1,17x en los seis spans.
+        # En span 20-35 el segundo termino es despreciable (0,006% de ambiguas) y por eso el modelo
+        # de un termino alcanzaba. En span 3 es el que MANDA.
+        o_por_span=C({3.0: 0.0310, 4.0: 0.0257, 5.0: 0.0237, 7.0: 0.0273, 10.0: 0.0242,
+                      25.0: 0.0546}, MEDIDO,
+                     "sesgo_marco_spans_cortos.py, bootstrap IID, 6 series, 3 celdas por span. "
+                     "SIMPLIFICACION MIA, no medicion: en 3-10 la falta de monotonia "
+                     "(0,0310/0,0257/0,0237/0,0273/0,0242) es probablemente ruido de 6 series, y "
+                     "el juez interpola. Rango observado en 3-10: 0,0237 a 0,0310, media 0,0264",
+                     n=6, reparto="repartido"),
+        tasa_ambigua_por_span=C({3.0: 0.01522, 4.0: 0.00733, 5.0: 0.00373, 7.0: 0.00168,
+                                 10.0: 0.00051, 25.0: 0.00006}, MEDIDO,
+                                "sesgo_marco_spans_cortos.py, fraccion de barras donde se tocan las "
+                                "dos barreras. Es artefacto de RESOLUCION de la barra de 1 min, no "
+                                "del mercado: con tick se sabria cual se toco primero",
+                                n=6, reparto="repartido"),
         cortes_tercil_bps=C("terciles de rango/precio de la sesion ANTERIOR", MEDIDO,
                             "juez_regimen_bps.py, sobre 2016-2019",
                             n=1006, reparto="repartido"),

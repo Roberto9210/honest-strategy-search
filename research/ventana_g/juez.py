@@ -100,7 +100,10 @@ MARKOUT_PASIVO = INS.INSTRUMENTOS["ES"]["markout_pasivo"]["valor"]     # pt, sob
 LLENADO_PASIVO = INS.INSTRUMENTOS["ES"]["llenado_pasivo"]["valor"]     # fraccion que se llena
 O_SOBREPASO = INS.INSTRUMENTOS["ES"]["o_sobrepaso"]["valor"]    # sesgo_marco.py
 O_ERROR_REL = 0.076                             # +-7,6% entre corridas
-SPAN_CARACTERIZADO = (20.0, 35.0)               # (T+S) donde el sesgo esta medido
+# EXTENDIDO 2026-09-07 por decision D3: el sesgo esta medido de 3 a 25 pt (sesgo_marco_spans_cortos)
+# y el rango 25-35 queda como estaba. Antes era (20, 35) y dejaba VACIO el solapamiento entre lo que
+# el reglamento permite operar (1 a 90 min de tenencia) y lo que el juez puede juzgar.
+SPAN_CARACTERIZADO = (3.0, 35.0)                # (T+S) donde el sesgo esta medido
 P_CARACTERIZADO = (0.15, 0.85)                  # S/(S+T) donde el sesgo esta medido
 CAJA = ("2020-01-02", "2026-08-19")             # no se toca sin bandera y pre-registro commiteado
 TRABAJO_HASTA = 2018                            # trabajo 2016-2018, verificacion 2019
@@ -408,6 +411,21 @@ def prerregistro_commiteado(ruta):
 # =========================================================================================
 # 4. Estadistica auxiliar
 # =========================================================================================
+def interp_span(tabla, span):
+    """Interpola en log(span) una tabla {span: valor}. Fuera del rango, toma el extremo: no
+    extrapola, que es la regla de la casa. Se usa para o(span) y para la tasa de ambiguas."""
+    xs = sorted(tabla)
+    if span <= xs[0]:
+        return tabla[xs[0]]
+    if span >= xs[-1]:
+        return tabla[xs[-1]]
+    for a, b in zip(xs, xs[1:]):
+        if a <= span <= b:
+            w = (math.log(span) - math.log(a)) / (math.log(b) - math.log(a))
+            return tabla[a] + w * (tabla[b] - tabla[a])
+    return tabla[xs[-1]]
+
+
 def sf_normal(z):
     return 0.5 * math.erfc(z / math.sqrt(2.0))
 
@@ -473,13 +491,39 @@ def juzgar_periodo(cand, m, idx, sgn, etiqueta, npermuta=NPERM, rotacion_global=
             exceso = EXCESO_STOP[kk]
             avisos.append(f"Deslizamiento del stop no medido para {S:g}pt; se usa el de {kk}pt = "
                           f"{exceso}. Sustitucion, no medicion.")
-        # sesgo por operacion en puntos: verdad = replay - o*(1-2p). Se aplica SOLO en la
-        # direccion conservadora: si la correccion ayuda al candidato, va con el o mas chico;
-        # si lo perjudica, con el mas grande. Nadie cobra la correccion eligiendo el bracket.
+        # SESGO DE CONTABILIDAD, DOS TERMINOS (D3, 2026-09-07):
+        #     verdad = replay - [ o(span)*(1-2p)  -  tasa_ambigua(span)*span*0,5 ]
+        # El primero es el sobrepaso de barrera, antisimetrico en (1-2p). El segundo son las barras
+        # AMBIGUAS -las dos barreras tocadas en la misma barra de un minuto, contadas como perdida-:
+        # un corrimiento parejo hacia abajo. Medido en sesgo_marco_spans_cortos.py y verificado a
+        # 1,03-1,17x contra la prediccion en seis spans.
+        o_span = interp_span(INS.INSTRUMENTOS[inst]["o_por_span"]["valor"], span)
+        amb = interp_span(INS.INSTRUMENTOS[inst]["tasa_ambigua_por_span"]["valor"], span)
+        # el primer termino, en la direccion conservadora de siempre
         signo_corr = (1 - 2 * p)
-        o_cons = O_SOBREPASO * (1 + O_ERROR_REL) if signo_corr > 0 else O_SOBREPASO * (1 - O_ERROR_REL)
-        sesgo_pt = o_cons * signo_corr
-        error_o_pt = O_SOBREPASO * O_ERROR_REL * abs(signo_corr)
+        o_cons = o_span * (1 + O_ERROR_REL) if signo_corr > 0 else o_span * (1 - O_ERROR_REL)
+        # el segundo es SIEMPRE negativo, asi que restarlo AYUDA al candidato: por eso va con el
+        # valor PREDICHO, que es 3-17% mas chico que el medido. Conservador por construccion.
+        sesgo_amb = -amb * span * 0.5
+        sesgo_pt = o_cons * signo_corr + sesgo_amb
+        error_o_pt = o_span * O_ERROR_REL * abs(signo_corr) + abs(sesgo_amb) * 0.17
+        if span < 20.0:
+            avisos.append(
+                f"SPAN ESTRECHO ({span:g} pt). o(span) = {o_span:.4f}, no el {O_SOBREPASO:.4f} del "
+                f"rango 20-35: en brackets estrechos el sobrepaso es la MITAD. Y el termino de "
+                f"ambiguedad pesa {abs(sesgo_amb):.4f} pt/op ({abs(sesgo_amb)/max(abs(sesgo_pt),1e-9):.0%} "
+                f"del sesgo total), contra 0,0008 en span 25.")
+            no_cubre.append(
+                f"AMBIGUEDAD DE RESOLUCION: {amb:.3%} de las operaciones de este bracket tocan las "
+                f"dos barreras en la misma barra de 1 min y se cuentan como PERDIDA. Es artefacto "
+                f"de la barra, no del mercado: con dato de tick se sabria cual se toco primero. El "
+                f"juez lo corrige con el valor predicho, que es el extremo conservador.")
+            if S < min(EXCESO_STOP):
+                no_cubre.append(
+                    f"EXCESO EN EL STOP SUSTITUIDO: el stop de {S:g} pt esta fuera del rango medido "
+                    f"{sorted(EXCESO_STOP)}; se usa {exceso:g} pt, que es {exceso/S:.0%} del stop "
+                    f"contra {EXCESO_STOP[20]/20:.0%} en un stop de 20. Sobreestima el costo, o sea "
+                    f"que va en la direccion conservadora, pero NO esta medido.")
     else:
         exceso, sesgo_pt, error_o_pt, p = 0.0, 0.0, 0.0, None
         avisos.append("Regla de TIEMPO: no hay barrera, asi que no hay sobrepaso ni deslizamiento "
