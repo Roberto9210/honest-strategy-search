@@ -18,6 +18,26 @@ candidatas fueron clasificadas **antes** de cualquier medición.
 | [F10_CUANTA_GENTE_ADENTRO.md](F10_CUANTA_GENTE_ADENTRO.md) | ¿ya lo está operando alguien? Cinco de once con producto encontrado |
 | **[P05_L07_sola.md](P05_L07_sola.md)** | **la prueba más barata del inventario: un símbolo, diez minutos por día** |
 | [P06_si_sale_positivo.md](P06_si_sale_positivo.md) | qué pasa si sale positivo. El procedimiento, sin un solo umbral |
+| **[P07](P07_L11_borrador.md)** y **[P08](P08_L10_borrador.md)** | **L11 y L10 preparadas hasta el borde. BORRADORES, NO REGISTRADOS** |
+| [P09_verificar_caneria.md](P09_verificar_caneria.md) | pedido a la VENTANA G: probar el formato sin correr el juicio |
+
+> ## ORDEN ACTUALIZADO — 2026-09-05
+>
+> El paso de lectura interna de [F7](F7_EDAD_DE_LA_EVIDENCIA.md) movió **tres de once**, y la tabla
+> de más abajo quedó vieja en esas tres filas. **El orden vigente es:**
+>
+> **L11 · L08 · L01 · L10 · L07 · L06 · L09 · L03 · L04 · L02 · L05**
+>
+> **L01 sube dos** por verificar estabilidad sobre una partición cronológica de cuarenta y seis años.
+> **L07 baja tres** por dos señales de declive escritas en su propio paper. El primer puesto no
+> cambia.
+>
+> ## Y una advertencia sobre las dos que el juez puede juzgar hoy
+>
+> **Prepararlas hasta el borde mostró que ninguna conviene registrarse sola.** L11 necesitaría el
+> 186 % de su magnitud publicada para pasar y L10 el 204 %. **Dos cartuchos comprarían dos pruebas
+> que no pueden ganar; la prueba agrupada de `P01` da 0,64 con uno.** La aritmética está en `P07`
+> sección 5 y `P08` sección 5.
 
 ## Lo que el juez puede juzgar HOY, tal como está
 
