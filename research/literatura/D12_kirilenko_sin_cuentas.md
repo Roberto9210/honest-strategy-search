@@ -78,6 +78,8 @@ Para cada `F` nuestro, todas observables sin cuenta:
    de ahí es una hipótesis nueva y cuesta un cartucho.** Lo escribo porque es exactamente el borde
    donde este proyecto se ha equivocado.
 4. **Verificación de una línea para G, antes de nada:** si los `T` del GLBX traen `order_id ≠ 0`.
-   Cambia cuánto se puede decir de la agresora.
+   Cambia cuánto se puede decir de la agresora. **CONTESTADA por G (commit `7de1fe2`): SÍ, 203.213 de
+   203.215 en el día medido.** La agresora tiene identidad de orden, y las siete características se
+   pueden calcular.
 
 **Costos:** dinero cero, cartuchos cero, K en 261. Tiempo de Roberto: leer y pasárselo a G.
