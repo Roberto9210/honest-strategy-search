@@ -598,6 +598,19 @@ def cadena_pasar(r, m, n_micros=None):
                 E=float((-CADENA["cuota"] + (res == 2) * CADENA["pago"]).mean()), N=N)
 
 
+REQUIERE_MEDICION = "REQUIERE MEDICION PASIVA POR CANDIDATO"
+
+
+def techo_pasivo(v, pasivo):
+    """El piso pasivo es una cota OPTIMISTA. Asimetria logica que va en el codigo: si un candidato
+    FALLA contra una cota optimista, falla seguro (NO SUPERA firme); si la SUPERA, no se sabe nada,
+    solo que vale la pena la medicion real. Por eso el modo pasivo NUNCA devuelve SUPERA: lo convierte
+    en REQUIERE MEDICION PASIVA POR CANDIDATO. El veredicto firme de aprobacion sale del modo CRUCE o
+    de la medicion por-candidato cuando exista (medir_pasivo_candidato). APUESTA AL REGIMEN y NO SUPERA
+    quedan como estan: no son aprobaciones."""
+    return REQUIERE_MEDICION if (pasivo and v == "SUPERA") else v
+
+
 def veredicto_de(r, reg, variantes_total):
     z_req = z_requerido(variantes_total)
     rentable = r["obs"] > 0 and r["z_rent"] >= z_req
@@ -711,6 +724,7 @@ def juzgar(cand, m, permitir_caja=False, prerregistro=None, verificar=False, npe
                        rotacion_global, pasivo)
     reg = regimen(r, m)
     v, z_req, rent, info = veredicto_de(r, reg, variantes_total)
+    v = techo_pasivo(v, pasivo)
     r.update(veredicto=v, z_req=z_req, rentable=rent, informativo=info, regimen=reg,
              regimen_hindsight=regimen(r, m, "tercil_hindsight"), cadena=cadena_pasar(r, m))
     salida["periodos"]["trabajo"] = r
@@ -743,6 +757,7 @@ def juzgar(cand, m, permitir_caja=False, prerregistro=None, verificar=False, npe
                                 rotacion_global, pasivo)
             regv = regimen(rv, m)
             vv, zq, rn, inf = veredicto_de(rv, regv, variantes_total)
+            vv = techo_pasivo(vv, pasivo)
             rv.update(veredicto=vv, z_req=zq, rentable=rn, informativo=inf, regimen=regv,
                       regimen_hindsight=regimen(rv, m, "tercil_hindsight"),
                       cadena=cadena_pasar(rv, m))

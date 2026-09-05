@@ -45,6 +45,16 @@ este mal (me paso con "A domina a TODO capital", que contradecia mi propia curva
       tumbaba el obs global bajo 3sd y daba NO SUPERA (el costo mataba la ventaja concentrada antes
       de mirar el regimen). Se sube a 0,90 para aislar la maquinaria de regimen: rentable global, y
       el unico freno es que solo un tercil aguanta.
+  C8  CANDIDATO EN EL BORDE entre modos (q=0,56): obs cae JUSTO entre el piso pasivo y el de cruce.
+      Es el unico control que prueba la frontera donde el desplazamiento de nivel entre modos podria
+      hacer dano. ESPERADO: NO APRUEBA en ninguno de los dos modos (NO SUPERA / APUESTA / REQUIERE
+      MEDICION), NUNCA SUPERA. La categoria exacta de no-aprobacion depende del sorteo (que aguanten
+      los tres terciles en el borde) y no se fija; el invariante robusto es NO SUPERA. La conversion
+      SUPERA->REQUIERE MEDICION la ejercita C2, que tiene ventaja grande y SUPERA firme en cruce.
+      LO HARIA FALLAR: que devuelva SUPERA en cualquiera de los dos modos.
+
+REGLA DE MODO PASIVO: el juez NUNCA devuelve SUPERA en modo pasivo (la cota optimista solo rechaza).
+Cuando superaria la cota devuelve REQUIERE MEDICION PASIVA POR CANDIDATO. Verificado en los ocho.
 
 DEMOSTRACION (no es un control): el contador. C1 juzgado otra vez en el registro donde ya esta
 C2 (misma huella de entradas) tiene que disparar el aviso de familia y subir el umbral.
@@ -70,6 +80,11 @@ Q2, Q5 = 0.62, 0.75
 # 0,90 para que el candidato SI sea rentable globalmente y el UNICO freno sea el regimen -> APUESTA.
 # El hecho de que a q=0,75 el costo solo lo tumbe queda anotado en el reporte.
 Q7 = 0.90
+# C8 (candidato en el BORDE entre modos): q=0,56 cae JUSTO entre el piso pasivo y el de cruce.
+# Calibrado en probe (NPERM 150): cruce z_rent 2,1 (NO SUPERA, 3/3 terciles) y pasivo z_rent 3,5
+# (seria SUPERA -> REQUIERE MEDICION, 3/3 terciles). Es el unico control que prueba la frontera donde
+# el desplazamiento de nivel entre modos podria hacer dano.
+Q8 = 0.56
 NPERM = int(os.environ.get("JUEZ_NPERM", "200"))
 MODO_PASIVO = False              # lo togglea correr(); el helper juzgar() lo inyecta en J.juzgar
 SEMILLA = 20260904
@@ -179,12 +194,12 @@ def correr(pasivo, m):
         print(f"      inyectada REALIZADA {realizada:+.2f}/sesion   recuperada: signo {ventB:+.2f} "
               f"({rec:.0%})   rotacion {ventA:+.2f} ({ventA/realizada:.0%})")
         if MODO_PASIVO:
-            # en pasivo los dolares se escalan por el llenado (~0,48), asi que la recuperacion cae a
-            # ~fill*100% POR CONSTRUCCION; la banda de magnitud es una calibracion de modo CRUCE. Lo
-            # que importa es el veredicto (SUPERA), que se mantiene.
-            ok2 = (v == "SUPERA")
-            print(f"      (modo pasivo: la recuperacion ~{rec:.0%} refleja el escalado por llenado "
-                  f"~{np.mean([J.LLENADO_PASIVO[k] for k in (0,1,2)]):.0%}, no un fallo; vale el veredicto)")
+            # en pasivo el juez NUNCA devuelve SUPERA: la cota optimista solo sirve para rechazar, y
+            # cuando la supera devuelve REQUIERE MEDICION. Ademas la recuperacion cae a ~fill*100% POR
+            # CONSTRUCCION (dolares escalados por el llenado); la banda de magnitud es de modo CRUCE.
+            ok2 = (v == J.REQUIERE_MEDICION)
+            print(f"      (modo pasivo: no da SUPERA -> {J.REQUIERE_MEDICION}. Recuperacion ~{rec:.0%} "
+                  f"= escalado por llenado ~{np.mean([J.LLENADO_PASIVO[k] for k in (0,1,2)]):.0%}, no un fallo)")
         else:
             ok2 = (v == "SUPERA") and (0.67 <= rec <= 1.33)
     resultados["C2"] = (ok2, v)
@@ -264,6 +279,22 @@ def correr(pasivo, m):
           f"La ventaja concentrada ahi tiene que aparecer en el tercil ALTO de volatilidad, no repartida.")
     resultados["C7"] = (v == "APUESTA AL REGIMEN", v)
 
+    # ---------------------------------------------------------------- C8 candidato en el borde
+    print(f"\nC8  CANDIDATO EN EL BORDE (q={Q8}, entre el piso pasivo y el de cruce). Prueba la frontera")
+    print(f"    entre modos, donde el desplazamiento de nivel podria hacer dano. Esperado: NO APRUEBA en")
+    print(f"    ninguno de los dos modos (NO SUPERA / APUESTA / REQUIERE MEDICION), NUNCA SUPERA. Falla si SUPERA.")
+    acierta8 = rng.random(len(idx)) < Q8
+    lado8 = np.where(acierta8, mejor_largo, ~mejor_largo)
+    c8c = candidato("C8_borde", m, idx, lado8)
+    v, s = juzgar("C8", c8c, m, registro_nuevo("c8"))
+    if s:
+        resumen(s)
+    # el invariante robusto es "no SUPERA en el borde"; la categoria exacta de no-aprobacion depende
+    # del sorteo (que aguanten o no los tres terciles) y no se fija. La conversion SUPERA->REQUIERE
+    # MEDICION la ejercita C2 de forma estable (ventaja grande, SUPERA firme en cruce).
+    NO_APRUEBA = {"NO SUPERA", "APUESTA AL REGIMEN", J.REQUIERE_MEDICION}
+    resultados["C8"] = (v in NO_APRUEBA, v)
+
     # ---------------------------------------------------------------- demostracion: contador
     print("\nDEMOSTRACION (no es control): el contador de familia.")
     reg = registro_nuevo("contador")
@@ -295,24 +326,28 @@ def main():
     m = J.cargar_mercado()
     res_cruce = correr(False, m)
     res_pas = correr(True, m)
+    n = len(res_cruce)
     print("\n" + "#" * 100)
-    print("COMPARACION DE MODOS - el veredicto de cada control NO puede cambiar solo por el modo.")
-    print("LO HARIA FALLAR: que un control cambie de veredicto entre CRUCE y PASIVO (el modo regalaria plata).")
+    print("COMPARACION DE MODOS. Regla: el modo PASIVO nunca aprueba (nunca SUPERA); una cota optimista")
+    print("solo sirve para rechazar. Un SUPERA de cruce se vuelve REQUIERE MEDICION en pasivo, y un")
+    print("candidato en el borde (C8) que cruce NO SUPERA puede volverse REQUIERE MEDICION -nunca SUPERA-.")
+    print("LO HARIA FALLAR: que cualquier corrida en PASIVO devuelva SUPERA.")
     print("#" * 100)
-    print(f"   {'control':>10}{'CRUCE':>26}{'PASIVO':>26}{'igual?':>9}")
-    igual_todos = True
+    print(f"   {'control':>10}{'CRUCE':>28}{'PASIVO':>32}")
+    hay_supera_pasivo = False
     for k in res_cruce:
         vc = res_cruce[k][1]; vp = res_pas[k][1]
-        ig = vc == vp
-        igual_todos &= ig
-        print(f"   {k:>10}{vc:>26}{vp:>26}{('SI' if ig else 'CAMBIO'):>9}")
+        if vp == "SUPERA":
+            hay_supera_pasivo = True
+        print(f"   {k:>10}{vc:>28}{vp:>32}")
     nc = sum(1 for ok, _ in res_cruce.values() if ok)
     npa = sum(1 for ok, _ in res_pas.values() if ok)
-    print(f"\n   controles pasados: CRUCE {nc}/7   PASIVO {npa}/7")
-    print(f"   veredictos identicos entre modos: {'SI - el modo no regala plata' if igual_todos else 'NO - un control cambio'}")
+    print(f"\n   controles pasados: CRUCE {nc}/{n}   PASIVO {npa}/{n}")
+    print(f"   SUPERA en modo pasivo (tiene que ser NINGUNO): "
+          f"{'HAY - FALLA' if hay_supera_pasivo else 'ninguno - OK'}")
     print("#" * 100)
-    if nc < 7 or npa < 7 or not igual_todos:
-        raise SystemExit("FALLO: algun control fallo o cambio de veredicto entre modos")
+    if nc < n or npa < n or hay_supera_pasivo:
+        raise SystemExit("FALLO: algun control fallo, o el modo pasivo devolvio SUPERA")
 
 
 if __name__ == "__main__":

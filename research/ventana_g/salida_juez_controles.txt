@@ -62,6 +62,15 @@ C7  VENTAJA SOLO EN TENDENCIAS BAJISTAS (mov. neto de las 20 sesiones anteriores
       informativo = min(rotacion, signo, pasiva) = +5.8sd; lo frena: nada (bate las tres)
       slots en sesion bajista: 983 de 3764 (26%). La ventaja concentrada ahi tiene que aparecer en el tercil ALTO de volatilidad, no repartida.
 
+C8  CANDIDATO EN EL BORDE (q=0.56, entre el piso pasivo y el de cruce). Prueba la frontera
+    entre modos, donde el desplazamiento de nivel podria hacer dano. Esperado: NO APRUEBA en
+    ninguno de los dos modos (NO SUPERA / APUESTA / REQUIERE MEDICION), NUNCA SUPERA. Falla si SUPERA.
+   [C8] NO SUPERA   (7s)
+      obs +75.16  nulaA -42.48 (vent +117.64, +4.2sd)  nulaB -58.51 (vent +133.67, +4.7sd)  pasiva -0.40 (+2.7sd)  sd 28.25  z_req 3.00
+      regimen: bajo=+106.1(+2.7sd)SI  medio=+234.4(+4.8sd)SI  alto=+66.6(+1.2sd)no
+      cadena eval x fondeada (10 micros): P(pasa eval) 0.124  P(pago) 0.005  P(se acaba el rango) 0.001  E sesiones 8  E $/intento -76
+      informativo = min(rotacion, signo, pasiva) = +2.7sd; lo frena: pasiva
+
 DEMOSTRACION (no es control): el contador de familia.
    [C2 en registro limpio] SUPERA   (7s)
    [C1 despues, misma huella] NO SUPERA   (7s)
@@ -77,8 +86,9 @@ DEMOSTRACION (no es control): el contador de familia.
    C5: PASADO   (veredicto: APUESTA AL REGIMEN)
    C6: PASADO   (veredicto: NO SUPERA)
    C7: PASADO   (veredicto: APUESTA AL REGIMEN)
+   C8: PASADO   (veredicto: NO SUPERA)
 
-   7 de 7 controles PASADOS.  [MODO CRUCE]
+   8 de 8 controles PASADOS.  [MODO CRUCE]
 ====================================================================================================
 ====================================================================================================
 CONTROLES DEL JUEZ - siete, con condicion de falla contra lo publicado   [MODO PASIVO]
@@ -95,13 +105,13 @@ C1  SIN VENTAJA. Esperado NO SUPERA. Falla si SUPERA o APUESTA.
       informativo = min(rotacion, signo, pasiva) = +1.4sd; lo frena: rotacion en rango, signo, pasiva
 
 C2  VENTAJA INYECTADA q=0.62. Esperado SUPERA y recuperacion dentro de +-33% de la realizada.
-   [C2] SUPERA   (7s)
+   [C2] REQUIERE MEDICION PASIVA POR CANDIDATO   (7s)
       obs +116.69  nulaA +2.12 (vent +114.57, +8.0sd)  nulaB -6.80 (vent +123.49, +8.6sd)  pasiva +2.25 (+8.0sd)  sd 14.34  z_req 3.00
       regimen: bajo=+101.6(+6.2sd)SI  medio=+142.5(+6.6sd)SI  alto=+127.2(+5.0sd)SI
       cadena eval x fondeada (10 micros): P(pasa eval) 0.277  P(pago) 0.062  P(se acaba el rango) 0.004  E sesiones 11  E $/intento +1
       informativo = min(rotacion, signo, pasiva) = +8.0sd; lo frena: nada (bate las tres)
       inyectada REALIZADA +255.44/sesion   recuperada: signo +123.49 (48%)   rotacion +114.57 (45%)
-      (modo pasivo: la recuperacion ~48% refleja el escalado por llenado ~49%, no un fallo; vale el veredicto)
+      (modo pasivo: no da SUPERA -> REQUIERE MEDICION PASIVA POR CANDIDATO. Recuperacion ~48% = escalado por llenado ~49%, no un fallo)
    BARRIDO DE TAMANO (mismo flujo de C2, cadena Tradeify 50K), P(pasar) por micro-equiv:
         micros  P(pasa ev)   P(pago)   E ses  E $/intento
              1       0.410     0.000     283          -83
@@ -147,38 +157,51 @@ C7  VENTAJA SOLO EN TENDENCIAS BAJISTAS (mov. neto de las 20 sesiones anteriores
       informativo = min(rotacion, signo, pasiva) = +6.8sd; lo frena: nada (bate las tres)
       slots en sesion bajista: 983 de 3764 (26%). La ventaja concentrada ahi tiene que aparecer en el tercil ALTO de volatilidad, no repartida.
 
+C8  CANDIDATO EN EL BORDE (q=0.56, entre el piso pasivo y el de cruce). Prueba la frontera
+    entre modos, donde el desplazamiento de nivel podria hacer dano. Esperado: NO APRUEBA en
+    ninguno de los dos modos (NO SUPERA / APUESTA / REQUIERE MEDICION), NUNCA SUPERA. Falla si SUPERA.
+   [C8] APUESTA AL REGIMEN   (7s)
+      obs +58.08  nulaA -0.59 (vent +58.67, +4.3sd)  nulaB -8.24 (vent +66.32, +4.8sd)  pasiva -0.40 (+4.2sd)  sd 13.77  z_req 3.00
+      regimen: bajo=+50.6(+2.7sd)SI  medio=+120.5(+4.8sd)SI  alto=+31.2(+1.2sd)no
+      cadena eval x fondeada (10 micros): P(pasa eval) 0.124  P(pago) 0.005  P(se acaba el rango) 0.001  E sesiones 8  E $/intento -76
+      informativo = min(rotacion, signo, pasiva) = +4.2sd; lo frena: nada (bate las tres)
+
 DEMOSTRACION (no es control): el contador de familia.
-   [C2 en registro limpio] SUPERA   (7s)
+   [C2 en registro limpio] REQUIERE MEDICION PASIVA POR CANDIDATO   (7s)
    [C1 despues, misma huella] NO SUPERA   (7s)
       hermanos detectados: 1   variantes totales: 2   umbral exigido: 3.21 desvios (base 3.0)
-         C2_ventaja_inyectada  SUPERA  (huella 100% a 30 barras)
+         C2_ventaja_inyectada  REQUIERE MEDICION PASIVA POR CANDIDATO  (huella 100% a 30 barras)
       cadena antes de alterar: OK   despues de alterar: ROTA en linea 3
 
 ====================================================================================================
    C1: PASADO   (veredicto: NO SUPERA)
-   C2: PASADO   (veredicto: SUPERA)
+   C2: PASADO   (veredicto: REQUIERE MEDICION PASIVA POR CANDIDATO)
    C3: PASADO   (veredicto: NO MEDIBLE)
    C4: PASADO   (veredicto: RECHAZADA)
    C5: PASADO   (veredicto: APUESTA AL REGIMEN)
    C6: PASADO   (veredicto: NO SUPERA)
    C7: PASADO   (veredicto: APUESTA AL REGIMEN)
+   C8: PASADO   (veredicto: APUESTA AL REGIMEN)
 
-   7 de 7 controles PASADOS.  [MODO PASIVO]
+   8 de 8 controles PASADOS.  [MODO PASIVO]
 ====================================================================================================
 
 ####################################################################################################
-COMPARACION DE MODOS - el veredicto de cada control NO puede cambiar solo por el modo.
-LO HARIA FALLAR: que un control cambie de veredicto entre CRUCE y PASIVO (el modo regalaria plata).
+COMPARACION DE MODOS. Regla: el modo PASIVO nunca aprueba (nunca SUPERA); una cota optimista
+solo sirve para rechazar. Un SUPERA de cruce se vuelve REQUIERE MEDICION en pasivo, y un
+candidato en el borde (C8) que cruce NO SUPERA puede volverse REQUIERE MEDICION -nunca SUPERA-.
+LO HARIA FALLAR: que cualquier corrida en PASIVO devuelva SUPERA.
 ####################################################################################################
-      control                     CRUCE                    PASIVO   igual?
-           C1                 NO SUPERA                 NO SUPERA       SI
-           C2                    SUPERA                    SUPERA       SI
-           C3                NO MEDIBLE                NO MEDIBLE       SI
-           C4                 RECHAZADA                 RECHAZADA       SI
-           C5        APUESTA AL REGIMEN        APUESTA AL REGIMEN       SI
-           C6                 NO SUPERA                 NO SUPERA       SI
-           C7        APUESTA AL REGIMEN        APUESTA AL REGIMEN       SI
+      control                       CRUCE                          PASIVO
+           C1                   NO SUPERA                       NO SUPERA
+           C2                      SUPERAREQUIERE MEDICION PASIVA POR CANDIDATO
+           C3                  NO MEDIBLE                      NO MEDIBLE
+           C4                   RECHAZADA                       RECHAZADA
+           C5          APUESTA AL REGIMEN              APUESTA AL REGIMEN
+           C6                   NO SUPERA                       NO SUPERA
+           C7          APUESTA AL REGIMEN              APUESTA AL REGIMEN
+           C8                   NO SUPERA              APUESTA AL REGIMEN
 
-   controles pasados: CRUCE 7/7   PASIVO 7/7
-   veredictos identicos entre modos: SI - el modo no regala plata
+   controles pasados: CRUCE 8/8   PASIVO 8/8
+   SUPERA en modo pasivo (tiene que ser NINGUNO): ninguno - OK
 ####################################################################################################

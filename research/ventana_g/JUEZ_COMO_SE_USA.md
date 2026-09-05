@@ -145,6 +145,43 @@ vale, y no hay código que lo detecte.
 publicados: sin ventaja → NO SUPERA; ventaja inyectada → SUPERA y recupera la magnitud; pocas
 operaciones → NO MEDIBLE; entrada con resultados → RECHAZADA; ventaja en un solo régimen (tercil alto
 de volatilidad) → APUESTA AL REGIMEN; el candidato solo-largo de 2017 → NO SUPERA con la defensa
-puesta (y se muestra sin la defensa, para ver que hace falta); y ventaja sólo en tendencias bajistas
-→ APUESTA AL REGIMEN, la prueba de que cerrar el eje de dirección no dejó un agujero. Salida en
+puesta (y se muestra sin la defensa, para ver que hace falta); ventaja sólo en tendencias bajistas
+→ APUESTA AL REGIMEN, la prueba de que cerrar el eje de dirección no dejó un agujero; y un candidato
+en el **borde** entre modos → NO SUPERA en cruce / REQUIERE MEDICION en pasivo, nunca SUPERA. Los ocho
+se corren en los **dos modos**, y se verifica que el modo pasivo nunca devuelve SUPERA. Salida en
 `salida_juez_controles.txt`.
+
+---
+
+## Estado final del juez
+
+**Qué mide.** Dólares por sesión, netos, de un candidato que entrega entradas y reglas (nunca
+resultados), contra ES 1-min 2016-2019: comisión medida, deslizamiento del stop medido, deslizamiento
+de entrada por régimen (cruce) o markout/llenado (pasivo), y el sesgo de contabilidad restado sólo en
+la dirección conservadora. Lo compara con dos nulas de permutación (rotación en rango + signo) más una
+posición pasiva, exige que la ventaja aguante en los tres terciles de volatilidad **ex-ante en bps**,
+devuelve P(pasar) por la cadena eval × fondeada **al tamaño declarado**, la resolución, y avisa cuándo
+a esa ventaja conviene capital propio. Registro encadenado con hash y huella de familia a tres cubetas.
+
+**Qué NO mide** (va impreso en cada veredicto): la búsqueda anterior al candidato (se declara, es
+inverificable); la regla de consistencia de las firmas; el deslizamiento de entrada **pasiva
+por-candidato** (hoy calibrado al azar); 2020+ (caja sellada); el costo de oportunidad del capital.
+
+**Veredictos posibles.**
+- **SUPERA** — sólo en modo cruce (o en la futura medición por-candidato). Aprobación firme.
+- **APUESTA AL REGIMEN** — rentable e informativo, pero la ventaja vive en un solo tercil. No es un pase.
+- **NO SUPERA** — no rentable, o no informativo, o no aguanta las nulas. Firme en los dos modos.
+- **REQUIERE MEDICION PASIVA POR CANDIDATO** — sólo en modo pasivo, cuando superaría la cota optimista.
+  El modo pasivo **nunca aprueba**: una cota optimista sólo sirve para rechazar.
+- **NO MEDIBLE** — pocas operaciones, bracket sin sesgo caracterizado, ventana angosta, fuera de datos.
+- **RECHAZADA** — la entrada trae resultados, o excede el límite de contratos declarado.
+
+**Las tres deudas abiertas.**
+1. **El markout pasivo por-candidato.** El modo pasivo usa un markout calibrado sobre entradas al
+   azar; para un candidato direccional puede darse vuelta. Lo salda `medir_pasivo_candidato` (el sim
+   FIFO sobre sus entradas reales), sin correr todavía.
+2. **El 53% no llenado por-candidato.** La fracción que no se llena se supone neutral (cierto al azar);
+   para un candidato el no-llenado está seleccionado por su señal y podría ser sus ganadores. Mismo
+   hook lo salda.
+3. **El régimen alto de 2026 está cubierto sólo por 2018.** Ningún día posterior a la caja sellada cae
+   en el tercil alto de volatilidad; cualquier conclusión sobre régimen alto reciente es extrapolación.
