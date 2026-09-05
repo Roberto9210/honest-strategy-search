@@ -133,10 +133,25 @@ demostrar que miramos y rechazamos, no que no miramos.
 
 | # | caso | qué describe | motivo del descarte o del pase |
 |---|---|---|---|
-| | | | |
+| 1 | **Falloon y Flatiron Futures Traders**, orden de la Comisión de Comercio de Futuros, 9 de septiembre de 2025. Multa de $200.000 y doce meses de inhabilitación | colocación de ofertas y demandas en **E-mini del S&P 500 y del Nasdaq 100**, con intención de cancelarlas antes de que se ejecutaran, entre mayo y diciembre de 2022 | **DESCARTADO POR LA LÍNEA.** Es órdenes engañosas: altera el libro y no se ejecuta. No hay nada extraíble ni siquiera como hecho de estructura |
 
-**El registro está vacío porque este documento se commitea ANTES de abrir el primer caso.** Ésa era
-la condición.
+## Lo que la primera cata ya enseñó, y no es lo que esperaba
+
+**Una sola búsqueda sobre futuros de índice bursátil devolvió, casi en su totalidad, casos de
+órdenes engañosas.** Es el tipo de conducta que domina la fiscalización en este instrumento
+—Merrill Lynch en metales, JPMorgan con la multa récord de $920 millones, una tanda de casos en
+bonos del Tesoro— **y es exactamente la categoría que la línea del punto 1 excluye por construcción.**
+
+> **Consecuencia para el orden de prioridad que declaré antes de buscar: el nivel 1, futuros de
+> índice bursátil, puede ser el MENOS productivo de los cuatro, no el más.** La fiscalización sobre
+> el E-mini se concentra en el libro de órdenes, que es lo único que no podemos usar.
+
+**Eso no cierra la fuente.** Los niveles 3 y 4 —flujos de rebalanceo y precios de referencia, y
+estructura de mercado y diseminación de datos— **no fueron catados todavía**, y son donde vive lo
+que el filtro sí admite. **Pero el orden de prioridad que escribí antes de mirar era probablemente el
+equivocado, y lo digo en vez de reordenarlo en silencio.**
+
+**Casos leídos: 1 de los 10 del alcance. Descartados: 1.**
 
 ---
 
