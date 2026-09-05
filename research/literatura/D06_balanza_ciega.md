@@ -3,13 +3,15 @@
 **VENTANA L. NO MIDE NADA. K sigue en 261.**
 
 > ## LA REGLA
->
+
 > **Antes de correr una prueba, calcular qué devolvería si la idea estuviera muerta. Si eso es
 > indistinguible de lo que devolvería si estuviera viva con el decaimiento típico, la prueba no
 > informa y no se corre.**
 >
 > **Y el umbral de detección NO se compara contra la magnitud publicada: se compara contra la
 > magnitud publicada DESPUÉS del decaimiento esperado.**
+
+> **RIESGO NOMBRADO, no corrección:** el escalado de σ de este documento supone volatilidad intradiaria **uniforme**, y no lo es. Con el patrón en U, **L01 y L03 pasarían a CIEGAS**. Los veredictos NO se corrigen porque ya decían "requiere medición" y ésta es la dirección desfavorable. Ver [A03](A03_variables_tratadas_como_constantes.md).
 
 ---
 
