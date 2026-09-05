@@ -136,6 +136,24 @@ los datos del proyecto terminan en 2019, o sea **seis años antes**. Para esta c
 período pre-publicación, que es lo bueno; y significa que un resultado positivo ahí **no dice nada
 sobre 2026**, que es lo malo.
 
+## 8-bis. Quiénes son los autores, que corta para los dos lados
+
+**Mazzoleni trabaja en Capital Group**, una de las gestoras más grandes del mundo. Harvey es de Duke
+y del NBER, Melone de Ohio State. El paper aclara que no está financiado y que los autores no
+declaran conflictos, y que las opiniones no reflejan las de Capital Group.
+
+**Es información mejor y es un conflicto, las dos cosas, y no resuelvo cuál pesa más.**
+
+- **A favor:** las dos señales del paper —umbral y calendario— salen de **las políticas de inversión
+  declaradas de las instituciones**, no de un barrido sobre datos. Saber cómo rebalancean de verdad
+  los fondos de pensión y los mutuos es conocimiento de adentro.
+- **En contra:** Capital Group es **uno de los rebalanceadores** cuyo flujo el paper describe como
+  predecible y explotable. Y el paper dice explícitamente que la predictibilidad permite adelantarse
+  a las órdenes de los fondos grandes.
+
+**Es el mismo patrón en tres de las once fichas** —L01, L08 y ésta— **y las tres son de efectos de
+flujo de calendario. Que las tres vengan de gente que ve el flujo no es casualidad.**
+
 ## 9. Cuántas variantes probaron los autores
 
 Contable de lo publicado: **2 señales** (umbral y calendario) × **2 activos** (acciones y bonos) ×

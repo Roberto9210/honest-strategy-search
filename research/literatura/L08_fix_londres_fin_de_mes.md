@@ -132,6 +132,24 @@ microestructura del pico. El efecto de la hora previa debería sobrevivir; el de
 fixing, no necesariamente.** Los datos del proyecto (2016-2019) son **todos posteriores** a la
 reforma.
 
+## 8-bis. Quiénes son los autores, que corta para los dos lados
+
+**Melvin y Prins trabajaban los dos en BlackRock** al escribir el paper, con dirección en la portada.
+**Es el caso más marcado de los tres.**
+
+**Es información mejor y es un conflicto, las dos cosas, y no resuelvo cuál pesa más.**
+
+- **A favor:** el paper describe con detalle operativo cómo los clientes pasan las órdenes a los
+  bancos una hora antes del fixing y cómo se calcula mecánicamente el monto del ajuste. **Eso no está
+  en ninguna base de datos: se sabe porque se está adentro de la cadena.** El propio texto dice que
+  no hay datos públicos de las operaciones de cobertura.
+- **En contra:** BlackRock es uno de los mayores gestores internacionales de renta variable, o sea
+  **uno de los coberturistas cuyo flujo el paper describe**. Publicar cómo se comporta ese flujo es
+  publicar sobre el propio flujo.
+
+**Es el mismo patrón en tres de las once fichas** —L01, ésta y L10— **y las tres son de efectos de
+flujo de calendario.**
+
 ## 9. Cuántas variantes probaron los autores
 
 Contable de lo publicado: **10 monedas** estimadas en panel **y una por una**; días de control

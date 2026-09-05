@@ -127,6 +127,23 @@ Mixto, y hay que leerlo con cuidado.
 **No encontré una replicación independiente de la versión `rROD` en ES posterior a 2021.** Eso es un
 hueco, no una ausencia de evidencia negativa.
 
+## 8-bis. Quiénes son los autores, que corta para los dos lados
+
+**Baltussen y Martens trabajan en Robeco Asset Management**, y lo declaran en la portada del paper.
+Da y Lammers son académicos.
+
+**Es información mejor y es un conflicto, las dos cosas, y no resuelvo cuál pesa más.**
+
+- **A favor:** el mecanismo que proponen —cobertura de gamma de creadores de mercado y emisores de
+  ETF apalancados— es un flujo que se ve desde adentro de una gestora y no desde una base de datos.
+  Un académico puro probablemente no lo habría propuesto.
+- **En contra:** una gestora tiene interés en que su marco de referencia circule, y quien publica
+  desde adentro elige qué publicar.
+
+**Es el mismo patrón en tres de las once fichas** —esta, L08 y L10— **y las tres son de efectos de
+flujo de calendario.** Que las tres vengan de gente que ve el flujo no es casualidad, y por eso la
+nota va en las tres.
+
 ## 9. Cuántas variantes probaron los autores
 
 **Declarable con honestidad: no menos de una docena, y el paper no publica un barrido completo.**
