@@ -169,15 +169,33 @@ nada.
 
 ## El borrador, que NO sale sin autorización
 
+**Primera versión, retirada:** decía *"estamos evaluando la replicabilidad fuera de muestra"* y
+*"la distinción decide si el período anterior es un fuera de muestra utilizable"*. **Las dos frases
+revelan qué estamos haciendo y por qué.** Roberto fijó los criterios: una sola pregunta, nada del
+proyecto ni del dinero, sin pedir datos ni código ni colaboración, cortés y corto.
+
+**Versión que cumple los cuatro criterios:**
+
 > Estimados profesores Harvey, Mazzoleni y Melone:
 >
-> Estamos evaluando la replicabilidad fuera de muestra de los resultados de *The Unintended
-> Consequences of Rebalancing*. Su muestra empieza en 1997. Nos interesa saber si esa fecha responde
-> a disponibilidad de datos, o a que consideran que el rebalanceo institucional con mandato no era
-> material antes de esa fecha. La distinción decide si el período anterior es un fuera de muestra
-> utilizable o si el mecanismo simplemente no estaba.
+> Leí con interés *The Unintended Consequences of Rebalancing*. Tengo una sola pregunta: la muestra
+> empieza en 1997. ¿Esa fecha responde a la disponibilidad de datos, o a que consideran que el
+> rebalanceo institucional con mandato no era material antes?
 >
 > Gracias por su tiempo.
+
+**Los autores publican en inglés; si se autoriza, sale en inglés y ésta es la traducción literal:**
+
+> Dear Professors Harvey, Mazzoleni and Melone,
+>
+> I read *The Unintended Consequences of Rebalancing* with interest and have a single question: the
+> sample begins in 1997. Is that date driven by data availability, or by a view that mandated
+> institutional rebalancing was not material before then?
+>
+> Thank you for your time.
+
+**Cuenta contra los criterios:** una pregunta, sí. Del proyecto y del dinero, nada. Datos, código,
+colaboración: no se piden. Cuatro renglones.
 
 **Costos:** dinero **cero**. Cartuchos **cero**, no registra ninguna hipótesis. **Tiempo de Roberto:
 leerlo y decidir si sale.** **Regla de la casa: ningún correo sale sin su autorización.**
