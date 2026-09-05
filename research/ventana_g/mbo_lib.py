@@ -33,7 +33,19 @@ def _cargar(path):
             df["order_id"].to_numpy(np.int64))
 
 
-def reconstruir(path, solo_rth=True):
+def reconstruir(path, solo_rth=True, con_tamano=False):
+    """con_tamano=False (por defecto): se anota una fila de BBO solo cuando cambia el PRECIO del
+    mejor bid o ask. Es el comportamiento original y se deja intacto para que las salidas ya
+    commiteadas (mbo_entrada_pasiva.py, microestructura_*) sigan siendo reproducibles.
+
+    con_tamano=True: se anota TAMBIEN cuando cambia el TAMANO al mejor precio. Hace falta para
+    cualquier pregunta sobre el DESBALANCE del libro. Medido en desbalance_diagnostico.py: con la
+    version de solo-precio, el estado del libro tiene 669 ms de antiguedad MEDIANA en el instante de
+    un llenado, y en 67% de los llenados ya era mas viejo que 100 ms -o sea que 'el libro 100 ms
+    antes' y 'el libro ahora' devolvian el mismo estado y la pregunta no se podia contestar-.
+    COSTO: la serie pasa de decenas de miles a millones de filas por dia (una fila por cada mensaje
+    que toca el mejor nivel). Son 5 arrays x 8 bytes por fila: del orden de 100-250 MB por dia. NO
+    entran seis dias juntos en memoria: hay que procesar de a un dia y liberar."""
     ts, act, side, price, size, oid = _cargar(path)
     n = len(ts)
     omap = {}                       # order_id -> [es_bid, price, size]
@@ -129,10 +141,13 @@ def reconstruir(path, solo_rth=True):
             continue
         else:
             continue
-        if (best_bid > 0 and best_ask < 1e17 and
-                (not bid_l or best_bid != bid_l[-1] or best_ask != ask_l[-1])):
-            tc_l.append(ts[i]); bid_l.append(best_bid); ask_l.append(best_ask)
-            bsz_l.append(bids.get(best_bid, 0)); asz_l.append(asks.get(best_ask, 0))
+        if best_bid > 0 and best_ask < 1e17:
+            nb = bids.get(best_bid, 0); na = asks.get(best_ask, 0)
+            cambio = (not bid_l or best_bid != bid_l[-1] or best_ask != ask_l[-1]
+                      or (con_tamano and (nb != bsz_l[-1] or na != asz_l[-1])))
+            if cambio:
+                tc_l.append(ts[i]); bid_l.append(best_bid); ask_l.append(best_ask)
+                bsz_l.append(nb); asz_l.append(na)
 
     tc = np.array(tc_l, np.int64)
     bid = np.array(bid_l); ask = np.array(ask_l)
