@@ -1,0 +1,51 @@
+==================================================================================================
+A1 - TASA DE FALSO POSITIVO DE LA FIRMA DE TIMING, sobre candidatos NULOS
+NO GASTA CARTUCHO. K = 261. La caja sellada no se toca.
+==================================================================================================
+
+   tabla de desenlaces: 759 sesiones, 1,021,939 barras, los dos lados, en 30s
+   CONTROL 0 (la tabla contra J.resolver, 3,000 ranuras al azar de los dos lados):
+      puntos identicos: SI      tenencia identica: SI      barras sin rellenar: 0 (tienen que ser 0: una rotacion cae ahi y envenena todo)
+
+   20,000 candidatos NULOS: grilla de 300 barras con corrimiento al azar sobre 2016-2018,
+   lado por moneda, 200 rotaciones y 200 signos cada uno. Es el mismo C1 mil veces.
+   corridos en 976s
+
+--------------------------------------------------------------------------------------------------
+   LO QUE DA LA NULA
+--------------------------------------------------------------------------------------------------
+   zA (rotacion): media +0.007  desvio 0.990  max +3.72   |   zB (signo): media +0.005  desvio 0.914  max +3.60
+   correlacion zA con zB: +0.910   (si fueran independientes, la firma timing seria casi imposible; si van pegadas, tampoco)
+
+      muestra    zA>=3 sola    FIRMA timing   IC95 arriba   FIRMA direcc.
+        1,000     2 =  0.20%     0 =  0.000%       0.383%     0 =  0.00%
+       20,000    31 =  0.15%     0 =  0.000%       0.019%     7 =  0.03%
+
+   POR QUE SALE ASI: bajo la nula zA y zB miden el MISMO observado contra dos nulas distintas
+   pero centradas en lo mismo. Un candidato nulo que por azar quede alto contra la rotacion
+   tiende a quedar alto tambien contra el signo, y entonces su firma es 'direccional', no
+   'timing'. La firma de timing exige la combinacion RARA: alto contra una y neutro contra la
+   otra. Eso es lo que la hace dificil de sacar por azar.
+
+--------------------------------------------------------------------------------------------------
+   LA PREGUNTA QUE IMPORTA: cuantos de esos llegarian a APROBACION
+--------------------------------------------------------------------------------------------------
+   Sacar firma 'timing' por azar no aprueba nada por si solo. Para que un nulo se APRUEBE
+   declarando 'timing' hace falta que ADEMAS pase el informativo relajado, que sigue siendo
+   min(rotacion, PASIVA) >= 3.00. La pasiva NUNCA se omite: es el segundo cerrojo.
+
+   nulos que pasarian el informativo ESTRICTO (min de las tres):      0/20000 = 0.00%
+   nulos con firma timing que pasarian el RELAJADO (min rot, pasiva): 0/20000 = 0.00%   IC95 [0.00%; 0.02%]
+   costo del arreglo, en falsos positivos: +0 sobre 20000 candidatos
+
+==================================================================================================
+   VEREDICTO DE A1
+==================================================================================================
+   La tasa de firma 'timing' es 0.00%, por DEBAJO de la vara de 0.1%.
+   Y NINGUNO de los 20,000 nulos llega a aprobacion declarando 'timing': la pasiva, que
+   nunca se omite, los frena a todos. El segundo cerrojo alcanza.
+
+   HONESTIDAD SOBRE ESTE NUMERO: con 20,000 candidatos, el limite superior del intervalo es
+   0.02% para la firma y 0.02% para la aprobacion. Una tasa verdadera por debajo de
+   ese limite no queda descartada por esta corrida; lo que queda medido es la cota.
+==================================================================================================
