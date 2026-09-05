@@ -1,5 +1,5 @@
 """
-CONTROLES DEL JUEZ - seis, cada uno con condicion de falla escrita contra un resultado PUBLICADO,
+CONTROLES DEL JUEZ - siete, cada uno con condicion de falla escrita contra un resultado PUBLICADO,
 y todos tienen que poder salir de las dos formas.
 
 NO GASTA CARTUCHO. K = 261. Construir la herramienta no es usarla: los candidatos de aca son
@@ -34,6 +34,13 @@ este mal (me paso con "A domina a TODO capital", que contradecia mi propia curva
       en 2017. ESPERADO: NO SUPERA con la defensa. Y se corre SIN defensa para mostrar que la
       defensa hace falta: ahi el 'informativo' tiene que subir.
       LO HARIA FALLAR: SUPERA o APUESTA con la defensa puesta.
+  C7  VENTAJA SOLO EN TENDENCIAS BAJISTAS (q = 0,75 en sesiones cuyo movimiento neto de las 20
+      anteriores fue negativo, moneda en el resto). Nace de mi propio (c1): al cerrar el eje de
+      direccion medi que las sesiones bajistas caen mayormente en el tercil ALTO de volatilidad
+      (172 de 261 en juez_regimen_direccion.py), asi que una ventaja puramente bajista tiene que
+      aparecer como ventaja concentrada en el regimen alto, no repartida. Es la prueba de que
+      cerrar el eje de direccion NO dejo un agujero. ESPERADO: APUESTA AL REGIMEN.
+      LO HARIA FALLAR: SUPERA (el juez no ve que la ventaja es de un solo regimen).
 
 DEMOSTRACION (no es un control): el contador. C1 juzgado otra vez en el registro donde ya esta
 C2 (misma huella de entradas) tiene que disparar el aviso de familia y subir el umbral.
@@ -120,7 +127,7 @@ def resumen(s):
 
 def main():
     print("=" * 100)
-    print("CONTROLES DEL JUEZ - seis, con condicion de falla contra lo publicado")
+    print("CONTROLES DEL JUEZ - siete, con condicion de falla contra lo publicado")
     print(f"NO GASTA CARTUCHO. K = 261. Permutaciones por nula: {NPERM}. La caja sellada no se toca.")
     print("=" * 100)
     m = J.cargar_mercado()
@@ -206,6 +213,22 @@ def main():
               "entradas por cuatro anios de regimenes distintos y su desvio se dispara: el juez ni "
               "siquiera puede decidir. La nula global es ruido para un candidato de periodo corto; "
               "la defensa no solo cierra el ataque, tambien devuelve la resolucion.")
+
+    # ---------------------------------------------------------------- C7 ventaja solo bajista
+    print(f"\nC7  VENTAJA SOLO EN TENDENCIAS BAJISTAS (mov. neto de las 20 sesiones anteriores < 0; "
+          f"q={Q5}). Esperado APUESTA AL REGIMEN. Falla si SUPERA.")
+    mov = np.array([m["cl"][b - 1] - m["cl"][a] for a, b in zip(m["ini"], m["fin"])])
+    cum = np.concatenate([[0.0], np.cumsum(mov)])
+    dir20 = np.array([np.sign(cum[k] - cum[k - 20]) if k >= 20 else 0.0 for k in range(m["nses"])])
+    baja = dir20[m["ses_de"][idx]] < 0
+    acierta7 = rng.random(len(idx)) < Q5
+    lado7 = np.where(baja, np.where(acierta7, mejor_largo, ~mejor_largo), rng.random(len(idx)) < 0.5)
+    c7c = candidato("C7_solo_bajista", m, idx, lado7)
+    v, s = juzgar("C7", c7c, m, registro_nuevo("c7"))
+    if s: resumen(s)
+    print(f"      slots en sesion bajista: {int(baja.sum())} de {len(idx)} ({baja.mean()*100:.0f}%). "
+          f"La ventaja concentrada ahi tiene que aparecer en el tercil ALTO de volatilidad, no repartida.")
+    resultados["C7"] = (v == "APUESTA AL REGIMEN", v)
 
     # ---------------------------------------------------------------- demostracion: contador
     print("\nDEMOSTRACION (no es control): el contador de familia.")

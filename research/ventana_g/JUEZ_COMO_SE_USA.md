@@ -88,12 +88,15 @@ ganadoras y el sesgo de supervivencia, en vez de evitables.
 - **Error por permutación, nunca binomial.** El binomial se muestra al lado con el factor "ganado".
 - **La resolución**, siempre: ±33% de la ventaja con ~5.000 operaciones. *"No detectó nada"* no es
   *"no hay nada"*.
-- **Por régimen**: terciles de volatilidad de la **sesión anterior** — un eje **conocible al entrar**
-  (verificado en `juez_regimen_exante.py`: el piso va de $5,07 a $105,34 entre el tercil bajo y el
-  alto, 20,8×, monótono). Con ese eje se **juzga**. La volatilidad de la sesión *entera* incluye lo
-  que pasó después de cada entrada; ese eje se llama **hindsight**, sólo **describe** el piso
-  (`juez_regimen.py`, $2,29 a $118,61) y se imprime aparte con ese nombre. La ventaja tiene que
-  aguantar en los tres terciles ex-ante:
+- **Por régimen**: terciles de volatilidad **en puntos básicos** (rango/precio) de la **sesión
+  anterior** — un eje **conocible al entrar** y **comparable entre épocas** (verificado en
+  `juez_regimen_bps.py`: el piso es monótono y el cociente alto/bajo es 13,1× en 5pt:20pt y 4,4× en
+  20pt:10pt, contra la vara de ≥3×; sólo 23% de las sesiones cambian de etiqueta contra el eje en
+  puntos). Se juzga en bps porque un bracket de 20 puntos es 1,1% del precio en 2016 y 0,26% en 2026:
+  en puntos el eje conflacionaría nivel de precio con volatilidad. La volatilidad de la sesión
+  *entera* en puntos incluye lo que pasó después de cada entrada; ese eje se llama **hindsight**,
+  sólo **describe** el piso (`juez_regimen.py`) y se imprime aparte. La ventaja tiene que aguantar
+  en los tres terciles ex-ante:
   positiva y a **≥ 1,5 desvíos** contra la nula de signo dentro del tercil (un tercil sin datos
   —menos de 20 sesiones— cuenta como no verificado y bloquea SUPERA). Ese umbral es permisivo a
   propósito, porque cada tercil tiene un tercio de las sesiones; un tercil nulo lo cruza por ruido
@@ -121,8 +124,10 @@ vale, y no hay código que lo detecte.
 
 ## Controles
 
-`python juez_controles.py` corre seis controles con condición de falla escrita contra resultados
+`python juez_controles.py` corre siete controles con condición de falla escrita contra resultados
 publicados: sin ventaja → NO SUPERA; ventaja inyectada → SUPERA y recupera la magnitud; pocas
-operaciones → NO MEDIBLE; entrada con resultados → RECHAZADA; ventaja en un solo régimen → APUESTA
-AL REGIMEN; el candidato solo-largo de 2017 → NO SUPERA con la defensa puesta (y se muestra sin la
-defensa, para ver que hace falta). Salida en `salida_juez_controles.txt`.
+operaciones → NO MEDIBLE; entrada con resultados → RECHAZADA; ventaja en un solo régimen (tercil alto
+de volatilidad) → APUESTA AL REGIMEN; el candidato solo-largo de 2017 → NO SUPERA con la defensa
+puesta (y se muestra sin la defensa, para ver que hace falta); y ventaja sólo en tendencias bajistas
+→ APUESTA AL REGIMEN, la prueba de que cerrar el eje de dirección no dejó un agujero. Salida en
+`salida_juez_controles.txt`.

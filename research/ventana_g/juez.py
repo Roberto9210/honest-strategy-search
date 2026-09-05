@@ -22,10 +22,11 @@ tan corto que quedan pocas rotaciones independientes (rango / L* = 4 sesiones), 
 
 EL VEREDICTO POR REGIMEN. El piso va de $3,49 a $106 por anio (factor 30). Se calcula la ventaja
 por tercil de volatilidad y se EXIGE que aguante en cada uno. Si aguanta solo en alguno: APUESTA
-AL REGIMEN, categoria propia, no un aprobado con asterisco. EL EJE ES EX-ANTE: la volatilidad de
-la sesion ANTERIOR, conocible al entrar (juez_regimen_exante.py: piso monotono, alto/bajo 20,8x y
-5,1x). La volatilidad de la sesion ENTERA incluye lo que paso despues de entrar; ese eje se llama
-hindsight, DESCRIBE el piso (juez_regimen.py) y se imprime aparte con ese nombre. No se juzga con el.
+AL REGIMEN, categoria propia, no un aprobado con asterisco. EL EJE ES EX-ANTE Y EN PUNTOS BASICOS:
+la volatilidad (rango/precio) de la sesion ANTERIOR, conocible al entrar y comparable entre epocas
+(juez_regimen_bps.py: piso monotono, alto/bajo 13,1x y 4,4x, contra >= 3x). La volatilidad de la
+sesion ENTERA en puntos incluye lo que paso despues de entrar y conflaciona nivel de precio; ese eje
+se llama hindsight, DESCRIBE el piso (juez_regimen.py) y se imprime aparte. No se juzga con el.
 
 EL PERIODO RESERVADO. 2016-2018 es trabajo; 2019 es verificacion. El juez se NIEGA a mostrar 2019
 hasta que el resultado de 2016-2018 este anotado en el registro. Es pre-registro real y
@@ -203,24 +204,31 @@ def cargar_mercado():
     for k, (a, b) in enumerate(zip(ini, fin)):
         fin_de[a:b] = b; ses_de[a:b] = k
     hi = df["high"].to_numpy(float); lo = df["low"].to_numpy(float)
+    clo = df["close"].to_numpy(float)
     rango = hi - lo
-    vol_ses = np.array([rango[a:b].mean() for a, b in zip(ini, fin)])
+    vol_pt = np.array([rango[a:b].mean() for a, b in zip(ini, fin)])
+    px_ses = np.array([clo[a:b].mean() for a, b in zip(ini, fin)])
+    vol_bps = vol_pt / px_ses * 1e4              # rango medio de barra / precio: viaja entre epocas
     # DOS EJES CON NOMBRES DISTINTOS, para que nadie los confunda dentro de seis meses:
-    #   tercil_hindsight - la sesion ENTERA. Incluye lo que paso despues de cada entrada. Sirve
-    #                      para DESCRIBIR el piso (juez_regimen.py). NO se juzga con esto.
-    #   tercil_exante    - la volatilidad de la sesion ANTERIOR, conocible al entrar. Con esto se
-    #                      JUZGA. Verificado en juez_regimen_exante.py: piso monotono, alto/bajo
-    #                      20,8x (5pt:20pt) y 5,1x (20pt:10pt), contra la vara de >= 3x.
-    q33, q66 = np.quantile(vol_ses, [1 / 3, 2 / 3])
-    tercil_hind = np.where(vol_ses <= q33, 0, np.where(vol_ses <= q66, 1, 2))
-    vol_prev = np.concatenate([[np.nan], vol_ses[:-1]])
-    p33, p66 = np.nanquantile(vol_prev, [1 / 3, 2 / 3])
-    tercil_ex = np.where(np.isnan(vol_prev), -1,
-                         np.where(vol_prev <= p33, 0, np.where(vol_prev <= p66, 1, 2)))
-    return dict(cl=df["close"].to_numpy(float), hi=hi, lo=lo, ts=ts, fin_de=fin_de,
+    #   tercil_hindsight - la sesion ENTERA en PUNTOS. Incluye lo que paso despues de cada entrada.
+    #                      Sirve para DESCRIBIR el piso (juez_regimen.py). NO se juzga con esto.
+    #   tercil_exante    - la volatilidad de la sesion ANTERIOR en PUNTOS BASICOS (rango/precio),
+    #                      conocible al entrar. Con esto se JUZGA. El bps es la unidad que viaja
+    #                      entre epocas: un bracket de 20pt es 1,1% del precio en 2016 y 0,26% en
+    #                      2026, no es el mismo instrumento; en puntos el eje conflaciona nivel de
+    #                      precio con volatilidad. Verificado en juez_regimen_bps.py: el factor
+    #                      se sostiene, alto/bajo 13,1x (5pt:20pt) y 4,4x (20pt:10pt), contra >= 3x,
+    #                      y solo 23% de las sesiones cambian de etiqueta contra el eje en puntos.
+    q33, q66 = np.quantile(vol_pt, [1 / 3, 2 / 3])
+    tercil_hind = np.where(vol_pt <= q33, 0, np.where(vol_pt <= q66, 1, 2))
+    prev_bps = np.concatenate([[np.nan], vol_bps[:-1]])
+    p33, p66 = np.nanquantile(prev_bps, [1 / 3, 2 / 3])
+    tercil_ex = np.where(np.isnan(prev_bps), -1,
+                         np.where(prev_bps <= p33, 0, np.where(prev_bps <= p66, 1, 2)))
+    return dict(cl=clo, hi=hi, lo=lo, ts=ts, fin_de=fin_de,
                 ses_de=ses_de, ini=ini, fin=fin, nses=len(ini), n=n, anio_ses=anio[ini],
                 tercil_exante=tercil_ex, tercil_hindsight=tercil_hind,
-                cortes_exante=(float(p33), float(p66)), cortes_hindsight=(float(q33), float(q66)))
+                cortes_exante_bps=(float(p33), float(p66)), cortes_hindsight_pt=(float(q33), float(q66)))
 
 
 def resolver(m, idx, sgn, regla, exceso):
@@ -707,8 +715,8 @@ def _bloque_periodo(A, r, s):
     A(f"   RENTABLE (dolares > 0):                  {r['z_rent']:+.1f} desvios contra {r['z_req']:.2f} exigidos   {'SI' if r['rentable'] else 'no'}")
     A(f"   INFORMATIVO (bate rotacion, signo y pasiva): {r['z_info']:+.1f} desvios contra {r['z_req']:.2f} exigidos   {'SI' if r['informativo'] else 'no'}")
     A("")
-    A(f"   POR REGIMEN, EJE EX-ANTE (tercil de volatilidad de la sesion ANTERIOR, conocible al entrar;")
-    A(f"   nula de signo, que conserva la sesion). Con esto se JUZGA:")
+    A(f"   POR REGIMEN, EJE EX-ANTE (tercil de volatilidad EN BPS -rango/precio- de la sesion ANTERIOR,")
+    A(f"   conocible al entrar y comparable entre epocas; nula de signo, que conserva la sesion). Con esto se JUZGA:")
     A(f"   {'tercil':>8}{'sesiones':>10}{'obs':>10}{'nula':>10}{'ventaja':>10}{'desvios':>9}{'aguanta':>9}")
     for t in r["regimen"]:
         if not t["verificable"]:
