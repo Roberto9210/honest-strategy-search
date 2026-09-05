@@ -1,6 +1,6 @@
 # D17 — La franja de 10 a 60 segundos está muerta por costo. La aritmética antes de los $800.
 
-**VENTANA L. NO MIDE NADA. K sigue en 261.** Aritmética en `scratchpad/cuenta_franja.py`, corrida desde
+**VENTANA L. NO MIDE CANDIDATAS; corre CONTROLES DEL INSTRUMENTO desde el 2026-09-05 (rol ampliado por Roberto, ver `INDICE`). K sigue en 261.** Aritmética en `scratchpad/cuenta_franja.py`, corrida desde
 el archivo. **Dinero: cero. Los $800 de `tbbo` no se gastan, y este documento dice por qué con número.**
 
 **El origen:** en el reporte anterior propuse que la franja entre 10 y 60 segundos —permitida por la
