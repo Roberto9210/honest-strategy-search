@@ -122,6 +122,38 @@ prueba sobre L07, y el control de dejar-una-afuera de `P01` lo detectaría de in
 
 **Lo correcto no es meterla en el grupo: es correrla sola.** Ver `P05`.
 
+## 5-bis. Lo que el paper regala, y lo que esconde
+
+**Dos controles regalados.** El paper publica dos afirmaciones que funcionan como controles con
+condición de falla, y quien mida esto no las tiene que inventar:
+
+1. **Placebo de hora.** *"Este retorno anormal es muy distinto del de cualquier otro momento del
+   día."* → Repetir la regla cambiando de largo a corto en otras horas **tiene que dar
+   aproximadamente cero**. Si da lo mismo, lo que se mide es el método y no el fijación.
+2. **Descarte de la liquidez.** *"Hay mucha liquidez disponible en este momento. La falta de liquidez
+   no explica este retorno."* → Si el efecto vive sólo en los días de volumen más bajo, es un
+   artefacto de horario delgado y contradice al paper.
+
+Los dos están escritos como controles en [P05](P05_L07_sola.md).
+
+**Y una trampa de tabla, que hay que dejar señalada donde alguien la va a buscar.**
+
+**La Tabla 5 trae coeficientes de calendario grandes y significativos al 1 % para los días 5 y 10 y
+para el fin de mes** —del orden de 0,046 a 0,101 según el banco y la especificación—. **Es la tabla
+equivocada.**
+
+Su variable dependiente es **la brecha entre el precio de fijación que anuncia el banco y el precio
+de mercado**, o sea **el margen que el banco se cobra**. No es el movimiento del precio de mercado,
+que es lo que se puede operar.
+
+| lo que está tabulado con números | lo que sólo está descrito |
+|---|---|
+| el efecto *gotobi* sobre **la ganancia del banco** | el efecto *gotobi* sobre **el precio de mercado** |
+
+**Quien busque la magnitud del efecto de calendario va a encontrar la Tabla 5 primero, y son
+coeficientes de otra cosa.** El único número publicado para el movimiento de precio es el **1,8 pb**
+de la sección 5.2, y es un promedio de **todos los días**, no de los *gotobi*.
+
 ## 6. Mecanismo declarado
 
 **Desbalance de órdenes de clientes, estructural y predecible en su signo.**
