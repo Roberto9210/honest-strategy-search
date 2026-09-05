@@ -1,0 +1,52 @@
+====================================================================================================
+TAREA 5 - order_id en los seis dias, y que son los mensajes 'N'
+NO GASTA CARTUCHO. K = 261. Dinero: $0. La caja sellada no se toca.
+====================================================================================================
+
+   (a) order_id DISTINTO DE CERO, por accion y por dia. 'T' es la que preguntaba la VENTANA L.
+
+                dia    mensajes        A        C        M        F        T        N        R
+             B/bajo   3,180,744   100.0%   100.0%   100.0%   100.0%   100.0%     0.0%     0.0%
+            B/medio   5,342,691   100.0%   100.0%   100.0%   100.0%   100.0%     0.0%     0.0%
+             B/alto   7,552,918   100.0%   100.0%   100.0%   100.0%   100.0%     0.0%     0.0%
+             A/bajo   8,359,691   100.0%   100.0%   100.0%   100.0%   100.0%     0.0%     0.0%
+            A/medio   9,654,846   100.0%   100.0%   100.0%   100.0%   100.0%     0.0%     0.0%
+          A/altoREL  12,115,743   100.0%   100.0%   100.0%   100.0%   100.0%     0.0%     0.0%
+
+----------------------------------------------------------------------------------------------------
+   (a) LA RESPUESTA SOBRE 'T', sobre los seis dias
+----------------------------------------------------------------------------------------------------
+                B/bajo     116,807 mensajes T,      2 con order_id = 0
+               B/medio     203,215 mensajes T,      2 con order_id = 0
+                B/alto     306,827 mensajes T,      2 con order_id = 0
+                A/bajo     324,208 mensajes T,      1 con order_id = 0
+               A/medio     379,529 mensajes T,      1 con order_id = 0
+             A/altoREL     434,919 mensajes T,      1 con order_id = 0
+
+   TOTAL: 1,765,505 mensajes T, 9 con order_id cero (0.0005%).
+   CONFIRMADO EN LOS SEIS DIAS: los mensajes T traen order_id distinto de cero.
+   Las siete caracteristicas por llenado de la VENTANA L quedan HABILITADAS para el
+   conjunto entero, no solo para el dia que mire antes.
+   ALCANCE: seis dias, un simbolo (ES.n.0), un dataset (GLBX.MDP3), dos epocas (2017-2019 y
+   2026). Sigue sin ser una afirmacion sobre el esquema mbo en general.
+
+----------------------------------------------------------------------------------------------------
+   (b) QUE SON LOS MENSAJES 'N'
+----------------------------------------------------------------------------------------------------
+                dia       n   oid=0  precio NaN  segundos distintos   lados
+             B/bajo     629     629         629                 570   {np.str_('N'): 629}
+            B/medio    1068    1068        1068                 954   {np.str_('N'): 1068}
+             B/alto       1       1           1                   1   {np.str_('N'): 1}
+             A/bajo     509     509         509                 466   {np.str_('N'): 509}
+            A/medio     638     638         638                 587   {np.str_('N'): 638}
+          A/altoREL     830     830         830                 757   {np.str_('N'): 830}
+
+   LO QUE SE PUEDE DECIR CON EL DATO, sin inventar: los N vienen con order_id = 0, precio
+   NaN y lado 'N' (ninguno). No tocan el libro -no hay orden que agregar, sacar o
+   modificar- y por eso caer en el `else: continue` de reconstruir() es el tratamiento
+   CORRECTO, no un descuido. Son mensajes administrativos del canal.
+   LO QUE NO PUEDO CITAR: la definicion oficial. No tengo la documentacion de Databento a
+   mano en este entorno y NO la voy a inferir del nombre. Queda como: verificado que no
+   afectan la reconstruccion, sin confirmar que significan. Cerrarlo es leer la pagina de
+   'MBO action' de Databento, cuesta cero y no lo hice.
+====================================================================================================
