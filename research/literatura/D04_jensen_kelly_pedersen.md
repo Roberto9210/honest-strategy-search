@@ -1,6 +1,6 @@
 # D04 — Jensen, Kelly y Pedersen: ¿aplica su marco al nuestro?
 
-**VENTANA L. NO MIDE NADA. K sigue en 261.**
+**VENTANA L. NO MIDE CANDIDATAS; corre CONTROLES DEL INSTRUMENTO desde el 2026-09-05 (rol ampliado por Roberto, ver `INDICE`). K sigue en 261.**
 
 **Jensen, Theis Ingerslev; Kelly, Bryan; Pedersen, Lasse Heje (2023). "Is There a Replication Crisis
 in Finance?"** *Journal of Finance* 78(5), 2465-2518.
