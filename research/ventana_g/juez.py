@@ -78,6 +78,15 @@ EXCESO_STOP = {10: 0.722, 20: 0.982}            # media_exceso.py, media del exc
 # trataba como CERO; ahora se cobra por operacion segun el tercil de la sesion de entrada.
 DESLIZAMIENTO_ENTRADA = {0: 0.1267, 1: 0.1334, 2: 0.1330}
 DESLIZAMIENTO_ENTRADA_ERROR = 0.006             # dispersion entre los tres terciles/dias, en puntos
+# MODO PASIVO por tercil ex-ante: en vez de cruzar y pagar el medio-spread, se descansa en el mejor
+# precio. Calibrado en mbo_entrada_pasiva.py sobre ENTRADAS AL AZAR (dias B 2017-2019, muerte 1 tick,
+# latencia 250 ms). MARKOUT_PASIVO = lo que sobrevive del medio-spread a 30 s (astilla positiva);
+# LLENADO_PASIVO = fraccion de senales que se llenan (el resto se pierde). ADVERTENCIA CLAVE: esto es
+# de entradas al azar; para un candidato DIRECCIONAL el markout puede darse vuelta (sus llenados estan
+# seleccionados por su propia senal). No vale hasta medirlo sobre el candidato real (paso b, hook
+# medir_pasivo_candidato, sin correr).
+MARKOUT_PASIVO = {0: 0.0392, 1: 0.0073, 2: 0.0697}     # pt, sobrevive a 30 s
+LLENADO_PASIVO = {0: 0.477, 1: 0.514, 2: 0.469}        # fraccion que se llena
 O_SOBREPASO = 0.0642                            # sesgo_marco.py
 O_ERROR_REL = 0.076                             # +-7,6% entre corridas
 SPAN_CARACTERIZADO = (20.0, 35.0)               # (T+S) donde el sesgo esta medido
@@ -234,10 +243,14 @@ def cargar_mercado():
     p33, p66 = np.nanquantile(prev_bps, [1 / 3, 2 / 3])
     tercil_ex = np.where(np.isnan(prev_bps), -1,
                          np.where(prev_bps <= p33, 0, np.where(prev_bps <= p66, 1, 2)))
-    # deslizamiento de entrada por sesion, en puntos, segun el tercil ex-ante (medio para la primera)
+    # deslizamiento de entrada (modo cruce) y markout/llenado (modo pasivo) por sesion, en puntos,
+    # segun el tercil ex-ante (medio para la primera sesion sin previa)
     slip_ses_pt = np.array([DESLIZAMIENTO_ENTRADA.get(int(t), DESLIZAMIENTO_ENTRADA[1])
                             for t in tercil_ex])
+    mk_ses_pt = np.array([MARKOUT_PASIVO.get(int(t), MARKOUT_PASIVO[1]) for t in tercil_ex])
+    fi_ses = np.array([LLENADO_PASIVO.get(int(t), LLENADO_PASIVO[1]) for t in tercil_ex])
     return dict(cl=clo, hi=hi, lo=lo, ts=ts, fin_de=fin_de, slip_ses_pt=slip_ses_pt,
+                mk_ses_pt=mk_ses_pt, fi_ses=fi_ses,
                 ses_de=ses_de, ini=ini, fin=fin, nses=len(ini), n=n, anio_ses=anio[ini],
                 tercil_exante=tercil_ex, tercil_hindsight=tercil_hind,
                 cortes_exante_bps=(float(p33), float(p66)), cortes_hindsight_pt=(float(q33), float(q66)))
@@ -376,7 +389,7 @@ def z_requerido(variantes):
 # =========================================================================================
 # 5. El juicio de UN periodo
 # =========================================================================================
-def juzgar_periodo(cand, m, idx, sgn, etiqueta, npermuta=NPERM, rotacion_global=False):
+def juzgar_periodo(cand, m, idx, sgn, etiqueta, npermuta=NPERM, rotacion_global=False, pasivo=False):
     """Juzga las operaciones (idx, sgn) que caen en un periodo. Devuelve el diccionario del
     veredicto. rotacion_global=True quita la defensa del rango (SOLO para el control que
     demuestra que la defensa hace falta; nunca para juzgar)."""
@@ -421,9 +434,17 @@ def juzgar_periodo(cand, m, idx, sgn, etiqueta, npermuta=NPERM, rotacion_global=
                       "de stop que restar.")
 
     def dolares(pts, ii):
-        # comision (c1) + sesgo de sobrepaso (sesgo_pt) + deslizamiento de ENTRADA por regimen de la
-        # sesion de cada operacion (slip_ses_pt): antes era cero, ahora es el medio-spread medido.
-        slip = m["slip_ses_pt"][m["ses_de"][ii]] * punto * contratos
+        # comision (c1) + sesgo de sobrepaso (sesgo_pt) + entrada por regimen de cada operacion.
+        # MODO CRUCE: se paga el medio-spread (slip). MODO PASIVO: en vez de pagarlo se captura el
+        # markout medido (astilla positiva) y solo se llena una fraccion fi de las senales (el resto
+        # no opera, no cobra comision); calibrado sobre entradas al azar. Aplica igual al observado y
+        # a las dos nulas, asi que el VEREDICTO no cambia de modo -solo el nivel del piso-.
+        t = m["ses_de"][ii]
+        if pasivo:
+            mk = m["mk_ses_pt"][t] * punto * contratos
+            fi = m["fi_ses"][t]
+            return fi * ((pts - sesgo_pt) * punto * contratos - c1 + mk)
+        slip = m["slip_ses_pt"][t] * punto * contratos
         return (pts - sesgo_pt) * punto * contratos - c1 - slip
 
     # --- rango, sesiones, rotaciones independientes ----------------------------------------
@@ -596,13 +617,35 @@ def veredicto_de(r, reg, variantes_total):
 # =========================================================================================
 # 6. El juicio completo: puerta, caja, periodos, registro
 # =========================================================================================
+def medir_pasivo_candidato(cand, m):
+    """HOOK (paso b, sin implementar a proposito). Aca ira el sim FIFO de mbo_lib corrido sobre las
+    ENTRADAS REALES del candidato: para cada senal, colocar la limite pasiva, seguir la cola, y medir
+    la rama LLENADO contra la rama NO-LLENADO con SU senal -no al azar-. Eso reemplazaria las
+    constantes MARKOUT_PASIVO/LLENADO_PASIVO (calibradas al azar) por las del candidato, y recien ahi
+    el modo pasivo deja de ser una cota optimista. No se corre contra nada inventado."""
+    raise NoMedible(
+        "El modo pasivo POR CANDIDATO no esta implementado (paso b): necesita el sim FIFO sobre las "
+        "entradas reales del candidato (mbo_lib.reconstruir + seguimiento de cola), no una calibracion "
+        "de entradas al azar. No se corre contra un candidato inventado. Hasta que exista un candidato "
+        "real, el modo pasivo usa la calibracion al azar y su piso es una COTA OPTIMISTA.")
+
+
 def juzgar(cand, m, permitir_caja=False, prerregistro=None, verificar=False, npermuta=NPERM,
-           registro=REGISTRO_DEFECTO, anotar_=True, rotacion_global=False):
+           registro=REGISTRO_DEFECTO, anotar_=True, rotacion_global=False, pasivo=False):
     validar(cand)
     hc = hash_candidato(cand)
     tss = pd.to_datetime([o["ts"] for o in cand["operaciones"]])
     tss = tss.tz_localize(None) if tss.tz is not None else tss
-    salida = dict(nombre=cand["nombre"], hash=hc[:16], avisos=[], no_cubre=[], periodos={})
+    salida = dict(nombre=cand["nombre"], hash=hc[:16], avisos=[], no_cubre=[], periodos={},
+                  pasivo=pasivo)
+    if pasivo:
+        salida["avisos"].append(
+            "MODO PASIVO: la entrada no cruza el spread, descansa en el mejor precio. Calibrado sobre "
+            "ENTRADAS AL AZAR (markout +0,01 a +0,07 pt, llenado ~47-51%; mbo_entrada_pasiva.py). "
+            "PARA UN CANDIDATO DIRECCIONAL EL MARKOUT PUEDE DARSE VUELTA: sus llenados estan "
+            "seleccionados por su propia senal, y podria llenar sus perdedores y perderse sus "
+            "ganadores. NO VALE hasta medirlo sobre el candidato real (medir_pasivo_candidato, sin "
+            "correr). Hasta entonces el piso en modo pasivo es una COTA OPTIMISTA.")
 
     # --- la caja sellada ----------------------------------------------------------------------
     en_caja = int(((tss >= pd.Timestamp(CAJA[0])) & (tss <= pd.Timestamp(CAJA[1]))).sum())
@@ -665,7 +708,7 @@ def juzgar(cand, m, permitir_caja=False, prerregistro=None, verificar=False, npe
         raise NoMedible("El candidato no tiene operaciones en el periodo de TRABAJO (2016-2018). "
                         "Sin resultado de trabajo anotado no se muestra el de verificacion (2019).")
     r = juzgar_periodo(cand, m, idx[mk_t], sgn_all[mk_t], "TRABAJO 2016-2018", npermuta,
-                       rotacion_global)
+                       rotacion_global, pasivo)
     reg = regimen(r, m)
     v, z_req, rent, info = veredicto_de(r, reg, variantes_total)
     r.update(veredicto=v, z_req=z_req, rentable=rent, informativo=info, regimen=reg,
@@ -697,7 +740,7 @@ def juzgar(cand, m, permitir_caja=False, prerregistro=None, verificar=False, npe
     else:
         try:
             rv = juzgar_periodo(cand, m, idx[mk_v], sgn_all[mk_v], "VERIFICACION 2019", npermuta,
-                                rotacion_global)
+                                rotacion_global, pasivo)
             regv = regimen(rv, m)
             vv, zq, rn, inf = veredicto_de(rv, regv, variantes_total)
             rv.update(veredicto=vv, z_req=zq, rentable=rn, informativo=inf, regimen=regv,
@@ -770,7 +813,8 @@ def informe(s):
     L = []; A = L.append
     r = s["periodos"]["trabajo"]
     A("=" * 96)
-    A(f"VEREDICTO (TRABAJO 2016-2018): {r['veredicto']}     candidato: {s['nombre']}   hash {s['hash']}")
+    A(f"VEREDICTO (TRABAJO 2016-2018): {r['veredicto']}     candidato: {s['nombre']}   hash {s['hash']}"
+      f"   [MODO {'PASIVO' if s.get('pasivo') else 'CRUCE'}]")
     A("=" * 96)
     A(f"ESTE NUMERO SUPONE QUE SE PROBARON {s['variantes_total']} VARIANTES ANTES DE LLEGAR ACA "
       f"({s['variantes']} declaradas + {len(s['hermanos'])} de la misma familia en el registro).")
@@ -834,16 +878,19 @@ def informe(s):
 
 def main(argv):
     if len(argv) < 2:
-        print("uso: python juez.py <candidato.json> [--verificar] [--caja --prerregistro <archivo>]")
+        print("uso: python juez.py <candidato.json> [--verificar] [--pasivo] "
+              "[--caja --prerregistro <archivo>]")
         return 2
     ruta = argv[1]
     permitir = "--caja" in argv
     verificar = "--verificar" in argv
+    pasivo = "--pasivo" in argv
     pre = argv[argv.index("--prerregistro") + 1] if "--prerregistro" in argv else None
     cand = json.load(open(ruta, encoding="utf-8"))
     try:
         m = cargar_mercado()
-        s = juzgar(cand, m, permitir_caja=permitir, prerregistro=pre, verificar=verificar)
+        s = juzgar(cand, m, permitir_caja=permitir, prerregistro=pre, verificar=verificar,
+                   pasivo=pasivo)
     except Rechazo as e:
         print("=" * 96); print(e); print("=" * 96)
         return 1

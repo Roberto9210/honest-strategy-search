@@ -71,6 +71,7 @@ Q2, Q5 = 0.62, 0.75
 # El hecho de que a q=0,75 el costo solo lo tumbe queda anotado en el reporte.
 Q7 = 0.90
 NPERM = int(os.environ.get("JUEZ_NPERM", "200"))
+MODO_PASIVO = False              # lo togglea correr(); el helper juzgar() lo inyecta en J.juzgar
 SEMILLA = 20260904
 
 
@@ -104,6 +105,7 @@ def candidato(nombre, m, idx, largo_mask, variantes=1, familia=None):
 
 def juzgar(nombre, cand, m, reg, **kw):
     t0 = time.time()
+    kw.setdefault("pasivo", MODO_PASIVO)
     try:
         s = J.juzgar(cand, m, npermuta=NPERM, registro=reg, **kw)
         v = s["periodos"]["trabajo"]["veredicto"]
@@ -135,12 +137,14 @@ def resumen(s):
           f"lo frena: {', '.join(frena) if frena else 'nada (bate las tres)'}")
 
 
-def main():
+def correr(pasivo, m):
+    global MODO_PASIVO
+    MODO_PASIVO = pasivo
     print("=" * 100)
-    print("CONTROLES DEL JUEZ - siete, con condicion de falla contra lo publicado")
+    print(f"CONTROLES DEL JUEZ - siete, con condicion de falla contra lo publicado   "
+          f"[MODO {'PASIVO' if pasivo else 'CRUCE'}]")
     print(f"NO GASTA CARTUCHO. K = 261. Permutaciones por nula: {NPERM}. La caja sellada no se toca.")
     print("=" * 100)
-    m = J.cargar_mercado()
     rng = np.random.default_rng(SEMILLA)
     idx = grilla(m, [2016, 2017, 2018])
     pL, pS = ambos_lados(m, idx)
@@ -174,7 +178,15 @@ def main():
         rec = ventB / realizada if realizada else float("nan")
         print(f"      inyectada REALIZADA {realizada:+.2f}/sesion   recuperada: signo {ventB:+.2f} "
               f"({rec:.0%})   rotacion {ventA:+.2f} ({ventA/realizada:.0%})")
-        ok2 = (v == "SUPERA") and (0.67 <= rec <= 1.33)
+        if MODO_PASIVO:
+            # en pasivo los dolares se escalan por el llenado (~0,48), asi que la recuperacion cae a
+            # ~fill*100% POR CONSTRUCCION; la banda de magnitud es una calibracion de modo CRUCE. Lo
+            # que importa es el veredicto (SUPERA), que se mantiene.
+            ok2 = (v == "SUPERA")
+            print(f"      (modo pasivo: la recuperacion ~{rec:.0%} refleja el escalado por llenado "
+                  f"~{np.mean([J.LLENADO_PASIVO[k] for k in (0,1,2)]):.0%}, no un fallo; vale el veredicto)")
+        else:
+            ok2 = (v == "SUPERA") and (0.67 <= rec <= 1.33)
     resultados["C2"] = (ok2, v)
 
     # ---- barrido de TAMANO en la cadena (tu (b)): P(pasar) para el MISMO flujo de C2 a 1/4/10/40
@@ -274,10 +286,33 @@ def main():
     n_ok = sum(1 for ok, _ in resultados.values() if ok)
     for k, (ok, v) in resultados.items():
         print(f"   {k}: {'PASADO' if ok else 'FALLADO'}   (veredicto: {v})")
-    print(f"\n   {n_ok} de {len(resultados)} controles PASADOS.")
+    print(f"\n   {n_ok} de {len(resultados)} controles PASADOS.  [MODO {'PASIVO' if pasivo else 'CRUCE'}]")
     print("=" * 100)
-    if n_ok < len(resultados):
-        raise SystemExit("ALGUN CONTROL FALLO")
+    return resultados
+
+
+def main():
+    m = J.cargar_mercado()
+    res_cruce = correr(False, m)
+    res_pas = correr(True, m)
+    print("\n" + "#" * 100)
+    print("COMPARACION DE MODOS - el veredicto de cada control NO puede cambiar solo por el modo.")
+    print("LO HARIA FALLAR: que un control cambie de veredicto entre CRUCE y PASIVO (el modo regalaria plata).")
+    print("#" * 100)
+    print(f"   {'control':>10}{'CRUCE':>26}{'PASIVO':>26}{'igual?':>9}")
+    igual_todos = True
+    for k in res_cruce:
+        vc = res_cruce[k][1]; vp = res_pas[k][1]
+        ig = vc == vp
+        igual_todos &= ig
+        print(f"   {k:>10}{vc:>26}{vp:>26}{('SI' if ig else 'CAMBIO'):>9}")
+    nc = sum(1 for ok, _ in res_cruce.values() if ok)
+    npa = sum(1 for ok, _ in res_pas.values() if ok)
+    print(f"\n   controles pasados: CRUCE {nc}/7   PASIVO {npa}/7")
+    print(f"   veredictos identicos entre modos: {'SI - el modo no regala plata' if igual_todos else 'NO - un control cambio'}")
+    print("#" * 100)
+    if nc < 7 or npa < 7 or not igual_todos:
+        raise SystemExit("FALLO: algun control fallo o cambio de veredicto entre modos")
 
 
 if __name__ == "__main__":

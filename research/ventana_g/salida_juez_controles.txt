@@ -1,5 +1,5 @@
 ====================================================================================================
-CONTROLES DEL JUEZ - siete, con condicion de falla contra lo publicado
+CONTROLES DEL JUEZ - siete, con condicion de falla contra lo publicado   [MODO CRUCE]
 NO GASTA CARTUCHO. K = 261. Permutaciones por nula: 200. La caja sellada no se toca.
 ====================================================================================================
 
@@ -78,5 +78,107 @@ DEMOSTRACION (no es control): el contador de familia.
    C6: PASADO   (veredicto: NO SUPERA)
    C7: PASADO   (veredicto: APUESTA AL REGIMEN)
 
-   7 de 7 controles PASADOS.
+   7 de 7 controles PASADOS.  [MODO CRUCE]
 ====================================================================================================
+====================================================================================================
+CONTROLES DEL JUEZ - siete, con condicion de falla contra lo publicado   [MODO PASIVO]
+NO GASTA CARTUCHO. K = 261. Permutaciones por nula: 200. La caja sellada no se toca.
+====================================================================================================
+
+   grilla 2016-2018: 3,764 ranuras cada 300 barras, celda 5pt:20pt, 1 ES.
+
+C1  SIN VENTAJA. Esperado NO SUPERA. Falla si SUPERA o APUESTA.
+   [C1] NO SUPERA   (7s)
+      obs +17.36  nulaA -2.83 (vent +20.19, +1.5sd)  nulaB -5.80 (vent +23.16, +1.7sd)  pasiva -1.30 (+1.4sd)  sd 13.71  z_req 3.00
+      regimen: bajo=+34.2(+1.9sd)no  medio=+17.3(+0.7sd)no  alto=+16.5(+0.7sd)no
+      cadena eval x fondeada (10 micros): P(pasa eval) 0.063  P(pago) 0.000  P(se acaba el rango) 0.003  E sesiones 7  E $/intento -83
+      informativo = min(rotacion, signo, pasiva) = +1.4sd; lo frena: rotacion en rango, signo, pasiva
+
+C2  VENTAJA INYECTADA q=0.62. Esperado SUPERA y recuperacion dentro de +-33% de la realizada.
+   [C2] SUPERA   (7s)
+      obs +116.69  nulaA +2.12 (vent +114.57, +8.0sd)  nulaB -6.80 (vent +123.49, +8.6sd)  pasiva +2.25 (+8.0sd)  sd 14.34  z_req 3.00
+      regimen: bajo=+101.6(+6.2sd)SI  medio=+142.5(+6.6sd)SI  alto=+127.2(+5.0sd)SI
+      cadena eval x fondeada (10 micros): P(pasa eval) 0.277  P(pago) 0.062  P(se acaba el rango) 0.004  E sesiones 11  E $/intento +1
+      informativo = min(rotacion, signo, pasiva) = +8.0sd; lo frena: nada (bate las tres)
+      inyectada REALIZADA +255.44/sesion   recuperada: signo +123.49 (48%)   rotacion +114.57 (45%)
+      (modo pasivo: la recuperacion ~48% refleja el escalado por llenado ~49%, no un fallo; vale el veredicto)
+   BARRIDO DE TAMANO (mismo flujo de C2, cadena Tradeify 50K), P(pasar) por micro-equiv:
+        micros  P(pasa ev)   P(pago)   E ses  E $/intento
+             1       0.410     0.000     283          -83
+             4       0.029     0.000      34          -83
+            10       0.277     0.062      11           +1
+            40       0.000     0.000       2          -83
+      -> el tamano es una decision del candidato tan importante como su ventaja: el mismo
+         flujo va de casi-nunca-cobra a cobrar seguido segun cuantos contratos ponga.
+
+C3  POCAS OPERACIONES (80). Esperado NO MEDIBLE. Falla si da un numero.
+   [C3] NO MEDIBLE   (0s)
+      motivo: [TRABAJO 2016-2018] 80 operaciones. El juez exige al menos 200 para que el error de permutacion signifique algo. Con menos, cualquier numero seria rui
+
+C4  ENTRADA CON RESULTADOS. Esperado RECHAZADA. Falla si se juzga.
+   [C4] RECHAZADA   (0s)
+      motivo: ENTRADA RECHAZADA. El campo 'pnl' aparece en candidato.operaciones[0] y es un RESULTADO.
+
+C5  VENTAJA SOLO EN EL TERCIL ALTO EX-ANTE (sesion anterior; q=0.75). Esperado APUESTA AL REGIMEN.
+   [C5] APUESTA AL REGIMEN   (7s)
+      obs +73.48  nulaA +0.56 (vent +72.92, +4.5sd)  nulaB -8.42 (vent +81.90, +5.1sd)  pasiva +0.46 (+4.6sd)  sd 16.04  z_req 3.00
+      regimen: bajo=-22.2(-1.3sd)no  medio=+7.6(+0.3sd)no  alto=+273.9(+10.9sd)SI
+      cadena eval x fondeada (10 micros): P(pasa eval) 0.196  P(pago) 0.082  P(se acaba el rango) 0.024  E sesiones 9  E $/intento +27
+      informativo = min(rotacion, signo, pasiva) = +4.5sd; lo frena: nada (bate las tres)
+
+C6  ATAQUE A1: solo-largo restringido a 2017. Esperado NO SUPERA con la defensa.
+   [C6 con defensa] NO SUPERA   (2s)
+      obs +99.53  nulaA +102.87 (vent -3.34, -0.2sd)  nulaB +8.89 (vent +90.64, +5.1sd)  pasiva +160.13 (-3.4sd)  sd 17.84  z_req 3.00
+      regimen: bajo=+68.4(+3.5sd)SI  medio=+151.8(+3.8sd)SI  alto=SIN DATOS
+      cadena eval x fondeada (10 micros): P(pasa eval) 0.299  P(pago) 0.068  P(se acaba el rango) 0.008  E sesiones 8  E $/intento +8
+      informativo = min(rotacion, signo, pasiva) = -3.4sd; lo frena: rotacion en rango, pasiva
+      LECTURA: la nula de signo SOLA lo aprobaria a +5.1sd. Lo frenan la rotacion DENTRO del rango y la pasiva: la defensa de A1 es lo que actua.
+   [C6 SIN defensa (rotacion global, solo para ver que hace falta)] NO SUPERA   (2s)
+      obs +99.53  nulaA +42.16 (vent +57.38, +1.4sd)  nulaB +8.89 (vent +90.64, +2.2sd)  pasiva +160.13 (-1.5sd)  sd 40.63  z_req 3.00
+      regimen: bajo=+68.4(+3.5sd)SI  medio=+151.8(+3.8sd)SI  alto=SIN DATOS
+      cadena eval x fondeada (10 micros): P(pasa eval) 0.299  P(pago) 0.068  P(se acaba el rango) 0.008  E sesiones 8  E $/intento +8
+      informativo = min(rotacion, signo, pasiva) = -1.5sd; lo frena: rotacion en rango, signo, pasiva
+
+C7  VENTAJA SOLO EN TENDENCIAS BAJISTAS (mov. neto de las 20 sesiones anteriores < 0; q=0.9). Esperado APUESTA AL REGIMEN. Falla si SUPERA.
+   [C7] APUESTA AL REGIMEN   (7s)
+      obs +115.90  nulaA +1.29 (vent +114.60, +6.8sd)  nulaB -7.77 (vent +123.67, +7.4sd)  pasiva +1.12 (+6.8sd)  sd 16.79  z_req 3.00
+      regimen: bajo=+27.0(+1.6sd)no  medio=+85.2(+3.7sd)SI  alto=+269.7(+11.1sd)SI
+      cadena eval x fondeada (10 micros): P(pasa eval) 0.278  P(pago) 0.174  P(se acaba el rango) 0.013  E sesiones 8  E $/intento +152
+      informativo = min(rotacion, signo, pasiva) = +6.8sd; lo frena: nada (bate las tres)
+      slots en sesion bajista: 983 de 3764 (26%). La ventaja concentrada ahi tiene que aparecer en el tercil ALTO de volatilidad, no repartida.
+
+DEMOSTRACION (no es control): el contador de familia.
+   [C2 en registro limpio] SUPERA   (7s)
+   [C1 despues, misma huella] NO SUPERA   (7s)
+      hermanos detectados: 1   variantes totales: 2   umbral exigido: 3.21 desvios (base 3.0)
+         C2_ventaja_inyectada  SUPERA  (huella 100% a 30 barras)
+      cadena antes de alterar: OK   despues de alterar: ROTA en linea 3
+
+====================================================================================================
+   C1: PASADO   (veredicto: NO SUPERA)
+   C2: PASADO   (veredicto: SUPERA)
+   C3: PASADO   (veredicto: NO MEDIBLE)
+   C4: PASADO   (veredicto: RECHAZADA)
+   C5: PASADO   (veredicto: APUESTA AL REGIMEN)
+   C6: PASADO   (veredicto: NO SUPERA)
+   C7: PASADO   (veredicto: APUESTA AL REGIMEN)
+
+   7 de 7 controles PASADOS.  [MODO PASIVO]
+====================================================================================================
+
+####################################################################################################
+COMPARACION DE MODOS - el veredicto de cada control NO puede cambiar solo por el modo.
+LO HARIA FALLAR: que un control cambie de veredicto entre CRUCE y PASIVO (el modo regalaria plata).
+####################################################################################################
+      control                     CRUCE                    PASIVO   igual?
+           C1                 NO SUPERA                 NO SUPERA       SI
+           C2                    SUPERA                    SUPERA       SI
+           C3                NO MEDIBLE                NO MEDIBLE       SI
+           C4                 RECHAZADA                 RECHAZADA       SI
+           C5        APUESTA AL REGIMEN        APUESTA AL REGIMEN       SI
+           C6                 NO SUPERA                 NO SUPERA       SI
+           C7        APUESTA AL REGIMEN        APUESTA AL REGIMEN       SI
+
+   controles pasados: CRUCE 7/7   PASIVO 7/7
+   veredictos identicos entre modos: SI - el modo no regala plata
+####################################################################################################

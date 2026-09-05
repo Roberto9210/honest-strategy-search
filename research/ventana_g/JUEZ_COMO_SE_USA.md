@@ -23,6 +23,17 @@ Un juez que siempre da un número es peor que ninguno.
     cd research/ventana_g
     python juez.py candidato.json
     python juez.py candidato.json --verificar          # segunda corrida: muestra 2019
+    python juez.py candidato.json --pasivo             # entrada pasiva en vez de cruzar el spread
+
+**Modo entrada (`--pasivo`).** Por defecto el juez cobra la entrada por **mercado** (cruzás el spread,
+~+0,13 pt = ~$6,5/mini). Con `--pasivo` la entrada **descansa en el mejor precio**: en vez del
+medio-spread se aplica el markout medido (astilla positiva ~+0,04 pt) y sólo se llena ~47-51% de las
+señales. El piso de referencia baja fuerte (de +$78/+$93 a +$15/+$32 por sesión). **Pero el modo
+imprime, en el veredicto, una advertencia obligatoria:** está calibrado sobre **entradas al azar**; para
+un candidato **direccional** el markout puede darse vuelta (sus llenados están seleccionados por su
+propia señal), así que el piso pasivo es una **cota optimista** hasta medirlo sobre el candidato real
+(el hook `medir_pasivo_candidato`, el paso que sigue, sin correr todavía). El modo **no cambia el
+veredicto** de ningún control: mueve el observado y las nulas juntos, sólo baja el nivel del piso.
 
 **El período reservado.** 2016-2018 es trabajo, 2019 es verificación. La primera corrida juzga
 2016-2018 y **anota** el veredicto en el registro; el resultado de 2019 se **retiene**. Sólo una
