@@ -1,6 +1,6 @@
 # A06 — Frases mías que generalizan más allá de lo medido, con su condición de falla
 
-**VENTANA L. NO MIDE NADA. K sigue en 261.**
+**VENTANA L. NO MIDE CANDIDATAS; corre CONTROLES DEL INSTRUMENTO desde el 2026-09-05 (rol ampliado por Roberto, ver `INDICE`). K sigue en 261.**
 
 **Regla nueva de la casa, adoptada de la VENTANA G:** *una frase que generaliza más allá de lo que se
 midió es un error del mismo tipo que un número mal calculado, y tiene que llevar su condición de falla
