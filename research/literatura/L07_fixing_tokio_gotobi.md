@@ -2,6 +2,8 @@
 
 **VENTANA L. Ficha de literatura. NO MEDIDA. No gasta cartucho, K sigue en 261.**
 
+> **ESTADO 2026-09-05: NO muere por reglamento —6J está en la tabla de tarifas de la firma, $6,20 ida y vuelta—. Sigue BLOQUEADA por la plomería del juez que G declaró NO IMPLEMENTADA con tercer candado. Limitación de medición, no prohibición de operar. Pendiente además la fila 11 de `F16`: si se puede operar en la sesión de la tarde-noche (su ventana es 19:50-21:00 del este). Ver [R03](R03_cierre_por_reglamento.md) ejecución.**
+
 > **DESACTUALIZADA en un punto:** esta ficha dice grado **A−**. Tras corregir la contaminación de mirada hacia adelante, **es grado B**. Ver [F7](F7_EDAD_DE_LA_EVIDENCIA.md) y [A02](A02_pasada_de_coherencia.md).
 
 Ésta es la candidata con la **hora escrita más precisa** de todo el lote: no es un día del mes ni una
