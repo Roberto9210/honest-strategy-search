@@ -502,6 +502,38 @@ cambia un número, y esta carpeta ya tiene treinta.
 **La forma mínima que sí se puede sostener: todo documento que publique un número de potencia lista
 sus dependencias en el encabezado.** Eso está aplicado desde hoy en los míos.
 
+## Sexta pregunta, en dos partes, agregada el 2026-09-05 después de fallar TRES veces
+
+> **6a. ¿Esta afirmación CONTRADICE un hallazgo propio de otra ronda?**
+> **6b. ¿Esta afirmación USA un método, un número o un supuesto que yo mismo ya corregí o marqué
+> como equivocado en otra ronda?**
+
+**La 6a la escribí en `D08` después del error de "no existe fuera de muestra para L10". No atrapó el
+tercero: el margen de 4,40 de `D08` y el 2,25 de `F15` no CONTRADECÍAN a `A03`. USABAN el escalado
+uniforme de volatilidad que `A03` ya había marcado como equivocado.**
+
+**La 6b es la que hacía falta, y es más difícil de ver que la 6a: un número heredado no se siente
+como una afirmación nueva.** Se copia de un documento anterior con la confianza del documento
+anterior, y arrastra el error del documento anterior sin que nadie lo vuelva a mirar.
+
+### Dónde más estaba metido el escalado uniforme — pasada corta, lista y no reescritura
+
+`grep` sobre la carpeta por la fórmula `82 · √(T/1380)` y por sus productos: 12,1 · 17,1 · 7,0 · 4,6 · 11,4 pb.
+
+| documento | qué usa | estado |
+|---|---|---|
+| `A03` | la fórmula, **como diagnóstico del error** | correcto: es el que lo señala |
+| `D06` | la tabla entera de la balanza ciega: 12,1 / 17,1 / 7,0 pb, y los 4,7 y 11,4 de divisas | **afectado.** Ya lleva el cartel de riesgo nombrado |
+| `D07` | `σ` optimista 12,1 pb para L04 y L05 | **afectado.** L04 y L05 salieron ciegas **con** el escalado favorable; con el patrón en U salen más ciegas. El veredicto no cambia |
+| `D08` | 17,1 pb → margen 4,40 | **afectado y ya corregido en `D09`**: 1,48 |
+| `F15` | la regla usa la fórmula, y el ejemplo de L10 da 2,25 | **afectado y ya corregido en `D09`**: 1,11. La regla en sí sobrevive, calibra mal |
+| `P05` y ficha `L07` | 4,6 pb para diez minutos de USD/JPY | **afectado.** No es la U del ES sino la del yen, pero es el mismo supuesto de uniformidad |
+| `P04` | el plan B hereda la potencia de L07 | afectado por herencia |
+
+**Siete documentos. Ninguno cambia de veredicto por esto —los ciegos siguen ciegos y los abiertos
+siguen abiertos— pero TODOS los márgenes numéricos entre sobrevivientes son de calibración
+equivocada. Por eso el ranking queda congelado.**
+
 ## Quinta pregunta, agregada el 2026-09-05: LA PRUEBA DE SIMETRÍA
 
 > **Antes de aceptar una evidencia, preguntarse si la habrías aceptado con el signo contrario. Si la
