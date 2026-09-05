@@ -3,6 +3,7 @@
 **VENTANA L. Ficha de literatura. NO MEDIDA. No gasta cartucho, K sigue en 261.**
 
 > **GRADO ACTUALIZADO — 2026-09-05: esta ficha pasa de C a B.** La refutación de Kurov et al. 2022 es sobre anuncios británicos y futuros de divisas: **por la prueba de simetría de `F13`, evidencia de otro mercado no cuenta en NINGUNA de las dos direcciones.** El riesgo queda nombrado: el mecanismo depende del acceso anticipado y en Estados Unidos hubo cortes equivalentes en 2013-14, **pero no hay evidencia directa sobre el ES**. Y ver [D06](D06_balanza_ciega.md): su veredicto operativo es REQUIERE MEDICIÓN.
+> **COSTO NOMBRADO Y NO INCLUIDO — 2026-09-05:** la salida `[t + 5 s, t + 1 min]` contiene entera la ventana de liquidación de inventario de alta frecuencia (10 a 20 s, Kirilenko et al.), y el signo es **adverso**, proporcional a la tasa de acierto. Ver [D11](D11_L03_salida_contra_la_liquidacion.md). **Sin número: el ranking está congelado.**
 
 ---
 
