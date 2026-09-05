@@ -11,7 +11,7 @@ viene de información o del patrón. Devuelve un veredicto de cuatro valores:
 
 | veredicto | qué significa |
 |---|---|
-| **SUPERA** | da dólares positivos, bate las dos nulas y la pasiva, y **aguanta en los tres regímenes** de volatilidad |
+| **SUPERA** | da dólares positivos, bate las nulas **válidas para su clase de ventaja** y la pasiva, y **aguanta en los tres regímenes** de volatilidad |
 | **APUESTA AL REGIMEN** | bate todo, pero la ventaja vive en un solo tercil de volatilidad. Categoría propia, no un aprobado con asterisco |
 | **NO SUPERA** | no da dólares, o no bate alguna nula, o no bate la posición pasiva equivalente |
 | **NO MEDIBLE** | el juez se niega: pocas operaciones, bracket sin sesgo caracterizado, ventana demasiado angosta para rotar, entradas fuera de los datos |
@@ -54,6 +54,7 @@ con otro replicador, a propósito.
   "contratos": 1,
   "limite_contratos": 4,
   "variantes_probadas": 3,
+  "clase_ventaja": "direccional",
   "familia": "reversion_apertura",
   "regla_salida": {"tipo": "bracket", "objetivo_pt": 5, "stop_pt": 20},
   "operaciones": [
@@ -71,6 +72,10 @@ con otro replicador, a propósito.
   acepta: el umbral de desvíos se ajusta a esa cifra (3,0 con una variante; 3,7 con diez; 4,3 con
   cien) y el veredicto lo dice en su cara: **"este número supone que se probaron N variantes; si
   fueron más, no vale"**.
+- `clase_ventaja`: **obligatorio.** `direccional` (la ventaja está en *qué lado*) o `timing` (está en
+  *cuándo* entrar; el lado es indiferente o aleatorio). Se declara **antes** de correr, porque de eso
+  depende **qué nula es válida** para este candidato — ver *La clase de ventaja* más abajo. Declarar
+  mal no es gratis y declarar `timing` no compra nada: el juez mide la firma y la contrasta.
 - `familia` (opcional): nombre de la idea. El registro cuenta intentos por familia declarada **y** por
   huella de entradas a tres tamaños de cubeta, para que no se esquive con esperas.
 - `regla_salida`: `bracket` (objetivo y stop en puntos) o `tiempo` (`n_barras`). Se declara; el juez
@@ -87,6 +92,37 @@ Cualquier campo que huela a resultado —`pnl`, `profit`, `precio_salida`, `win`
 rechaza la entrada entera. No es una comodidad que se le saca al usuario: el juez calcula los
 desenlaces él mismo, y eso es lo único que hace **imposibles** la censura, la selección de
 ganadoras y el sesgo de supervivencia, en vez de evitables.
+
+## La clase de ventaja — por qué se declara, y por qué no es una puerta trasera
+
+Las dos nulas no son intercambiables. La de **signo** destruye *qué lado* y por lo tanto **no puede
+ver** una ventaja que esté en *cuándo*: contra una ventaja de timing pura devuelve −1% de lo
+inyectado. Como el "informativo" es el **mínimo** de las tres, una ventaja de timing de cualquier
+tamaño moría en la nula que no la mide. Ése era un falso negativo **estructural**, no un umbral duro.
+
+El mínimo se queda —es lo que defiende del ataque A1, y sacarlo abriría el juez de par en par—. Lo que
+cambia es **cuáles** nulas entran al mínimo, y el orden lo decide todo:
+
+1. El candidato **declara** `clase_ventaja` en la entrada, antes de correr.
+2. El juez **mide la firma** sobre los desvíos de las dos nulas: rotación alta con signo ≈ 0 →
+   `timing`; las dos altas → `direccional`; cualquier otra cosa → `indefinida`.
+3. La nula de signo se omite **sólo si la firma medida CONFIRMA lo declarado**. En cualquier otro caso
+   se aplica el mínimo estricto de las tres.
+4. Si declarado y medido **no coinciden**, sale **BANDERA ROJA** en el veredicto, con los dos desvíos.
+
+**Las tres nulas se informan siempre**, se usen o no; la omitida sale impresa con el motivo. La
+declaración queda en el registro (`clase_declarada` y `firma_medida`), así que cambiarla después de
+ver el resultado deja rastro.
+
+**Por qué declarar `timing` no alcanza para pasar:** la relajación no se gana declarando, se gana con
+la firma medida. Un candidato **sin ventaja** que declare `timing` tiene rotación ≈ 0, su firma sale
+`indefinida`, no confirma nada, y recibe el mínimo estricto: **NO SUPERA** (control C10, en los dos
+modos). Lo que la declaración compra es que, cuando la ventaja *sí* está y *sí* es de cuándo, no la
+mate el instrumento que no la puede ver.
+
+Esto vale **también en el chequeo por régimen**: dentro de cada tercil se compara contra la nula
+válida para la clase confirmada, no siempre contra la de signo. Sin eso el punto ciego volvía a entrar
+por la ventana del régimen (ver el CIERRE).
 
 ## Qué devuelve, y en qué unidades
 
@@ -122,16 +158,24 @@ ganadoras y el sesgo de supervivencia, en vez de evitables.
 - **LO QUE ESTE VEREDICTO NO CUBRE**, obligatorio. Entre otras: el deslizamiento de entrada ahora se
   **cobra** (medio-spread por mercado), pero supone entrada por mercado —una entrada **pasiva** no lo
   paga y en cambio corre no-ejecución y selección adversa, la pregunta de mbo diseñada sin correr en
-  `MBO_DISENO_entrada_pasiva.md`; la consistencia de las firmas no está modelada; y **el falso
-  negativo estructural**: un candidato cuya ventaja sea sólo de sincronización muere contra la nula de
-  signo aunque sea real.
+  `MBO_DISENO_entrada_pasiva.md`; la consistencia de las firmas no está modelada; y **qué clases de
+  ventaja ve**: la direccional y la de tamaño se recuperan al 91-95%; la de **timing** sólo si se
+  declara y la firma la confirma; una ventaja de **salida** (cuándo cerrar) es inexpresable por
+  construcción, porque la regla de salida se declara y se aplica igual a todas las operaciones.
 
 ## El registro y el contador
 
 `REGISTRO_JUEZ.jsonl`, una línea por juicio, **encadenada con hash**: borrar o editar una línea rompe
 la cadena y el juez lo avisa en cada corrida siguiente. Cuenta intentos de la misma familia y sube
-el umbral. **Defiende contra el descuido, no contra alguien motivado:** se puede correr en otra
+el umbral. Guarda también `clase_declarada` y `firma_medida`, para que cambiar la clase entre corridas
+deje rastro. **Defiende contra el descuido, no contra alguien motivado:** se puede correr en otra
 copia del repo o con otro registro. Agujero conocido y marcado.
+
+**El registro commiteado abre con dos líneas del ejemplo.** Son las dos corridas de `valido.json` que
+ejercitan la CLI (cruce y pasivo), candidato sintético, no un candidato real. **No se borran:** la
+cadena es de sólo-agregar desde su primera línea, y resetearla a mano sería exactamente el gesto que
+el diseño dice que nadie puede hacer. El efecto sobre un candidato futuro es **conservador** —si su
+huella se parece a la del ejemplo, cuentan como dos hermanos y el umbral **sube**, nunca baja—.
 
 ## El agujero mayor, dicho en la cara
 
@@ -141,24 +185,30 @@ vale, y no hay código que lo detecte.
 
 ## Controles
 
-`python juez_controles.py` corre siete controles con condición de falla escrita contra resultados
+`python juez_controles.py` corre **diez** controles con condición de falla escrita contra resultados
 publicados: sin ventaja → NO SUPERA; ventaja inyectada → SUPERA y recupera la magnitud; pocas
 operaciones → NO MEDIBLE; entrada con resultados → RECHAZADA; ventaja en un solo régimen (tercil alto
 de volatilidad) → APUESTA AL REGIMEN; el candidato solo-largo de 2017 → NO SUPERA con la defensa
 puesta (y se muestra sin la defensa, para ver que hace falta); ventaja sólo en tendencias bajistas
-→ APUESTA AL REGIMEN, la prueba de que cerrar el eje de dirección no dejó un agujero; y un candidato
-en el **borde** entre modos → NO SUPERA en cruce / REQUIERE MEDICION en pasivo, nunca SUPERA. Los ocho
-se corren en los **dos modos**, y se verifica que el modo pasivo nunca devuelve SUPERA. Salida en
-`salida_juez_controles.txt`.
+→ APUESTA AL REGIMEN, la prueba de que cerrar el eje de dirección no dejó un agujero; un candidato
+en el **borde** entre modos → NO SUPERA en cruce / REQUIERE MEDICION en pasivo, nunca SUPERA; una
+**ventaja de timing declarada bien** → SUPERA; y la **puerta trasera**, un candidato sin ventaja que
+declara `timing` → NO SUPERA igual. Los diez se corren en los **dos modos**, y se verifica que el modo
+pasivo nunca devuelve SUPERA. Salida en `salida_juez_controles.txt`.
+
+Otras tres corridas, cada una con su salida commiteada:
+`juez_verificar_prueba.py` (el candado de 2019 en las dos direcciones),
+`juez_rutas_nunca_corridas.py` (el detector de firma por `informe()` y el juez por **línea de
+comandos**, en subproceso real) y `juez_particion_potencia.py` (la partición trabajo/verificación).
 
 ---
 
 # CIERRE — el juez está terminado
 
-**Versión final, 2026-09-04.** `juez.py` + `juez_controles.py` + `mbo_lib.py`. No queda trabajo
+**Versión final, 2026-09-05.** `juez.py` + `juez_controles.py` + `mbo_lib.py`. No queda trabajo
 pendiente **que no requiera un candidato real**.
 
-## Los ocho controles, en los dos modos (8/8 y 8/8)
+## Los diez controles, en los dos modos (10/10 y 10/10)
 
 | control | qué prueba | CRUCE | PASIVO |
 |---|---|---|---|
@@ -170,12 +220,19 @@ pendiente **que no requiera un candidato real**.
 | C6 | el ataque A1 (solo-largo 2017) | NO SUPERA | NO SUPERA |
 | C7 | ventaja sólo bajista | APUESTA AL REGIMEN | APUESTA AL REGIMEN |
 | C8 | candidato en el **borde** entre modos | NO SUPERA | **REQUIERE MEDICION** |
+| C9 | **ventaja de timing declarada bien** | **SUPERA** | **REQUIERE MEDICION** |
+| C10 | **la puerta trasera**: nulo declarando `timing` | NO SUPERA | NO SUPERA |
 
 **Ningún control devuelve SUPERA en modo pasivo**, y no puede: `techo_pasivo` lo convierte por
 construcción. C8 quedó recalibrado con `c8_semillas.py` (12 semillas × 3 valores de ventaja): a
 q=0,56 sólo el 42% de las semillas caía en el borde y 5 de 12 quedaban **por encima** (SUPERA en
 cruce); a **q=0,545** las 12 dan NO SUPERA en cruce y **9 de 12 (75%) cruzan hacia arriba** en pasivo,
 sin ninguna llegar a SUPERA. El suite usa una semilla dedicada para que el borde no dependa del sorteo.
+
+**C9 aísla el timing del régimen a propósito.** La ventaja se inyecta en el mejor tercio **dentro de
+cada tercil** de volatilidad, no en el mejor tercio global. Con selección global el mismo candidato da
+**APUESTA AL REGIMEN**: el juez sí ve la ventaja, pero informa que vive concentrada en un régimen. Son
+dos cosas distintas y conviene no confundirlas al leer un veredicto.
 
 ## El candado de 2019, ejercitado en las dos direcciones
 
@@ -201,16 +258,62 @@ nuevas (`juez_formas_ventaja.py`) y se midió qué recupera el instrumento:
 | **TIMING** (sabe cuándo, lado al azar) | +$403,04/sesión | **98%** (+22,2σ) | **−1%** (−0,2σ) | **NO SUPERA** |
 | **TAMAÑO** (acierta 50%, arriesga más al acertar) | +$559,75/sesión | 91% (+11,1σ) | 95% (+11,6σ) | **SUPERA** |
 
-**El punto ciego de timing es TOTAL, no parcial.** Una ventaja de timing de +$403/sesión, medida y
-recuperada al 98% por la nula de rotación, se descarta igual, porque el "informativo" es el **mínimo**
-de las tres nulas y la de signo la ve al −1%. Cualquier ventaja de timing pura, **del tamaño que sea**,
-recibe NO SUPERA. La de tamaño, en cambio, el juez la ve bien (91-95%).
+**El punto ciego de timing era TOTAL, no parcial.** Una ventaja de timing de +$403/sesión, medida y
+recuperada al 98% por la nula de rotación, se descartaba igual, porque el "informativo" es el
+**mínimo** de las tres nulas y la de signo la ve al −1%. Cualquier ventaja de timing pura, **del tamaño
+que sea**, recibía NO SUPERA. La de tamaño, en cambio, el juez la ve bien (91-95%).
 
-Por eso el juez ahora **detecta la firma** (rotación alta, signo ~0) y la imprime: un candidato con
-ventaja de timing recibe NO SUPERA **con el aviso de que le falta el instrumento**, no un rechazo mudo.
+## El punto ciego, ARREGLADO — con la clase declarada por adelantado
+
+La salida es la clase de ventaja declarada y **verificada contra la firma medida** (ver *La clase de
+ventaja*). El mismo candidato de +$403, declarando `timing`, ahora da **SUPERA** en cruce con los tres
+terciles aguantando (+11,6σ / +12,7σ / +15,6σ). Y un candidato **sin ventaja** que declare `timing`
+sigue dando **NO SUPERA** en los dos modos: no hay puerta trasera, porque la relajación la habilita la
+firma medida, no la declaración.
+
+**El arreglo estaba a medias y C9 lo expuso.** La primera versión omitía la nula de signo del
+informativo **global** pero el chequeo por **régimen** seguía comparando siempre contra la de signo:
+las ventajas por tercil daban ≈ +$1 en vez de +$417 y el veredicto caía en APUESTA AL REGIMEN. El punto
+ciego volvía a entrar por la ventana del régimen. Se guarda ahora la nula de rotación **por sesión**
+(`VA`) y `regimen()` elige la nula válida para la clase confirmada. Recién con eso C9 pasa.
 
 No se agregó una tercera forma: la que faltaría es una ventaja de **salida** (cuándo cerrar), y el juez
 la prohíbe por construcción — la regla de salida se declara y se aplica igual a todas las operaciones.
+
+## Las dos rutas que estaban escritas y nunca corridas (5/5)
+
+`juez_rutas_nunca_corridas.py`:
+
+| ruta | resultado |
+|---|---|
+| el **detector de firma** por `informe()` (timing declarado `direccional`) | imprime la BANDERA ROJA (rotación +22,4, signo +0,1) |
+| CLI sin argumentos | código **2** + el uso |
+| CLI con `rechazado.json` | código **1** + el motivo del rechazo |
+| CLI con `valido.json` | código **0** + el veredicto |
+| CLI con `valido.json --pasivo` | código **0** + el veredicto, `[MODO PASIVO]` |
+
+La CLI es la capa que va a tocar un lanzador de doble clic, y era la única sin una corrida encima. Se
+ejercita en **subproceso real**, no importando el módulo, para que los códigos de salida cuenten.
+
+## La partición trabajo / verificación, calculada al revés — y NO aplicada
+
+`juez_particion_potencia.py` calcula qué fracción habría que reservar para que la verificación tenga
+**la misma resolución** que el trabajo. Da **54% / 46%**, corte en **2018-02-21**. El intercambio: el
+piso de detección del trabajo sube **+10%** ($20,54 → $22,55) y el de la verificación baja −4%
+($25,84 → $24,74).
+
+**No se reparticionó, y el motivo es medido.** La MDE **no es monótona** en el número de sesiones: en
+el barrido salta de **$8,56 con 501 sesiones a $22,55 con 541** — 2,6× peor por agregar 40 sesiones —
+porque el desvío por año va de $36 (2017) a **$368** (2018), un factor 10. El corte de "igual potencia"
+cae **justo sobre el pico de febrero 2018**: el punto de máxima sensibilidad a un puñado de sesiones
+extremas. Fijar ahí la partición sería ajustarla a la cola de 2018.
+
+Y el intercambio no es el que suponíamos: **acortar el trabajo lo MEJORA** ($20,54 → $8,56), porque
+saca 2018. Lo que se pierde no es potencia, es **cobertura de régimen**: un trabajo de 2016-2017 no
+contiene régimen alto y la maquinaria de tres terciles se queda sin el tercil que más importa. La
+restricción que manda es la cobertura, no el conteo de sesiones. La partición por calendario
+(2016-2018 / 2019) deja la verificación gruesa, y ahora se sabe **por qué**: no le falta cantidad, le
+falta cola. Queda para que Roberto decida, con los dos números a la vista.
 
 ## Los seis veredictos
 
@@ -252,13 +355,18 @@ Queda escrito para que Roberto decida si vale la pena, en vez de seguir puliendo
 resultados), contra ES 1-min 2016-2019: comisión medida, deslizamiento del stop medido, deslizamiento
 de entrada por régimen (cruce) o markout/llenado (pasivo), y el sesgo de contabilidad restado sólo en
 la dirección conservadora. Lo compara con dos nulas de permutación (rotación en rango + signo) más una
-posición pasiva, exige que la ventaja aguante en los tres terciles de volatilidad **ex-ante en bps**,
+posición pasiva —las tres informadas siempre, y **cuáles entran al mínimo lo decide la clase de
+ventaja declarada, sólo si la firma medida la confirma**—, exige que la ventaja aguante contra la nula
+válida en los tres terciles de volatilidad **ex-ante en bps**,
 devuelve P(pasar) por la cadena eval × fondeada **al tamaño declarado**, la resolución, y avisa cuándo
 a esa ventaja conviene capital propio. Registro encadenado con hash y huella de familia a tres cubetas.
 
 **Qué NO mide** (va impreso en cada veredicto): la búsqueda anterior al candidato (se declara, es
-inverificable); la regla de consistencia de las firmas; el deslizamiento de entrada **pasiva
-por-candidato** (hoy calibrado al azar); 2020+ (caja sellada); el costo de oportunidad del capital.
+inverificable); **si la clase de ventaja declarada es sincera** —la firma la contrasta y la contradice
+con bandera roja, pero una firma `indefinida` no prueba nada en ninguna dirección—; la regla de
+consistencia de las firmas; el deslizamiento de entrada **pasiva por-candidato** (hoy calibrado al
+azar); una ventaja de **salida**, inexpresable por construcción; 2020+ (caja sellada); el costo de
+oportunidad del capital.
 
 **Veredictos posibles.**
 - **SUPERA** — sólo en modo cruce (o en la futura medición por-candidato). Aprobación firme.
