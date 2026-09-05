@@ -29,6 +29,7 @@ un dia por regimen, sin agitado en 2026; latencia 250 ms de ingenieria, anclada 
 """
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 import numpy as np
@@ -49,6 +50,7 @@ MUERTES = [1, 2]
 HORIZONTES_S = [1, 5, 30, 60, 300]
 VENTANA_NS = 300 * 1_000_000_000        # 300 s tope para llenar/morir
 SEMILLA = 20260904
+CON_TAMANO = os.environ.get("MBO_CON_TAMANO") == "1"
 
 
 def dwell_ms(rec):
@@ -114,7 +116,12 @@ def main():
         p = DIR / fn
         if not p.exists():
             print(f"\n[{epoca} {tercil}] FALTA {fn}"); continue
-        rec = M.reconstruir(str(p))
+        # MBO_CON_TAMANO=1 usa el libro que ve tambien los cambios de TAMANO al mejor precio. La
+        # calibracion original (MARKOUT_PASIVO / LLENADO_PASIVO) se hizo SIN eso, con el libro que
+        # solo veia cambios de precio: el tamano de cola que decide el llenado estaba congelado
+        # desde el ultimo cambio de precio (669 ms de antiguedad mediana, desbalance_diagnostico.py).
+        # Por defecto queda apagado para que la salida vieja siga siendo reproducible.
+        rec = M.reconstruir(str(p), con_tamano=CON_TAMANO)
         tc = rec["tc"]
         dwm, dwmean = dwell_ms(rec)
         # entradas al azar en el rango cubierto, dejando 300s de cola

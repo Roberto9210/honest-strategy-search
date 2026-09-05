@@ -1,0 +1,76 @@
+====================================================================================================
+EL PISO PASIVO RECALCULADO CON EL LIBRO ARREGLADO - es $15 o es $78?
+NO GASTA CARTUCHO. K = 261. Dinero: $0. La caja sellada no se toca.
+====================================================================================================
+
+   constantes NUEVAS leidas de salida_mbo_entrada_pasiva_v2.txt: ok
+       tercil   markout viejo   markout nuevo   llenado viejo   llenado nuevo
+         bajo         +0.0392         -0.0014           0.477           0.451
+        medio         +0.0073         -0.0027           0.514           0.423
+         alto         +0.0697         -0.0063           0.469           0.423
+
+----------------------------------------------------------------------------------------------------
+   EL PISO, VIEJO Y NUEVO, MISMA CORRIDA Y MISMO CODIGO
+----------------------------------------------------------------------------------------------------
+        celda     cruce   pasivo VIEJO   pasivo NUEVO    cambio   ventaja pasiva     pasivo fi=1
+     5pt:20pt    +78.24         +15.45         +18.58     +3.12           +59.66          +43.86
+    20pt:10pt    +92.81         +32.33         +31.37     -0.96           +61.44          +73.45
+
+   'ventaja pasiva' = piso de cruzar menos piso pasivo NUEVO: lo que entrar pasivo ahorra.
+   Publicado hoy: pasivo $15.45 y $32.33; cruce $78.24 y $92.81.
+
+----------------------------------------------------------------------------------------------------
+   VERIFICACION DE RESOLUCION, y su segunda mitad: podia fallar?
+----------------------------------------------------------------------------------------------------
+   Cambio maximo en markout entre terciles: 0.0760 pt.  En llenado: 0.091.
+   El chequeo PODIA fallar: si el libro arreglado hubiera dado las mismas constantes, los
+   dos pisos serian identicos y la columna 'cambio' seria 0,00. No lo es.
+   Y NO es una tautologia: el piso no se calcula desde las constantes solamente -entra el
+   flujo secuencial de 1.006 sesiones, el exceso del stop y el sesgo de sobrepaso, que son
+   los MISMOS en las dos columnas-. Lo unico que cambia entre columnas son las dos
+   constantes contaminadas, que es exactamente lo que se quiso aislar.
+
+====================================================================================================
+   EL VEREDICTO: (A), (B) o (C)
+====================================================================================================
+
+----------------------------------------------------------------------------------------------------
+   LA DESCOMPOSICION QUE DECIDE EL VEREDICTO, y por la que NO acepto el (A) comodo
+----------------------------------------------------------------------------------------------------
+   'pasivo fi=1' es el piso con el markout NUEVO pero SIN el llenado parcial. Separa las dos
+   cosas que el numero mezcla: (i) entrar pasivo ahorra el medio-spread, y (ii) solo se llena
+   ~42% de las senales, asi que se opera menos y se pierde menos.
+   5pt:20pt   cruce $+78.24  ->  fi=1 $+43.86  ->  con llenado $+18.58
+      NO CRUZAR (medio-spread ahorrado + markout, que hoy es ~0): +34.37
+      LLENADO PARCIAL (operar menos, NO es ventaja):        +25.29   = 42% de la ventaja
+   20pt:10pt   cruce $+92.81  ->  fi=1 $+73.45  ->  con llenado $+31.37
+      NO CRUZAR (medio-spread ahorrado + markout, que hoy es ~0): +19.36
+      LLENADO PARCIAL (operar menos, NO es ventaja):        +42.08   = 68% de la ventaja
+
+   Y OPERAR MENOS NO ES UNA VENTAJA. El llenado parcial multiplica los dolares por sesion por
+   fi ~ 0,42, y como sin ventaja esos dolares son NEGATIVOS, multiplicarlos por 0,42 achica la
+   perdida. Pero la VENTAJA de un candidato queda multiplicada por el MISMO 0,42: se llena el
+   42% de sus senales, no el 42% de sus perdidas y el 100% de sus ganancias. El piso baja y la
+   vara que el candidato tiene que superar baja igual: no se gana nada.
+   EL NUMERO QUE IMPORTA ES 'pasivo fi=1', y ahi la ventaja del pasivo es el medio-spread que
+   no se paga. El markout, que antes agregaba encima, hoy es ~0 y no agrega nada.
+
+====================================================================================================
+   EL VEREDICTO: (A), (B) o (C)
+====================================================================================================
+   5pt:20pt: la ventaja pasiva REAL -sin el llenado parcial- es +34.37 contra los
+        +62.79 que se publicaron: 55% de lo que se creia.
+        (B). La palanca EXISTE -no cruzar ahorra +34.37 por sesion, y eso es
+        real- pero es 1.8 veces mas chica de lo publicado. El piso
+        pasivo honesto es $43.86, no $15.45.
+   20pt:10pt: la ventaja pasiva REAL -sin el llenado parcial- es +19.36 contra los
+        +60.48 que se publicaron: 32% de lo que se creia.
+        (B). La palanca EXISTE -no cruzar ahorra +19.36 por sesion, y eso es
+        real- pero es 3.1 veces mas chica de lo publicado. El piso
+        pasivo honesto es $73.45, no $32.33.
+
+   Y LO QUE NO CAMBIA CON ESTO: la bajada del piso en modo pasivo sigue siendo una COTA
+   OPTIMISTA. Las constantes estan calibradas sobre entradas AL AZAR; para un candidato
+   direccional el markout puede darse vuelta y el no-llenado esta seleccionado por su senal.
+   Arreglar el libro corrige el INSTRUMENTO, no convierte la cota en medicion.
+====================================================================================================
