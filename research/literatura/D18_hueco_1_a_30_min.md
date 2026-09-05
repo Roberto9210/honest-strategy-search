@@ -1,6 +1,6 @@
 # D18 — El hueco entre un minuto y media hora: ¿nadie miró, o miraron y no hay nada?
 
-**VENTANA L. NO MIDE NADA. K sigue en 261.**
+**VENTANA L. NO MIDE CANDIDATAS; corre CONTROLES DEL INSTRUMENTO desde el 2026-09-05 (rol ampliado por Roberto, ver `INDICE`). K sigue en 261.**
 
 **La pregunta de Roberto:** reporté que entre 1 y 30 minutos no encontré nada publicado sobre el ES a
 ≥ 5 operaciones por día. Eso es una de dos: **(A)** nadie miró —y es el único terreno virgen que
