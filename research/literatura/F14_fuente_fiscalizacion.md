@@ -151,7 +151,61 @@ estructura de mercado y diseminación de datos— **no fueron catados todavía**
 que el filtro sí admite. **Pero el orden de prioridad que escribí antes de mirar era probablemente el
 equivocado, y lo digo en vez de reordenarlo en silencio.**
 
-**Casos leídos: 1 de los 10 del alcance. Descartados: 1.**
+---
+
+## Segunda cata — niveles 3 y 4, con la inversión de orden DECLARADA
+
+> **Cambio de orden declarado el 2026-09-05, y el motivo:** la primera cata mostró que el nivel 1
+> devuelve casi puro libro de órdenes. **Invierto y voy a los niveles 3 y 4 primero.**
+>
+> **Roberto corrigió el tamaño de este pecado y tiene razón:** seleccionar sobre el dato es pecado
+> cuando se selecciona sobre **el resultado que se está midiendo**. Acá seleccioné sobre **dónde vive
+> el material**, que es información sobre la **fuente** y no sobre ninguna candidata. **Buscar donde
+> el material es denso es estrategia de búsqueda, no inferencia.** Se declara igual.
+
+| # | caso | qué describe | motivo del descarte o del pase |
+|---|---|---|---|
+| 2 | **TotalEnergies Trading**, orden de la Comisión de Comercio de Futuros. Multa de **$48 millones** | manipulación de futuros ligados a un índice de referencia de combustible, **vendiendo físico por debajo del mercado** para mover el índice | **DESCARTADO POR LA LÍNEA.** Manipulación del precio de referencia. Y exige inventario físico |
+| 3 | **la familia de precios de referencia**: tasas interbancarias, tasas de canje, divisas | fijación coordinada de referencias entre bancos | **DESCARTADO POR LA LÍNEA, y por dos motivos**: manipulación **y** flujo de clientes propio. Es la misma pared que ya tumbó el mecanismo original de L07 |
+| 4 | **Citadel Securities**, acción de la Comisión de Bolsa y Valores | algoritmos que aprovechaban **discrepancias de precio entre el flujo de datos consolidado y los flujos propietarios más rápidos de los mercados**, con manejo de órdenes no declarado a los clientes | **la CONDUCTA se descarta**: manejo de órdenes no declarado y flujo de clientes. **PERO el hecho de estructura SÍ pasa el punto (A)** |
+
+### Lo único que pasó el filtro en cuatro casos: un hecho de estructura
+
+> **El flujo de datos consolidado va con retardo respecto de los flujos propietarios que venden los
+> propios mercados, y ese retardo es explotable.**
+
+**Es un hecho del sistema, no sobre nadie**, y por lo tanto entra en la categoría (A) del punto 2.
+
+**Y es inútil para este proyecto, y hay que decirlo en la misma línea:** explotarlo exige colocación
+y latencia de microsegundos. La VENTANA G ya midió que el tope del ES vive en **113 a 197
+milisegundos**, del orden de la latencia residencial. **Estamos tres órdenes de magnitud afuera.**
+
+**Se anota como hecho, no como candidata.**
+
+### Balance de la cata
+
+**Cuatro casos examinados de los diez del alcance. Cuatro descartados como candidatas. Un hecho de
+estructura extraído e inservible para nosotros.**
+
+**Lo que la cata muestra sobre la fuente, y era el punto de hacerla:**
+
+| nivel | qué devolvió |
+|---|---|
+| 1, índices bursátiles | casi puro libro de órdenes. **Excluido por la línea** |
+| 3, precios de referencia y rebalanceos | manipulación de referencia **más** flujo de clientes. **Doblemente excluido** |
+| 4, estructura de mercado | **el único que produjo algo**, y lo que produjo exige colocación |
+
+> ## **La fuente produce, pero produce en la categoría (A) —hechos de estructura— y no en la (B) —mecanismos ejecutables por un externo—. Y los hechos de estructura que produce viven en escalas de latencia que este proyecto no alcanza.**
+
+**Eso NO cierra la fuente por dos motivos concretos:** quedan seis casos del alcance sin examinar, y
+**no busqué en la categoría que estructuralmente debería ser la más fértil: casos donde el acusado
+anticipó un flujo público y obligatorio operando en el mercado abierto.** Esa conducta suele NO
+terminar en una demanda, precisamente porque no es ilegal, **lo que sugiere que la fuente está
+sesgada exactamente en contra de lo que le pedimos.**
+
+**Ése es el hallazgo de la cata y es más informativo que cualquier caso: la fuente selecciona
+conductas que cruzaron una línea, y lo que nosotros podemos usar es, por definición, lo que no la
+cruzó. La intersección puede ser estructuralmente casi vacía.**
 
 ---
 

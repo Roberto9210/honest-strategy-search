@@ -137,6 +137,49 @@ número sí, y va corregido en `P08`.
 
 ---
 
+# 4-bis. L11, CERRADA — 2026-09-05
+
+**Aplico las seis reglas sin la lista completa de fechas, y alcanza para cerrar.**
+
+## Un impacto cierto, identificado por estructura
+
+**El informe de empleo sale el primer viernes del mes. La entrada es el cierre del jueves anterior.**
+
+**El 4 de julio de 2019 fue jueves, y el viernes 5 de julio fue el primer viernes: el informe de
+empleo de junio salió ese día.** La entrada caería en el **4 de julio, con el mercado cerrado**.
+
+**Por la regla 2 —si la sesión anterior fue cierre completo, el evento se elimina— ese evento se
+cae.** La alternativa sería entrar el 3 de julio, que además fue cierre anticipado, con una
+exposición de dos días cruzando el feriado.
+
+**Los otros tres años no tienen el problema:** el 4 de julio cayó lunes en 2016, martes en 2017 y
+miércoles en 2018, y en ninguno el primer viernes fue el día siguiente.
+
+## Lo que no puedo enumerar sin la lista
+
+**Las publicaciones del índice de precios caen a mediados de mes sin día fijo**, así que podrían
+seguir a un lunes feriado —el de Martin Luther King, el de los Presidentes, el de la Memoria o el del
+Trabajo—. **Sin las fechas exactas no puedo contarlas.** Por estructura son pocas: hacen falta dos
+coincidencias, que la publicación caiga en martes y que ese lunes sea feriado.
+
+**Las reuniones del comité de política monetaria son martes y miércoles y evitan feriados**, así que
+no aportan casos.
+
+## Por qué la auditoría se cierra igual
+
+> ## **L11 es CIEGA con la magnitud ENTERA (`D06`): su umbral es 18,54 puntos básicos y su magnitud publicada 11,4. Toda corrección de fechas REDUCE `n`, y reducir `n` SUBE el umbral.**
+
+**Cualquier enumeración exacta sólo la haría más ciega. No existe un conteo de fechas que cambie su
+veredicto.**
+
+**Enumerar las fechas restantes sería trabajo cuyo resultado no puede cambiar nada, que es
+exactamente lo que `F12` prohíbe — aplicado a mi propio trabajo.**
+
+**La auditoría de L11 se cierra por veredicto, no por enumeración.** Las seis reglas quedan escritas
+y se aplican intactas el día que la lista se arme por otro motivo.
+
+---
+
 # 5. Lo que esta auditoría deja como advertencia
 
 **Las dos fechas rotas las encontró la VENTANA G, no yo.** Yo había escrito en `P09` que *"mis
