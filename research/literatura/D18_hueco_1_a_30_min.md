@@ -25,6 +25,32 @@ paper que se publicó por otro hallazgo.** Hay tres en el corpus que ya tengo en
 > encontró el efecto primera→última media hora buscó en las otras doce y dijo que no hay nada.** Eso
 > es exactamente el hueco 30-390 minutos cerrado por quien tenía el incentivo contrario.
 
+# 1b. Lo que trajo la lectura de Roberto, 2026-09-05 — un (B) sobre NUESTRO instrumento, y dos parciales
+
+| fuente | qué miraron | qué encontraron | **grilla que toca** |
+|---|---|---|---|
+| **Boyarchenko, Larsen y Whelan 2020/2022**, NY Fed SR 917 → `L12` | **el ES**, 1998-2020, retornos del punto medio; estrategias largas en ventanas **horarias** de la madrugada | Sharpe 1,1 → **−0,5** después del diferencial (2:00-3:00); 1,3 → **0,3** (1:30-3:30); *"With transaction costs, the OD is not profitable in practice"* | **horaria, 1 por día, 60-120 minutos.** Es el extremo lento |
+| Breedon y Ranaldo 2013, *JMCB* (SNB 2011) — **PARCIAL**: sólo el fragmento indexado | estrategias de hora del día en divisas | *"most of these simple time-of-day trading strategies are not profitable when trading costs are included"* | horaria, divisas. **Toca a L07 y L08 por el lado adverso**, mismo mercado |
+| Yamamoto 2012, *JBF* — **PARCIAL**: sólo el fragmento | reglas técnicas intradiarias con desbalance de flujo y de libro, acciones de Tokio | *"not profitable when transaction costs are included"* | minutos, **otro mercado**: por `F13` no cuenta para el ES en ninguna dirección; cuenta como (B) de la clase 1 de `INVENTARIO_2` en general |
+
+**Sobre qué franja queda tocada, con precisión, porque Roberto lo pidió así:**
+
+| franja | estado después de esta vuelta |
+|---|---|
+| **60-120 min, 1 por día, ES** | **(B), publicado, sobre nuestro instrumento, 23 años.** BLW |
+| 30 min, 1 por día, índice | **(B), publicado.** Gao Tabla 13 (§1) |
+| **1-30 min, ≥ 5 por día, ES** | **SIN TOCAR.** BLW no mira ahí: sus ventanas son horarias. Nada de lo leído entra en esta franja |
+| segundos, ES | el nulo propio de G a 30 s (`9a02717`) |
+
+> **La respuesta de la Tarea 2 no cambia de tamaño: BLW cierra la grilla horaria del ES, no el hueco de
+> 1 a 30 minutos.** Lo que agrega es que el cierre de la grilla gruesa ahora está en **nuestro
+> instrumento** y no sólo en SPY.
+
+**Y una lectura del mecanismo de BLW que sí alcanza a la franja fina, como argumento y no como
+medición:** si el creador de mercado fija el diferencial donde la operación horaria deja de pagar, con
+más razón lo fija donde la de minutos deja de pagar —el diferencial es el mismo y el movimiento es
+menor (`D17`)—. Es un argumento; la franja de 1-30 min sigue **sin medición publicada**.
+
 # 2. Evidencia de (B) por mecanismo, en la grilla de 1 a 5 minutos — de memoria y FRÁGIL, para que Roberto la verifique
 
 **Estas tres las cito de memoria; no tengo el texto y van a la lista de lecturas de Roberto.**
