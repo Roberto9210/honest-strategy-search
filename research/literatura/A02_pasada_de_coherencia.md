@@ -1,6 +1,6 @@
 # A02 — Pasada de coherencia sobre la carpeta
 
-**VENTANA L. NO MIDE NADA. K sigue en 261. Aplicación de `F13`, punto 3.**
+**VENTANA L. NO MIDE CANDIDATAS; corre CONTROLES DEL INSTRUMENTO desde el 2026-09-05 (rol ampliado por Roberto, ver `INDICE`). K sigue en 261. Aplicación de `F13`, punto 3.**
 
 **Presupuesto:** la pasada llevó bastante menos que las tareas 1 y 2 juntas, así que la hice
 completa. **Es una lista, no una reescritura.**
