@@ -1,6 +1,6 @@
 # D11 — La salida de L03 cae exactamente cuando los de alta frecuencia deshacen. El signo, razonado.
 
-**VENTANA L. NO MIDE NADA. K sigue en 261. EL RANKING SIGUE CONGELADO: no recalculo ningún margen.**
+**VENTANA L. NO MIDE CANDIDATAS; corre CONTROLES DEL INSTRUMENTO desde el 2026-09-05 (rol ampliado por Roberto, ver `INDICE`). K sigue en 261. EL RANKING SIGUE CONGELADO: no recalculo ningún margen.**
 
 ---
 
