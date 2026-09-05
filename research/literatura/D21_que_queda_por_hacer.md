@@ -1,6 +1,6 @@
 # D21 — ¿Queda algo que la VENTANA L pueda hacer que cambie un veredicto? La respuesta derecha, con el número al lado.
 
-**VENTANA L. NO MIDE NADA —salvo el control de hoy, por instrucción—. K sigue en 261.**
+**VENTANA L. NO MIDE CANDIDATAS; corre CONTROLES DEL INSTRUMENTO desde el 2026-09-05 (rol ampliado por Roberto, ver `INDICE`). K sigue en 261.**
 
 **La pregunta de Roberto, sin esperanza:** con `D20` escrito, las tres salidas alternativas medidas y
 muertas, y una sola forma lógica sobreviviente sin ejemplar conocido, **¿qué tarea concreta, qué
