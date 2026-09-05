@@ -339,6 +339,87 @@ vale.** Es caro y es opcional; si no se hace, se declara que no se hizo.
 
 ---
 
+**Control 7 — EL PLACEBO GRATIS DE L03: los anuncios oficiales.**
+
+**Bernile, Hu y Tang (2016), *Journal of Financial Economics* 121(3), 496-520, publican un resultado
+nulo que sirve de placebo dentro de la misma muestra: encuentran comercio informado en los embargos
+del comité de política monetaria y NO lo encuentran en los encierros de nóminas no agrícolas, índice
+de precios al productor ni producto bruto.**
+
+Y encaja con lo que ya estaba anotado en L03: **los cuatro anuncios con deriva en el ES son todos de
+organismos privados** —dos del Instituto de Gestión de Suministros y dos de la asociación de agentes
+inmobiliarios—, **y ninguno del gobierno**.
+
+**La predicción publicada, entonces, tiene dos mitades:**
+
+```
+en los CUATRO anuncios privados de las 10:00     →  debe aparecer deriva
+en nóminas, precios al productor y producto bruto →  NO debe aparecer
+```
+
+| resultado | qué significa |
+|---|---|
+| deriva en los privados, nada en los oficiales | **el mecanismo publicado se sostiene.** El acceso temprano privado explica dónde pasa |
+| nada en ninguno | el efecto no transfiere a 2016-2019, que es un resultado limpio |
+| **deriva en los DOS** | **CONDICIÓN DE FALLA.** Lo que se está midiendo no es acceso privado a la información. O el mecanismo está mal contado, o la construcción tiene un sesgo común a todos los anuncios |
+| deriva sólo en los oficiales | contradice a los dos papers. Revisar la construcción antes de interpretar |
+
+**No cuesta nada: son los mismos datos, la misma ventana y el mismo código, sobre otro conjunto de
+fechas que también es público y gratuito.** Es un control que puede fallar y que sale gratis, que es
+la mejor clase que hay.
+
+**Control 8 — LA SEGUNDA SERIE DE L11: la tasa libre de riesgo.**
+
+Savor y Wilson no publican una serie sino **dos**, y yo había usado sólo la accionaria. La sección
+III.G reporta que la tasa libre de riesgo es **más baja** en días de anuncio, y da los dos
+subperíodos:
+
+| | diferencia accionaria | **diferencia en la tasa libre de riesgo** |
+|---|---|---|
+| 1958-1983 | 8,7 pb | **−0,7 pb** |
+| 1984-2009 | 11,4 pb | **−0,6 pb** |
+
+**"Casi iguales entre las dos submuestras"**, en palabras de los autores.
+
+**Por qué vale mucho más que un control cualquiera:** son **dos series independientes moviéndose en
+la dirección que predice el mismo mecanismo**. Si en los días de anuncio se paga una prima por
+soportar riesgo, entonces el activo riesgoso rinde más **y** el activo seguro se encarece. Que la
+segunda serie sea **estable entre mitades** es exactamente la clase de evidencia que el filtro de
+edad busca y casi nunca encuentra.
+
+**Cómo entra:** como control, no como término del estadístico agrupado. Datos gratuitos y públicos
+de la tasa de letras del Tesoro a tres meses.
+
+| resultado | qué significa |
+|---|---|
+| efecto accionario positivo **y** tasa libre de riesgo más baja | las dos predicciones del mecanismo se cumplen |
+| efecto accionario positivo, **tasa sin efecto o al revés** | **CONDICIÓN DE FALLA de la interpretación**, no del número. El retorno accionario existiría pero **la lectura de prima de riesgo no tendría apoyo**, y habría que buscarle otra explicación antes de usarlo |
+| ninguno de los dos | el efecto no transfiere |
+
+**Ese matiz es importante y va escrito: el control 8 puede fallar sin que falle la medición.** Separa
+"hay un retorno" de "hay un retorno por este motivo", y para este proyecto la diferencia decide si un
+positivo es una ventaja o el pago por un riesgo real con cola izquierda.
+
+---
+
+# L03 entra, y L07 no
+
+**L03 ENTRA**, como híbrida sin grado de libertad. El criterio y la resolución están en
+[HIBRIDAS.md](HIBRIDAS.md): la pieza que faltaba está publicada en Bernile, Hu y Tang (2016) sobre el
+propio E-mini, y las dos decisiones residuales quedan pinchadas a la construcción de Kurov et al.
+
+**Sigue sin peso asignado**, porque su magnitud publicada de 5,4 a 10,4 puntos básicos es la
+respuesta a la **sorpresa**, no al **desbalance de órdenes**, y la correlación entre los dos es
++0,19. **Poner un número ahí sería inventarlo.** La magnitud de la versión operable hay que extraerla
+de Bernile et al., y ése es el paso de literatura pendiente.
+
+**L07 NO ENTRA, y el motivo es que entraría demasiado fuerte.** Con la magnitud ya extraída —1,8
+puntos básicos sobre una ventana de diez minutos, todos los días— aportaría entre cinco y quince
+veces más que L11 y L10 juntas, y la prueba agrupada dejaría de medir lo que dice medir. **Se corre
+sola: ver [P05](P05_L07_sola.md).**
+
+---
+
 # Lo que hace falta antes de poder correrla
 
 | paso | qué es | costo | ¿bloquea? |
