@@ -1,6 +1,6 @@
 # LECTURAS PARA ROBERTO — lo que a esta ventana le rebotó, con qué buscar en cada una
 
-**VENTANA L. NO MIDE NADA. K sigue en 261.** Roberto puede leer páginas que a mí me devuelven 403 o
+**VENTANA L. NO MIDE CANDIDATAS; corre CONTROLES DEL INSTRUMENTO desde el 2026-09-05 (rol ampliado por Roberto, ver `INDICE`). K sigue en 261.** Roberto puede leer páginas que a mí me devuelven 403 o
 binario. **Para cada ítem: qué es, dónde, qué extraer exactamente, y a qué documento alimenta.** Con
 esto `INVENTARIO_2` y `D18` dejan de tener el límite declarado.
 
