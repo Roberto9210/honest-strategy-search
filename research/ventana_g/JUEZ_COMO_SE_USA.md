@@ -402,6 +402,45 @@ medio-spread de ES aplicado a 6E devuelve un número con cara de veredicto. `cal
 única herencia permitida es MES ← ES, declarada **como herencia** en la propia ficha (mismo
 subyacente, mismo libro, mismo tick en puntos).
 
+**Cada constante MEDIDA lleva su TAMAÑO DE MUESTRA, y hay mínimo.** Una calibración hecha con 3 días
+pasaba la misma compuerta que la del ES hecha con 1.006 sesiones, y no son lo mismo: medido en
+`cortes_tercil_muestra.py`, con los cortes de tercil estimados sobre *n* sesiones el porcentaje de
+sesiones que **cambian de etiqueta** contra los cortes del período entero es **34% a n=3**, 15% a
+n=25, 10% a n=50, 7% a n=100, **4,7% a n=250** y 3,3% a n=500. Como el veredicto por régimen exige
+que la ventaja aguante en **los tres** terciles, una etiqueta equivocada mueve sesiones de tercil: el
+mínimo se fija en **250** para los cortes, el exceso en el stop y la constante de sobrepaso.
+
+Y hay una segunda exigencia que **no es de tamaño sino de reparto**: en ventanas **contiguas** —que
+es lo que pasa al comprar *n* días seguidos— el error de etiqueta a n=250 sigue en **29%** y a n=500
+en 20%. Eso es **sesgo, no varianza**, y no baja comprando más días seguidos: baja comprando días
+**repartidos por régimen**. Las tres constantes de microestructura piden pocos días pero
+`reparto="repartido"`, y la ficha lo verifica.
+
+### La plomería por instrumento: NO IMPLEMENTADA
+
+**Marcado a propósito, para que nadie lo lea como funcionando.** La ficha y la compuerta son reales;
+**el cálculo todavía está cableado al ES**. Quedan cuatro constantes leyéndose de los globales del ES
+dentro de `juzgar_periodo`:
+
+1. `EXCESO_STOP` — el exceso medio en el stop (`media_exceso.py`, ES)
+2. `O_SOBREPASO` / `O_ERROR_REL` — la constante de sobrepaso del bracket (`sesgo_marco.py`, ES)
+3. `MARKOUT_PASIVO` y `LLENADO_PASIVO` — el modo pasivo, vía `m["mk_ses_pt"]` y `m["fi_ses"]`
+4. `m["slip_ses_pt"]` — el deslizamiento de entrada, que `cargar_mercado()` arma con el
+   `DESLIZAMIENTO_ENTRADA` del ES y el eje de terciles del ES
+
+Y además el camino de datos entero: **`cargar_mercado()` lee ES 1-min y nada más.**
+
+**Por qué no se terminó:** terminarla exige que `cargar_mercado()` sepa cargar otro instrumento, y
+**no hay datos de otro instrumento en el repo** — el paquete de divisas está *cotizado*, no comprado.
+Sería escribir un camino de código que no se puede correr ni una vez y que los diez controles no
+tocarían. Código sin una corrida encima es exactamente lo que este juez existe para no aceptar.
+
+**Y para que no dependa de la compuerta:** hay una **tercera cerradura dentro del cálculo**,
+`exigir_plomeria()`, que se llama al principio de `juzgar_periodo`. Si mañana alguien completa la
+ficha de 6E, la compuerta de la ficha se abre — y el cálculo **igual se niega**, con la lista de las
+cuatro constantes cableadas. Completar la ficha no alcanza: hay que terminar el cálculo y volver a
+correr los diez controles.
+
 **Y esto abarata a las candidatas de la VENTANA L:** L07 y L08 **no usan bracket** —miden el retorno
 de una ventana declarada—, así que se caen los dos ítems más caros (sobrepaso y exceso en el stop).
 Para juzgarlas en modo cruce alcanza con punto y tick (gratis), comisión (una lectura),
