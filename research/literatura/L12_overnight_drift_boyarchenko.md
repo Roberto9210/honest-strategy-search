@@ -68,6 +68,28 @@ mismo instrumento; NO confirmación de un número. Las confirmaciones siguen sie
   predictor de la noche siguiente**: es la clase 1 de `INVENTARIO_2` a escala de horas, y G tiene el
   dato para mirarla sin comprar nada. No es candidata: 1/día.
 
+## 9. La amplificación por volatilidad ex-ante: **la QUINTA confirmación externa, de criterio, con su alcance escrito**
+
+BLW p. 27 (leído por Roberto, textual): *"ex-ante volatility has a strong amplification effect on the
+relationship between order imbalance and overnight returns between 2:00 – 3:00."*
+
+**Lo que la casa tiene:** un eje de régimen **ex-ante** —la volatilidad de la sesión anterior, en puntos
+básicos— que G construyó, puso a prueba con una condición escrita antes (monotonía y cociente ≥ 3) y que
+**pasó**: *"VEREDICTO: el eje ex-ante EXISTE. El mejor es ANTERIOR (sesión anterior)"*
+(`salida_juez_regimen_exante.txt`). El juez juzga con él.
+
+**¿Es el mismo objeto?** El **criterio** sí: *la variable que condiciona el fenómeno en el ES es la
+volatilidad ex-ante*. El **instrumento** sí: el ES. Lo que difiere: BLW la miden con el VIX (implícita) y
+G con el rango realizado de la sesión anterior; y BLW la usan sobre una relación desbalance→retorno y G
+sobre el piso del juez. **Por eso cuenta como confirmación de CRITERIO —como la vara de 3,0 contra
+Harvey-Liu-Zhu y la categoría de costo contra Fett-Haynes— y no de número: no confirma los cortes de
+tercil, ni el factor 52, ni el piso por régimen.**
+
+> **Quinta confirmación externa: el eje de régimen es la volatilidad ex-ante, en el ES, publicado por
+> otro equipo. Las tres consistencias de mecanismo (BLW p. 7, Menkveld, Brogaard) siguen siendo
+> consistencias y no confirmaciones; ésta es distinta porque valida una elección de diseño de la casa
+> sobre el mismo instrumento.** Si alguien no la cuenta, siguen siendo cuatro y nada más cambia.
+
 ## 8. Lo que la mataría del todo, y lo que no
 
 Ya está cerrada por F17 y por la balanza. **Lo único que la reabriría es la fila 11 de F16 dando "sí" Y
