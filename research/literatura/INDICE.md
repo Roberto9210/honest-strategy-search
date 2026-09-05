@@ -28,16 +28,23 @@ candidatas fueron clasificadas **antes** de cualquier medición.
 > Y la literatura ya tenía la respuesta: el remedio para un resultado preseleccionado es **recortar
 > la magnitud objetivo, no la vara**. **En la práctica no cambiaba nada de todos modos.**
 
-> ## ORDEN ACTUALIZADO — 2026-09-05
+| [FRAGILIDAD.md](FRAGILIDAD.md) | de cuántos números **sin medir** cuelga cada conclusión |
+| [D03](D03_recorte_harvey_liu.md) y [D04](D04_jensen_kelly_pedersen.md) | el recorte de Harvey y Liu aplicado, y por qué el marco de Jensen, Kelly y Pedersen no aplica |
+
+> ## ORDEN VIGENTE — 2026-09-05, tras corregir la contaminación de F7
 >
-> El paso de lectura interna de [F7](F7_EDAD_DE_LA_EVIDENCIA.md) movió **tres de once**, y la tabla
-> de más abajo quedó vieja en esas tres filas. **El orden vigente es:**
+> **L11 · L10 · L07 · L01 · L08 · L06 · L09 · L03 · L04 · L02 · L05**
 >
-> **L11 · L08 · L01 · L10 · L07 · L06 · L09 · L03 · L04 · L02 · L05**
+> **La tabla de más abajo quedó vieja en la columna de grado y en el orden.**
 >
-> **L01 sube dos** por verificar estabilidad sobre una partición cronológica de cuarenta y seis años.
-> **L07 baja tres** por dos señales de declive escritas en su propio paper. El primer puesto no
-> cambia.
+> **NINGUNA de las once conserva grado A.** La confirmación posterior sólo cuenta si su muestra **no
+> se superpone** con 2016-2019, y la de L11 la cubre, la de L01 también, y la de L08 no se pudo
+> verificar. **Cuatro de once cambian de posición y el primer puesto no se cae**, pero L11 lo
+> conserva por otro motivo: con todas en grado B, **el desempate lo hace la distancia a un
+> veredicto**, no la evidencia.
+>
+> **Consecuencia incómoda: corregido, `F7` casi no discrimina arriba.** Sigue sirviendo abajo, donde
+> separa a L03 y L02 por evidencia negativa, que la corrección no toca.
 >
 > ## Y una advertencia sobre las dos que el juez puede juzgar hoy
 >
