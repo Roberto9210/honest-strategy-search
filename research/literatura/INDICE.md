@@ -14,6 +14,21 @@ candidatas fueron clasificadas **antes** de cualquier medición.
 | ~~[P01](P01_PREREGISTRO_prueba_agrupada.md)~~ | **⛔ CERRADO.** El instrumento detecta 0,72 y la hipótesis pide 0,25. Ver **[D05](D05_la_pregunta_que_bloquea.md)** |
 | **[D05](D05_la_pregunta_que_bloquea.md)** | **por qué se cierra, con las cuatro salidas descartadas y el número de cada una** |
 | [A01](A01_auditoria_de_fechas.md) y [A02](A02_pasada_de_coherencia.md) | la auditoría de fechas del CME, y la pasada de coherencia sobre los 39 documentos |
+| **[D06](D06_balanza_ciega.md)** y **[D07](D07_las_tres_no_evaluables.md)** | **la regla de la balanza ciega aplicada a las once, y las tres que no tenían magnitud** |
+| **[F15](F15_regla_de_la_ventana.md)** | **la regla de la ventana: qué forma debe tener una candidata antes de que exista** |
+| [F14](F14_fuente_fiscalizacion.md) | la fuente de fiscalización, con su filtro y su registro de descarte |
+| [A03](A03_variables_tratadas_como_constantes.md) | dónde tratamos una variable como constante |
+
+> ## ESTADO DE LAS ONCE — 2026-09-05, por la balanza ciega
+>
+> | veredicto | cuántas | cuáles |
+> |---|---|---|
+> | **CIEGA, cerrada con número** | **6** | L02, L04, L06, L09, L10, L11 |
+> | **REQUIERE MEDICIÓN, bloqueada** | **4** | L01 y L03 esperan el perfil de volatilidad; L07 y L08 esperan una decisión de compra |
+> | **NO EVALUABLE COMO REGLA** | 1 | L05, con su contribución máxima acotada e insuficiente |
+>
+> **Ninguna candidata del inventario está disponible para trabajar hoy.** Las seis cerradas lo están
+> con su número; las cuatro abiertas dependen de terceros.
 
 > ## ⛔ LA PRUEBA AGRUPADA SE CERRÓ — 2026-09-05
 >
