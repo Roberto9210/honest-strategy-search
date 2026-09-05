@@ -12,10 +12,9 @@
 **Por eso esta fuente NO se evalúa como generadora de candidatas. Se evalúa como fuente de hechos, y
 se apunta a lo que ya tenemos abierto.**
 
-**Alcance: Roberto lo amplió a ocho documentos más sobre los tres iniciales. Van seis: cinco con
-hecho y uno muerto por instrumento. Un séptimo —Haynes y Roberts, *Automated Trading in Futures
-Markets*, la actualización— no se pudo bajar: el archivo supera el límite de descarga, y queda
-pendiente.** Criterio de muerte, fijado por él: **si no describe nuestro
+**Alcance: Roberto lo amplió a ocho documentos más sobre los tres iniciales. Van siete: seis con
+hecho y uno muerto por instrumento. Haynes y Roberts, que no bajaba por tamaño, bajó por otra vía
+y es el Hecho 6.** Criterio de muerte, fijado por él: **si no describe nuestro
 instrumento o nuestro período, se mata y se dice por qué.**
 
 ---
@@ -268,6 +267,57 @@ suman **44,7 %** del volumen en 2010; Coughlan y Orlov miden **45,0 %** de prome
 
 ---
 
+# HECHO 6 — Cuánto del E-mini es automático, cuánto es de cuentas chicas, y qué tan rápido netean las grandes
+
+**Fuente:** Haynes, Richard y Roberts, John S., Oficina del Economista Jefe, *"Automated Trading in
+Futures Markets — Update"*, 29 de marzo de 2017. Actualiza el documento blanco de marzo de 2015.
+`cftc.gov/.../oce_automatedtrading_update.pdf` (11,6 MB; no lo bajó la herramienta de lectura y lo bajé
+con `curl`).
+**Datos: transacciones del CME, dos períodos: 12-nov-2012 → 31-oct-2014 y 1-nov-2014 → 31-oct-2016.**
+"Automático" es la marca del propio CME sobre cada lado de cada operación.
+
+## Los números para el E-mini del S&P 500, y sólo para él
+
+| Tabla 3 — por tipo de las dos puntas | 2012-14 | **2014-16** |
+|---|---|---|
+| automático contra automático | 43,4 % | **50,6 %** |
+| automático contra manual | 42,6 % | **39,3 %** |
+| manual contra manual | 13,8 % | *(ilegible en mi extracción; ~10 % por diferencia)* |
+
+| Tabla 5 — por tamaño de cuenta (grande = ≥ 0,5 % del volumen del día) | 2012-14 | **2014-16** |
+|---|---|---|
+| cuentas **chicas**, número | 126.675 | **143.363** |
+| volumen de las chicas, automático / manual | 19,2 % / 29,3 % | **19,5 % / 25,5 %** |
+| cuentas **grandes**, número | 469 | **423** |
+| volumen de las grandes, automático / manual | 45,5 % / 5,8 % | **50,8 % / 4,0 %** |
+
+| Tabla 8 — cuentas grandes automáticas: fracción de su volumen que **netean** dentro de la ventana | 2012-14 | **2014-16** |
+|---|---|---|
+| en **1 minuto** | 57,7 % | **66,8 %** |
+| en 3 minutos | 69,3 % | 77,0 % |
+| en 5 minutos | 73,5 % | 80,4 % |
+| en el día entero | 86,7 % | 90,8 % |
+
+## Por qué importa acá, en tres líneas
+
+1. **Roberto está en la fila "cuentas chicas, manual"** —25,5 % del volumen— y al automatizar pasa
+   a "chicas, automático", 19,5 %. **Es la primera vez que una fuente pone un número a la población
+   a la que él pertenece, en su instrumento.**
+2. **423 cuentas hacen el 54,8 % del volumen; 143.363 hacen el 45 %.** El factor 25 otra vez, con
+   el registro completo del CME y no una muestra.
+3. **Tabla 8 es Kirilenko en la caja de herramientas del regulador**: `mín(compras, ventas) / volumen`
+   por ventana. **Las grandes automáticas netean dos tercios de su volumen en un minuto.** Para `D11`
+   y `D12`: la liquidación rápida de inventario no es una rareza de mayo de 2010, es la norma en
+   2014-2016. **No dice si ocurre en 5 o en 50 segundos**, que es lo que `D11` necesita.
+
+## Lo que lo mataría
+
+**El período termina en octubre de 2016: se solapa con el nuestro en diez meses.** El instrumento es
+el correcto. **Y "automático" no es "alta frecuencia"**: el 50,6 % de Tabla 3 y el 45 % de Coughlan
+y Orlov son definiciones distintas, **y que caigan cerca no es confirmación de nada.**
+
+---
+
 # MUERTO — Raman, Robe y Yadav, *"Electronic Market Makers, Trader Anonymity and Invisible Liquidity"*, regulador, 2012
 
 **Instrumento: crudo WTI. Períodos: 2006, 2008 y 2011.** Cincuenta y dos creadores de mercado
@@ -282,11 +332,11 @@ promedie "por participante" en un mercado así describe al 99,65 % que hace la o
 
 ---
 
-# BALANCE de la fuente, con seis documentos
+# BALANCE de la fuente, con siete documentos
 
 | | |
 |---|---|
-| **hechos con número extraídos** | **6**: latencia de 200 ms, factor 25 de ponderación, cinco niveles del libro del E-mini en 2013-2016, la categoría de tamaño que define el costo, **45 % de volumen de alta frecuencia en el ES, 2012-2021**, y **16 cuentas = 34 % del volumen en 2010, con la definición textual** |
+| **hechos con número extraídos** | **7**: latencia de 200 ms, factor 25 de ponderación, cinco niveles del libro del E-mini en 2013-2016, la categoría de tamaño que define el costo, **45 % de volumen de alta frecuencia en el ES, 2012-2021**, **16 cuentas = 34 % del volumen en 2010, con la definición textual**, y **la población de Roberto: cuentas chicas manuales = 25,5 % del volumen del E-mini en 2014-16, y las grandes automáticas netean el 67 % en un minuto** |
 | hechos cualitativos | 1: el diseño de la liquidación afecta el comportamiento en la ventana |
 | **confirmaciones externas de números de la casa** | **2**: la latencia y el modelo de costo. Son la **tercera y la cuarta** del proyecto |
 | huecos nombrados | **1**: el tercer escalón de latencia, que no bloquea a ninguna candidata actual |
