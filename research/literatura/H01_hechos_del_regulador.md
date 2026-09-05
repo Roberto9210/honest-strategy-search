@@ -203,8 +203,10 @@ del regulador que describe nuestro instrumento en nuestro período **sin borde.*
 ## Por qué importa acá
 
 **Es un número de `F10` —cuánta gente adentro— medido por quien tiene el registro completo.** Cerca
-de la mitad del volumen del ES en nuestro período está del lado de los que responden en menos de
-200 milisegundos (Hecho 1).
+de la mitad del volumen del ES en nuestro período está del lado de lo que Coughlan y Orlov llaman alta
+frecuencia. *(Que ese grupo sea el de los "menos de 200 ms" del Hecho 1 es una identificación mía entre
+dos definiciones de dos documentos distintos. **Falla** si la definición de Coughlan y Orlov incluye
+cuentas que no son las del Hecho 1. Ver `A06`.)*
 
 **Y toca a L03 por donde ya estaba tocada:** su salida es una ventana de segundos después de una
 publicación. **La contraparte en esa ventana es, por construcción, de este grupo.**
@@ -307,8 +309,11 @@ con `curl`).
    el registro completo del CME y no una muestra.
 3. **Tabla 8 es Kirilenko en la caja de herramientas del regulador**: `mín(compras, ventas) / volumen`
    por ventana. **Las grandes automáticas netean dos tercios de su volumen en un minuto.** Para `D11`
-   y `D12`: la liquidación rápida de inventario no es una rareza de mayo de 2010, es la norma en
-   2014-2016. **No dice si ocurre en 5 o en 50 segundos**, que es lo que `D11` necesita.
+   y `D12`: netear en un minuto es lo que se mide; que sea *liquidación de inventario* es lectura
+   mía, porque netear compras y ventas dentro de un minuto es consistente con creación de mercado
+   **y** con absorción-y-liquidación, y la tabla no las distingue. *(**Falla** si el neteo viene de
+   cotizar los dos lados y no de deshacer inventario. Ver `A06`.)* **Y no dice si ocurre en 5 o en 50
+   segundos**, que es lo que `D11` necesita.
 
 ## Lo que lo mataría
 
