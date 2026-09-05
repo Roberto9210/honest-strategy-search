@@ -164,6 +164,24 @@ NO GASTA CARTUCHO. K = 261. Dinero: $0. La caja sellada no se toca.
    Dispersion de la forma SOLO en las cajas de factor >= 1 (15 cajas, los picos): mediana 11.0%
    Dispersion de la forma en las cajas de factor < 1 (31 cajas, la madrugada):    mediana 15.6%
 
+   CAJA POR CAJA, las de factor >= 1. 'rango' = mayor/menor entre los cuatro anos.
+      #    hora   factor    2016    2017    2018    2019   rango    disp   veredicto
+     18   02:00     1.12    1.32    1.08    0.95    1.15    1.39   13.6%   NO - medir por periodo
+     29   07:30     1.00    0.95    0.99    1.00    1.08    1.14    5.4%   CONSTANTE
+     31   08:30     2.20    2.03    2.26    2.11    2.39    1.18    7.2%   CONSTANTE
+     32   09:00     1.72    1.84    1.73    1.55    1.76    1.19    7.1%   CONSTANTE
+     33   09:30     1.70    1.60    1.87    1.62    1.70    1.17    7.2%   CONSTANTE
+     34   10:00     1.68    1.34    2.23    1.67    1.50    1.67   23.1%   NO - medir por periodo
+     35   10:30     1.52    1.29    1.69    1.56    1.57    1.31   11.0%   NO - medir por periodo
+     36   11:00     1.35    1.23    1.47    1.47    1.23    1.20   10.5%   CONSTANTE
+     37   11:30     1.22    1.06    1.30    1.40    1.14    1.32   12.5%   NO - medir por periodo
+     38   12:00     1.27    1.12    1.38    1.29    1.27    1.23    8.6%   CONSTANTE
+     39   12:30     1.32    1.26    1.44    1.46    1.13    1.28   11.7%   NO - medir por periodo
+     40   13:00     1.42    1.47    1.35    1.53    1.31    1.16    7.0%   CONSTANTE
+     41   13:30     1.47    1.41    1.35    1.75    1.37    1.30   12.8%   NO - medir por periodo
+     42   14:00     1.49    1.64    1.42    1.69    1.21    1.40   14.9%   NO - medir por periodo
+     43   14:30     1.85    1.37    1.89    2.33    1.80    1.70   21.4%   NO - medir por periodo
+
    NO ES ESTABLE DEL TODO, y hay que decir DONDE no lo es, porque el promedio miente.
    El NIVEL se mueve 2.5x entre anos: eso ya se sabia y no es la
    novedad. La FORMA normalizada tiene correlacion minima 0,79 entre pares de anos, que

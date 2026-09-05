@@ -215,6 +215,21 @@ def main():
       f"mediana {np.median(disp[grandes]):.1%}")
     A(f"   Dispersion de la forma en las cajas de factor < 1 ({len(chicas)} cajas, la madrugada):    "
       f"mediana {np.median(disp[chicas]):.1%}")
+    # PERO "las cajas grandes son estables" es un PROMEDIO, y adentro no todas lo son. Se lista caja
+    # por caja para que nadie tome como constante una que no lo es -en particular la del cierre del
+    # contado, que es la que mira Baltussen-.
+    A("")
+    A("   CAJA POR CAJA, las de factor >= 1. 'rango' = mayor/menor entre los cuatro anos.")
+    A(f"   {'#':>4}{'hora':>8}{'factor':>9}" + "".join(f"{y:>8}" for y in ANIOS)
+      + f"{'rango':>8}{'disp':>8}   veredicto")
+    for j in grandes:
+        jj = int(vivas[j])
+        vals = np.array([M[i, j] for i in range(len(ANIOS))])
+        rango = vals.max() / vals.min()
+        ok = rango <= 1.25
+        A(f"   {jj:>4}{hora_ini[jj]:>8}{np.nanmean(vals):>9.2f}"
+          + "".join(f"{v:>8.2f}" for v in vals)
+          + f"{rango:>8.2f}{disp[j]:>8.1%}   {'CONSTANTE' if ok else 'NO - medir por periodo'}")
     estable = corr[np.triu_indices(len(ANIOS), 1)].min() > 0.9 and np.median(disp) < 0.15
     A("")
     if estable:

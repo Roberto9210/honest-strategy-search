@@ -7,6 +7,49 @@ Lo leí de ahí, no lo toqué.*
 
 ---
 
+## 0. CORRECCIÓN URGENTE AL PERFIL INTRADIARIO — antes de aplicarlo al ranking
+
+**Se me devolvió mi propio resultado con una generalización que mi medición NO sostiene, y hay que
+pararla antes de que entre en el ranking de candidatas.**
+
+Lo que escribí: *"los factores de las cajas grandes sirven como constantes; los de la madrugada hay
+que medirlos en el período del candidato"*. Eso salió de mirar **dos** cajas: la #31 (apertura) y la
+#15 (madrugada). Es cierto como promedio y **falso caja por caja** — y falso justamente en la que
+importa para Baltussen.
+
+De las 15 cajas de factor ≥ 1, sólo **7** son constantes dentro de ±25% entre 2016 y 2019:
+
+| caja | hora CT | factor | 2016 | 2017 | 2018 | 2019 | rango | veredicto |
+|---|---|---|---|---|---|---|---|---|
+| #31 | 08:30 (apertura contado) | 2,20 | 2,03 | 2,26 | 2,11 | 2,39 | **1,18** | **CONSTANTE** |
+| #32 | 09:00 | 1,72 | 1,84 | 1,73 | 1,55 | 1,76 | 1,19 | CONSTANTE |
+| #33 | 09:30 | 1,70 | 1,60 | 1,87 | 1,62 | 1,70 | 1,17 | CONSTANTE |
+| #34 | 10:00 | 1,68 | 1,34 | 2,23 | 1,67 | 1,50 | 1,67 | NO |
+| **#43** | **14:30 (cierre contado)** | **1,85** | **1,37** | **1,89** | **2,33** | **1,80** | **1,70** | **NO — medir por período** |
+
+**La caja #43 es la última media hora del contado: la de Baltussen, la de L01, la que el ranking está
+por usar.** Su factor va de **1,37 en 2016 a 2,33 en 2018**, un rango de 1,70× y dispersión 21,4% —
+la segunda peor de las quince. Tratarla como constante mete un error de hasta 70% en el desvío que se
+use para esa ventana, y el error **no es simétrico**: en 2018 subestimaría el ruido casi a la mitad.
+
+**Qué hacer con esto:** para L01 y cualquier candidata que opere el cierre, el factor de la ventana
+hay que medirlo **en los años del candidato**, no tomarlo de la tabla agregada. Para la apertura
+(#31-#33) el factor agregado sirve. La tabla completa con el veredicto por caja está en
+`salida_perfil_intradia.txt`.
+
+*Que esto haya aparecido devuelto como una generalización mía es culpa mía por escribirla así, no de
+quien la relayó. La corrijo acá con la tabla en vez de sólo con la frase.*
+
+### Sobre la conversión de Baltussen: sigue FRÁGIL y no la puedo cerrar yo
+
+Mi diagnóstico (396/√252 = 24,95 ≈ 25 contra 396/252 = 1,57) **explica el número que me pasaron, no
+verifica el 3,96%**. Cerrarlo exige leer el paper, que es trabajo de literatura y no mío: no tengo el
+texto y no lo voy a inferir. Hasta que la VENTANA L lo confirme contra la fuente, el contraste
+correcto **no está establecido** — lo que está establecido es que 25 pb es incompatible con un desvío
+medido de 20,92 pb en esa ventana, porque serían 1,20 desvíos capturados por evento.
+
+---
+
 ## 1. DOS COSAS DE FECHAS QUE ROMPEN LA ESPECIFICACIÓN TAL COMO ESTÁ ESCRITA
 
 ### 1.1 — El evento 48 de L10 cae DENTRO de la caja sellada
