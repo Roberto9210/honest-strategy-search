@@ -1,6 +1,6 @@
 # D03 — El recorte de Harvey y Liu, aplicado a las magnitudes objetivo
 
-**VENTANA L. NO MIDE NADA. K sigue en 261.**
+**VENTANA L. NO MIDE CANDIDATAS; corre CONTROLES DEL INSTRUMENTO desde el 2026-09-05 (rol ampliado por Roberto, ver `INDICE`). K sigue en 261.**
 
 Continuación de la línea que abrieron `P02` y `P03`: **el remedio publicado para un resultado
 preseleccionado es recortar la magnitud esperada, no bajar la vara.**
