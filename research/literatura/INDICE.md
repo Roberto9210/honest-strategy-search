@@ -24,6 +24,8 @@ candidatas fueron clasificadas **antes** de cualquier medición.
 | **[D10](D10_trampa_de_profundidad.md)** | **para G: el ES publica diez niveles hoy y publicaba cinco en 2013-2016. Lo que ve la plataforma de Roberto se cuenta, no se busca** |
 | **[R01](R01_regla_atipicos_1987.md)** | **regla sellada antes de mirar: un evento fuera del dominio del eje de régimen se excluye por regla, y octubre de 1987 no es el mismo objeto** |
 | **[T01](T01_franjas_horarias.md)** | **ranking congelado: en qué franja vive cada sobreviviente, para aplicar el perfil en diez minutos. Los cinco viven en picos** |
+| **[F17](F17_frecuencia_minima.md)** | **FRECUENCIA MÍNIMA, escrito antes de buscar: umbral como parámetro nombrado, con las dos tablas de G (la corregida manda) y las cerraduras del reglamento adentro** |
+| **[INVENTARIO_2](INVENTARIO_2_frecuencia.md)** | **la búsqueda nueva con F17 primero: microestructura del E-mini, regulador, flujo y libro. El resultado, con cada clase y por qué** |
 | **[D14](D14_la_cuenta_de_los_anios.md)** | **trece filas × 4/8/12/16 años: una sola cruza con años que existen fuera de muestra y de la caja (L03, por 3 %). Los cuatro años explican una fila** |
 | **[D15](D15_el_instrumento_no_auditado.md)** | **dos generadores, un resultado: el instrumento no está mal calibrado (los controles lo prueban), mide rentabilidad a escala y no existencia; once pruebas sin potencia; la vara 3,0 es generosa (Bonferroni K=261 = 3,73)** |
 | **[D16](D16_L10_una_hora_decision.md)** | **L10 en una hora: (A) cartucho, (B) 30 segundos, (C) cerrar. Recomendación (C): la magnitud publicada no vive en ninguna ventana intradiaria. Inventario en cero limpio** |
@@ -42,7 +44,7 @@ candidatas fueron clasificadas **antes** de cualquier medición.
 > | veredicto | cuántas | cuáles |
 > |---|---|---|
 > | **CERRADA con número** | **7** | L02, L04, **L05**, L06, L09, L10, L11 |
-> | **ABIERTA, bloqueada por terceros** | **4** | L01 y L03 esperan el perfil de volatilidad; L07 y L08 esperan una decisión de compra |
+> | **ABIERTA, bloqueada por terceros** | **4** | L01 y L03 esperan el perfil de volatilidad; L07 y L08 esperan una decisión de compra. **2026-09-05, tarde: L01 y L03 CIEGAS con el perfil (`D13`); L11 MUERTA por reglamento (`R03`); L07 y L08 bloqueadas por plomería, no por reglamento; L10 en una hora cerrada (`D16`). Ruta vieja en cero limpio** |
 > | | **11** | **siete más cuatro. Ver [A04](A04_domicilio_de_L05.md)** |
 >
 > **Ninguna candidata del inventario está disponible para trabajar hoy.** Las siete cerradas lo están
