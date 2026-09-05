@@ -1,6 +1,6 @@
 # D16 — L10 en una hora: tres salidas, una recomendación. **(C) CERRARLA, con la razón nombrada.**
 
-**VENTANA L. NO MIDE NADA. K sigue en 261.**
+**VENTANA L. NO MIDE CANDIDATAS; corre CONTROLES DEL INSTRUMENTO desde el 2026-09-05 (rol ampliado por Roberto, ver `INDICE`). K sigue en 261.**
 
 **El objeto:** la única fila del inventario con margen > 1 (1,44 en cota optimista, `D13`), cuya ventana
 —la última hora del último día hábil del mes— **la elegí yo en `F15`**. El paper mide su 17 pb *"over
