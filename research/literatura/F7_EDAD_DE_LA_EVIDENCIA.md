@@ -12,6 +12,40 @@ magnitud, de eventos ni de exposición la habría detenido.
 
 ---
 
+> # CORRECCIÓN — 2026-09-05: la confirmación no puede superponerse con el período de prueba
+>
+> **Este filtro tenía una contaminación de mirada hacia adelante, y la introduje yo.**
+>
+> Calificaba con grado A a las candidatas con confirmación posterior de terceros. **Pero varias de
+> esas confirmaciones tienen muestras que CUBREN 2016-2019, que es donde queremos probar.** El grado
+> A de L11 venía de que Ai, Bansal y Guo extendieron a 2023, y 2016-2019 está adentro de 2023.
+>
+> **Elegíamos la candidata número uno usando evidencia que cubre el período de prueba.**
+>
+> ## La regla corregida
+>
+> **La evidencia posterior cuenta como confirmación SÓLO si su muestra NO se superpone con
+> 2016-2019. Si se superpone, no es confirmación independiente: es la misma búsqueda extendida.**
+>
+> **Y si la no superposición no se puede verificar, no se otorga el grado.** La carga está del lado
+> de la confirmación, igual que con cualquier otro número que no se puede verificar en esta carpeta.
+>
+> ## Una asimetría que agrego, porque la regla simétrica sería un error
+>
+> **La superposición descalifica la confirmación POSITIVA, no la refutación NEGATIVA.**
+>
+> El daño que la regla evita es que elijamos una candidata porque alguien encontró que funciona en
+> nuestro período. Si en cambio alguien encontró que **no** funciona ahí, no hay mirada hacia
+> adelante favorable: hay información desfavorable que estaríamos ignorando. **Descontarla sería
+> proteger a la candidata del dato malo.**
+>
+> Por eso la replicación fallida de Rosa sobre L02 **sigue contando**, aunque su período fuera de
+> muestra se superponga con el nuestro.
+>
+> ## Resultado
+>
+> **NINGUNA de las once conserva grado A.** Ver la sección *Aplicación de la corrección*.
+
 ## La escala, y qué gatilla cada grado
 
 | grado | significa | qué hace |
@@ -432,6 +466,59 @@ Los dos movimientos, y los dos son informativos:
 
 **El paso costó cero: los textos ya estaban extraídos de rondas anteriores. Es el filtro más barato
 de los diez y encontró dos cosas.**
+
+---
+
+# APLICACIÓN DE LA CORRECCIÓN — ninguna conserva grado A
+
+| candidata | en qué se apoyaba su grado | muestra de esa evidencia | ¿se superpone con 2016-2019? | grado |
+|---|---|---|---|---|
+| **L11** | Ai, Bansal y Guo extienden a 2023 | **1961-2023** | **SÍ** | **A → B** |
+| **L08** | Ito y Yamada sobre la reforma, 2017 | **no verificable**: el documento es de abril de 2017 y estudia la reforma de febrero de 2015. **No pude confirmar que termine antes de 2016** | **no verificado** | **A → B** |
+| **L07** | Bessho, Sugimoto y Suzuki | **2018-2020** | **SÍ** | ya era B por lectura interna |
+| **L01** | lectura interna: estabilidad entre mitades | la segunda mitad es **2000-2020** | **SÍ**: la estabilidad que la ascendió incluye nuestro período | **A− → B** |
+| L05 | Dim, Eraker y Vilkov | hasta ~2023 | sí, y además contradice | sigue C |
+| L02 | Rosa, replicación **fallida** | se superpone | **la refutación SÍ cuenta**, por la asimetría | sigue C |
+| L03 | Kurov et al. 2022, **mercado británico** | 2019, pero **otro mercado y otro instrumento** | **NO contamina nuestros datos** | sigue C |
+| L04 | revisión de Lenkey, sin datos nuevos | subyacentes hasta 2014 | no | sigue C |
+| L06, L09 | sin evidencia posterior | — | — | siguen B |
+
+**El caso de L08 hay que decirlo bien: no probé que se superponga. No pude probar que NO se
+superponga, y la carga está del lado de la confirmación.** Se restaura leyendo el período de muestra
+del paper, que es un paso de literatura y cuesta cero.
+
+## El orden nuevo
+
+| # | ficha | grado | falta | movimiento |
+|---|---|---|---|---|
+| 1 | **L11** | B | 1,9× | **=** |
+| 2 | L10 | B | 2,1× | ↑ 2 |
+| 3 | L07 | B | 3,4× | ↑ 2 |
+| 4 | L01 | B | 12,6× | ↓ 1 |
+| 5 | **L08** | B | 28× | **↓ 3** |
+| 6 | L06 | B | 34× | = |
+| 7 | L09 | B | — | = |
+| 8 | L03 | C | 2,9× | = |
+| 9 | L04 | C | 12,6× | = |
+| 10 | L02 | C | 14,1× | = |
+| 11 | L05 | C | — | = |
+
+**Cuatro de once cambian. El primer puesto NO se cae.**
+
+## Pero L11 conserva el puesto por otro motivo, y eso es lo importante
+
+**L11 sigue primera, pero ya no porque tenga confirmación: la perdió.** Sigue primera porque, con
+todas en grado B, **el desempate lo hace la distancia a un veredicto**, y ella es la que menos lejos
+está.
+
+> ## **Con la contaminación corregida, la dimensión de evidencia DEJA DE DISCRIMINAR entre las
+> primeras siete. El índice vuelve a estar ordenado por distancia, que es como estaba antes de que
+> existiera `F7`.**
+
+**Ése es el resultado honesto de arreglar mi propio filtro: el filtro, corregido, casi no aporta
+información arriba.** Sigue aportándola abajo, donde separa a las cuatro de grado C, y **ahí sí
+distingue: L03 tiene el efecto debilitado por sus propios autores y L02 tiene una replicación fallida
+publicada.** Eso no lo tocó la corrección.
 
 ---
 
