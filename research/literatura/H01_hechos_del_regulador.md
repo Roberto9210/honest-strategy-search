@@ -12,7 +12,11 @@
 **Por eso esta fuente NO se evalúa como generadora de candidatas. Se evalúa como fuente de hechos, y
 se apunta a lo que ya tenemos abierto.**
 
-**Alcance: máximo cinco documentos. Van dos.**
+**Alcance: Roberto lo amplió a ocho documentos más sobre los tres iniciales. Van seis: cinco con
+hecho y uno muerto por instrumento. Un séptimo —Haynes y Roberts, *Automated Trading in Futures
+Markets*, la actualización— no se pudo bajar: el archivo supera el límite de descarga, y queda
+pendiente.** Criterio de muerte, fijado por él: **si no describe nuestro
+instrumento o nuestro período, se mata y se dice por qué.**
 
 ---
 
@@ -178,15 +182,117 @@ qué fracción del flujo es informado. **Ahí la unidad es el participante y no 
 
 ---
 
-# BALANCE de la fuente, con tres de cinco documentos
+# HECHO 4 — Qué fracción del volumen del E-mini es de alta frecuencia, y cómo cambió
+
+**Fuente:** Coughlan, Ryan y Orlov, Alexei, Comisión de Comercio de Futuros, *"High-Frequency Trading
+and Market Quality: Evidence from Futures Markets"*, julio de 2022. SSRN 4069573.
+**Datos: registro de transacciones del regulador, nueve contratos, 2012 a 2021.** Usan como
+experimento natural el cambio de 2015 en la liquidación de los agrícolas del CME.
+
+## Los números para nuestro instrumento, y sólo para el nuestro
+
+| E-mini del S&P 500 | participación de alta frecuencia en el volumen |
+|---|---|
+| **2012** | **31,8 %** |
+| **2021** | **49,7 %** |
+| promedio del período | **45,0 %** |
+| variación | **+56,3 %** |
+
+**El período cubre el nuestro entero: 2016-2019 está adentro de 2012-2021.** Es el primer documento
+del regulador que describe nuestro instrumento en nuestro período **sin borde.**
+
+## Por qué importa acá
+
+**Es un número de `F10` —cuánta gente adentro— medido por quien tiene el registro completo.** Cerca
+de la mitad del volumen del ES en nuestro período está del lado de los que responden en menos de
+200 milisegundos (Hecho 1).
+
+**Y toca a L03 por donde ya estaba tocada:** su salida es una ventana de segundos después de una
+publicación. **La contraparte en esa ventana es, por construcción, de este grupo.**
+
+**Frontera del factor 25, aplicada:** el 45 % es una fracción del VOLUMEN, o sea ponderada por
+observación. **Describe lo que un contrato nuestro encuentra enfrente, que es la pregunta correcta
+para nosotros.** No describe al participante típico, y no lo necesitamos.
+
+## Lo que lo mataría
+
+**La definición de alta frecuencia del paper.** No la transcribo porque no la tengo fijada del texto,
+y una definición por umbral de mensajes o de inventario cambia la fracción. **El 45 % es "su
+definición", y hasta que la copie textual se lee como orden de magnitud.**
+
+---
+
+# HECHO 5 — Quiénes son los de alta frecuencia en el E-mini, con la definición copiada textual
+
+**Fuente:** Kirilenko, Kyle, Samadi y Tuzun, *"The Flash Crash: The Impact of High Frequency Trading
+on an Electronic Market"*, trabajo bajo contrato de la Oficina del Economista Jefe, autorizado para
+distribución el 21 de febrero de 2014. SSRN 1686004.
+**Datos: registro de auditoría del E-mini del S&P 500, cuentas identificadas, 3 al 6 de mayo de 2010.**
+
+## Los números, y son del instrumento correcto
+
+| | número |
+|---|---|
+| cuentas que operaron el 6 de mayo de 2010 | **15.422** |
+| cuentas clasificadas como alta frecuencia | **16** |
+| cuentas clasificadas como creadores de mercado | 179 |
+| **participación de las 16 en el volumen**, 3 al 5 de mayo | **34,22 %** |
+| participación de los 179 creadores de mercado | 10,49 % |
+| vida media del inventario de las 16 | **unos 140 segundos por regresión, "probablemente menos"** |
+
+## La definición, copiada porque es la que le faltaba al Hecho 4
+
+Una cuenta es alta frecuencia o creador de mercado si y sólo si: **(1)** operó 10 contratos o más en
+al menos uno de los tres días previos; **(2)** el valor absoluto de su posición neta al cierre **no
+supera el 5 % de su volumen del día**; **(3)** la desviación de su inventario intradía respecto del
+cierre, sumada sobre los 405 minutos, **no supera el 1,5 % de su volumen del día**. De las 195
+cuentas que cumplen las tres, **las 16 con más operaciones son alta frecuencia**, y el corte está
+donde hay un salto grande entre la cuenta 16 y la 17.
+
+## Por qué importa acá
+
+**Dieciséis cuentas sobre 15.422 son el 0,10 % de las cuentas y el 34 % del volumen.** Es el mismo
+patrón que el crudo de Raman, Robe y Yadav y que el factor 25 del Hecho 1, **ahora en NUESTRO
+instrumento.**
+
+**Y engancha con el Hecho 4 sin que lo haya buscado:** alta frecuencia más creadores de mercado
+suman **44,7 %** del volumen en 2010; Coughlan y Orlov miden **45,0 %** de promedio para 2012-2021.
+**Son definiciones distintas y no se suman; que caigan cerca es orden de magnitud, no confirmación.**
+
+## Lo que lo mata, y lo mata para los números
+
+> **El período: cuatro días de mayo de 2010, uno de ellos el Flash Crash.** Ningún número de acá
+> describe 2016-2019. **Lo que sobrevive es la ESTRUCTURA** —cómo se define alta frecuencia con
+> inventario y volumen, y que una fracción ínfima de cuentas es un tercio del volumen— y **la
+> definición sirve para leer el Hecho 4.**
+
+---
+
+# MUERTO — Raman, Robe y Yadav, *"Electronic Market Makers, Trader Anonymity and Invisible Liquidity"*, regulador, 2012
+
+**Instrumento: crudo WTI. Períodos: 2006, 2008 y 2011.** Cincuenta y dos creadores de mercado
+electrónicos —definidos como más de 2.000 operaciones por día y menos del 5 % de la posición al
+cierre— son el **0,35 % de las cuentas y cerca del 50 % del volumen.**
+
+> **Se mata por instrumento: es crudo, no E-mini. Ningún número se transfiere.**
+
+**Lo único que queda, y como estructura, no como número:** el 0,35 % de las cuentas hace el 50 % del
+volumen. **Es el factor 25 otra vez, visto desde el lado de las cuentas.** Cualquier cosa que
+promedie "por participante" en un mercado así describe al 99,65 % que hace la otra mitad.
+
+---
+
+# BALANCE de la fuente, con seis documentos
 
 | | |
 |---|---|
-| **hechos con número extraídos** | **4**: latencia de 200 ms, factor 25 de ponderación, cinco niveles del libro del E-mini, y la categoría de tamaño que define el costo |
+| **hechos con número extraídos** | **6**: latencia de 200 ms, factor 25 de ponderación, cinco niveles del libro del E-mini en 2013-2016, la categoría de tamaño que define el costo, **45 % de volumen de alta frecuencia en el ES, 2012-2021**, y **16 cuentas = 34 % del volumen en 2010, con la definición textual** |
 | hechos cualitativos | 1: el diseño de la liquidación afecta el comportamiento en la ventana |
 | **confirmaciones externas de números de la casa** | **2**: la latencia y el modelo de costo. Son la **tercera y la cuarta** del proyecto |
 | huecos nombrados | **1**: el tercer escalón de latencia, que no bloquea a ninguna candidata actual |
+| **documentos muertos por instrumento** | **1**: Raman, Robe y Yadav, crudo |
 | candidatas producidas | **0**, como estaba previsto |
+| **hechos que hay que corregir por fecha** | **1**: los cinco niveles del Hecho 3 eran de 2013-2016; **hoy son diez.** Ver `D10` |
 
 **La fuente rinde para lo que Roberto la apuntó y no rinde para lo otro, exactamente como se
 esperaba.**
