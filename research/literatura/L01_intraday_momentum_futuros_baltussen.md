@@ -127,6 +127,41 @@ Mixto, y hay que leerlo con cuidado.
 **No encontré una replicación independiente de la versión `rROD` en ES posterior a 2021.** Eso es un
 hueco, no una ausencia de evidencia negativa.
 
+## 7-bis. Dos condicionamientos publicados que apuntan a lados distintos
+
+**El paper trae dos formas de concentrar el efecto, y no son la misma. Las dos van escritas y
+NINGUNA elegida, porque elegir entre ellas es un grado de libertad nuestro.**
+
+**Condicionamiento 1 — cuando los signos DIFIEREN.** Sección 3.4 y Tabla 3: el retorno del día
+completo gana la comparación directa contra el de la primera media hora en las dos submuestras, *"y
+especialmente cuando sus signos difieren"*. En futuros de índice, bonos y materias primas, cuando
+difieren **el coeficiente de la primera media hora tiene el signo equivocado y el del día completo
+sigue positivo y muy significativo**.
+
+**Condicionamiento 2 — cuando los signos COINCIDEN.** La estrategia combinada de la Tabla 6 toma
+posición **sólo cuando los dos predictores tienen el mismo signo** y no opera cuando difieren. Es la
+que da la **tasa de acierto más alta del paper, 61 %**, contra 55 % de las otras dos.
+
+## Por qué no son contradictorios, y por qué igual son una trampa
+
+**No se contradicen: hablan de cosas distintas.** El primero es sobre **qué predictor es mejor**; el
+segundo es sobre **cuándo operar**. Que el día completo sea el mejor predictor justo cuando los
+signos difieren es compatible con que la estrategia más segura sea no operar esos días.
+
+**Pero para nosotros son dos reglas operables distintas que salen del mismo paper, y quedarnos con
+una es una decisión nuestra.** Por `F9`, es una pieza **con grado de libertad**.
+
+| si se elige | qué se gana | qué se paga |
+|---|---|---|
+| operar sólo cuando **coinciden** | tasa de acierto de 61 % | menos días, y es la regla que el paper presenta como estrategia |
+| operar sólo cuando **difieren** | el predictor está en su mejor momento | el paper **no** reporta una estrategia para ese caso |
+| operar **siempre** con el día completo | es la regla principal del paper, 6,86 % anual y Sharpe 1,73 | no usa ninguno de los dos condicionamientos |
+
+**La tercera fila es la única que no exige que elijamos.** Si alguna vez se mide L01, ésa es la que
+no gasta un grado de libertad, y las otras dos se declaran como variantes si se usan.
+
+**Queda anotado y no resuelto, a propósito.**
+
 ## 8-bis. Quiénes son los autores, que corta para los dos lados
 
 **Baltussen y Martens trabajan en Robeco Asset Management**, y lo declaran en la portada del paper.
