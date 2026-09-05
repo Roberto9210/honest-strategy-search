@@ -6,18 +6,35 @@ Este documento existe para que nadie las vuelva a traer. Cada entrada tiene **cu
 no una opinión. Varias son buenos papers y algunas son efectos probablemente reales: **están acá por
 incompatibles con la forma de operar de Roberto, no por falsas.**
 
-Los cuatro filtros duros del encargo:
+Los filtros:
 
-- **F1** — necesita mantener posición de un día para otro
+- **F1** — ~~necesita mantener posición de un día para otro~~ **CORREGIDO Y REEMPLAZADO**
+- **F1'** — **ventana de exposición sin freno**, definido en [FILTROS.md](FILTROS.md)
 - **F2** — necesita muchos instrumentos a la vez
 - **F3** — no declara mecanismo
 - **F4** — magnitud declarada por debajo del piso
+- **F5** — mínimo de eventos por año, con el umbral derivado en `FILTROS.md`
+
+> ## AVISO — dos de este documento fueron RECUPERADAS
+>
+> El filtro F1 estaba mal escrito: preguntaba si la posición cruza el cierre del día, cuando lo que
+> se quería evitar era la exposición **sin posibilidad de frenarla**. La Compuerta 1 cerró su rama
+> porque la mecánica de ejecución **prohibía poner un stop**, no porque fuera de noche.
+>
+> Con el filtro corregido, **dos de las siete del Grupo 1 sobreviven y salieron de este documento**:
+>
+> - **1.4 Harvey, Mazzoleni y Melone** → ficha [L10](L10_rebalanceo_institucional_harvey.md)
+> - **3.4 Savor y Wilson** → ficha [L11](L11_prima_dias_anuncio_savor_wilson.md)
+>
+> Sus entradas quedan abajo **tachadas**, con el motivo por el que salieron. Las otras cinco del
+> Grupo 1 siguen descartadas, pero varias por un motivo distinto del que decía antes. La revisión
+> completa de las siete está en `FILTROS.md`.
 
 ---
 
-## Grupo 1 — Muere por F1 (posición de un día para otro)
+## Grupo 1 — Muere por F1' (exposición) o por otro filtro
 
-**Es el grupo más grande, y esa es la observación más importante de esta ventana.** Ver el reporte.
+**Era el grupo más grande y por eso se revisó el filtro. Cinco de siete siguen acá.**
 
 ### 1.1 La deriva previa al anuncio de la Fed
 
@@ -76,7 +93,14 @@ entre 2000 y 2009.
 arbitraje empleado** y crece con el tamaño de los fondos indexados relativo al mercado. Un Sharpe de
 4,4 publicado en una tesis de 2010 y trece años de arbitraje después no es un Sharpe de 4,4.
 
-### 1.4 El rebalanceo institucional de fin de mes y de trimestre
+### ~~1.4~~ RECUPERADA — El rebalanceo institucional de fin de mes y de trimestre
+
+> **SALIÓ DE ESTE DOCUMENTO.** Ficha completa en [L10](L10_rebalanceo_institucional_harvey.md).
+> Su ventana de exposición son ~23 horas y **admite un stop**, así que no muere por F1'. Con la
+> palanca del MES —400 puntos de drawdown contra 40— la exposición nocturna deja de ser el problema
+> que cerró la Compuerta 1. **Es la de mayor magnitud declarada sobre futuros ES del inventario.**
+
+Lo que decía la entrada original, que sigue siendo correcto:
 
 Harvey, Campbell R.; Mazzoleni, Michele G.; Melone, Alessandro (2025). "The Unintended Consequences
 of Rebalancing." NBER Working Paper 33554.
@@ -253,7 +277,15 @@ hace falta medirlo.
 
 **Motivo secundario:** son **4 eventos por año**, 16 en 2016-2019. No medible por acumulación.
 
-### 3.4 La prima de los días de anuncio macro
+### ~~3.4~~ RECUPERADA — La prima de los días de anuncio macro
+
+> **SALIÓ DE ESTE DOCUMENTO.** Ficha completa en [L11](L11_prima_dias_anuncio_savor_wilson.md).
+> Su ventana de exposición es una sesión y **admite un stop**, así que no muere por F1'. **Es la
+> candidata que menos lejos queda de ser medible con los datos que hay**, corta por un factor de
+> 1,9 en eventos. Advertencia que va con ella: su pariente cercano, la deriva previa a la Fed de
+> la entrada 1.1, **murió después de 2015**.
+
+Lo que decía la entrada original, que sigue siendo correcto:
 
 Savor, Pavel; Wilson, Mungo (2013). "How Much Do Investors Care About Macroeconomic Risk? Evidence
 from Scheduled Economic Announcements." *Journal of Financial and Quantitative Analysis*, vol. 48,
