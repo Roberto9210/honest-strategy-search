@@ -56,6 +56,16 @@ este mal (me paso con "A domina a TODO capital", que contradecia mi propia curva
       SUPERA->REQUIERE MEDICION la ejercita C2, que tiene ventaja grande y SUPERA firme en cruce.
       LO HARIA FALLAR: que devuelva SUPERA en cualquiera de los dos modos.
 
+  C9  (reforzado) SE VERIFICA LA NULA APLICADA, NO EL VEREDICTO. En modo PASIVO el veredicto solo no
+      distingue: REQUIERE MEDICION es lo que techo_pasivo devuelve para cualquier cosa que superaria,
+      asi que el control pasaba sin mirar si la nula correcta se habia aplicado -lo dije en el bloque
+      de observaciones y esto lo cierra-. Ahora se chequean cuatro cosas, iguales en los dos modos:
+      (1) la firma medida confirma la clase declarada; (2) omitir la de signo CAMBIA el numero
+      (z_info > z_estricto); (3) SIN el arreglo el candidato no pasaria (z_estricto < z_req); y
+      (4) CON el arreglo pasa (z_info >= z_req). Mas el veredicto.
+      LO HARIA FALLAR: que el veredicto sea el esperado pero z_info == z_estricto, o sea que el
+      arreglo no hizo nada y el candidato paso por otro motivo.
+
   C9  VENTAJA DE TIMING declarada BIEN (sabe CUANDO, lado al azar; el mejor tercio de ranuras DENTRO
       de cada tercil de volatilidad, para que el timing quede repartido por regimen y el control aisle
       una sola propiedad). Publicado en juez_formas_ventaja.py: una ventaja de timing pura la recupera
@@ -166,10 +176,15 @@ def resumen(s):
     c = r["cadena"]
     print(f"      cadena eval x fondeada ({c['N']} micros): P(pasa eval) {c['p_pasa']:.3f}  P(pago) {c['p_pago']:.3f}  "
           f"P(se acaba el rango) {c['p_tiempo']:.3f}  E sesiones {c['e_ses']:.0f}  E $/intento {c['E']:+.0f}")
-    frena = [n for n, z in (("rotacion en rango", A[3]), ("signo", B[3]), ("pasiva", r["z_pas"]))
-             if z < r["z_req"]]
-    print(f"      informativo = min(rotacion, signo, pasiva) = {r['z_info']:+.1f}sd; "
-          f"lo frena: {', '.join(frena) if frena else 'nada (bate las tres)'}")
+    # la linea tiene que decir QUE nulas entraron al minimo. Con clase timing confirmada la de signo
+    # se omite, y decir 'min(rotacion, signo, pasiva)' ahi era mentir sobre la cuenta que se hizo:
+    # el resumen mostraba 'lo frena: signo' junto a un z_info que ya no la incluia.
+    usadas = (("rotacion en rango", A[3]), ("pasiva", r["z_pas"])) if r["aplica_timing"] else \
+             (("rotacion en rango", A[3]), ("signo", B[3]), ("pasiva", r["z_pas"]))
+    frena = [n for n, z in usadas if z < r["z_req"]]
+    print(f"      informativo = min({', '.join(n for n, _ in usadas)}) = {r['z_info']:+.1f}sd"
+          f"{'  [signo OMITIDA: clase timing confirmada]' if r['aplica_timing'] else ''}; "
+          f"lo frena: {', '.join(frena) if frena else f'nada (bate las {len(usadas)})'}")
 
 
 def correr(pasivo, m):
@@ -333,12 +348,28 @@ def correr(pasivo, m):
     lado9 = rng.random(int(sel.sum())) < 0.5
     c9c = candidato("C9_timing_declarado", m, idx[sel], lado9, clase="timing")
     v, s = juzgar("C9", c9c, m, registro_nuevo("c9"))
+    # A2 - SE VERIFICA LA NULA APLICADA, NO EL VEREDICTO FINAL. En PASIVO el veredicto solo no
+    # distingue nada: REQUIERE MEDICION es lo que techo_pasivo devuelve para CUALQUIER cosa que
+    # superaria, asi que el control pasaba sin mirar si la nula correcta se habia aplicado. Las
+    # cuatro condiciones de abajo se chequean IGUAL en los dos modos y cada una puede fallar sola.
+    ok9 = False
     if s:
         resumen(s)
         r9 = s["periodos"]["trabajo"]
+        cond = {
+            "firma confirma la clase declarada": bool(r9["aplica_timing"]),
+            "omitir la de signo CAMBIA el numero": r9["z_info"] > r9["z_estricto"] + 0.01,
+            "sin el arreglo NO pasaria": r9["z_estricto"] < r9["z_req"],
+            "con el arreglo SI pasa": r9["z_info"] >= r9["z_req"],
+            "el veredicto acompana": v in ("SUPERA", J.REQUIERE_MEDICION),
+        }
+        ok9 = all(cond.values())
         print(f"      clase declarada {r9['clase_declarada']} / firma medida {r9['firma']}   "
-              f"omite signo: {r9['aplica_timing']}   z_info {r9['z_info']:+.1f} (estricto seria {r9['z_estricto']:+.1f})")
-    resultados["C9"] = (v in ("SUPERA", J.REQUIERE_MEDICION), v)
+              f"omite signo: {r9['aplica_timing']}   z_info {r9['z_info']:+.1f} "
+              f"(estricto seria {r9['z_estricto']:+.1f}; exigido {r9['z_req']:.2f})")
+        print("      LA NULA APLICADA: " + "  ".join(
+            f"[{'ok' if b else 'FALLA'}] {k}" for k, b in cond.items()))
+    resultados["C9"] = (ok9, v)
 
     print(f"\nC10 LA PUERTA TRASERA: candidato SIN ventaja que declara 'timing'. Esperado NO SUPERA igual.")
     print(f"    Falla si declarar una clase falsa lo hace pasar.")

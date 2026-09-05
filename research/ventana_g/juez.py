@@ -66,17 +66,27 @@ AQUI = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, AQUI)
 REGISTRO_DEFECTO = os.path.join(AQUI, "REGISTRO_JUEZ.jsonl")
 
-# --- constantes MEDIDAS, con procedencia ------------------------------------------------
-COMISION = {"ES": 5.76, "MES": 1.82}            # ida y vuelta por contrato, help.tradeify.co
-PUNTO = {"ES": 50.0, "MES": 5.0}
-MICROS_POR_CONTRATO = {"ES": 10, "MES": 1}
-EXCESO_STOP = {10: 0.722, 20: 0.982}            # media_exceso.py, media del exceso en el stop
+# --- CALIBRACION POR INSTRUMENTO: vive en instrumentos.py, no aca -----------------------
+# B1: lo que depende del instrumento (valor del punto, tick, sesion, comision, medio-spread,
+# markout y llenado pasivos, exceso en el stop, la constante de sobrepaso, los cortes de tercil)
+# se saco a instrumentos.py, con el ORIGEN de cada constante -ESPEC (se deriva de la
+# especificacion oficial, gratis), REGLA (lista de precios del producto, gratis), MEDIDO (hay que
+# comprar datos) o FALTA-. Lo que NO depende del instrumento -las nulas, la clase de ventaja, los
+# terciles, la asimetria del modo pasivo, los veredictos, el registro, la caja- se queda aca.
+# Los diccionarios de abajo se ARMAN desde las fichas: una sola fuente de verdad, y agregar un
+# instrumento es llenar una ficha en vez de tocar el juez.
+import instrumentos as INS  # noqa: E402
+
+COMISION = {k: INS.INSTRUMENTOS[k]["comision"]["valor"] for k in INS.COMPLETOS}
+PUNTO = {k: INS.INSTRUMENTOS[k]["punto"]["valor"] for k in INS.COMPLETOS}
+MICROS_POR_CONTRATO = {k: INS.INSTRUMENTOS[k]["micros_equiv"]["valor"] for k in INS.COMPLETOS}
+EXCESO_STOP = INS.INSTRUMENTOS["ES"]["exceso_stop"]["valor"]   # media_exceso.py
 # DESLIZAMIENTO DE ENTRADA por tercil ex-ante (bps): medio-spread efectivo medio, en puntos, medido
 # en microestructura_tbbo.py sobre tbbo de ES 2017-2019 (el terreno que juzga el juez). Es el costo
 # de cruzar el spread UNA vez al entrar, relativo al punto medio. Casi no depende del regimen (el
 # spread de ES es ~1 tick siempre). El costo NO cambio contra 2026 (+6% bajo, -2% medio). Antes se
 # trataba como CERO; ahora se cobra por operacion segun el tercil de la sesion de entrada.
-DESLIZAMIENTO_ENTRADA = {0: 0.1267, 1: 0.1334, 2: 0.1330}
+DESLIZAMIENTO_ENTRADA = INS.INSTRUMENTOS["ES"]["deslizamiento_entrada"]["valor"]
 DESLIZAMIENTO_ENTRADA_ERROR = 0.006             # dispersion entre los tres terciles/dias, en puntos
 # MODO PASIVO por tercil ex-ante: en vez de cruzar y pagar el medio-spread, se descansa en el mejor
 # precio. Calibrado en mbo_entrada_pasiva.py sobre ENTRADAS AL AZAR (dias B 2017-2019, muerte 1 tick,
@@ -85,9 +95,9 @@ DESLIZAMIENTO_ENTRADA_ERROR = 0.006             # dispersion entre los tres terc
 # de entradas al azar; para un candidato DIRECCIONAL el markout puede darse vuelta (sus llenados estan
 # seleccionados por su propia senal). No vale hasta medirlo sobre el candidato real (paso b, hook
 # medir_pasivo_candidato, sin correr).
-MARKOUT_PASIVO = {0: 0.0392, 1: 0.0073, 2: 0.0697}     # pt, sobrevive a 30 s
-LLENADO_PASIVO = {0: 0.477, 1: 0.514, 2: 0.469}        # fraccion que se llena
-O_SOBREPASO = 0.0642                            # sesgo_marco.py
+MARKOUT_PASIVO = INS.INSTRUMENTOS["ES"]["markout_pasivo"]["valor"]     # pt, sobrevive a 30 s
+LLENADO_PASIVO = INS.INSTRUMENTOS["ES"]["llenado_pasivo"]["valor"]     # fraccion que se llena
+O_SOBREPASO = INS.INSTRUMENTOS["ES"]["o_sobrepaso"]["valor"]    # sesgo_marco.py
 O_ERROR_REL = 0.076                             # +-7,6% entre corridas
 SPAN_CARACTERIZADO = (20.0, 35.0)               # (T+S) donde el sesgo esta medido
 P_CARACTERIZADO = (0.15, 0.85)                  # S/(S+T) donde el sesgo esta medido
@@ -180,9 +190,13 @@ def validar(cand):
             if campo == "limite_contratos":
                 extra = "\n  El limite de contratos simultaneos de la cuenta. Se verifica contra la exposicion."
             raise Rechazo(f"ENTRADA RECHAZADA. Falta el campo obligatorio '{campo}'.{extra}")
-    if cand["instrumento"] not in PUNTO:
-        raise Rechazo(f"ENTRADA RECHAZADA. Instrumento '{cand['instrumento']}' desconocido. "
-                      f"Hay comisiones medidas solo para {sorted(PUNTO)}.")
+    # B1: la puerta del instrumento la contesta la ficha de calibracion, no una lista aca. Si el
+    # instrumento no tiene todo lo que su regla de salida necesita, el juez se NIEGA y dice que
+    # falta y de donde saldria. Sustituir por la calibracion de otro instrumento esta prohibido.
+    try:
+        INS.calibracion(cand["instrumento"], cand.get("regla_salida", {}).get("tipo", "bracket"))
+    except INS.NoCalibrado as e:
+        raise Rechazo(f"ENTRADA RECHAZADA. {e}")
     if int(cand["variantes_probadas"]) < 1:
         raise Rechazo("ENTRADA RECHAZADA. variantes_probadas tiene que ser >= 1.")
     if cand["clase_ventaja"] not in CLASES_VENTAJA:
@@ -209,8 +223,14 @@ def validar(cand):
 
 
 def hash_candidato(cand):
+    # LA CLASE VA EN LA HUELLA, y no es cosmetico. Antes el nucleo NO la incluia: el mismo candidato
+    # reclasificado daba el MISMO hash, y el bucle de hermanos saltea las filas con hash igual ("es el
+    # mismo candidato en otro periodo"). O sea que correrlo como 'direccional', ver NO SUPERA y volver
+    # como 'timing' era GRATIS: ni contaba como hermano ni subia el umbral. Con la clase adentro, la
+    # segunda corrida es un candidato distinto con huella de entradas identica -> hermano, umbral
+    # arriba, y ademas el candado de 2019 se re-cierra (ya_anotado mira este hash).
     nucleo = dict(instrumento=cand["instrumento"], contratos=int(cand["contratos"]),
-                  regla_salida=cand["regla_salida"],
+                  regla_salida=cand["regla_salida"], clase_ventaja=cand["clase_ventaja"],
                   operaciones=sorted((str(o["ts"]), o["lado"]) for o in cand["operaciones"]))
     return hashlib.sha256(json.dumps(nucleo, sort_keys=True).encode()).hexdigest()
 
@@ -697,7 +717,7 @@ def juzgar(cand, m, permitir_caja=False, prerregistro=None, verificar=False, npe
     tss = pd.to_datetime([o["ts"] for o in cand["operaciones"]])
     tss = tss.tz_localize(None) if tss.tz is not None else tss
     salida = dict(nombre=cand["nombre"], hash=hc[:16], avisos=[], no_cubre=[], periodos={},
-                  pasivo=pasivo)
+                  pasivo=pasivo, clase_ventaja=cand["clase_ventaja"], reclasificados=[])
     if pasivo:
         salida["avisos"].append(
             "MODO PASIVO: la entrada no cruza el spread, descansa en el mejor precio. Calibrado sobre "
@@ -747,7 +767,8 @@ def juzgar(cand, m, permitir_caja=False, prerregistro=None, verificar=False, npe
                                 f"Alguien borro o edito. El contador de esta corrida no es confiable.")
     firmas = {f"firma_{b}": minhash(idx, b) for b in BUCKETS}
     fam_decl = cand.get("familia")
-    hermanos = []
+    hermanos, reclasificados = [], []
+    clase_dec = cand["clase_ventaja"]
     for f in previos:
         if f.get("hash_candidato") == hc:
             continue                       # el mismo candidato (otro periodo) no es un hermano
@@ -757,6 +778,11 @@ def juzgar(cand, m, permitir_caja=False, prerregistro=None, verificar=False, npe
         if misma or jmax >= JACCARD_FAMILIA:
             hermanos.append((f, jmax, "declarada" if misma else
                              f"huella {jmax:.0%} a {max(js, key=js.get)} barras"))
+        # RECLASIFICACION: entradas practicamente identicas y clase declarada DISTINTA. Es la misma
+        # idea vuelta a traer con otra etiqueta, y ahora se dice con nombre y fecha en vez de quedar
+        # escondida dentro del conteo de hermanos.
+        if jmax >= 0.99 and f.get("clase_declarada") not in (None, clase_dec):
+            reclasificados.append((f, jmax))
     variantes = int(cand["variantes_probadas"])
     variantes_total = variantes + len(hermanos)
     # REQUIERE MEDICION previos SIN RESOLVER: como la medicion por-candidato (medir_pasivo_candidato)
@@ -764,7 +790,8 @@ def juzgar(cand, m, permitir_caja=False, prerregistro=None, verificar=False, npe
     # acumule como callejon sin salida ni se lea como pase blando: van en la cara de quien corre.
     req_prev = [f for f in previos if f.get("veredicto") == REQUIERE_MEDICION]
     salida.update(hermanos=hermanos, variantes=variantes, variantes_total=variantes_total,
-                  familia_declarada=fam_decl, cadena_ok=cadena_ok, req_prev=req_prev)
+                  familia_declarada=fam_decl, cadena_ok=cadena_ok, req_prev=req_prev,
+                  reclasificados=reclasificados)
 
     # --- periodo de trabajo -------------------------------------------------------------------
     mk_t = anio_op <= TRABAJO_HASTA
@@ -929,6 +956,17 @@ def informe(s):
         A(f"#  Probar variantes hasta que una pase fabrica falsos positivos. Intentos previos:")
         for f, j, como in s["hermanos"][-8:]:
             A(f"#     {f.get('cuando','?')}  {f.get('nombre','?'):<26} {f.get('veredicto','?'):<20} ({como})")
+        A("#" * 96)
+    if s.get("reclasificados"):
+        A("")
+        A("#" * 96)
+        A(f"#  RECLASIFICACION: estas MISMAS entradas ya se juzgaron con OTRA clase de ventaja.")
+        A(f"#  Cambiar la clase cambia que nula se aplica. Volver a traer la misma idea con otra")
+        A(f"#  etiqueta hasta que una pase es multiplicidad, y va contada como intento previo.")
+        for f, j in s["reclasificados"][-8:]:
+            A(f"#     {f.get('cuando','?')}  {f.get('nombre','?'):<22} "
+              f"clase {str(f.get('clase_declarada')):<12} -> {s['clase_ventaja']:<12} "
+              f"dio {f.get('veredicto','?')}")
         A("#" * 96)
     A("")
     A(f"   operaciones {r['n_op']:,}   sesiones del rango {r['n_ses']:,}   {r['op_ses']:.2f} op/sesion   "
