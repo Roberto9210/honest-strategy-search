@@ -87,6 +87,23 @@ para investigar tiene poder de cierre **cero** y va al final.
 el canal público del ES pasó de cinco a diez niveles (`D10`), y los números de Andersen y Bollerslev
 que no pude extraer (`T02`). **Ninguna cierra nada; se hacen si sobra tiempo y no antes.**
 
+## ESTADO — 2026-09-05, después de que Roberto miró
+
+| fila | resultado | fuente | consecuencia |
+|---|---|---|---|
+| **8** publicaciones | **sin ninguna restricción**, *"free reign"*, política completa verificada | help.tradeify.co, Roberto, 2026-09-05 | nadie muere (`R03` rama 2) |
+| **7** 6J y 6E | **en la tabla de tarifas**: 6J $6,20, 6E $6,20, M6E $1,60 ida y vuelta | idem | L07 y L08 no mueren; siguen bloqueadas por plomería |
+| **9** noche | **prohibido**: todo cerrado 16:45 del este, 12:59 en cierre temprano, lo cierran ellos | idem | **L11 publicada MUERTA** (`R03` rama 3) |
+| **10** comisión de divisas | $6,20 ida y vuelta | idem | resuelta |
+| **6** micros | 40 micros o 4 minis en $50k; la lista de productos no se reportó todavía | idem, parcial | pendiente la lista |
+| 1, 2, 3, 4, 5 | **sin reportar** | — | pendientes |
+| **11, nueva** | **¿se puede abrir y cerrar operaciones en la sesión de Globex de la tarde-noche, entre las 18:00 y las 16:45 del este?** No es lo mismo que "nada abierto a las 16:45". Decide la operabilidad de L07 (19:50-21:00 del este) | — | **pendiente; agujero de `R03`** |
+
+**Y tres reglas nuevas que salieron de la misma lectura y no estaban en la lista:** microscalping (más del
+50 % de las operaciones y de la ganancia en operaciones de más de 10 s; bloquea el retiro), *"No HFT
+bots"* sin definición numérica, y consistencia (ningún día > 40 / 35 / 20 % de la ganancia según la
+cuenta). G ya las metió en el juez como cerraduras (`f5d129f`, `6d4bc1c`). Van adentro de `F17`.
+
 ## Para pegarle a Roberto tal cual: dónde mirar y qué anotar
 
 1. **Publicaciones (fila 8).** En el centro de ayuda de la firma, la página de reglas para operadores
