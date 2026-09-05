@@ -444,3 +444,60 @@ hallazgos laterales.**
 
 **El paso 3 no es "la idea es mala": es "la idea no es decidible con lo que tenemos hoy".** Puede
 volver cuando el inventario cambie, y entonces la cuenta dará distinto.
+
+**Alcance de `F12`, fijado por Roberto el 2026-09-05:** se aplica a debates sobre **método externo**
+—*¿deberíamos usar la técnica de tal paper?*—. **NO se aplica a revisiones de nuestro propio
+trabajo. Un debate sobre si nosotros nos equivocamos siempre se abre.**
+
+---
+
+# F13 — EL FILTRO QUE NOS MIRA A NOSOTROS
+
+**Regla permanente. 2026-09-05.**
+
+## El agujero que tapa
+
+**Los doce filtros anteriores miran hacia afuera: evalúan candidatas.** Ninguno evalúa **nuestras
+propias afirmaciones**.
+
+**El caso de uso es real y es mío:** el ranking contaminado —calificar con grado A usando evidencia
+cuya muestra cubría el período de prueba— **pasó los doce filtros sin que ninguno lo tocara**, porque
+los doce preguntaban por el paper y ninguno preguntaba por el filtro.
+
+## Las cuatro preguntas
+
+Se aplican a **cada afirmación nuestra que gobierne una decisión**: un orden, un umbral, un
+veredicto, una recomendación de gasto.
+
+**1. ¿De cuántos números SIN MEDIR depende?**
+Más de uno → **FRÁGIL**, marcado arriba del documento y no en una nota al pie. El inventario vive en
+[FRAGILIDAD.md](FRAGILIDAD.md).
+
+**2. ¿Usa información del período que pretende juzgar?**
+Es la contaminación de mirada hacia adelante. Aplica a la evidencia que usamos para **elegir**, no
+sólo a la que usamos para medir. **Con la asimetría de `F7`: descalifica la confirmación positiva, no
+la refutación negativa.**
+
+**3. ¿Sigue siendo cierta después del último cambio de número?**
+Cada vez que se mide algo que antes se estimaba, **todo documento que use el número viejo queda
+sospechoso hasta que se revise**. Un documento que se lee solo y miente es peor que uno que no
+existe.
+
+**4. ¿La escribí cuando me convenía?**
+Si una afirmación propia apareció justo cuando rescataba algo que queríamos rescatar, **las dos
+posiciones se escriben y se commitean antes del veredicto** (`D01` y `D02`).
+
+## Por qué éste sí puede funcionar y `F12` no lo cubre
+
+`F12` decide **qué debates abrir**. `F13` decide **qué afirmaciones nuestras siguen en pie**. Son
+cosas distintas y el ranking contaminado lo prueba: **no era un debate, era una afirmación vigente
+que nadie estaba revisando.**
+
+## Su límite, dicho de entrada
+
+**`F13` es un procedimiento manual, no un chequeo automático.** Hay que correrlo, y nada obliga.
+**Su punto 3 es el que más se va a incumplir**, porque exige revisar documentos viejos cada vez que
+cambia un número, y esta carpeta ya tiene treinta.
+
+**La forma mínima que sí se puede sostener: todo documento que publique un número de potencia lista
+sus dependencias en el encabezado.** Eso está aplicado desde hoy en los míos.
