@@ -1,0 +1,32 @@
+==================================================================================================
+COSTO DE ENTRAR CRUZANDO EL SPREAD (tbbo), por regimen y por epoca
+NO GASTA CARTUCHO. K = 261. La caja sellada no se toca.
+==================================================================================================
+
+(a) SPREAD POR DIA. 1 tick = 0.25 pt. $/op = medio-spread efectivo * valor del punto (una entrada).
+    epoca   tercil       fecha   operac.  spread med spread medio    p95 1/2sp ef $/op MES  $/op ES
+        B     bajo  2017-06-07   116,805      1.00tk      1.001tk   1.0tk   0.507tk    0.634     6.34
+        B    medio  2019-05-01   203,213      1.00tk      1.004tk   1.0tk   0.534tk    0.667     6.67
+        B     alto  2018-04-25   306,825      1.00tk      1.008tk   1.0tk   0.532tk    0.665     6.65
+        A     bajo  2026-08-26   324,207      1.00tk      1.022tk   1.0tk   0.538tk    0.672     6.72
+        A    medio  2026-09-02   379,528      1.00tk      1.012tk   1.0tk   0.523tk    0.654     6.54
+        A  altoREL  2026-09-01   434,918      1.00tk      1.011tk   1.0tk   0.522tk    0.653     6.53
+
+   CONTROL (spread mediano = 1 tick en los seis dias): PASADO
+
+(b) CAMBIO EL COSTO EN DIEZ ANIOS? Emparejado por tercil de bps (para eso se eligieron).
+      tercil             2017-2019                  2026   cambio medio-spread ef.
+        bajo     0.507tk $  6.34        0.538tk $  6.72              +6.0%
+       medio     0.534tk $  6.67        0.523tk $  6.54              -1.9%
+        alto     0.532tk $  6.65        0.522tk $  6.53              -1.8%  (2026 NO es alto: extrapolacion)
+   'cambio' > 0 = mas caro hoy. Emparejar por tercil evita comparar un dia calmo de una
+   epoca contra uno agitado de la otra, que seria mezclar regimen con epoca.
+
+   Deslizamiento de entrada por tercil (B 2017-2019), en puntos: {0: 0.1267, 1: 0.1334, 2: 0.133}
+   -> escrito en deslizamiento_entrada.json para que juez.py lo cargue.
+
+   LIMITACIONES: (1) media ponderada por operacion, no por tiempo ni por las entradas del
+   candidato; el spread es casi siempre 1 tick, asi que pesa poco, pero se dice. (2) el
+   regimen alto de 2026 no existe fuera de la caja: la fila alto compara 2018 contra un dia
+   medio de 2026, no es un emparejamiento. (3) 1-2 contratos no caminan el libro; para
+   tamanos grandes habria impacto de mercado que esto NO mide.
