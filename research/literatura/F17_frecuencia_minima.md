@@ -1,6 +1,6 @@
 # F17 — FRECUENCIA MÍNIMA. Escrito ANTES de buscar la primera candidata nueva.
 
-**VENTANA L. NO MIDE NADA. K sigue en 261.** Catalogar es gratis; el cartucho se gasta al preregistrar,
+**VENTANA L. NO MIDE CANDIDATAS; corre CONTROLES DEL INSTRUMENTO desde el 2026-09-05 (rol ampliado por Roberto, ver `INDICE`). K sigue en 261.** Catalogar es gratis; el cartucho se gasta al preregistrar,
 y esa decisión es de Roberto.
 
 > ## LA REGLA
