@@ -1,0 +1,25 @@
+====================================================================================================
+TAREA 5 - EL MARKOUT DEL A/medio POR TRAMOS: artefacto de un dia o cosa de la epoca?
+NO GASTA CARTUCHO. K = 261. Dinero: $0. La caja sellada no se toca.
+====================================================================================================
+
+   Markout a H=30s, latencia 250 ms, muerte 1 tick, libro CON tamano.
+   La sesion RTH se parte en 6 tramos iguales.
+
+                dia     total        T1        T2        T3        T4        T5        T6  n llenos
+             B/bajo   -0.0028   -0.0104   +0.0347   -0.0038   -0.0491   +0.0126   +0.0017      1364
+            B/medio   -0.0154   -0.0575   +0.0284   -0.0174   -0.0276   +0.0202   -0.0357      1281
+             B/alto   -0.0204   -0.0207   -0.0540   -0.1095   +0.0979   +0.0261   -0.0451      1266
+             A/bajo   -0.0149   -0.0688   -0.1188   +0.0782   +0.0490   +0.0190   -0.0747      1166
+            A/medio   -0.0017   -0.1257   -0.0058   +0.1250   -0.0175   -0.0570   +0.0635      1174
+          A/altoREL   +0.0023   -0.0203   -0.0140   -0.0228   +0.1375   -0.0203   -0.0314      1136
+
+----------------------------------------------------------------------------------------------------
+   COMO LEERLO
+----------------------------------------------------------------------------------------------------
+   Si el markout malo del A/medio esta concentrado en UN tramo, es un evento de ese dia y no
+   dice nada de la epoca. Si esta repartido en los seis, es una propiedad del dia -y hay que
+   mirar si el otro dia A la comparte-.
+   ESTO ES UN VISTAZO: seis tramos de un dia son ~230 llenados por celda. No alcanza para
+   afirmar nada sobre la epoca; alcanza para decidir si vale la pena mirarlo en serio.
+====================================================================================================
