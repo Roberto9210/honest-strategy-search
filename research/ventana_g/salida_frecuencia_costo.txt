@@ -1,0 +1,95 @@
+====================================================================================================
+TAREA 1 - FRECUENCIA CON EL COSTO ADENTRO, y el escalado del movimiento MEDIDO
+NO GASTA CARTUCHO. K = 261. Dinero: $0. La caja sellada no se toca.
+====================================================================================================
+
+   1,007 sesiones de ES 1-min. Costos R5: ES $5.76, MES $1.82 ida y vuelta; medio-spread 0.13 pt.
+
+----------------------------------------------------------------------------------------------------
+   (0) COMO ESCALA EL MOVIMIENTO CON EL HORIZONTE. Es lo que decide todo lo demas.
+----------------------------------------------------------------------------------------------------
+     H (min)   sigma (pt)  sigma ($ ES)   sigma/sigma(1)   raiz(H)  exponente
+           1        0.596         29.80             1.00      1.00        nan
+           2        0.819         40.94             1.37      1.41      0.458
+           5        1.265         63.23             2.12      2.24      0.467
+          10        1.769         88.44             2.97      3.16      0.472
+          20        2.491        124.53             4.18      4.47      0.477
+          30        3.056        152.80             5.13      5.48      0.481
+          60        4.329        216.43             7.26      7.75      0.484
+         120        6.123        306.14            10.27     10.95      0.487
+         390       10.672        533.58            17.90     19.75      0.484
+
+   EXPONENTE MEDIO: 0.476   (raiz del tiempo puro seria 0,500)
+   El movimiento escala practicamente con RAIZ DEL TIEMPO. Entonces sigma por operacion
+   SI se achica al acortar el horizonte, y el costo por operacion NO. Mi conclusion de la
+   tanda pasada -'subir la frecuencia solo ayuda'- tenia ese supuesto adentro y ERA FALSO.
+
+----------------------------------------------------------------------------------------------------
+   ES: costo ida y vuelta $12.26 (comision $5.76 + medio-spread $6.50)
+----------------------------------------------------------------------------------------------------
+     op/dia  H (min)  ses p/1262  ses p/5047  costo $/ses  vent exigida  en ticks  en sigmas  detectable   razon
+          1      390       1,262       5,047        12.26         12.26      0.98      0.023       0.112     0.2
+          5       60         252       1,009        61.30         12.26      0.98      0.057       0.050     1.1
+         10       30         126         505       122.60         12.26      0.98      0.080       0.035     2.3
+         20       20          63         252       245.20         12.26      0.98      0.098       0.025     3.9
+         40       10          32         126       490.40         12.26      0.98      0.139       0.018     7.8
+
+   'vent exigida' = $ por operacion para empatar el costo. Es el MISMO numero a toda
+   frecuencia ($12.26): el costo no depende de cuanto dura la operacion.
+   'en sigmas' = ese costo dividido por el movimiento tipico del horizonte. ESE si crece
+   al acortar, porque el movimiento se achica y el costo no.
+   'razon' = exigida / detectable. Mayor que 1 significa que la ventaja que hace falta
+   para ganar plata es MAS GRANDE que la mas chica que se puede ver: se puede medir, pero
+   hay que tener una ventaja grande. Menor que 1 es lo contrario.
+
+----------------------------------------------------------------------------------------------------
+   MES: costo ida y vuelta $2.47 (comision $1.82 + medio-spread $0.65)
+----------------------------------------------------------------------------------------------------
+     op/dia  H (min)  ses p/1262  ses p/5047  costo $/ses  vent exigida  en ticks  en sigmas  detectable   razon
+          1      390       1,262       5,047         2.47          2.47      1.98      0.046       0.112     0.4
+          5       60         252       1,009        12.35          2.47      1.98      0.114       0.050     2.3
+         10       30         126         505        24.70          2.47      1.98      0.162       0.035     4.6
+         20       20          63         252        49.40          2.47      1.98      0.198       0.025     7.9
+         40       10          32         126        98.80          2.47      1.98      0.279       0.018    15.8
+
+   'vent exigida' = $ por operacion para empatar el costo. Es el MISMO numero a toda
+   frecuencia ($2.47): el costo no depende de cuanto dura la operacion.
+   'en sigmas' = ese costo dividido por el movimiento tipico del horizonte. ESE si crece
+   al acortar, porque el movimiento se achica y el costo no.
+   'razon' = exigida / detectable. Mayor que 1 significa que la ventaja que hace falta
+   para ganar plata es MAS GRANDE que la mas chica que se puede ver: se puede medir, pero
+   hay que tener una ventaja grande. Menor que 1 es lo contrario.
+
+====================================================================================================
+   LA RESPUESTA A LA PREGUNTA DE LA TABLA
+====================================================================================================
+     1 op/dia (H~390 min): exigida 0.023 sigmas, detectable 0.112, razon 0.2
+    40 op/dia (H~ 10 min): exigida 0.139 sigmas, detectable 0.018, razon 7.8
+
+   Al pasar de 1 a 40 operaciones por dia:
+      la ventaja EXIGIDA por operacion sube  6.0x  (0.023 -> 0.139 sigmas)
+      la DETECTABILIDAD mejora               6.3x  (0.112 -> 0.018 sigmas)
+      la razon exigida/detectable            38.2x
+
+   LA EXIGIDA SUBE MAS RAPIDO QUE LO QUE SE GANA EN DETECTABILIDAD. Subir la frecuencia
+   NO es gratis: mejora la resolucion pero empeora la economia mas rapido. Mi conclusion
+   de la tanda pasada estaba mal, y estaba mal por el supuesto que no habia verificado.
+
+   POR QUE, en una linea: el costo por operacion es FIJO en dolares, y el movimiento del que
+   hay que sacarlo se achica con raiz del tiempo. Acortar el horizonte a la mitad deja el
+   costo igual y achica el movimiento 1,41 veces.
+
+----------------------------------------------------------------------------------------------------
+   Y EL MICRO ES PEOR QUE EL MINI, con el numero de la propia firma
+----------------------------------------------------------------------------------------------------
+   costo por contrato: ES $12.26   MES $2.47
+   costo POR UNIDAD DE EXPOSICION (dividido por el valor del punto): ES $0.2452/pt   MES $0.4940/pt
+   El MES cuesta 2.01x mas por unidad de exposicion.
+   Y NO coincide con el 3,2x del aviso de la propia Tradeify (10 micros $18,20 contra $5,76
+   de un mini), asi que hay que decir por que: el 3,2x es SOLO comision. Al sumar el
+   medio-spread -que SI escala con el valor del punto- el castigo se diluye de 3,16x a
+   2.01x. El aviso de la firma exagera el castigo porque mira su propia factura,
+   no el costo total de operar.
+   CONSECUENCIA: toda la tabla de arriba es PEOR en MES por ese factor. Operar chico para
+   arriesgar menos cuesta ventaja exigida.
+====================================================================================================
