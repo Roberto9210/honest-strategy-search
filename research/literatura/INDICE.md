@@ -2,6 +2,10 @@
 
 **VENTANA L. NADA DE ESTO ESTÁ MEDIDO. No gasta cartucho. K sigue en 261.**
 
+> ## ROL DE LA VENTANA L — ampliado por Roberto el 2026-09-05
+>
+> **La VENTANA L PUEDE CORRER CONTROLES DEL INSTRUMENTO: medir si nuestra herramienta reproduce algo ya publicado (`CTRL01`). NO puede correr candidatas, ni pre-registrar, ni producir reglas de operación: eso sigue igual.** Antes de esa fecha la cabecera decía "NO MIDE NADA"; el primer control se corrió por instrucción antes de que el rol estuviera escrito, y Roberto lo declaró como error suyo en vez de dejarlo como excepción estirada.
+
 Primera vez que el proyecto muestrea un generador de hipótesis que **no somos nosotros**. Todas las
 candidatas fueron clasificadas **antes** de cualquier medición.
 
@@ -27,6 +31,8 @@ candidatas fueron clasificadas **antes** de cualquier medición.
 | **[D21](D21_que_queda_por_hacer.md)** | **la respuesta derecha: nada que cambie un veredicto de candidata (todo < 0,05); dos que cambian el del instrumento —CTRL01-A, corrido hoy, reproduce; la auditoría de las 261, pendiente**|
 | **[CAJA_MANCHA_01](CAJA_MANCHA_01.md)** | **registro de la mancha de la caja: cinco fuentes leídas cuyas muestras cruzan 2020 (BLW, Baltussen, Harvey, Coughlan-Orlov, Huang por verificar); ninguna decisión sobre la caja se apoya en ellas** |
 | **[F19](F19_verificar_la_caja_antes_de_leer.md)** | **antes de leer una fuente externa, verificar si su muestra cruza la caja y declararlo antes. Lo hicimos al revés cinco veces** |
+| **[AUD01](AUD01_potencia_de_las_261_para_G.md)** | **para G: la auditoría parcial de las 261 —cuántas tenían potencia contra el costo—, con lo que encontré en los archivos (114 líneas de ledger sin σ ni resolución; 3 registros del juez), la comparación, y las dos lecturas selladas** |
+| **[A07](A07_las_reglas_llegan_despues.md)** | **todas las reglas llegaron después del error que las nombra: F16-F19 con sus cuatro errores, lo que tienen en común (son preguntas sobre ENTRADAS) y lo que habría hecho falta para anticipar una** |
 | **[L13](L13_menkveld_creador_de_mercado.md)** | **Menkveld: €0,88 por operación = €1,55 de diferencial − €0,68 de posición, negativa en todas las acciones. La ganancia del creador ES la pérdida del tomador promedio: el tick neto de F17 es contabilidad del otro lado** |
 | **[L14](L14_brogaard_hendershott_riordan.md)** | **los de alta frecuencia aciertan tomando y son seleccionados en contra proveyendo (NASDAQ 2008-09, textual). Consistencia de mecanismo con 3b de G; no sube a cinco** |
 | **[L15](L15_vpin_cerrada.md)** | **VPIN mide toxicidad, no dirección; su autor dice que tampoco pronostica volatilidad. Cerrada** |
