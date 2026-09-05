@@ -112,6 +112,35 @@ ecuación 14). **Cada una de esas decisiones es una variante que no aparece en e
 Para el juez: si alguna vez se prueba una regla condicionada por gamma, **la construcción de la
 NGE cuenta como variantes**, y no menos de 10.
 
+## 9-bis. Cuánta gente ya está adentro — y acá es una industria
+
+**De las once candidatas, ésta es la que tiene más gente adentro, y por lejos.** Ver
+[F10](F10_CUANTA_GENTE_ADENTRO.md).
+
+El eje que este paper propone como hallazgo novedoso en 2021 **se vende hoy como producto de
+suscripción**: SpotGamma, fundada en 2020; SqueezeMetrics, cuyo documento fundacional sobre
+exposición a gamma es de marzo de 2016 y revisado en 2017 y que es además **la fuente de datos que
+Baltussen et al. agradecen en el propio paper**; MenthorQ; Unusual Whales; FlashAlpha, con interfaces
+de programación vendidas por suscripción. Hay comparativas publicadas de "mejores plataformas de
+análisis de gamma".
+
+**Y uno de esos vendedores apunta explícitamente al instrumento de este proyecto:** MenthorQ se
+recomienda **"para operadores de futuros de ES o NQ, porque la estructura de los futuros puede
+diferir del mapa de opciones sobre el índice"**.
+
+**Es el instrumento exacto y el mecanismo exacto de esta ficha, vendido como producto.**
+
+**Con la asimetría de `F10` puesta, que es lo único que este dato permite concluir:** esto
+**penaliza, no absuelve**. Significa que hay mucha gente mirando el mismo eje sobre el mismo
+instrumento desde alrededor de 2020. **No significa que el eje no funcionara en 2016-2019**, que es
+el único período medible; significa que **un veredicto positivo sobre ese período no se traslada al
+presente sin una medición posterior**.
+
+Y hay una ironía que conviene anotar sin sacarle conclusiones: **la variable que sostiene la prueba
+de mecanismo de un paper del Journal of Financial Economics es hoy un producto comercial que
+cualquiera compra con una tarjeta.** Eso hace la reconstrucción más barata de lo que estimé, y hace
+el aglomeramiento peor.
+
 ## 10. Qué haría falta para probarla acá
 
 **Los datos NO los tenemos y NO son baratos.** Ésta es la última de la lista por facilidad de prueba,
