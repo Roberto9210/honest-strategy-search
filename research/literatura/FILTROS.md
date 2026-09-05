@@ -501,3 +501,44 @@ cambia un número, y esta carpeta ya tiene treinta.
 
 **La forma mínima que sí se puede sostener: todo documento que publique un número de potencia lista
 sus dependencias en el encabezado.** Eso está aplicado desde hoy en los míos.
+
+## Quinta pregunta, agregada el 2026-09-05: LA PRUEBA DE SIMETRÍA
+
+> **Antes de aceptar una evidencia, preguntarse si la habrías aceptado con el signo contrario. Si la
+> respuesta es no, no cuenta en NINGUNA de las dos direcciones.**
+
+### El caso que la produjo, y mi propio error
+
+Bajé a **L03** a grado C porque sus autores publicaron en 2022 que la deriva se debilita cuando se
+corta el acceso anticipado. **Después propuse subirla, con el argumento de que ese paper es sobre
+anuncios británicos y futuros de divisas, o sea evidencia sobre el mecanismo y no una medición del
+ES.**
+
+**Ese argumento es correcto y era el equivocado para usar**, porque **estaba aflojando evidencia
+NEGATIVA, que es la dirección donde hay que ser más duro y no menos.** Si el criterio es "es de otro
+mercado, así que pesa menos", ese criterio se puede usar para descartar cualquier dato malo.
+
+### El argumento que sí lo autoriza
+
+**Si ese mismo paper británico hubiera salido POSITIVO, ¿lo habría aceptado como confirmación de
+L03?** No: por el filtro de alcance, es otro mercado y otro instrumento.
+
+**Entonces tampoco puede valer como refutación.** No porque sea débil, sino porque **está fuera del
+alcance en las dos direcciones.**
+
+### Cómo se relaciona con la asimetría de `F7`
+
+**No la contradice, la precede.**
+
+| paso | pregunta | resultado en L03 |
+|---|---|---|
+| **1. alcance** | ¿esta evidencia cuenta, en cualquier dirección? | **NO**: otro mercado, otro instrumento |
+| 2. superposición (`F7`) | si contara, ¿su muestra pisa el período de prueba? | no se llega a preguntar |
+
+**La asimetría de `F7` —el solapamiento descalifica la confirmación positiva pero no la refutación
+negativa— sigue vigente y se aplica DESPUÉS del alcance.** Primero se pregunta si la evidencia es del
+objeto correcto; recién después, si está contaminada.
+
+**Consecuencia: L03 pasa a grado B, con el riesgo nombrado pegado —el mecanismo que declara depende
+del acceso anticipado, y en Estados Unidos hubo cortes equivalentes en 2013 y 2014— pero sin
+evidencia directa sobre el ES en ninguna dirección.**
