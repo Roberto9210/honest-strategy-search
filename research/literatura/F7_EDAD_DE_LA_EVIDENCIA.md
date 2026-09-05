@@ -356,6 +356,85 @@ dimensión y como advertencia sobre las que ganan en una sola.
 
 ---
 
+# PASO DE LECTURA INTERNA — leer el paper original buscando declive adentro
+
+**Agregado 2026-09-05. El filtro buscaba evidencia posterior AFUERA y no leía el paper original
+buscando declive ADENTRO.**
+
+El caso que lo obliga estaba en un texto que yo ya tenía extraído y no usé, porque la búsqueda
+apuntaba a seguimientos: **Ito y Yamada reportan que la correlación entre los precios de fijación de
+los dos bancos era del 80 % antes de 2008 y cayó a menos del 50 % después.** Es una medida
+cuantitativa de que el mecanismo se debilitó, dentro del mismo paper al que le puse grado A menos.
+
+## El paso
+
+**Antes de asignar grado, leer el paper original buscando: particiones cronológicas con resultados
+distintos, afirmaciones de que el efecto se concentra en una época, o medidas del mecanismo que
+cambian a lo largo de la muestra.**
+
+## La advertencia que va pegada, y es mía
+
+**Un declive dentro de la muestra puede ser un cambio de régimen puntual y no decaimiento del
+efecto.** El corte de Ito y Yamada es 2008, que es la crisis financiera global: **puede ser el efecto
+apagándose o puede ser la crisis.** Con lo publicado **no se puede distinguir**, y cuando no se puede,
+se dice.
+
+## Cómo modifica el grado
+
+**Un paso, nunca más:**
+
+- **declive interno** → el grado baja un escalón;
+- **crecimiento o estabilidad** verificados sobre una partición cronológica completa → sube un
+  escalón, **nunca por encima de A**, porque el grado A lo gana sólo la evidencia externa de terceros;
+- **si hay evidencia externa en contra, la lectura interna NO sube el grado.** Una estabilidad
+  interna no puede borrar una replicación fallida publicada.
+
+## Las once, leídas por dentro
+
+| candidata | qué dice el propio paper | efecto |
+|---|---|---|
+| **L11** | mitades 1958-1983 y 1984-2009: la diferencia va de **8,7 a 11,4 pb**. **Creció** | ya era A, se queda |
+| **L01** | sección 3.4, submuestras **1974-1999 y 2000-2020**: *"los resultados son similares en la primera y la segunda mitad"*, y `rROD` gana la comparación directa en las dos | **B → A−** |
+| **L02** | `r1` *"es siempre significativo, haya crisis o no"*; `r12` viene *"en gran parte del período de la crisis financiera"*. El predictor que promueven es el estable | **sin cambio**: tiene replicación fallida externa, y la regla no permite subir |
+| **L07** | **dos señales de declive**: la correlación entre bancos cae de 80 % a menos de 50 % después de 2008, y el sesgo del precio de fijación pasa de estar sobre el **máximo** transado a estar sobre la **mediana** | **A− → B** |
+| L03 | extiende la muestra hacia atrás, no hacia adelante. La lectura interna queda **superada** por el paper externo de 2022 de los mismos autores | sin cambio |
+| L04 | sin partición cronológica utilizable | sin cambio |
+| L05 | la cuota de mercado de los ETF apalancados **sube** a lo largo de 2006-2020, o sea que el impulsor del mecanismo crece | sin cambio: hay contradicción externa |
+| L08 | **ninguna partición temporal** | sin cambio |
+| L10 | sólo la nota al pie de la **primera** mitad, cualitativa | sin cambio |
+| L06, L09 | texto no disponible | **no leído**, y se anota así |
+
+## El reordenamiento
+
+| # | ficha | grado | movimiento contra el orden anterior |
+|---|---|---|---|
+| 1 | **L11** | A | = |
+| 2 | **L08** | A | ↑ 1 |
+| 3 | **L01** | **A−** | **↑ 2** |
+| 4 | L10 | B | = |
+| 5 | **L07** | **B** | **↓ 3** |
+| 6 | L06 | B | = |
+| 7 | L09 | B | = |
+| 8 | L03 | C | = |
+| 9 | L04 | C | = |
+| 10 | L02 | C | = |
+| 11 | L05 | C | = |
+
+**Tres de once cambian de posición. El primer puesto no cambia.**
+
+Los dos movimientos, y los dos son informativos:
+
+- **L07 baja tres lugares** por un declive que estaba escrito en su propio paper y que yo no había
+  leído. **Con la advertencia puesta: puede ser la crisis de 2008 y no el efecto.**
+- **L01 sube dos lugares** por lo contrario: es el único paper del inventario que **verifica
+  estabilidad sobre una partición cronológica de cuarenta y seis años** y la publica. Eso es más
+  fuerte que la ausencia de un seguimiento externo, que era todo lo que tenía antes.
+
+**El paso costó cero: los textos ya estaban extraídos de rondas anteriores. Es el filtro más barato
+de los diez y encontró dos cosas.**
+
+---
+
 # CRITERIO GENERAL — antes de descartar por muerto, preguntar si se MUDÓ
 
 **Éste es un criterio permanente del filtro, no una nota de una tanda.**
