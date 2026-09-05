@@ -1,0 +1,36 @@
+====================================================================================================
+DIAGNOSTICO: el negativo de la Pieza 3b es del MERCADO o de mi INSTRUMENTO?
+NO GASTA CARTUCHO. K = 261. Dinero: $0. La caja sellada no se toca.
+====================================================================================================
+
+   mbo_lib.reconstruir anota BBO solo cuando cambia el PRECIO del mejor bid/ask. Los cambios
+   de TAMANO en el mismo precio no se anotan, asi que bsz/asz -y con ellos el desbalance-
+   quedan congelados desde el ultimo cambio de precio.
+
+                dia  n cambios  dwell med  dwell prom  antig. med  antig. p90   > 100ms   > 500ms  > 1000ms
+             B/bajo     24,349        0.2       997.1      7320.9     34462.9     81.1%     79.5%     77.0%
+            B/medio     59,127        0.2       411.0      1733.8     14409.6     72.3%     65.2%     59.3%
+             B/alto    106,424        0.2       228.3       704.6      5054.3     65.1%     55.6%     44.8%
+             A/bajo    185,303        0.2       131.1       633.5      4336.5     62.9%     52.8%     42.0%
+            A/medio    229,411        0.2       105.9       519.4      3730.9     62.3%     50.9%     39.4%
+          A/altoREL    259,262        0.1        93.7       318.3      2486.6     57.3%     44.1%     30.0%
+
+----------------------------------------------------------------------------------------------------
+   LO QUE DECIDE
+----------------------------------------------------------------------------------------------------
+   Antiguedad MEDIANA del estado del libro en el instante del llenado: 669.0 ms.
+   Fraccion de llenados cuyo estado ya era mas viejo que 100 ms: 66.8%
+   Fraccion de llenados cuyo estado ya era mas viejo que 500 ms: 58.0%
+   Fraccion de llenados cuyo estado ya era mas viejo que 1000 ms: 48.7%
+
+   EL INSTRUMENTO NO SIRVE PARA ESTA PREGUNTA. En 67% de los llenados el estado
+   del libro ya tenia mas de 100 ms cuando el llenado ocurrio, asi que
+   'mirar el libro 100 ms antes' y 'mirarlo en el instante' devuelven EL MISMO estado.
+   La fila de adelantos de la Pieza 3c estaba comparando el mismo numero con si mismo.
+   EL NEGATIVO DE 3b NO ESTA ESTABLECIDO: esta SIN MEDIR.
+
+   QUE HARIA FALTA PARA ARREGLARLO, si hace falta: anotar en reconstruir() una fila tambien
+   cuando cambia el TAMANO en el mejor precio. Es un cambio de una linea en la condicion, y
+   multiplica el largo de la serie por el cociente entre cambios de tamano y de precio -o sea
+   que cuesta memoria y tiempo de corrida, no dinero-. No lo hago aca: primero el diagnostico.
+====================================================================================================
