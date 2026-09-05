@@ -62,10 +62,10 @@ operación** de 0,58. Anualizado con el ritmo que la franja permite:
 | quién | Sharpe anualizado | condición |
 |---|---|---|
 | Baltussen et al., la mejor estrategia intradiaria del inventario viejo (`L01`) | **1,73** | paga el spread, 1 por día |
-| Virtu, la firma de alta frecuencia más documentada | un día perdedor en 1.238 (*de memoria, de su prospecto de 2014: **FRÁGIL***) → del orden de **45-50** | **cobra** el spread, colocada, miles de operaciones por día |
+| Virtu, la firma de alta frecuencia más documentada | **el dato, textual del S-1** (Virtu Financial Inc., 10 de marzo de 2014, registro 333-194473, p. 2): *"we had only one losing trading day during the period depicted, a total of 1,238 trading days"*. **El S-1 NO dice "Sharpe" en ninguna parte** (Roberto lo buscó en el documento completo). El **~48** es una **DERIVACIÓN de Roberto sobre ese dato**: cola de 1/1.238 → ~3 desvíos diarios bajo normalidad → × √252 ≈ 48. **Verificada con bisección sobre `erfc` (`cuenta_overnight.py`): z = 3,15, anualizado 50,1** —Roberto puso 3,03; la diferencia es del orden de magnitud de la aproximación y no cambia nada—. Supone normalidad y estacionariedad; vale como orden de magnitud y no como cifra de nadie | **cobra** el spread, colocada, miles de operaciones por día. Ingreso neto ajustado por día: $1,7 millones en 2013 |
 | Baron, Brogaard, Hagströmer y Kirilenko 2019, alta frecuencia en el E-mini | sin números: SSRN 403. Va a la lista de lecturas de Roberto | los más rápidos y agresivos |
 
-> ## **No. Ni la firma de alta frecuencia más rentable documentada llega a lo que la franja exige a alguien que PAGA el spread desde una máquina de casa. La franja está muerta por costo, y los $800 no se gastan.**
+> ## **No. Ni la firma de alta frecuencia más rentable documentada llega a lo que la franja exige a alguien que PAGA el spread desde una máquina de casa: a una operación cada 30 segundos harían falta ~257, cinco veces lo que se deriva para la firma más rápida del mundo con la computadora dentro del mercado. La franja está muerta por costo, y los $800 no se gastan.**
 
 # 4. (c) El caso pasivo: 0,27, y contra lo que G ya midió
 
