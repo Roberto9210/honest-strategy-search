@@ -24,6 +24,8 @@ candidatas fueron clasificadas **antes** de cualquier medición.
 | **[D10](D10_trampa_de_profundidad.md)** | **para G: el ES publica diez niveles hoy y publicaba cinco en 2013-2016. Lo que ve la plataforma de Roberto se cuenta, no se busca** |
 | **[R01](R01_regla_atipicos_1987.md)** | **regla sellada antes de mirar: un evento fuera del dominio del eje de régimen se excluye por regla, y octubre de 1987 no es el mismo objeto** |
 | **[T01](T01_franjas_horarias.md)** | **ranking congelado: en qué franja vive cada sobreviviente, para aplicar el perfil en diez minutos. Los cinco viven en picos** |
+| **[L12](L12_overnight_drift_boyarchenko.md)** | **la deriva nocturna del ES (NY Fed SR 917, 1998-2020): Sharpe 1,3 antes de costos, 0,3 después; 0,019 σ por operación, t = 1,44 con 23 años. CIEGA y fuera de F17; condicional a la fila 11** |
+| **[D19](D19_el_feed_cambio_en_2017.md)** | **para G: el feed pasó de profundidad agregada a evento por orden en marzo de 2017, sin sellos de captura antes de 2017-05-21; toca el 10,6× y los seis días de mbo** |
 | **[D17](D17_franja_10_60s.md)** | **la franja de 10 a 60 s muerta por costo, verificada contra las filas de G: 0,57 cruzando, 0,27 pasivo contra markouts medidos de 0,00-0,08; los $800 no se gastan** |
 | **[D18](D18_hueco_1_a_30_min.md)** | **el hueco de 1 a 30 minutos: en media hora es (B) y está publicado por Gao (Tabla 13); en 1-5 min para el ES no se distingue desde afuera; el nulo propio de G a 30 s dice (B)** |
 | **[LECTURAS_PARA_ROBERTO](LECTURAS_PARA_ROBERTO.md)** | **diez lecturas que a esta ventana le rebotaron, ordenadas por lo que pueden cambiar; qué extraer de cada una** |
