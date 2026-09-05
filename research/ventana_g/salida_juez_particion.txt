@@ -1,0 +1,66 @@
+==================================================================================================
+LA PARTICION TRABAJO / VERIFICACION POR POTENCIA - cuanto hay que reservar de verdad
+NO GASTA CARTUCHO. K = 261. La caja sellada no se toca.
+==================================================================================================
+
+   1,006 sesiones 2016-2019, celda 5pt:20pt, 5.39 op/sesion por lado.
+   desvio de los dolares por sesion, por anio:
+      2016:  254 sesiones, desvio $ 101.77
+      2017:  251 sesiones, desvio $  36.32
+      2018:  253 sesiones, desvio $ 368.44
+      2019:  248 sesiones, desvio $ 163.66
+
+   PARTICION ACTUAL (calendario): trabajo 2016-2018 = 758 sesiones, verificacion 2019 = 248 sesiones
+      MDE trabajo      $  20.54
+      MDE verificacion $  25.84   -> la verificacion es 1.26x mas gruesa
+
+   BARRIDO DEL CORTE CRONOLOGICO (trabajo = primeras i sesiones):
+          i   fecha del corte  n trab  n verif  MDE trab  MDE verif   razon
+        251        2016-12-28     251      755     16.06      21.57    1.34
+        301        2017-03-09     301      705     13.54      23.03    1.70
+        351        2017-05-22     351      655     11.85      24.71    2.08
+        401        2017-08-01     401      605     10.44      26.67    2.55
+        451        2017-10-11     451      555      9.33      28.98    3.10
+        501        2017-12-26     501      505      8.56      31.69    3.70
+        551        2018-03-07     551      455     22.25      25.13    1.13
+        601        2018-05-18     601      405     21.33      26.79    1.26
+        651        2018-07-30     651      355     19.82      30.21    1.52
+        701        2018-10-09     701      305     18.45      34.86    1.89
+        751        2018-12-20     751      255     19.93      30.08    1.51
+        801        2019-03-07     801      205     19.64      29.17    1.49
+        851        2019-05-23     851      155     18.65      36.28    1.95
+
+   CORTE DE IGUAL POTENCIA: i = 541 (54% trabajo / 46% verificacion)
+      fecha del corte: 2018-02-21
+      MDE trabajo $22.55   MDE verificacion $24.74   razon 1.10
+      La verificacion se lleva 46%, MAS de la mitad, porque el tramo tardio es mas
+      volatil: igualar resolucion no es igualar sesiones.
+
+   EL INTERCAMBIO, las dos puntas:
+      trabajo AHORA  (758 ses): MDE $20.54
+      trabajo NUEVO  (541 ses): MDE $22.55   -> el piso de deteccion del trabajo SUBE +10%
+      verificacion AHORA (248 ses): MDE $25.84
+      verificacion NUEVA (465 ses): MDE $24.74   -> BAJA -4%
+
+==================================================================================================
+PERO EL CALCULO NO SE SOSTIENE, Y ESTE ES EL HALLAZGO
+==================================================================================================
+   La MDE NO es monotona en el numero de sesiones. En el barrido salta de $8.56 con 501 sesiones a $22.55 con 541: 2.6x PEOR
+   por agregar 40 sesiones. El desvio por anio lo explica: 2017 $36, 2018 $368 -un factor 10-.
+   Agregar datos EMPEORA el piso de deteccion cuando los datos que se agregan son la cola.
+
+   Consecuencia: el corte de 'igual potencia' (2018-02-21) cae JUSTO sobre el
+   pico de volatilidad de febrero 2018. Es el peor lugar posible para cortar: el punto de
+   maxima sensibilidad a un punado de sesiones extremas. Reparticionar ahi seria ajustar la
+   particion a la cola de 2018, que es exactamente la clase de cosa que esta busqueda rechaza.
+
+   Y el intercambio NO es el que suponiamos: acortar el trabajo lo MEJORA ($20.54 -> $8.56 con 501 sesiones), porque saca 2018.
+   Lo que se pierde no es potencia: es COBERTURA DE REGIMEN. Un trabajo de 2016-2017 no
+   contiene regimen alto, y la maquinaria de tres terciles del juez se quedaria sin el
+   tercil que mas importa.
+
+   RECOMENDACION: NO reparticionar por potencia. La restriccion que manda es la cobertura
+   de regimen, no el conteo de sesiones. La particion por calendario (2016-2018 / 2019) deja
+   la verificacion gruesa, y ahora se sabe POR QUE: no le falta cantidad, le falta cola.
+   Queda para que Roberto decida, con los dos numeros a la vista.
+==================================================================================================

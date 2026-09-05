@@ -1,0 +1,66 @@
+====================================================================================================
+EL SEGUNDO EJE DEL REGIMEN: DIRECCION EX-ANTE. Separa los pisos como la volatilidad?
+NO GASTA CARTUCHO. K = 261. La caja sellada no se toca.
+====================================================================================================
+
+   1,006 sesiones. Direccion ex-ante: signo del movimiento neto de la sesion anterior (dir1) y de las 20 anteriores (dir20).
+   dir1: 562 al alza / 429 a la baja.  dir20: 725 al alza / 261 a la baja.
+   CONDICION (escrita antes): separa si algun piso (largo, corto o comb) difiere >= 3x entre alza y baja, con diferencia > 3 errores.
+
+   celda 5pt:20pt
+   eje                                 celda        ses  piso largo   err  piso corto   err  piso comb   err  op/ses
+   volatilidad ex-ante (referencia)    bajo         335      -68.12  29.4      +78.25  29.4      +5.07   2.0    2.36
+   volatilidad ex-ante (referencia)    alto         335      +42.01  89.1     +168.67  84.1    +105.34  18.9   10.09
+                                       ->         largo 1.6x (cambia signo) 1.2err | corto 2.2x 1.0err | comb 20.8x 5.3err SEPARA
+   dir1: sesion anterior               al alza      562      -70.83  37.3     +115.35  38.6     +22.26   5.3    4.56
+   dir1: sesion anterior               a la baja    429      +40.78  62.2      +97.45  56.6     +69.12  14.0    6.51
+                                       ->         largo 1.7x (cambia signo) 1.5err | corto 1.2x 0.3err | comb 3.1x 3.1err SEPARA
+   dir20: 20 sesiones anteriores       al alza      725      -30.35  32.3      +70.40  29.9     +20.02   4.2    3.62
+   dir20: 20 sesiones anteriores       a la baja    261      -20.59  92.4     +231.33  90.4    +105.37  22.4    9.78
+                                       ->         largo 1.5x 0.1err | corto 3.3x 1.7err | comb 5.3x 3.7err SEPARA
+
+   celda 20pt:10pt
+   eje                                 celda        ses  piso largo   err  piso corto   err  piso comb   err  op/ses
+   volatilidad ex-ante (referencia)    bajo         335      -44.51  30.0      +99.12  29.6     +27.31   1.7    1.49
+   volatilidad ex-ante (referencia)    alto         335      +53.42  86.7     +226.33  85.8    +139.87   9.2    5.44
+                                       ->         largo 1.2x (cambia signo) 1.1err | corto 2.3x 1.4err | comb 5.1x 12.1err SEPARA
+   dir1: sesion anterior               al alza      562      -29.69  38.3     +152.59  37.8     +61.45   4.3    2.60
+   dir1: sesion anterior               a la baja    429      +44.05  59.5     +131.98  59.1     +88.02   6.5    3.62
+                                       ->         largo 1.5x (cambia signo) 1.0err | corto 1.2x 0.3err | comb 1.4x 3.4err
+   dir20: 20 sesiones anteriores       al alza      725       -0.14  32.0      +99.81  30.7     +49.83   2.4    2.14
+   dir20: 20 sesiones anteriores       a la baja    261      -19.66  89.9     +276.94  90.9    +128.64  11.5    5.26
+                                       ->         largo 140.5x 0.2err | corto 2.8x 1.8err | comb 2.6x 6.7err
+
+====================================================================================================
+DIRECCION DENTRO DE CADA TERCIL DE VOLATILIDAD (dir20). Si separa aca, es direccion de verdad;
+si no, era volatilidad disfrazada. Misma regla: >= 3x y > 3 errores, en comb o en un lado.
+====================================================================================================
+
+   celda 5pt:20pt
+   tercil vol  direccion    ses  piso largo   err  piso corto   err  piso comb   err  op/ses
+   bajo        al alza      307      -86.03  28.3      +98.44  28.4      +6.21   2.1    2.29
+   bajo        a la baja     28   (menos de 30 sesiones: sin datos)
+   medio       al alza      274      -10.21  44.8      +39.26  43.8     +14.53   4.6    3.68
+   medio       a la baja     61     -179.67  82.5     +243.96  92.4     +32.15  16.2    3.80
+               ->         largo 17.6x 1.8err | corto 6.2x 2.0err | comb 2.2x 1.0err
+   alto        al alza      144      +50.03 124.4      +69.84 110.0     +59.94  18.2    6.33
+   alto        a la baja    172      +11.58 134.5     +287.81 130.3    +149.69  32.9   12.99
+               ->         largo 4.3x 0.2err | corto 4.1x 1.3err | comb 2.5x 2.4err
+
+   celda 20pt:10pt
+   tercil vol  direccion    ses  piso largo   err  piso corto   err  piso comb   err  op/ses
+   bajo        al alza      307      -65.43  29.0     +116.19  28.8     +25.38   1.7    1.46
+   bajo        a la baja     28   (menos de 30 sesiones: sin datos)
+   medio       al alza      274      +27.68  45.9      +74.75  44.5     +51.22   3.6    2.13
+   medio       a la baja     61     -135.19  83.0     +242.54  86.0     +53.68  16.3    2.37
+               ->         largo 4.9x (signo) 1.7err | corto 3.2x 1.7err | comb 1.0x 0.1err
+   alto        al alza      144      +86.13 120.1     +112.57 114.4     +99.35   7.6    3.61
+   alto        a la baja    172      -12.00 130.4     +348.54 131.8    +168.27  15.7    6.84
+               ->         largo 7.2x (signo) 0.6err | corto 3.1x 1.4err | comb 1.7x 4.0err
+
+====================================================================================================
+VEREDICTO: la direccion separo el piso COMBINADO en bruto, pero NO dentro de los terciles de
+   volatilidad, y nunca separo un lado solo: era VOLATILIDAD DISFRAZADA (una sesion a la baja
+   anticipa una volatil). El juez ya condiciona por volatilidad; la pasiva cubre la tendencia
+   del rango. El segundo eje NO hace falta. Se cierra.
+====================================================================================================

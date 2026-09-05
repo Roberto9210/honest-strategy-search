@@ -1,0 +1,74 @@
+========================================================================================================
+VERIFICACION - la inversa tiene que reproducir la directa
+========================================================================================================
+   directa:  n_exacto(80,0% -> 81,2%) = 6,988   esperado 6.988   OK
+   inversa:  mde_exacto(n=6,988) = 1.182 puntos   esperado ~1,200
+   cierre dentro de 0,05 puntos: OK
+   INVERSION VERIFICADA
+
+========================================================================================================
+1. DIFERENCIA MINIMA DETECTABLE POR PRESUPUESTO (alfa 0,05 una cola, potencia 80%)
+========================================================================================================
+   'puntos' = puntos de tasa de acierto. '$/op' = dolares de esperanza por
+   operacion por encima de la moneda. Delta E = delta * (gana + pierde).
+
+   --- presupuesto 250 operaciones ---
+       bracket   moneda   MDE puntos   MDE $/op   op/dia   anios
+      5pt:10pt    66.7%        7.45      58.60      3.5     0.3
+     10pt:10pt    50.0%        8.02      83.14      1.0     1.0
+     20pt:10pt    33.3%        7.89     121.20      1.0     1.0
+      5pt:20pt    80.0%        6.03      78.34      3.5     0.3
+     10pt:20pt    66.7%        7.45     115.48      1.0     1.0
+
+   --- presupuesto 1,000 operaciones ---
+       bracket   moneda   MDE puntos   MDE $/op   op/dia   anios
+      5pt:10pt    66.7%        3.70      29.06      3.5     1.1
+     10pt:10pt    50.0%        3.98      41.20      1.0     4.0
+     20pt:10pt    33.3%        3.80      58.43      1.0     4.0
+      5pt:20pt    80.0%        3.14      40.83      3.5     1.1
+     10pt:20pt    66.7%        3.70      57.27      1.0     4.0
+
+   --- presupuesto 3,000 operaciones ---
+       bracket   moneda   MDE puntos   MDE $/op   op/dia   anios
+      5pt:10pt    66.7%        2.13      16.73      3.5     3.4
+     10pt:10pt    50.0%        2.28      23.67      1.0    11.9
+     20pt:10pt    33.3%        2.19      33.58      1.0    11.9
+      5pt:20pt    80.0%        1.81      23.49      3.5     3.4
+     10pt:20pt    66.7%        2.13      32.96      1.0    11.9
+
+========================================================================================================
+2. EL PISO: que tiene que prometer una idea para que valga la pena MEDIRLA
+========================================================================================================
+   Hay DOS pisos y manda el mas alto:
+     rentabilidad  = ventaja que hace que operar deje de perder plata (fija por bracket)
+     detectabilidad = ventaja minima que el presupuesto puede distinguir de la moneda
+   Si detectabilidad > rentabilidad, una idea apenas rentable es INDEMOSTRABLE ahi.
+
+       bracket  piso rentab.     $/op    piso n=250     $/op  piso n=1,000     $/op  piso n=3,000     $/op
+      5pt:10pt         2.26    17.79         7.45*    58.60         3.70*    29.06         2.13    16.73
+     10pt:10pt         2.30    23.81         8.02*    83.14         3.98*    41.20         2.28    23.67
+     20pt:10pt         1.94    29.83         7.89*   121.20         3.80*    58.43         2.19*    33.58
+      5pt:20pt         1.20    15.58         6.03*    78.34         3.14*    40.83         1.81*    23.49
+     10pt:20pt         1.43    22.13         7.45*   115.48         3.70*    57.27         2.13*    32.96
+
+   * = el presupuesto NO alcanza para distinguir ni siquiera el punto de
+       equilibrio de ese bracket. Una idea exactamente rentable seria invisible.
+
+   LECTURA POR PRESUPUESTO:
+     n=250: piso en dolares entre $59/op (5pt:10pt) y $121/op (20pt:10pt).
+             NO alcanza para el equilibrio de NINGUN bracket.
+     n=1,000: piso en dolares entre $29/op (5pt:10pt) y $58/op (20pt:10pt).
+             NO alcanza para el equilibrio de NINGUN bracket.
+     n=3,000: piso en dolares entre $17/op (5pt:10pt) y $34/op (20pt:10pt).
+             alcanza para el equilibrio de: 5pt:10pt, 10pt:10pt
+
+========================================================================================================
+3. LA ESPECIFICACION PARA LA BUSQUEDA
+========================================================================================================
+   Celda del criterio (5pt:20pt): equilibrio a +1.20 puntos = $15.58/op.
+   Con 1.000 operaciones solo se distingue +3.14 puntos = $40.83/op,
+   que es 2.6 veces el equilibrio. Una idea que prometa
+   apenas rentabilidad en esta celda NO es demostrable con 1.000 operaciones.
+
+   El piso no es un numero: depende del bracket, y va de $29 a $58
+   por operacion con el mismo presupuesto de 1.000. Por eso la tabla, y no una cifra.

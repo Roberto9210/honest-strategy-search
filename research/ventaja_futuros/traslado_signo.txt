@@ -1,0 +1,67 @@
+TRASLADO DEL SIGNO DEL HUECO -- Ventana D, 2026-09-03. CSV del guardian (37a0144). Sin close - open.
+
+=== ES contra MES ===
+  fechas comunes (ambos en mismo contrato): 1845   2019-05-07 -> 2026-08-21
+  hueco nulo (open == close_prev exacto): ES 54 (2.9 %), MES 58 (3.1 %), alguno 104 (5.6 %)
+  ambos no nulos: 1741   ACUERDO DE SIGNO: 1682 / 1741 = 96.61 %
+  ambos |gap| >= 0.25: 1741   acuerdo: 96.61 %
+  alguno |gap| >= 0.50:  1717   acuerdo: 97.20 %
+  alguno |gap| >= 1.00:  1599   acuerdo: 98.44 %
+  alguno |gap| >= 2.00:  1296   acuerdo: 99.38 %
+  desacuerdos: 59; mediana |gap_ES| en ellos 0.50, mediana |gap_MES| 0.50; max |gap| entre los dos 15.75
+  diferencia gap_ES - gap_MES en TODAS las comunes: mediana |dif| 0.50, p95 2.25, max 59.00
+  por anio (fechas comunes / ambos no nulos / acuerdo %):
+    2019:  167 /  148 /  89.19 %
+    2020:  253 /  242 /  98.35 %
+    2021:  255 /  237 /  99.16 %
+    2022:  253 /  247 /  95.14 %
+    2023:  247 /  228 /  96.93 %
+    2024:  255 /  240 /  95.83 %
+    2025:  252 /  244 /  97.95 %
+    2026:  163 /  155 /  98.06 %
+
+  >>> TRASLADO: PASA  (acuerdo 96.61 % sobre fechas con ambos huecos no nulos; criterio E1.4: >= 95 PASA, 90-95 INDETERMINADO, < 90 FALLA)
+  >>> precondicion C0 (rotulo, no veredicto): 5.6 % de fechas con algun hueco nulo
+
+=== NQ contra MNQ (mismo control en el otro par, orientacion) ===
+  fechas comunes (ambos en mismo contrato): 1849   2019-05-07 -> 2026-08-21
+  hueco nulo (open == close_prev exacto): NQ 27 (1.5 %), MNQ 37 (2.0 %), alguno 59 (3.2 %)
+  ambos no nulos: 1790   ACUERDO DE SIGNO: 1698 / 1790 = 94.86 %
+  ambos |gap| >= 0.25: 1790   acuerdo: 94.86 %
+  alguno |gap| >= 0.50:  1785   acuerdo: 95.01 %
+  alguno |gap| >= 1.00:  1749   acuerdo: 95.71 %
+  alguno |gap| >= 2.00:  1687   acuerdo: 96.62 %
+  desacuerdos: 92; mediana |gap_NQ| en ellos 1.25, mediana |gap_MNQ| 1.50; max |gap| entre los dos 107.25
+  diferencia gap_NQ - gap_MNQ en TODAS las comunes: mediana |dif| 1.50, p95 11.50, max 115.25
+  por anio (fechas comunes / ambos no nulos / acuerdo %):
+    2019:  166 /  155 /  90.32 %
+    2020:  253 /  247 /  95.55 %
+    2021:  253 /  247 /  97.17 %
+    2022:  253 /  245 /  94.69 %
+    2023:  253 /  245 /  92.24 %
+    2024:  255 /  245 /  95.51 %
+    2025:  253 /  246 /  95.93 %
+    2026:  163 /  160 /  96.25 %
+
+=== ES contra NQ (dos indices distintos: para ver cuanto comparten signo, orientacion) ===
+  fechas comunes (ambos en mismo contrato): 2527   2016-08-24 -> 2026-08-21
+  hueco nulo (open == close_prev exacto): ES 115 (4.6 %), NQ 60 (2.4 %), alguno 166 (6.6 %)
+  ambos no nulos: 2361   ACUERDO DE SIGNO: 2030 / 2361 = 85.98 %
+  ambos |gap| >= 0.25: 2361   acuerdo: 85.98 %
+  alguno |gap| >= 0.50:  2350   acuerdo: 86.21 %
+  alguno |gap| >= 1.00:  2259   acuerdo: 87.21 %
+  alguno |gap| >= 2.00:  2062   acuerdo: 89.38 %
+  desacuerdos: 331; mediana |gap_ES| en ellos 0.75, mediana |gap_NQ| 2.50; max |gap| entre los dos 86.25
+  diferencia gap_ES - gap_NQ en TODAS las comunes: mediana |dif| 6.75, p95 67.75, max 576.25
+  por anio (fechas comunes / ambos no nulos / acuerdo %):
+    2016:   90 /   67 /  86.57 %
+    2017:  253 /  212 /  81.13 %
+    2018:  252 /  233 /  89.27 %
+    2019:  254 /  237 /  85.23 %
+    2020:  253 /  245 /  86.12 %
+    2021:  252 /  236 /  85.59 %
+    2022:  252 /  245 /  86.94 %
+    2023:  254 /  243 /  82.72 %
+    2024:  254 /  241 /  87.97 %
+    2025:  250 /  244 /  88.11 %
+    2026:  163 /  158 /  86.08 %

@@ -1,0 +1,75 @@
+====================================================================================================
+ESTUDIO DE ENTRADA PASIVA (mbo): ahorra el medio-spread o lo devuelve como seleccion adversa?
+NO GASTA CARTUCHO. K = 261. Entradas AL AZAR. La caja sellada no se toca.
+====================================================================================================
+
+[B bajo]  bbo changes 24,349  fills 310,656  dwell true ms: med 0.15 / mean 997   corte rafaga (cambios/seg) = 0
+   muerte 1tk  lat   0ms  llenado  47.6%  (rafaga 47.3% / calma 47.7%)  markout pt: H1s +0.0582  H5s +0.0530  H30s +0.0374  H60s +0.0161  H300s +0.0325
+      markout por regimen (pt): rafaga H1s +0.0385 H30s +0.0041   |   calma H1s +0.0611 H30s +0.0423
+   muerte 1tk  lat 250ms  llenado  47.7%  (rafaga 48.1% / calma 47.6%)  markout pt: H1s +0.0570  H5s +0.0536  H30s +0.0392  H60s +0.0183  H300s +0.0370
+      markout por regimen (pt): rafaga H1s +0.0399 H30s +0.0047   |   calma H1s +0.0596 H30s +0.0444
+   muerte 2tk  lat   0ms  llenado  67.6%  (rafaga 68.0% / calma 67.5%)  markout pt: H1s +0.0552  H5s +0.0556  H30s +0.0404  H60s +0.0164  H300s +0.0244
+   muerte 2tk  lat 250ms  llenado  67.6%  (rafaga 68.8% / calma 67.4%)  markout pt: H1s +0.0549  H5s +0.0564  H30s +0.0411  H60s +0.0191  H300s +0.0277
+   [cruce] markout de 226,750 fills REALES en el mejor precio (pt): H1s +0.0358  H30s +0.0263  H300s +0.0144
+
+[B medio]  bbo changes 59,127  fills 579,414  dwell true ms: med 0.15 / mean 411   corte rafaga (cambios/seg) = 0
+   muerte 1tk  lat   0ms  llenado  51.6%  (rafaga 51.9% / calma 51.4%)  markout pt: H1s +0.0323  H5s +0.0329  H30s -0.0051  H60s +0.0007  H300s -0.0380
+      markout por regimen (pt): rafaga H1s +0.0398 H30s -0.0180   |   calma H1s +0.0285 H30s +0.0016
+   muerte 1tk  lat 250ms  llenado  51.4%  (rafaga 50.5% / calma 51.8%)  markout pt: H1s +0.0324  H5s +0.0365  H30s +0.0073  H60s +0.0200  H300s -0.0189
+      markout por regimen (pt): rafaga H1s +0.0396 H30s +0.0017   |   calma H1s +0.0288 H30s +0.0101
+   muerte 2tk  lat   0ms  llenado  70.4%  (rafaga 69.4% / calma 70.8%)  markout pt: H1s +0.0301  H5s +0.0351  H30s +0.0110  H60s +0.0346  H300s +0.0440
+   muerte 2tk  lat 250ms  llenado  70.4%  (rafaga 69.3% / calma 71.0%)  markout pt: H1s +0.0309  H5s +0.0373  H30s +0.0217  H60s +0.0489  H300s +0.0593
+   [cruce] markout de 390,489 fills REALES en el mejor precio (pt): H1s +0.0316  H30s +0.0378  H300s +0.0416
+
+[B alto]  bbo changes 106,424  fills 657,122  dwell true ms: med 0.23 / mean 228   corte rafaga (cambios/seg) = 0
+   muerte 1tk  lat   0ms  llenado  46.7%  (rafaga 47.7% / calma 45.7%)  markout pt: H1s +0.0277  H5s +0.0307  H30s +0.0537  H60s +0.0584  H300s +0.0652
+      markout por regimen (pt): rafaga H1s +0.0246 H30s +0.0319   |   calma H1s +0.0307 H30s +0.0758
+   muerte 1tk  lat 250ms  llenado  46.9%  (rafaga 47.5% / calma 46.4%)  markout pt: H1s +0.0290  H5s +0.0447  H30s +0.0697  H60s +0.0551  H300s +0.0854
+      markout por regimen (pt): rafaga H1s +0.0257 H30s +0.0547   |   calma H1s +0.0322 H30s +0.0845
+   muerte 2tk  lat   0ms  llenado  66.8%  (rafaga 68.1% / calma 65.5%)  markout pt: H1s +0.0231  H5s +0.0249  H30s +0.0307  H60s +0.0264  H300s +0.0659
+   muerte 2tk  lat 250ms  llenado  66.7%  (rafaga 68.8% / calma 64.7%)  markout pt: H1s +0.0253  H5s +0.0320  H30s +0.0468  H60s +0.0326  H300s +0.0718
+   [cruce] markout de 422,676 fills REALES en el mejor precio (pt): H1s +0.0425  H30s +0.0280  H300s +0.0277
+
+[A bajo]  bbo changes 185,303  fills 606,631  dwell true ms: med 0.20 / mean 131   corte rafaga (cambios/seg) = 2
+   muerte 1tk  lat   0ms  llenado  47.0%  (rafaga 46.4% / calma 47.6%)  markout pt: H1s +0.0217  H5s +0.0404  H30s +0.0841  H60s +0.0987  H300s +0.0441
+      markout por regimen (pt): rafaga H1s +0.0129 H30s +0.0856   |   calma H1s +0.0297 H30s +0.0828
+   muerte 1tk  lat 250ms  llenado  46.4%  (rafaga 43.8% / calma 48.8%)  markout pt: H1s +0.0229  H5s +0.0332  H30s +0.0700  H60s +0.0795  H300s +0.0214
+      markout por regimen (pt): rafaga H1s +0.0180 H30s +0.0926   |   calma H1s +0.0270 H30s +0.0511
+   muerte 2tk  lat   0ms  llenado  67.4%  (rafaga 66.2% / calma 68.6%)  markout pt: H1s +0.0248  H5s +0.0376  H30s +0.0714  H60s +0.0596  H300s +0.0456
+   muerte 2tk  lat 250ms  llenado  66.9%  (rafaga 64.9% / calma 68.7%)  markout pt: H1s +0.0247  H5s +0.0347  H30s +0.0671  H60s +0.0575  H300s +0.0269
+   [cruce] markout de 324,516 fills REALES en el mejor precio (pt): H1s +0.0293  H30s +0.0236  H300s +0.0711
+
+[A medio]  bbo changes 229,411  fills 748,136  dwell true ms: med 0.15 / mean 106   corte rafaga (cambios/seg) = 4
+   muerte 1tk  lat   0ms  llenado  47.5%  (rafaga 44.9% / calma 49.6%)  markout pt: H1s +0.0235  H5s +0.0185  H30s +0.0013  H60s +0.0050  H300s +0.0332
+      markout por regimen (pt): rafaga H1s +0.0293 H30s +0.0158   |   calma H1s +0.0192 H30s -0.0095
+   muerte 1tk  lat 250ms  llenado  47.3%  (rafaga 44.3% / calma 49.8%)  markout pt: H1s +0.0186  H5s +0.0101  H30s -0.0079  H60s -0.0316  H300s +0.0738
+      markout por regimen (pt): rafaga H1s +0.0125 H30s -0.0172   |   calma H1s +0.0231 H30s -0.0011
+   muerte 2tk  lat   0ms  llenado  70.0%  (rafaga 67.4% / calma 72.1%)  markout pt: H1s +0.0227  H5s +0.0169  H30s -0.0080  H60s -0.0056  H300s +0.0052
+   muerte 2tk  lat 250ms  llenado  69.4%  (rafaga 66.9% / calma 71.5%)  markout pt: H1s +0.0249  H5s +0.0205  H30s -0.0035  H60s -0.0180  H300s +0.0222
+   [cruce] markout de 415,398 fills REALES en el mejor precio (pt): H1s +0.0281  H30s +0.0332  H300s +0.0013
+
+[A altoREL]  bbo changes 259,262  fills 923,925  dwell true ms: med 0.15 / mean 94   corte rafaga (cambios/seg) = 6
+   muerte 1tk  lat   0ms  llenado  47.0%  (rafaga 47.2% / calma 46.8%)  markout pt: H1s +0.0301  H5s +0.0244  H30s +0.0150  H60s -0.0288  H300s -0.0999
+      markout por regimen (pt): rafaga H1s +0.0354 H30s +0.0445   |   calma H1s +0.0255 H30s -0.0110
+   muerte 1tk  lat 250ms  llenado  45.9%  (rafaga 44.0% / calma 47.7%)  markout pt: H1s +0.0278  H5s +0.0334  H30s +0.0217  H60s -0.0160  H300s -0.0901
+      markout por regimen (pt): rafaga H1s +0.0462 H30s +0.0704   |   calma H1s +0.0129 H30s -0.0175
+   muerte 2tk  lat   0ms  llenado  68.4%  (rafaga 67.7% / calma 68.9%)  markout pt: H1s +0.0306  H5s +0.0218  H30s +0.0265  H60s -0.0068  H300s -0.0887
+   muerte 2tk  lat 250ms  llenado  68.0%  (rafaga 66.8% / calma 69.1%)  markout pt: H1s +0.0294  H5s +0.0270  H30s +0.0281  H60s +0.0025  H300s -0.0781
+   [cruce] markout de 505,354 fills REALES en el mejor precio (pt): H1s +0.0280  H30s +0.0418  H300s +0.0707
+
+====================================================================================================
+RESUMEN - markout a H=30s (pt) y llenado, muerte 1 tick. medio-spread ahorrado ~ +0,13 pt.
+====================================================================================================
+    epoca   tercil  lat ms  llenado  markout H30s                 veredicto
+        B     bajo       0    47.6%       +0.0374DEVUELVE (adversa se lo come)
+        B     bajo     250    47.7%       +0.0392DEVUELVE (adversa se lo come)
+        B    medio       0    51.6%       -0.0051DEVUELVE (adversa se lo come)
+        B    medio     250    51.4%       +0.0073DEVUELVE (adversa se lo come)
+        B     alto       0    46.7%       +0.0537                   parcial
+        B     alto     250    46.9%       +0.0697                   parcial
+        A     bajo       0    47.0%       +0.0841                   parcial
+        A     bajo     250    46.4%       +0.0700                   parcial
+        A    medio       0    47.5%       +0.0013DEVUELVE (adversa se lo come)
+        A    medio     250    47.3%       -0.0079DEVUELVE (adversa se lo come)
+        A  altoREL       0    47.0%       +0.0150DEVUELVE (adversa se lo come)
+        A  altoREL     250    45.9%       +0.0217DEVUELVE (adversa se lo come)

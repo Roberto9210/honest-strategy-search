@@ -1,0 +1,46 @@
+{
+ "nombre": "ejemplo_rechazado",
+ "instrumento": "ES",
+ "contratos": 1,
+ "limite_contratos": 4,
+ "variantes_probadas": 1,
+ "familia": "ejemplo",
+ "regla_salida": {
+  "tipo": "bracket",
+  "objetivo_pt": 5,
+  "stop_pt": 20
+ },
+ "operaciones": [
+  {
+   "ts": "2016-01-03T23:00:00",
+   "lado": "corto",
+   "pnl": 250.0
+  },
+  {
+   "ts": "2016-01-04T14:00:00",
+   "lado": "corto",
+   "pnl": 250.0
+  },
+  {
+   "ts": "2016-01-04T23:00:00",
+   "lado": "corto",
+   "pnl": 250.0
+  },
+  {
+   "ts": "2016-01-05T14:01:00",
+   "lado": "largo",
+   "pnl": 250.0
+  },
+  {
+   "ts": "2016-01-05T23:00:00",
+   "lado": "largo",
+   "pnl": 250.0
+  },
+  {
+   "ts": "2016-01-06T14:00:00",
+   "lado": "corto",
+   "pnl": 250.0
+  }
+ ],
+ "clase_ventaja": "direccional"
+}

@@ -1,0 +1,66 @@
+====================================================================================================
+LINEA DE BASE - la tasa sin ventaja, MEDIDA en vez de afirmada
+NO GASTA CARTUCHO. K = 261. Medicion de una constante del modelo.
+====================================================================================================
+
+ES 1-min Databento 2016-2019, 1,357,785 barras (contrato unico por sesion).
+Rango de una barra de un minuto: mediana 0.50pt, p99 3.25pt, MAXIMO 36.00pt
+-> el bracket de CONTROL usa 23pt a cada lado (46pt de separacion): ninguna barra observada puede contener los dos.
+
+====================================================================================================
+CONTROL - bracket tan ancho que la ambiguedad es imposible
+====================================================================================================
+   lado           n   ambiguo   asumido  observado      dif
+   largo      36711    0.000%     50.0%      54.6%    +4.6
+   corto      36711    0.000%     50.0%      45.4%    -4.6
+   pooled     59156    0.000%     50.0%      50.0%    +0.0
+
+   ambiguedad = 0%: OK
+   CONTROL PASADO  (la tasa pooled tiene que dar ~50% si el defecto era solo la ambiguedad)
+
+====================================================================================================
+LA BANDA POR BRACKET - entradas al azar, horizonte de una sesion
+====================================================================================================
+       bracket    lado       n   ambiguo  sin resolv   asumido   contra   a favor   ancho
+      5pt:10pt   largo   39356     0.00%        7.3%     66.7%    70.1%     70.1%    0.0
+      5pt:10pt   corto   39356     0.00%        7.0%     66.7%    66.4%     66.4%    0.0
+                POOLED   73068     0.00%                 66.7%    68.2%     68.2%    0.0
+     10pt:10pt   largo   39356     0.00%       19.0%     50.0%    52.6%     52.6%    0.0
+     10pt:10pt   corto   39356     0.00%       19.0%     50.0%    47.4%     47.4%    0.0
+                POOLED   63756     0.00%                 50.0%    50.0%     50.0%    0.0
+     20pt:10pt   largo   39356     0.00%       37.7%     33.3%    28.6%     28.6%    0.0
+     20pt:10pt   corto   39356     0.00%       33.5%     33.3%    26.0%     26.0%    0.0
+                POOLED   50710     0.00%                 33.3%    27.3%     27.3%    0.0
+      5pt:20pt   largo   39356     0.00%       15.7%     80.0%    85.8%     85.8%    0.0
+      5pt:20pt   corto   39356     0.00%       19.2%     80.0%    84.6%     84.6%    0.0
+                POOLED   64994     0.00%                 80.0%    85.2%     85.2%    0.0
+     10pt:20pt   largo   39356     0.00%       33.5%     66.7%    74.0%     74.0%    0.0
+     10pt:20pt   corto   39356     0.00%       37.7%     66.7%    71.4%     71.4%    0.0
+                POOLED   50710     0.00%                 66.7%    72.7%     72.7%    0.0
+
+====================================================================================================
+LA PREGUNTA QUE DECIDE: el +1,2 del criterio contra el ancho de la banda
+====================================================================================================
+       bracket   asumido     banda observada   ancho banda   sesgo vs asumido
+      5pt:10pt     66.7%       68.2% - 68.2%         0.00             +1.58
+     10pt:10pt     50.0%       50.0% - 50.0%         0.00             +0.00
+     20pt:10pt     33.3%       27.3% - 27.3%         0.00             -6.08
+      5pt:20pt     80.0%       85.2% - 85.2%         0.00             +5.17
+     10pt:20pt     66.7%       72.7% - 72.7%         0.00             +6.08
+
+   'ancho banda' = cuanto no se sabe por la ambiguedad de la barra de un minuto.
+   'sesgo' = cuanto se corre el centro de la banda respecto de S/(S+T) afirmado.
+
+====================================================================================================
+DE DONDE VIENE EL SESGO - prueba de horizonte (la ambiguedad ya dio 0%)
+====================================================================================================
+       bracket   asumido   1 sesion  sin resolv   5 sesiones  sin resolv   converge?
+      5pt:10pt     66.7%      68.2%        7.2%        67.2%        0.0%          SI
+     10pt:10pt     50.0%      50.0%       19.0%        50.0%        0.7%          no
+     20pt:10pt     33.3%      27.3%       35.6%        31.2%        4.0%          SI
+      5pt:20pt     80.0%      85.2%       17.4%        81.6%        1.1%          SI
+     10pt:20pt     66.7%      72.7%       35.6%        68.8%        4.0%          SI
+
+   Si al alargar el horizonte la tasa se acerca a S/(S+T), el sesgo es CENSURA:
+   las que no resuelven no se pierden al azar, se pierden las que iban a la
+   barrera LEJANA. Y el modelo supone que toda operacion resuelve alguna vez.

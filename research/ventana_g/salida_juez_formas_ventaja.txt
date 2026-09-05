@@ -1,0 +1,37 @@
+====================================================================================================
+EL JUEZ CONTRA OTRAS FORMAS DE VENTAJA - se mide el punto ciego, no se declara
+NO GASTA CARTUCHO. K = 261. 200 permutaciones. La caja sellada no se toca.
+====================================================================================================
+
+   grilla 2016-2018: 3,764 ranuras, 758 sesiones.
+
+   FORMA A - TIMING: opera 1,266 de 3,764 ranuras (34%), lado al azar.
+
+   [A timing] veredicto: NO SUPERA
+      ventaja INYECTADA (realizada, exacta): +403.04 $/sesion
+      recupera nula A rotacion:  +396.13  (   98% de la inyectada)  +22.2 desvios
+      recupera nula B signo:       -2.74  (   -1% de la inyectada)  -0.2 desvios
+      pasiva: +0.63 (+21.3 desvios)   informativo = min de las tres = -0.2
+      obs +380.42  z_rent +21.3  z_req 3.00  op/sesion 1.67
+      -> la nula de SIGNO conserva las ranuras: no puede ver una ventaja de cuando.
+
+   FORMA B - TAMANO: acierta 50% (moneda), duplica en 1,872 ranuras ganadoras -> 5,636 operaciones.
+
+   [B tamano] veredicto: SUPERA
+      ventaja INYECTADA (realizada, exacta): +559.75 $/sesion
+      recupera nula A rotacion:  +510.17  (   91% de la inyectada)  +11.1 desvios
+      recupera nula B signo:     +531.81  (   95% de la inyectada)  +11.6 desvios
+      pasiva: +3.83 (+9.9 desvios)   informativo = min de las tres = +9.9
+      obs +456.03  z_rent +9.9  z_req 3.00  op/sesion 7.43
+      -> las dos nulas deberian verla: dar vuelta el lado convierte las dobles en perdedoras.
+
+====================================================================================================
+QUE VE EL JUEZ
+====================================================================================================
+   A timing   inyectada +403.04  rotacion recupera    98%  signo recupera    -1%  -> veredicto NO SUPERA  (NO LA VE)
+   B tamano   inyectada +559.75  rotacion recupera    91%  signo recupera    95%  -> veredicto SUPERA  (LA VE)
+
+   EL PUNTO CIEGO, CUANTIFICADO: una ventaja de TIMING de +403.04 $/sesion -medida y
+   recuperada al 98% por la nula de rotacion- se descarta igual, porque el
+   'informativo' es el MINIMO de las tres nulas y la de signo la ve en -1%.
+   No es un punto ciego chico: es TOTAL para una ventaja de timing pura, sea del tamano que sea.

@@ -1,0 +1,54 @@
+==================================================================================================
+EJERCITAR LA RUTA --verificar: el candado que guarda 2019, probado en las DOS direcciones
+NO GASTA CARTUCHO. K = 261. La caja sellada (2020-2026) no se toca.
+==================================================================================================
+
+   candidato sin ventaja: 4,994 operaciones, 3,764 en TRABAJO 2016-2018 y 1,230 en 2019.
+
+(1) CANDADO CERRADO: --verificar sobre registro LIMPIO (trabajo NO anotado).
+    Tiene que NEGARSE a mostrar 2019.
+    verificacion: RETENIDO: --verificar exige que el resultado de TRABAJO de este mismo candidato ya estuviera anotado ANTES de esta corri
+    mostro 2019? NO - el candado aguanta
+
+(2) SIN --verificar: juzga trabajo, lo anota, y retiene 2019 avisando como verlo.
+    veredicto TRABAJO: NO SUPERA
+    verificacion: RETENIDO: 1,230 operaciones de 2019 NO se juzgan. El resultado de trabajo ya quedo anotado en el registro; volve a corre
+
+(3) CANDADO ABIERTO: --verificar con el trabajo YA anotado. Tiene que MOSTRAR 2019.
+    verificacion: MOSTRADO: NO SUPERA
+    mostro 2019? SI
+
+(4) EL INFORME DE VERIFICACION, tal cual lo imprime el juez:
+      VERIFICACION 2019: MOSTRADO: NO SUPERA
+      ------------------------------------------------------------------------------------------------
+      VEREDICTO (VERIFICACION 2019): NO SUPERA
+      
+                                        $/sesion
+         OBSERVADO (neto)                -101.52
+         nula A rotacion                  -54.93   desvio   52.01   ventaja   -46.59 =  -0.9 desvios
+         nula B signo                     -28.13   desvio   50.95   ventaja   -73.39 =  -1.4 desvios
+         PASIVA misma exposicion           -7.61                  ventaja   -93.91 =  -1.8 desvios
+      
+         ERROR: permutacion $52.01 (+) error de o propagado $0.73 = $52.02. NUNCA binomial (daria $69.32; factor ganado 0.8x).
+         RESOLUCION: +-72% de la ventaja de referencia (+-$52.02/sesion contra $72.69; MDE $129.34); referencia +-33% de la ventaja con ~4,994 operaciones (permutacion.py). 'No detecto nada' NO es 'no hay nada'.
+         correccion de contabilidad aplicada solo en direccion conservadora: -0.0356 pt/op
+      
+         RENTABLE (dolares > 0):                  -2.0 desvios contra 3.00 exigidos   no
+         INFORMATIVO (bate rotacion, signo y pasiva): -1.8 desvios contra 3.00 exigidos   no
+      
+         POR REGIMEN, EJE EX-ANTE (tercil de volatilidad EN BPS -rango/precio- de la sesion ANTERIOR,
+         conocible al entrar y comparable entre epocas; nula de signo, que conserva la sesion). Con esto se JUZGA:
+           tercil  sesiones       obs      nula   ventaja  desvios  aguanta
+             bajo        62    -56.41    -21.99    -34.42     -0.4       no
+            medio        96    +40.99    +60.38    -19.38     -0.3       no
+
+    informe de verificacion completo (veredicto + tabla + nulas): SI
+
+==================================================================================================
+   1 cerrado    PASADO
+   2 retiene    PASADO
+   3 abierto    PASADO
+   4 informe    PASADO
+
+   EL CANDADO DE 2019 FUNCIONA EN LAS DOS DIRECCIONES: se niega sin el trabajo anotado y abre cuando esta.
+==================================================================================================

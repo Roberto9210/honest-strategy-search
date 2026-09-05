@@ -21,3 +21,4 @@ __pycache__/
 
 # --- Salida de la suite (se regenera en cada corrida) ----------------------
 tests/fase2/ultima_corrida.log
+*.npy

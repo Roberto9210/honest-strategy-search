@@ -1,0 +1,59 @@
+====================================================================================================
+TAREA 2 - CARACTERIZAR UNA CELDA DENTRO DE LA VENTANA OPERABLE (1 a 90 min)
+NO GASTA CARTUCHO. K = 261. Dinero: $0. La caja sellada no se toca.
+====================================================================================================
+
+   QUE DARIA SI EL EFECTO NO EXISTIERA (antes de correr): entradas por senal darian la MISMA
+   tenencia que la grilla al azar, cociente 1,00, y el problema seria del juez y no de la
+   grilla.
+
+   grilla al azar: 3,764 entradas   senal de ruptura de 30 barras: 28,730 entradas (37.9 por sesion)
+
+----------------------------------------------------------------------------------------------------
+   (1) LA TENENCIA: al azar contra por senal
+----------------------------------------------------------------------------------------------------
+        celda  ten AZAR (bar)  ten SENAL (bar)  cociente  senal en min  dentro de 1-90?
+     5pt:20pt             289              209      0.72           209               no
+    20pt:10pt             462              355      0.77           355               no
+    10pt:10pt             410              279      0.68           279               no
+     5pt:10pt             227              167      0.74           167               no
+      4pt:6pt             151              100      0.66           100               no
+      3pt:4pt              83               56      0.67            56               SI
+      2pt:3pt              37               29      0.78            29               SI
+      2pt:2pt              27               20      0.74            20               SI
+      1pt:2pt              12                8      0.67             8               SI
+
+   Cociente mediano senal/azar en las cuatro celdas ya caracterizadas: 0.70
+   Entrar por senal cambia la tenencia por 0.70x: la grilla SI era parte del
+   problema.
+
+----------------------------------------------------------------------------------------------------
+   (2) LAS CELDAS QUE CAEN DENTRO DE LA VENTANA OPERABLE, caracterizadas
+----------------------------------------------------------------------------------------------------
+   costo ida y vuelta $12.26.  vara z = 3.552.  4 anos de datos.
+
+        celda  ten (min)  sigma $/op  op/dia impl  piso $/ses   exigida  detectable   razon  span pt
+      3pt:4pt         56      185.21          7.0       85.38    0.0662      0.0424    1.56        7
+      2pt:3pt         29      137.55         13.4      164.88    0.0891      0.0305    2.92        5
+      2pt:2pt         20      116.83         19.5      239.07    0.1049      0.0253    4.14        4
+      1pt:2pt          8       86.34         48.8      597.67    0.1420      0.0160    8.86        3
+
+====================================================================================================
+   LO QUE DECIDE
+====================================================================================================
+   4 de 9 celdas caen dentro de la ventana operable de 1 a 90 min,
+   y NINGUNA de las cuatro que el juez tiene caracterizadas esta entre ellas.
+
+   Y LA TRAMPA QUE HAY QUE DECIR ANTES DE FESTEJAR: las celdas que caen dentro tienen span
+   (objetivo + stop) de 3 a 10 puntos, y el sesgo de contabilidad del juez esta medido SOLO
+   para span entre 20 y 35 pt. El juez
+   las RECHAZA con NO MEDIBLE, y hace bien: no extrapola una correccion.
+   O sea que el solapamiento entre 'lo que el reglamento permite operar' y 'lo que el juez
+   puede juzgar' es, hoy, VACIO. No es que el juez juzgue mal la ventana operable: es que no
+   la juzga.
+
+   QUE HARIA FALTA, nombrado y NO hecho: correr sesgo_marco.py sobre spans de 3 a 10 pt para
+   caracterizar el sesgo de contabilidad ahi. Es una corrida sobre datos que ya estan, cuesta
+   $0 y ningun cartucho, y es lo que abre la ventana operable al juez. Sin eso, todos los
+   numeros del juez describen un regimen que el reglamento no permite operar.
+====================================================================================================

@@ -1,0 +1,34 @@
+====================================================================================================
+RAZON RANGO/DESVIO A VARIAS ESCALAS - microestructura o estructura?
+NO GASTA CARTUCHO. K = 261. La caja sellada no se toca.
+====================================================================================================
+
+   ES 1-min Databento 2016-2019, 1,357,785 barras en 1,007 sesiones de contrato unico.
+   Referencia browniana: E[rango] / desvio = raiz(8/pi) = 1.5958
+
+      escala     barras  rango medio  desvio inc    RAZON  vs browniano    VR(k)    lectura VR
+       1 min  1,357,784       0.6577      0.5961    1.103         69.2%    1.000    sin rebote
+       2 min    678,597       0.9455      0.8189    1.155         72.4%    0.944inflado en 1min
+       3 min    452,332       1.1634      0.9956    1.169         73.2%    0.930inflado en 1min
+       5 min    271,235       1.5102      1.2692    1.190         74.6%    0.907inflado en 1min
+      10 min    135,340       2.1462      1.7801    1.206         75.6%    0.892inflado en 1min
+      15 min     90,091       2.6373      2.1661    1.218         76.3%    0.880inflado en 1min
+      30 min     44,831       3.7519      3.0576    1.227         76.9%    0.877inflado en 1min
+      60 min     21,975       5.3367      4.3929    1.215         76.1%    0.905inflado en 1min
+     120 min     10,972       7.6218      6.4172    1.188         74.4%    0.966    sin rebote
+     240 min      4,993      10.3881      8.3912    1.238         77.6%    0.826inflado en 1min
+     390 min      2,984      13.3420     10.9909    1.214         76.1%    0.872inflado en 1min
+
+====================================================================================================
+LECTURA
+====================================================================================================
+
+   razon a 1 minuto:   1.103  (69.2% del browniano)
+   razon a 390 minutos: 1.214  (76.1% del browniano)
+   maximo de la curva: 1.238 en 240 min
+
+   -> sube pero NO llega al browniano. Parte es microestructura y parte no.
+      Hace falta decir cuanto de cada cosa antes de usarla para algo.
+
+   QUE HARIA FALLAR ESTA LECTURA: que la razon se quedara plana Y que VR(k) se
+   quedara en 1. Ahi el rebote no explicaria nada.

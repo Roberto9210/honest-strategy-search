@@ -1,0 +1,24 @@
+====================================================================================================
+DES-DRIFT CALIBRADO - sobrevive el residuo?
+NO GASTA CARTUCHO. K = 261.
+====================================================================================================
+
+   5 sesiones de horizonte, 30,000 rutas por lado.
+   El factor se calibra contra la separacion largo/corto de 10pt:10pt, que por
+   identidad tiene pooled = 0 y por lo tanto su separacion es drift puro.
+
+     factor   10:10 sep   10:10 pool   20:10 sep   20:10 pool    5:20 sep    5:20 pool
+       0.00       +5.67        +0.00       +5.67        -2.15       +3.68        +1.52
+       0.50       -1.00        +0.00       -0.66        -2.05       -0.12        +1.21
+       1.00       -6.18        +0.00       -6.56        -1.65       -4.00        +0.92
+
+   Separacion de 10pt:10pt por factor: 0.00->+5.67, 0.50->-1.00, 1.00->-6.18
+   FACTOR CALIBRADO (separacion = 0): 0.425
+
+   En el factor calibrado:
+       bracket      sep   pooled  sin res   censura predice   RESIDUO
+     10pt:10pt    -0.08    +0.00     0.9%             -0.00     +0.00
+     20pt:10pt    +0.26    -2.03     4.3%             -0.71     -1.32
+      5pt:20pt    +0.42    +1.19     1.4%             +0.41     +0.78
+
+   RESIDUO = pooled - lo que la censura explica, ya sin drift.

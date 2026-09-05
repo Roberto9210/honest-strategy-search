@@ -1,0 +1,23 @@
+BARRAS DIARIAS TRUNCADAS en los CSV del guardian (37a0144), contrato elegido por maximo volumen
+criterio: volumen < 5% de la mediana de las 10 barras anteriores y 10 siguientes (centrada, sin la propia)
+
+--- ES: 2579 fechas, 4 barras con volumen < 5% de la mediana local ---
+  2016-11-16 Wed  ES_12-16   V      6336  (0.0045 de la mediana)  O 2179.00 H 2180.00 L 2178.25 C 2179.00  rango 1.75
+  2023-04-18 Tue  ES_06-23   V      7243  (0.0051 de la mediana)  O 4177.00 H 4177.50 L 4175.00 C 4176.50  rango 2.50
+  2025-08-29 Fri  ES_09-25   V         2  (0.0000 de la mediana)  O 6474.00 H 6474.00 L 6472.75 C 6472.75  rango 1.25
+  2026-04-03 Fri  ES_06-26   V     71443  (0.0430 de la mediana)  O 6622.50 H 6639.00 L 6598.25 C 6603.75  rango 40.75
+  antes de 2020: 1   desde 2020: 3
+
+--- MES: 1880 fechas, 1 barras con volumen < 5% de la mediana local ---
+  2023-07-04 Tue  MES_09-23  V     35119  (0.0474 de la mediana)  O 4491.75 H 4493.75 L 4486.25 C 4490.25  rango 7.50
+  antes de 2020: 0   desde 2020: 1
+
+--- NQ: 2582 fechas, 1 barras con volumen < 5% de la mediana local ---
+  2016-11-16 Wed  NQ_12-16   V       760  (0.0035 de la mediana)  O 4765.00 H 4771.00 L 4764.50 C 4768.75  rango 6.50
+  antes de 2020: 1   desde 2020: 0
+
+--- MNQ: 1897 fechas, 3 barras con volumen < 5% de la mediana local ---
+  2023-04-06 Thu  MNQ_06-23  V      8188  (0.0097 de la mediana)  O 13075.25 H 13075.25 L 13053.00 C 13057.00  rango 22.25
+  2025-01-01 Wed  MNQ_03-25  V         3  (0.0000 de la mediana)  O 21235.00 H 21235.00 L 21226.50 C 21226.50  rango 8.50
+  2026-09-03 Thu  MNQ_09-26  V     33216  (0.0136 de la mediana)  O 29175.75 H 29208.75 L 29149.00 C 29176.75  rango 59.75
+  antes de 2020: 0   desde 2020: 3

@@ -1,0 +1,15 @@
+================================================================================================
+CUANTO BAJA EL PISO CON MODO PASIVO (entradas al azar) - y cuanto es real vs deuda
+NO GASTA CARTUCHO. K = 261. La caja sellada no se toca.
+================================================================================================
+
+        celda     cruce  sust. entrada  + llenado (PASIVO)  bajada total  op/ses
+     5pt:20pt    +78.24         +32.50              +15.45        +62.79    5.39
+                descomposicion: sustitucion de entrada +45.74  +  llenado parcial +17.05  =  bajada +62.79
+    20pt:10pt    +92.81         +67.05              +32.33        +60.48    3.04
+                descomposicion: sustitucion de entrada +25.76  +  llenado parcial +34.72  =  bajada +60.48
+
+   REAL vs DEUDA: para entradas al azar las dos componentes son reales. Para un CANDIDATO,
+   la parte del markout (dentro de 'sustitucion') y TODO el 'llenado parcial' son DEUDA:
+   sus llenados estan seleccionados por su senal. La bajada del piso en modo pasivo es una
+   COTA OPTIMISTA hasta medirlo sobre el candidato (mbo_lib, paso b).

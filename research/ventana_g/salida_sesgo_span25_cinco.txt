@@ -1,0 +1,44 @@
+====================================================================================================
+TAREA 1 - CONVERGENCIA DEL SPAN 25: el 15% es ruido o es otra cosa?
+NO GASTA CARTUCHO. K = 261. Dinero: $0. La caja sellada no se toca.
+====================================================================================================
+
+   PREDICCION NULA, POR COMPONENTE (escrita antes de correr):
+   (i)   si era ruido: al subir K el valor se mueve hacia 0.0642
+   (ii)  si es real: se queda en 0.0546 con error chico, y hay algo distinto
+   (iii) el error tiene que bajar como raiz(K) en los dos casos
+
+   Span 25, 5 celdas, 40 series de bootstrap (contra 6 de la tabla anterior).
+
+         bracket    1-2p   sesgo pt/op     error   o despejado   o con K=6
+            5:20   -0.60       -0.0371   0.00170        0.0619            
+           10:15   -0.20       -0.0155   0.00187        0.0776            
+       12.5:12.5    0.00       -0.0003   0.00015           nan           -
+           15:10    0.20       +0.0147   0.00190        0.0737            
+            20:5    0.60       +0.0367   0.00174        0.0611            
+
+----------------------------------------------------------------------------------------------------
+   (iii) EL ERROR BAJA COMO RAIZ(K)?  o despejado usando las primeras k series
+----------------------------------------------------------------------------------------------------
+     k series   o despejado   error de o   error x raiz(k)
+            3        0.0675      0.00901           0.01561
+            6        0.0722      0.00895           0.02193
+           10        0.0687      0.00999           0.03158
+           20        0.0703      0.00977           0.04371
+           40        0.0686      0.00614           0.03885
+
+====================================================================================================
+   LA RESPUESTA
+====================================================================================================
+   o con K=40: 0.0686 +- 0.0061   (con K=6 daba 0.0546)
+   publicado en sesgo_marco.py: 0.0642
+   distancia al publicado: +0.7 errores
+
+   (i) CONVERGE. El 0,0546 era ruido de muestreo: con mas series el valor es compatible
+   con el 0.0642 publicado dentro de dos errores. El 15% desaparece y la
+   cadena de spans cortos queda limpia.
+
+   Y LO QUE ESTO LE HACE A LOS SPANS CORTOS: si el span 25 sube a 0.0642, el
+   cociente o_corto/o_25 pasa de ~0,48 a ~0.41. La conclusion NO cambia
+   -o sigue siendo la mitad o menos en brackets estrechos- pero el factor exacto si.
+====================================================================================================

@@ -1,0 +1,50 @@
+====================================================================================================
+CONTROL DE CONSISTENCIA - esperanza por operacion antes de costo, en puntos
+Una entrada al azar tiene que dar ~0. Si no, la mezcla de piezas esta mal.
+====================================================================================================
+       bracket    con tasa ASUMIDA    con tasa MEDIDA
+      5pt:10pt             -0.142pt            +0.071pt   OK
+     10pt:10pt             +0.000pt            +0.000pt   OK
+     20pt:10pt             +1.176pt            +0.007pt   OK
+      5pt:20pt             -1.009pt            +0.065pt   OK
+     10pt:20pt             -1.176pt            -0.007pt   OK
+
+   La columna ASUMIDA se desvia hasta 1,18pt: esa mezcla fabrica ventaja donde
+   no hay. Por eso el tercer estado va SIEMPRE con la tasa de resueltas medida.
+   CONTROL PASADO
+
+====================================================================================================
+CONTROL - con fraccion abierta CERO el modelo nuevo debe reproducir el viejo
+====================================================================================================
+      5pt:10pt  viejo   3.2388%   nuevo   3.2388%   IDENTICO
+     10pt:10pt  viejo   4.4022%   nuevo   4.4022%   IDENTICO
+     20pt:10pt  viejo   5.1139%   nuevo   5.1139%   IDENTICO
+      5pt:20pt  viejo   6.2358%   nuevo   6.2358%   IDENTICO
+     10pt:20pt  viejo   6.0881%   nuevo   6.0881%   IDENTICO
+   CONTROL PASADO
+
+====================================================================================================
+LA CADENA CON EL TERCER ESTADO - P(pasar) vieja contra nueva
+====================================================================================================
+   'abierta' = fraccion medida que no resuelve en una sesion.
+   'M2M medio' = valor a mercado medio de esas, en puntos de ES.
+
+       bracket   abierta   M2M medio    P vieja    P nueva   dif rel   direccion
+      5pt:10pt      7.1%      -2.005     3.239%     3.927%    +21.3%        sube
+     10pt:10pt     18.9%       0.000     4.402%     4.381%     -0.5%        BAJA
+     20pt:10pt     35.4%       3.323     5.114%     5.295%     +3.5%        sube
+      5pt:20pt     17.4%      -5.798     6.236%     6.892%    +10.5%        sube
+     10pt:20pt     35.4%      -3.323     6.088%     6.713%    +10.3%        sube
+
+   Equilibrio del intento: P >= 6.148%
+       bracket    P nueva    supera equilibrio?
+      5pt:10pt     3.927%                    no
+     10pt:10pt     4.381%                    no
+     20pt:10pt     5.295%                    no
+      5pt:20pt     6.892%                    SI
+     10pt:20pt     6.713%                    SI
+
+   LECTURA: el signo del M2M medio manda. Donde el objetivo esta mas cerca que
+   el stop, las que quedan abiertas van hacia el stop lejano y su M2M es NEGATIVO:
+   el modelo viejo las ignoraba y por eso sobreestimaba. Donde el objetivo esta
+   mas lejos, pasa al reves.

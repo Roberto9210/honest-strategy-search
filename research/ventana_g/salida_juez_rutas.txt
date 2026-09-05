@@ -1,0 +1,34 @@
+==================================================================================================
+EJERCITAR LAS DOS RUTAS NUNCA CORRIDAS: el detector por informe(), y la CLI
+NO GASTA CARTUCHO. K = 261. La caja sellada no se toca.
+==================================================================================================
+
+(a) EL DETECTOR DE FIRMA DE TIMING, pasado por informe().
+    Candidato con ventaja de TIMING pero declarada 'direccional': es el caso donde el juez
+    lo mata con la nula de signo y el usuario tiene que enterarse de por que.
+    veredicto: NO SUPERA   clase declarada direccional / firma medida timing
+      #  BANDERA ROJA: declaraste 'direccional' y la firma medida es 'timing'.
+      #  No coinciden. El juez NO aplica la regla de la clase declarada: usa el minimo de las TRES
+      #  Tu ventaja tiene firma de TIMING (rotacion +22.4, signo +0.1) y la declaraste
+      #  direccional: si de verdad es de CUANDO, declarala asi y volve a correr -pero la
+    el bloque se imprime: SI
+
+(b) EL JUEZ POR LINEA DE COMANDOS (subproceso real, no import).
+    sin argumentos                   codigo 2 (esperado 2)  OK
+       uso: python juez.py <candidato.json> [--verificar] [--pasivo] [--caja --prerregistro <archivo>]
+    rechazado.json (trae 'pnl')      codigo 1 (esperado 1)  OK
+       ENTRADA RECHAZADA. El campo 'pnl' aparece en candidato.operaciones[0] y es un RESULTADO.
+    valido.json                      codigo 0 (esperado 0)  OK
+       VEREDICTO (TRABAJO 2016-2018): NO SUPERA     candidato: ejemplo_valido   hash d389785ca2630fd8   [MODO CRUCE]
+    valido.json --pasivo             codigo 0 (esperado 0)  OK
+       VEREDICTO (TRABAJO 2016-2018): NO SUPERA     candidato: ejemplo_valido   hash d389785ca2630fd8   [MODO PASIVO]
+
+==================================================================================================
+   a detector                             PASADO
+   b sin argumentos                       PASADO
+   b rechazado.json (trae 'pnl')          PASADO
+   b valido.json                          PASADO
+   b valido.json --pasivo                 PASADO
+
+   LAS DOS RUTAS QUEDAN EJERCITADAS: 'escrito' y 'alguna vez corrido' ya son el mismo numero.
+==================================================================================================

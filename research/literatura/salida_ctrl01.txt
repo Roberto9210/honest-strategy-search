@@ -1,0 +1,30 @@
+CTRL01 - control del instrumento: la deriva nocturna de BLW sobre ES 1-min 2016-2019
+   1,007 sesiones limpias del cargador de G; 1,357,785 barras
+
+CHEQUEO DE RELOJ - los tres minutos del este con mayor |retorno| medio de 1 min (espero 09:30 y 08:30):
+   15:59 ET   4.56 pb
+   09:31 ET   3.87 pb
+   09:35 ET   3.82 pb
+
+VENTANA 2:00-3:00 ET   n = 1006 dias   (BLW: Sharpe 1.1 antes de costos -> theta_pub = 0.0693)
+   media = +0.785 pb   desvio = 12.24 pb   t = +2.03   (t esperada si estacionario: 2.20)
+   theta_obs = +0.0641   +/- 0.0315   intervalo de reproduccion [+0.0062, +0.1324]
+   VEREDICTO SELLADO: REPRODUCE
+   por anio:
+      2016: n = 254   media = +1.795 pb   desvio = 15.88   t = +1.80
+      2017: n = 251   media = +0.426 pb   desvio = 5.15   t = +1.31
+      2018: n = 253   media = +1.296 pb   desvio = 13.86   t = +1.49
+      2019: n = 248   media = -0.407 pb   desvio = 11.21   t = -0.57
+
+VENTANA 1:30-3:30 ET   n = 1006 dias   (BLW: Sharpe 1.3 antes de costos -> theta_pub = 0.0819)
+   media = +1.409 pb   desvio = 19.71 pb   t = +2.27   (t esperada si estacionario: 2.60)
+   theta_obs = +0.0715   +/- 0.0315   intervalo de reproduccion [+0.0188, +0.1449]
+   VEREDICTO SELLADO: REPRODUCE
+   por anio:
+      2016: n = 254   media = +2.700 pb   desvio = 26.10   t = +1.65
+      2017: n = 251   media = +0.714 pb   desvio = 8.25   t = +1.37
+      2018: n = 253   media = +1.802 pb   desvio = 21.95   t = +1.31
+      2019: n = 248   media = +0.390 pb   desvio = 17.87   t = +0.34
+
+LO QUE ESTE CONTROL NO ES: no es una candidata (1 por dia, F17), no produce una regla, no toca
+la caja, y 2016-2019 esta ADENTRO de la muestra de BLW: informa sobre el instrumento, no sobre el mercado.

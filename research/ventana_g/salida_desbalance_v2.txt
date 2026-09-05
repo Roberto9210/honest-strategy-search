@@ -1,0 +1,110 @@
+====================================================================================================
+PIEZA 3 REHECHA CON EL LIBRO ARREGLADO (con_tamano=True)
+NO GASTA CARTUCHO. K = 261. Dinero: $0, compra SUSPENDIDA. La caja sellada no se toca.
+====================================================================================================
+
+   COSTO DECLARADO: ~100-250 MB por dia de serie de BBO. Se procesa de a un dia y se libera.
+   CONTABILIDAD: medir es gratis en cartuchos; USAR el filtro en una estrategia la convierte
+   en una candidata distinta y eso se declara aparte.
+
+----------------------------------------------------------------------------------------------------
+   (b) LA VERIFICACION DEL ARREGLO. Si esto no baja, NO se corre 3b.
+----------------------------------------------------------------------------------------------------
+   Antiguedad = cuanto hace que se congelo el estado, MEDIDA DESDE EL INSTANTE QUE SE
+   CONSULTA (tf - d). En tf da 0 trivialmente: el llenado crea su propia fila.
+
+                dia   filas BBO     MB   seg    med d=0  med d=100  med d=500 med d=1000
+             B/bajo   1,550,909     62    20       0.00      96.22     110.66     102.57
+            B/medio   2,614,351    105    37       0.00      66.92      61.05      66.90
+             B/alto   3,201,114    128    58       0.00      51.54      52.01      52.44
+             A/bajo   3,641,066    146    63       0.00      45.72      50.01      49.70
+            A/medio   4,229,492    169    67       0.00      41.14      41.56      40.99
+          A/altoREL   5,660,704    226    76       0.00      30.69      32.42      28.29
+
+                                                    p90:        0.0      274.6      275.3      283.7
+
+   Antiguedad MEDIANA consultando con 100 ms de adelanto: 48.63 ms
+      antes (libro viejo, misma consulta): 669 ms   ->  14x mejor
+   ARREGLO SUFICIENTE: la antiguedad mediana (48.6 ms) esta por debajo de la
+   escala del efecto (100 ms). Los adelantos SI distinguen estados
+   distintos, y 3b se puede contestar.
+
+----------------------------------------------------------------------------------------------------
+   (d) 3a CON EL LIBRO ARREGLADO - cuanto se movio el numero
+----------------------------------------------------------------------------------------------------
+                dia                  H=1s                  H=5s                 H=30s
+                     spread tk        rho  spread tk        rho  spread tk        rho
+             B/bajo      0.397      0.330      0.645      0.301      0.872      0.167
+            B/medio      0.462      0.276      0.518      0.156      0.400      0.065
+             B/alto      0.503      0.233      0.535      0.132      0.662      0.070
+             A/bajo      0.583      0.208      0.594      0.102      0.009      0.003
+            A/medio      0.510      0.187      0.602      0.090      0.319      0.030
+          A/altoREL      0.572      0.207      0.561      0.104      0.685      0.041
+
+      H     nuevo     viejo    cambio
+      1     0.505     0.102    +0.403
+      5     0.576     0.182    +0.394
+     30     0.491     0.189    +0.302
+
+   Cruzar cuesta del orden de 1 tick. La separacion a H=1s es 0.505 ticks.
+   Sigue MUERTA, y ahora con el libro que si ve: haria falta 2x
+   mas para pagar el cruce. La conclusion de 3a queda firme, no solo con margen.
+
+----------------------------------------------------------------------------------------------------
+   (c) 3b - EL DESBALANCE COMO PREDICTOR DE SELECCION ADVERSA
+----------------------------------------------------------------------------------------------------
+   Orden pasiva al mejor precio, latencia 250 ms, muerte 1 tick, markout H=30s.
+                dia  llenado  n llenos   markout    rho d=0  rho d=100  rho d=500 rho d=1000
+             B/bajo    0.436      1307   +0.0192     -0.005     -0.047     -0.012     -0.032
+            B/medio    0.435      1304   +0.0048     -0.060     +0.011     -0.004     -0.014
+             B/alto    0.431      1292   -0.0405     +0.012     +0.023     -0.020     +0.011
+             A/bajo    0.397      1192   +0.0132     -0.040     +0.030     +0.007     -0.055
+            A/medio    0.389      1168   -0.0055     -0.043     +0.034     -0.042     +0.045
+          A/altoREL    0.387      1162   -0.0065     +0.021     +0.003     +0.077     +0.041
+
+   rho promedio entre dias: d=0ms -0.019   d=100ms +0.009   d=500ms +0.001   d=1000ms -0.001
+
+----------------------------------------------------------------------------------------------------
+   (c) 3c - EL FILTRO. La mejora y el CONTEO, siempre juntos.
+----------------------------------------------------------------------------------------------------
+   ADELANTO d = 0 ms   (base: 7,425 llenados, markout medio -0.0026 pt)
+        umbral I  sobreviven       n   mk filtrado    mejora    error  sigmas  mejora x n
+           -0.50       59.5%    4421       -0.0127   -0.0101   0.0082   -1.24     -0.0060
+           -0.25       51.4%    3816       -0.0157   -0.0131   0.0097   -1.35     -0.0067
+            0.00       36.4%    2699       -0.0167   -0.0141   0.0131   -1.07     -0.0051
+            0.25       12.8%     951       -0.0269   -0.0244   0.0259   -0.94     -0.0031
+            0.50        4.0%     294       -0.0289   -0.0263   0.0489   -0.54     -0.0010
+      monotona en el umbral: SI   (cambios de signo: 0 de 3)
+
+   ADELANTO d = 100 ms   (base: 7,425 llenados, markout medio -0.0026 pt)
+        umbral I  sobreviven       n   mk filtrado    mejora    error  sigmas  mejora x n
+           -0.50       78.2%    5807       +0.0009   +0.0035   0.0052   +0.66     +0.0027
+           -0.25       53.7%    3990       +0.0161   +0.0187   0.0092   +2.03     +0.0101
+            0.00       32.2%    2393       +0.0036   +0.0062   0.0144   +0.43     +0.0020
+            0.25       17.0%    1260       +0.0248   +0.0274   0.0220   +1.25     +0.0046
+            0.50        7.4%     550       -0.0152   -0.0127   0.0351   -0.36     -0.0009
+      monotona en el umbral: NO - zigzag, firma de ruido   (cambios de signo: 3 de 3)
+
+   ADELANTO d = 500 ms   (base: 7,425 llenados, markout medio -0.0026 pt)
+        umbral I  sobreviven       n   mk filtrado    mejora    error  sigmas  mejora x n
+           -0.50       83.1%    6168       -0.0047   -0.0021   0.0045   -0.47     -0.0018
+           -0.25       60.8%    4514       +0.0102   +0.0128   0.0080   +1.60     +0.0078
+            0.00       36.7%    2722       -0.0077   -0.0051   0.0131   -0.39     -0.0019
+            0.25       18.5%    1371       +0.0200   +0.0225   0.0209   +1.08     +0.0042
+            0.50        7.5%     557       +0.0040   +0.0066   0.0349   +0.19     +0.0005
+      monotona en el umbral: NO - zigzag, firma de ruido   (cambios de signo: 3 de 3)
+
+   ADELANTO d = 1000 ms   (base: 7,425 llenados, markout medio -0.0026 pt)
+        umbral I  sobreviven       n   mk filtrado    mejora    error  sigmas  mejora x n
+           -0.50       84.7%    6287       -0.0068   -0.0042   0.0042   -0.99     -0.0035
+           -0.25       63.4%    4710       -0.0057   -0.0032   0.0075   -0.42     -0.0020
+            0.00       40.0%    2970       +0.0059   +0.0085   0.0122   +0.70     +0.0034
+            0.25       20.3%    1507       +0.0259   +0.0285   0.0197   +1.45     +0.0058
+            0.50        8.3%     618       +0.0411   +0.0436   0.0330   +1.32     +0.0036
+      monotona en el umbral: SI   (cambios de signo: 0 de 3)
+
+   'mejora x n' es la mejora POR LLENADO ORIGINAL: es lo unico comparable entre umbrales,
+   porque un filtro que mejora mucho y deja 4% de llenados no mejora la estrategia.
+   'sigmas' es la mejora sobre su propio error. Una mejora de menos de 2 sigmas no es una
+   mejora, y una que zigzaguea al mover el umbral tampoco, aunque tenga sigmas.
+====================================================================================================

@@ -1,0 +1,61 @@
+Fechas comunes (mismo P-control que terreno_tenencia.py): 828
+
+====================================================================================================
+1. LA FECHA 2016-11-16, barra contra barra, con sus vecinas
+====================================================================================================
+  NT8 diario, TODAS las filas de ES_*.csv entre 11-13 y 11-19 (no solo el contrato elegido):
+    2016-11-14  ES_12-16  O  2164.50 H  2174.50 L  2152.25 C  2161.00 V   1778943  <- elegido
+    2016-11-15  ES_12-16  O  2161.00 H  2179.75 L  2158.50 C  2179.00 V   1419984  <- elegido
+    2016-11-16  ES_12-16  O  2179.00 H  2180.00 L  2178.25 C  2179.00 V      6336  <- elegido
+    2016-11-17  ES_12-16  O  2172.50 H  2185.50 L  2171.75 C  2184.25 V   1338041  <- elegido
+    2016-11-18  ES_12-16  O  2184.00 H  2187.50 L  2176.50 C  2180.75 V   1261853  <- elegido
+  Databento, sesion 17:00->16:00 CT reconstruida, mismas fechas:
+    2016-11-14  ESZ6      O  2164.50 H  2174.50 L  2152.25 C  2161.00 V   1778943  barras 1365  primera 17:00 CT
+    2016-11-15  ESZ6      O  2161.00 H  2179.75 L  2158.50 C  2179.00 V   1419984  barras 1365  primera 17:00 CT
+    2016-11-16  ESZ6      O  2179.00 H  2185.00 L  2168.75 C  2172.25 V   1317471  barras 1358  primera 17:00 CT
+    2016-11-17  ESZ6      O  2172.50 H  2185.50 L  2171.75 C  2185.00 V   1338041  barras 1358  primera 17:00 CT
+    2016-11-18  ESZ6      O  2184.00 H  2187.50 L  2176.50 C  2180.25 V   1261853  barras 1362  primera 17:00 CT
+
+  Databento, sesion 2016-11-16: primeras 6 barras (CT):
+    2016-11-15 17:00:00  ESZ6  O 2179.00 H 2179.25 L 2178.75 C 2179.00 V 817
+    2016-11-15 17:01:00  ESZ6  O 2179.00 H 2179.25 L 2178.75 C 2179.00 V 204
+    2016-11-15 17:02:00  ESZ6  O 2178.75 H 2178.75 L 2178.50 C 2178.75 V 205
+    2016-11-15 17:03:00  ESZ6  O 2178.50 H 2178.75 L 2178.50 C 2178.50 V 35
+    2016-11-15 17:04:00  ESZ6  O 2178.50 H 2179.00 L 2178.50 C 2179.00 V 175
+    2016-11-15 17:05:00  ESZ6  O 2178.75 H 2179.00 L 2178.75 C 2178.75 V 71
+  barra del minimo: 2016-11-16 08:20:00  O 2169.25 H 2170.00 L 2168.75 C 2170.00 V 2828
+  barra del maximo: 2016-11-15 18:23:00  O 2181.25 H 2185.00 L 2181.00 C 2184.00 V 4722
+  solo RTH 08:30->15:00: O 2170.75 H 2176.25 L 2169.00 C 2174.00
+  solo la tarde-noche 17:00->23:59 del 11-15: O 2179.00 H 2185.00 L 2178.25 C 2179.75  barras 415
+  barras de Databento con low < low de NT8 (2178.25): 847; primera 2016-11-16 01:35:00; ultima 2016-11-16 15:59:00
+  barras de Databento que tocan el open de NT8 (2179.00) como open o close: 27; primera 2016-11-15 17:00:00
+
+====================================================================================================
+2. CONTEO DE DISCORDANCIAS sobre las fechas comunes, campo por campo y por excursion
+====================================================================================================
+  campo      <= 0.25    <= 1.0    <= 2.0    <= 5.0   <= 10.0    > 10.0   (fechas, acumulado por umbral)
+  open           799       799       802       821       828         0
+  high           799       800       803       822       828         0
+  low            800       800       804       822       828         0
+  close          251       510       667       784       823         5
+  largo          815       822       824       827       828         0
+  corto          812       821       824       828       828         0
+
+  volumen: mediana Databento/NT8 = 1.0000, p10 1.0000, p90 1.0000
+  excursion (largo o corto) discordante en mas de  2.0 pts:   4 fechas; de ellas a <= 3 sesiones de un cambio de contrato: 0; lejos de todo roll: 4
+  excursion (largo o corto) discordante en mas de  5.0 pts:   1 fechas; de ellas a <= 3 sesiones de un cambio de contrato: 0; lejos de todo roll: 1
+  excursion (largo o corto) discordante en mas de  9.0 pts:   1 fechas; de ellas a <= 3 sesiones de un cambio de contrato: 0; lejos de todo roll: 1
+
+  EL CIERRE. Fechas comunes en las que el close de NT8 coincide (<= 0.25) con el close de la barra de Databento de:
+    15:59 CT (ultima barra de la sesion)              225 de 798 con barra  (28.2 %)
+    15:14 CT (ultima barra antes del corte 15:15)     512 de 798 con barra  (64.2 %)
+    15:15 CT                                           50 de 68 con barra  (73.5 %)
+    15:29 CT                                            0 de 0 con barra  (0.0 %)
+    15:30 CT (primera tras el corte)                  358 de 798 con barra  (44.9 %)
+    mediana |close NT8 - close 15:14| = 0.25 pts;  mediana |close NT8 - close 15:59| = 0.75 pts
+
+  TODAS las fechas con discordancia > 2 pts en alguna excursion, con el campo que difiere:
+    2016-11-16  largo   9.50  corto   5.00  a 17 sesiones de un roll  | campos: high 5.00, low 9.50, close 6.75  | vol db/nt8 207.934
+    2019-09-02  largo   4.00  corto   4.00  a 9 sesiones de un roll  | campos: open 4.00  | vol db/nt8 1.047
+    2017-01-18  largo   2.75  corto   3.75  a 22 sesiones de un roll  | campos: open 2.75, high 1.00, close 0.75  | vol db/nt8 1.159
+    2017-01-19  largo   2.25  corto   2.25  a 23 sesiones de un roll  | campos: open 2.25, close 0.50  | vol db/nt8 1.103

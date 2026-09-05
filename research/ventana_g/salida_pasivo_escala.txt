@@ -1,0 +1,65 @@
+====================================================================================================
+TAREA 1 - EL MODO PASIVO ESCALA LA VENTAJA POR fi, O SOLO EL PISO?
+NO GASTA CARTUCHO. K = 261. Dinero: $0. La caja sellada no se toca.
+====================================================================================================
+
+   Candidato: el mismo C2 (ventaja inyectada, q = 0.62), 3,764 operaciones.
+   fi promedio de las constantes del juez: 0.487
+
+----------------------------------------------------------------------------------------------------
+   LO QUE DEVUELVE EL JUEZ EN CADA MODO
+----------------------------------------------------------------------------------------------------
+                                      CRUCE        PASIVO   pasivo/cruce
+   observado ($/sesion)           +677.9808     +349.8795          0.516
+   nula A rotacion                 -61.6427       -9.9416          0.161
+   nula B signo                    -55.1081       -6.6418          0.121
+   VENTAJA contra signo           +733.0889     +356.5214          0.486
+   VENTAJA contra rotacion        +739.6235     +359.8211          0.486
+   desvio total (sd_tot)           +27.7479      +13.4572          0.485
+   comparacion pasiva               -7.2479       -7.2479          1.000
+
+   z contra rotacion                 +26.66        +26.74          1.003
+   z contra signo                    +26.42        +26.49          1.003
+   z contra pasiva                   +24.69        +26.54          1.075
+   veredicto                         SUPERAREQUIERE MEDICION PASIVA POR CANDIDATO
+
+====================================================================================================
+   LA RESPUESTA
+====================================================================================================
+   La VENTAJA recuperada sale escalada por 0.486.  fi promedio = 0.487.
+   SALE ESCALADA POR fi. El juez NO baja el piso sin bajar la ventaja: escala las dos.
+   MI SOSPECHA MUERE Y LA CIERRO.
+
+   Y el desvio se escala por 0.485, asi que el COCIENTE -que es el z- se mueve solo
+   1.003. El VEREDICTO es casi invariante a fi, que es lo que uno quiere: la decision
+   de aprobar no deberia depender de cuantas senales se llenan, solo de si las que se llenan
+   tienen informacion.
+
+----------------------------------------------------------------------------------------------------
+   DONDE SI ESTABA EL PROBLEMA, Y NO ERA DONDE YO DIJE
+----------------------------------------------------------------------------------------------------
+   El VEREDICTO del juez es (casi) invariante a fi: mi sospecha sobre el modo pasivo del juez
+   era equivocada. Pero el PISO PUBLICADO en dolares por sesion SI se escala por fi, y ese es
+   otro numero, calculado en piso_pasivo.py y no por el juez. La critica valia para el piso
+   -donde ya la aplique y bajo de $15,45 a $43,86- y NO para el veredicto.
+   Es la misma leccion de siempre en otra forma: el numero y el veredicto no se comportan
+   igual, y hay que decir de CUAL se habla.
+
+   LAS DOS ASIMETRIAS QUE SI QUEDAN, chicas y en la direccion conservadora:
+      - el error de la constante de sobrepaso (err_o) NO se escala por fi, asi que con fi<1
+        pesa relativamente mas en sd_tot: hace el z mas chico. Conservador.
+      - la comparacion pasiva (-7.25 en cruce, -7.25 en pasivo) tampoco se
+        escala igual que el observado, asi que z_pas mezcla escalas. Es la unica de las tres
+        nulas donde el modo cambia la comparacion, y va anotada.
+
+----------------------------------------------------------------------------------------------------
+   VERIFICACION DE RESOLUCION, y su segunda mitad
+----------------------------------------------------------------------------------------------------
+   El chequeo PODIA fallar: el cociente medido puede caer en cualquier valor entre 0 y 1 y
+   este script no lo calcula -se lo pide al juez y lee lo que devuelve-. Si el juez no
+   escalara la ventaja, el cociente daria ~1,00 en vez de 0.486.
+   Y la ventaja inyectada es grande (+733.09 $/sesion contra un
+   desvio de 27.75), asi que el cociente se mide con error relativo del orden de
+   3.8%: bastante mas chico que la diferencia
+   entre 0.486 y 1,00 que habria que distinguir.
+====================================================================================================

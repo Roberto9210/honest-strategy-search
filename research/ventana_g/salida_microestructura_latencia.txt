@@ -1,0 +1,12 @@
+============================================================================================
+ESCALAS DE TIEMPO DEL LIBRO (tbbo, RTH) - para anclar la latencia realista
+NO GASTA CARTUCHO. K = 261. No es el estudio mbo. La caja sellada no se toca.
+============================================================================================
+
+           dia    op RTH   op/seg  gap op ms  cambios/seg  dwell ms  camb/250ms  op/250ms
+     bajo 2017    98,193      4.0        0.6          0.3     197.2         0.1       1.0
+     alto 2018   244,123     10.0        0.9          1.5     112.8         0.4       2.5
+
+   'dwell ms' = mediana del tiempo que vive el mejor precio antes de cambiar.
+   'camb/250ms' = cambios de cotizacion en 250 ms = cuantas veces se da vuelta
+   el tope del libro mientras una orden pasiva viaja con latencia residencial.

@@ -1,0 +1,88 @@
+====================================================================================================
+PIEZA 3 - DESBALANCE DEL LIBRO. 3a prediccion en ticks, 3b seleccion adversa, 3c el filtro.
+NO GASTA CARTUCHO. K = 261. Dinero: $0, los datos ya estan en disco. Caja sellada intacta.
+====================================================================================================
+
+CONTABILIDAD DECLARADA: medir el comportamiento del costo es gratis en cartuchos. Pero el dia
+que este filtro se USE dentro de una estrategia, esa estrategia es una candidata DISTINTA de
+la misma sin filtro. Se declara y probablemente cuesta cartucho. No pasa de contrabando.
+
+   6 dias reconstruidos (RTH 08:30-15:15 CT). B = 2017-2019 (el terreno que juzga el juez); A = 2026, posterior a la caja.
+
+----------------------------------------------------------------------------------------------------
+   3a - CUANTO PREDICE EL DESBALANCE, EN TICKS DEL ES
+----------------------------------------------------------------------------------------------------
+   'spread' = movimiento medio del decil mas comprador MENOS el del mas vendedor, en ticks.
+   Es la separacion maxima que el desbalance puede darte si lo usaras para adivinar el lado.
+                dia                  H=1s                  H=5s                 H=30s
+                     spread tk        rho  spread tk        rho  spread tk        rho
+             B/bajo      0.117      0.177      0.248      0.177      0.570      0.095
+            B/medio      0.157      0.130      0.060      0.040     -0.194      0.031
+             B/alto      0.093      0.062      0.230      0.027      0.150      0.003
+             A/bajo      0.135      0.066      0.228      0.036      0.190     -0.013
+            A/medio      0.111      0.047      0.378      0.043      0.478      0.008
+          A/altoREL     -0.001      0.042     -0.052      0.033     -0.057      0.013
+
+   H= 1s: spread entre deciles extremos +0.102 ticks de media (rango -0.001 a +0.157)
+   H= 5s: spread entre deciles extremos +0.182 ticks de media (rango -0.052 a +0.378)
+   H=30s: spread entre deciles extremos +0.189 ticks de media (rango -0.194 a +0.570)
+
+   CONTRA EL COSTO DE CRUZAR: cruzar cuesta del orden de 1 tick (medio-spread ~0,5 tick
+   por lado). La separacion maxima a H=1s es 0.102 ticks.
+   0.102 < 1 tick: la version 'adivinar la direccion con el desbalance y
+   cruzar' esta MUERTA, y se cierra con numero. No alcanza ni para pagar la entrada.
+
+----------------------------------------------------------------------------------------------------
+   3b - EL DESBALANCE COMO PREDICTOR DE SELECCION ADVERSA EN NUESTROS LLENADOS
+----------------------------------------------------------------------------------------------------
+   Orden pasiva al mejor precio, latencia 250 ms, muerte a 1 tick, markout a H=30s.
+   'I favorable' = desbalance con el signo de nuestro lado: >0 = la cola esta de nuestro lado.
+   rho = correlacion entre I favorable y el markout. Positivo = el libro SI avisa.
+
+                dia  llenado  n llenos   markout    rho d=0  rho d=100  rho d=500 rho d=1000
+             B/bajo    0.488      1463   +0.0420     -0.067     +0.014     -0.002     +0.050
+            B/medio    0.519      1556   +0.0345     -0.065     -0.039     -0.020     -0.038
+             B/alto    0.478      1434   +0.0101     -0.063     -0.024     -0.041     -0.010
+             A/bajo    0.464      1392   +0.0503     -0.015     -0.058     -0.016     -0.027
+            A/medio    0.475      1425   +0.0539     -0.070     -0.066     -0.023     -0.022
+          A/altoREL    0.458      1373   +0.0093     -0.047     +0.031     -0.009     +0.018
+
+----------------------------------------------------------------------------------------------------
+   3c - EL FILTRO: cuantos llenados sobreviven, y cuanto mejora. SIEMPRE JUNTOS.
+----------------------------------------------------------------------------------------------------
+   Filtro: se retira la orden cuando I favorable < umbral, con adelanto d antes del llenado.
+   'sobreviven' = fraccion de los llenados originales que quedan. 'mk' en puntos.
+
+   ADELANTO d = 0 ms
+        umbral I  sobreviven       n   mk filtrado  mk sin filtro    mejora
+           -0.50       27.0%    2332       -0.0363        +0.0335   -0.0697
+           -0.25       25.8%    2226       -0.0401        +0.0335   -0.0735
+            0.00       19.2%    1663       -0.0525        +0.0335   -0.0860
+            0.25        6.5%     564       -0.0239        +0.0335   -0.0574
+            0.50        2.4%     207       -0.0284        +0.0335   -0.0618
+
+   ADELANTO d = 100 ms
+        umbral I  sobreviven       n   mk filtrado  mk sin filtro    mejora
+           -0.50       10.8%     931       -0.0379        +0.0335   -0.0713
+           -0.25       10.2%     883       -0.0326        +0.0335   -0.0660
+            0.00        9.8%     851       -0.0283        +0.0335   -0.0618
+            0.25        9.5%     820       -0.0235        +0.0335   -0.0569
+            0.50        9.3%     805       -0.0092        +0.0335   -0.0426
+
+   ADELANTO d = 500 ms
+        umbral I  sobreviven       n   mk filtrado  mk sin filtro    mejora
+           -0.50       18.0%    1555       -0.0055        +0.0335   -0.0390
+           -0.25       17.5%    1512       +0.0000        +0.0335   -0.0335
+            0.00       17.0%    1472       -0.0046        +0.0335   -0.0380
+            0.25       16.5%    1422       +0.0024        +0.0335   -0.0311
+            0.50       16.2%    1401       +0.0079        +0.0335   -0.0255
+
+   ADELANTO d = 1000 ms
+        umbral I  sobreviven       n   mk filtrado  mk sin filtro    mejora
+           -0.50       24.5%    2116       +0.0139        +0.0335   -0.0196
+           -0.25       23.9%    2069       +0.0130        +0.0335   -0.0204
+            0.00       23.5%    2027       +0.0165        +0.0335   -0.0169
+            0.25       22.9%    1981       +0.0194        +0.0335   -0.0140
+            0.50       22.6%    1957       +0.0238        +0.0335   -0.0096
+
+====================================================================================================

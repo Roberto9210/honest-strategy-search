@@ -1,0 +1,54 @@
+====================================================================================================
+TAREA 4 - EL CRUCE DE exigida/detectable: coincidencia o estructura?
+NO GASTA CARTUCHO. K = 261. Dinero: $0. La caja sellada no se toca.
+====================================================================================================
+
+   PRIMERA VERSION, VACUA, Y LA DEJO ESCRITA: busque el cruce usando la curva de sigma(H) del
+   PRECIO para las cuatro celdas. Dio 5,20 op/dia en las cuatro y dispersion 1,00x, porque la
+   celda NO ENTRABA EN LA CUENTA: mismo costo, misma sigma, mismo resultado. Un chequeo que
+   no puede dar otra cosa no es un chequeo. Es la trampa que mi propia regla nombra.
+
+   LA VERSION QUE SI DISTINGUE: la celda cambia sigma POR OPERACION -un bracket TRUNCA el
+   desenlace, no lo deja correr- y cambia la TENENCIA, o sea las operaciones por sesion que
+   la celda permite. Las dos se miden resolviendo la celda sobre la grilla real.
+
+        celda  sigma $/op  tenencia med  op/dia implic   exigida  detectable   razon  cruce op/dia
+     5pt:20pt      411.40           256           1.52    0.0298      0.0906    0.33          4.63
+    20pt:10pt      530.48           459           0.85    0.0231      0.1214    0.19          4.46
+    10pt:10pt      435.86           368           1.06    0.0281      0.1087    0.26          4.09
+     5pt:10pt      334.31           195           2.00    0.0367      0.0791    0.46          4.31
+
+====================================================================================================
+   LA RESPUESTA
+====================================================================================================
+   El cruce cae en 4.09 - 4.63 operaciones por dia en las 4 celdas.
+   Dispersion entre celdas: 1.13x
+
+   ES ESTRUCTURA, NO COINCIDENCIA, y ahora con la celda adentro de la cuenta: sigma por
+   operacion va de $334 a $530 y la tenencia de 195 a 459 barras -las celdas SI difieren- y
+   aun asi el cruce se mueve apenas 1,13x. El motivo es que las dos cosas se compensan: un
+   bracket mas ancho aguanta mas tiempo Y tiene mas sigma, y las dos entran en la cuenta con
+   signos opuestos.
+
+   PERO EL HALLAZGO NO ES EL CRUCE: ES DONDE ESTAN LAS CELDAS RESPECTO DE EL.
+   Las cuatro celdas del juez implican entre 0,85 y 2,00 operaciones por dia, y su cruce esta
+   en 4.1-4.6. LAS CUATRO ESTAN POR DEBAJO, con razon 0,19 a 0,46.
+   Razon menor que 1 quiere decir que la ventaja necesaria para empatar el costo es MAS CHICA
+   que la mas chica que se puede ver. O sea: en las celdas que el juez usa, una ventaja del
+   tamano justo para ser rentable es INVISIBLE para el instrumento.
+
+   Y ESO CORRIGE MI PROPIA PREOCUPACION, que estaba mal planteada. No es que el juez este
+   calibrado JUSTO EN el cruce y por eso sin margen: esta calibrado por DEBAJO del cruce, del
+   lado en que no se ve lo que importa, por un factor de 2 a 5 en frecuencia. Es peor que lo
+   que yo sospechaba y es mas facil de arreglar, porque tiene direccion: hace falta MAS
+   frecuencia, no otra calibracion.
+
+   QUE HACER CON ESO, nombrado y NO hecho: un flujo de calibracion con 5 o mas operaciones por
+   sesion pondria al juez del lado bueno del cruce. Cuesta que la ventaja exigida por
+   operacion suba -0,98 ticks se mantiene, pero en sigmas sube- y cambia los diez controles.
+   No lo decido yo.
+
+   MARCA DE FRAGILIDAD: la tenencia mediana sale de la grilla cada 300 barras, que es una
+   entrada AL AZAR. Un candidato real elige cuando entrar y su tenencia puede ser otra. El
+   'op/dia implicito' es una propiedad de la CELDA con entradas al azar, no de una candidata.
+====================================================================================================

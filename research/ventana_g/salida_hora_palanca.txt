@@ -1,0 +1,47 @@
+====================================================================================================
+1. CONTAMINACION HORARIA DE LA CONSTANTE DE COSTO
+====================================================================================================
+   NO es una regla de operacion. Son dos constantes, medidas, presentadas al lado.
+
+      D   horas   TODAS: media   SIN 17:00: media    cambio   peso de 17:00
+     4pt      23        0.5556            0.5341     -3.9%            2.8%
+    10pt      23        0.9499            0.9140     -3.8%            2.7%
+    20pt      23        1.6931            1.5283     -9.7%            4.8%
+
+   La reapertura pesa poco en n pero mueve la media: es un outlier, no un sesgo
+   general. (Poblacion: ventanas de 1 hora, que es donde existe el desglose.)
+
+====================================================================================================
+2. CUANTO MUEVE EL REQUERIDO - sensibilidad, sustituyendo una constante por la otra
+====================================================================================================
+   Aviso: la constante que usa el modelo sale de la ventana T23, no de ventanas de
+   1 hora. En T23 el stop se puede tocar a cualquier hora y NO se registro la hora
+   del toque, asi que la constante T23 no se puede desglosar con lo medido. Esto
+   es una SENSIBILIDAD del mismo tamano que la contaminacion, no una remedicion.
+
+       bracket   moneda   req TODAS   req SIN 17:00    cambio
+      5pt:10pt    66.7%       68.7%           68.7%     -0.0
+     10pt:10pt    50.0%       51.8%           51.6%     -0.2
+     20pt:10pt    33.3%       34.6%           34.5%     -0.1
+      5pt:20pt    80.0%       80.5%           80.4%     -0.0
+     10pt:20pt    66.7%       67.3%           67.2%     -0.1
+
+====================================================================================================
+3. LA ULTIMA PALANCA DE PARAMETROS: objetivo / drawdown, que la fija la firma
+====================================================================================================
+   Cuentas de 50K, etapa de evaluacion, de datos_crudos.md. Menor = mejor forma.
+
+   firma                           objetivo  drawdown   obj/dd  vs Tradeify
+   Apex (Intraday 50K)                3,000     2,000    1.500        1.00x
+   Topstep (50K)                      3,000     2,000    1.500        1.00x
+   Lucid Pro (50K)                    3,000     2,000    1.500        1.00x
+   BluSky Launch (50K)                3,000     2,000    1.500        1.00x
+   Take Profit Trader (50K)           3,000     2,000    1.500        1.00x
+   Tradeify Growth (50K)              3,000     2,000    1.500        1.00x
+   MyFundedFutures Rapid (50K)        3,000     2,000    1.500        1.00x
+   FundedNext Flex (50K)              2,500     1,500    1.667        1.11x
+
+   Rango de forma: 1.500 a 1.667. El mejor es 1.11x el peor y 1.00x el de Tradeify.
+   Rango de ESCALA (drawdown absoluto, que es lo que manda la holgura): $1,500 a $2,000.
+   La compuerta 1 midio que harian falta $9.000 para bajar la ruina nocturna al
+   3,7%. Falta un factor de 4.5 contra el mayor drawdown de 50K.

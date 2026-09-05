@@ -1,0 +1,57 @@
+====================================================================================================
+APRETAR EL POSITIVO - celda 5pt:20pt via 1 mini, tercer estado adentro
+====================================================================================================
+   P(pasar) sin ventaja = 6.892%
+   Equilibrio con cuota $83: 6.148%
+   E = 6.892% x $1,350 - $83 = $+10.04
+
+----------------------------------------------------------------------------------------------------
+(a) CUANTO DESLIZAMIENTO DE ENTRADA lo anula
+----------------------------------------------------------------------------------------------------
+   La entrada se paga en las TRES ramas (ganada, perdida y abierta al corte),
+   asi que entra como costo por operacion: e puntos = 5e USD por micro-equiv.
+
+        entrada   c1 $/micro   P(pasar)       E $
+      0.00 tk        0.576     6.892%    +10.04
+      0.25 tk        0.888     6.213%     +0.88
+      0.50 tk        1.201     5.560%     -7.94
+      0.75 tk        1.514     4.940%    -16.31
+      1.00 tk        1.826     4.394%    -23.68
+
+   ANULA EN: 0.0693 puntos = 0.28 ticks = $3.47 por operacion por mini.
+   Contra lo que dije la vez pasada -'un tick al filo, dos lo matan'-:
+   el numero exacto es 0.28 ticks.
+
+----------------------------------------------------------------------------------------------------
+(b) CUANTA CAIDA DE LA TASA DE ACIERTO lo anula
+----------------------------------------------------------------------------------------------------
+   Tasa medida entre resueltas: 85.2%. Si el drift residual la inflo,
+   cuanto habria que bajarla para volver al equilibrio?
+
+         tasa   P(pasar)       E $
+        85.2%     6.892%    +10.04
+        84.7%     5.756%     -5.29
+        84.2%     4.815%    -18.00
+        83.7%     3.993%    -29.09
+
+   ANULA EN: una caida de 0.32 puntos de tasa de acierto,
+   de 85.2% a 84.88%.
+   Para dimensionar: el residuo sin explicar, ya des-driftado, es 0,78 puntos
+   en esta celda. Es 2.4 veces lo que hace falta para anularlo.
+
+----------------------------------------------------------------------------------------------------
+(c) DE DONDE SALEN LOS DOS INSUMOS
+----------------------------------------------------------------------------------------------------
+   COBRO $1,350 = $1.500 x 90%. Los DOS MEDIDOS de fuente oficial:
+     'Primer retiro maximo: $1.500 (50K)' y 'Traders receive 90% of the payout
+     amount requested', help.tradeify.co, leidos 2026-09-03. Solido.
+
+   CUOTA $83: es el PRECIO PROMOCIONAL con codigo SEP.
+   El precio de LISTA es $165 (datos_crudos.md, mismo widget oficial).
+   Los dos estan medidos, pero NO son la misma clase de numero: el cupon caduca.
+
+        cuota  equilibrio       E $     signo
+          83      6.148%    +10.04  POSITIVO
+         165     12.222%    -71.96  negativo
+
+   EL POSITIVO EXISTE SOLO AL PRECIO DE CUPON. A precio de lista es $-72.

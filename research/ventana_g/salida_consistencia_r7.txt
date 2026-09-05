@@ -1,0 +1,73 @@
+====================================================================================================
+TAREA 3 - R7, LA REGLA DE CONSISTENCIA: que le exige a la distribucion de resultados
+NO GASTA CARTUCHO. K = 261. Dinero: $0. La caja sellada no se toca.
+====================================================================================================
+
+----------------------------------------------------------------------------------------------------
+   (1) LA COTA DURA, que sale de la aritmetica y no necesita datos
+----------------------------------------------------------------------------------------------------
+                   cuenta    cap    dias ganadores minimos   si son parejos, c/u
+       Lightning fondeada    20%                         5                   20%
+                   Growth    35%                         3                   33%
+              Select eval    40%                         3                   33%
+
+   Es una cota INFERIOR y ademas apretada: con el minimo de dias, todos tienen que dar
+   EXACTAMENTE lo mismo. Cualquier desparejo obliga a mas dias.
+   Y la condicion no es sobre el numero de dias sino sobre la FORMA: max_dia / suma_ganancias
+   <= c. Un dia que sea el doble del promedio ya obliga a 2/c dias.
+
+----------------------------------------------------------------------------------------------------
+   (2) MEDIDO sobre intentos que ALCANZAN el objetivo de $3,000
+----------------------------------------------------------------------------------------------------
+   PRIMERO, con el flujo SIN VENTAJA: CERO de 1,006 intentos llegan al objetivo. A quien
+   nunca cobra, la regla de consistencia no lo ata. Por eso la poblacion correcta es otra.
+   Flujo CON ventaja inyectada (q = 0.6, se elige el lado bueno el 60% de las veces),
+   4 minis -el limite de la cuenta de 50K (R6)-, 1,006 sesiones, celda 5pt:20pt.
+   Un intento arranca en cada sesion y acumula hasta el objetivo o el drawdown de $2,000.
+   intentos que llegan al objetivo: 511 de 1,006 (50.8%)
+   dias hasta llegar: mediana 2, p10 1, p90 5
+
+   mejor_dia / suma de dias ganadores:
+      mediana 86.6%   p10 50.5%   p90 100.0%   max 100.0%
+
+                   cuenta    cap   intentos BLOQUEADOS
+       Lightning fondeada    20%                100.0%
+                   Growth    35%                 99.8%
+              Select eval    40%                 97.1%
+
+====================================================================================================
+   LO QUE ESTO DECIDE
+====================================================================================================
+   Con el cap del 20% (Lightning fondeada), 100% de los intentos que LLEGAN al
+   objetivo quedarian bloqueados para cobrar. Con 35%, 100%.
+
+   Y ESTO NO ES UNA PENALIDAD SOBRE LA MALA SUERTE, ES SOBRE LA FORMA. La regla premia
+   muchas ganancias chicas y parejas y castiga pocas grandes. Un candidato con la MISMA
+   esperanza pero mas concentrado cobra menos veces.
+
+   LA CONDICION QUE EL JUEZ PUEDE VERIFICAR, y es una linea sobre lo que ya calcula:
+      max(dias con ganancia) / suma(dias con ganancia)  <=  c
+   calculada sobre las sesiones del candidato en el periodo. No necesita dato nuevo: el juez
+   ya tiene v_obs, los dolares por sesion. Se puede reportar como una cifra mas del veredicto
+   -'concentracion del mejor dia'- y compararla contra el cap de la cuenta declarada.
+   NO LA IMPLEMENTO EN ESTA TANDA: agregar una cerradura mas al juez cambia los diez
+   controles y ya cambie dos cosas hoy. Queda nombrada y medida.
+
+   Y EL MECANISMO ES LA VELOCIDAD, no la suerte: la mediana de dias hasta el objetivo es DOS.
+   Con dos dias, el mejor dia pesa por construccion mas de la mitad. Cuanto MEJOR es el
+   candidato y mas grande opera, mas rapido llega y MAS concentrado queda. La regla de
+   consistencia y el tamano de contrato tiran en direcciones opuestas.
+
+   LA SALIDA QUE LA REGLA EMPUJA, y conecta con la tabla de frecuencia: operar MAS CHICO para
+   estirar la ganancia en mas dias. Pero operar mas chico multiplica el costo por unidad de
+   exposicion -el MES cuesta 2,0x mas por punto que el ES- y alarga el intento, que es
+   exactamente lo que la Tarea 1 mostro que cobra caro. La regla de consistencia le pone un
+   PISO al numero de dias y el costo le pone un TECHO. Nadie habia mirado que se cruzan.
+
+   MARCAS DE FRAGILIDAD, dos: (1) la ventaja inyectada (q = 0,60) es enorme y arbitraria; con
+   una ventaja mas chica los intentos tardan mas y se concentran menos, asi que estos
+   porcentajes son una COTA SUPERIOR. (2) El flujo promedia los dos lados por sesion y no
+   modela el orden intradiario, asi que 'dia' es una unidad gruesa. Lo que NO es fragil es la
+   aritmetica de la cota dura: con cap del 20% hacen falta 5 dias ganadores parejos, y eso no
+   depende de ningun supuesto.
+====================================================================================================

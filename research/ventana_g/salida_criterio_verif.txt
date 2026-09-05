@@ -1,0 +1,16 @@
+========================================================================================================
+VERIFICACION 1 - el script con costo cero
+========================================================================================================
+  Tradeify 20pt:10pt, costo 0 -> acierto requerido = 32.7%
+  Esperado por el criterio escrito a mano: 50,0%  -> NO COINCIDE
+  Esperado por el criterio derivado S/(S+T) = 33.3% (equilibrio de la operacion, no del intento)
+
+========================================================================================================
+VERIFICACION 2 - reproducir una celda de BRACKET_RESULTADO.md
+========================================================================================================
+  Celda: Tradeify, N=10, stop 40 ticks (10pt), objetivo 80 ticks (20pt), sin ventaja
+  Publicado: P(eval)=0,231  P(fondeada)=0,226  P(total)=0,0521  vara=1,181
+  Recalculado: P(eval)=0.232  P(fondeada)=0.226  P(total)=0.0524  vara=1.173
+  Diferencias: eval 0.0013  fondeada 0.0003  vara 0.0083
+  Tolerancia (ruido de Monte Carlo, semilla distinta): 0,010 en P, 0,060 en vara
+  -> COINCIDE

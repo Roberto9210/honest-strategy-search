@@ -1,0 +1,31 @@
+====================================================================================================
+B2 - LOS MENSAJES T DEL GLBX TRAEN order_id DISTINTO DE CERO?
+NO GASTA CARTUCHO. K = 261. Dinero: $0. La caja sellada no se toca.
+====================================================================================================
+
+   Archivo: mbo_ESn0_B_medio_2019-05-01.dbn.zst   5,342,691 mensajes   (GLBX.MDP3, schema mbo, ES.n.0)
+   Acciones presentes: {np.str_('A'): 1861232, np.str_('C'): 1847826, np.str_('M'): 780047, np.str_('F'): 649302, np.str_('T'): 203215, np.str_('N'): 1068, np.str_('R'): 1}
+
+     accion    mensajes   order_id = 0  order_id != 0   % no cero
+          A   1,861,232              0      1,861,232     100.0%
+          C   1,847,826              0      1,847,826     100.0%
+          F     649,302              0        649,302     100.0%
+          M     780,047              0        780,047     100.0%
+          N       1,068          1,068              0       0.0%
+          R           1              1              0       0.0%
+          T     203,215              2        203,213     100.0%
+
+----------------------------------------------------------------------------------------------------
+   LA RESPUESTA
+----------------------------------------------------------------------------------------------------
+   SI. 203,213 de 203,215 mensajes T (100.0%) traen order_id distinto de cero.
+   Las caracteristicas por llenado que dependan del order_id del trade se pueden
+   calcular.
+
+   Y PARA COMPARAR, que es lo que de verdad usa el simulador: los 649,302 mensajes F traen order_id no cero en 100.0% de los casos.
+
+   ALCANCE DE ESTA VERIFICACION, dicho para que no se generalice de mas: es UN dia (edio_2019-05-0),
+   un simbolo (ES.n.0) y un dataset (GLBX.MDP3). No es una afirmacion sobre el esquema mbo en
+   general ni sobre otros mercados. Si hace falta como propiedad del esquema, hay que
+   repetirlo en los otros cinco dias, que ya estan en disco y cuestan cero.
+====================================================================================================

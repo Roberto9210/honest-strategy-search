@@ -1,0 +1,13 @@
+============================================================================================
+CUANTO SE MUEVE EL PISO AL COBRAR EL DESLIZAMIENTO DE ENTRADA MEDIDO
+NO GASTA CARTUCHO. K = 261. La caja sellada no se toca.
+============================================================================================
+
+   deslizamiento de entrada por tercil (pt): {0: 0.1267, 1: 0.1334, 2: 0.133}   plano: 0.1310
+
+        celda  piso viejo  piso con entrada  movimiento  op/ses
+     5pt:20pt      +42.93            +78.24      +35.31    5.39
+    20pt:10pt      +72.93            +92.81      +19.89    3.04
+
+   El movimiento es slip * PUNTO * op/ses: el deslizamiento de entrada es del orden de la
+   comision, asi que el piso -lo que un candidato tiene que superar por sesion- sube fuerte.

@@ -1,0 +1,49 @@
+====================================================================================================
+LOS CORTES REALES DE SESION, Y EL TRAMO SIN TENDENCIA
+NO GASTA CARTUCHO. K = 261. La caja sellada no se toca.
+====================================================================================================
+
+   barras: 1,357,785
+   sesiones REALES: 1,007  (mediana 1,362 barras, minimo 1, maximo 1367)
+   se descartan 1 sesiones de menos de 60 barras
+   -> quedan 1,006 sesiones reales
+   bloques FIJOS de 1380: 983
+
+====================================================================================================
+(3) CORTES REALES CONTRA BLOQUES FIJOS
+   CRITERIO: si el piso se mueve menos que su error ($6,69), la aproximacion era
+   inocua. Si se mueve mas, la unidad de tiempo estaba mal.
+====================================================================================================
+
+        celda         particion  sesiones   $/sesion    error  op/sesion  sesgo marco      PISO   total op
+     5pt:20pt      bloques 1380       983     -55.29     6.69       5.53       -10.65    +44.64     10,874
+     5pt:20pt   sesiones reales     1,006     -53.31     6.73       5.39       -10.38    +42.93     10,843
+    20pt:10pt      bloques 1380       983     -68.37     4.09       3.13        +3.34    +71.71      6,146
+    20pt:10pt   sesiones reales     1,006     -69.68     3.70       3.04        +3.25    +72.93      6,107
+
+     5pt:20pt  piso +44.64 -> +42.93   mueve -1.71   error 6.69   INOCUA   (operaciones +0.3%)
+    20pt:10pt  piso +71.71 -> +72.93   mueve +1.22   error 4.09   INOCUA   (operaciones +0.6%)
+
+   CONTROL (las dos particiones cubren la misma serie): PASADO
+
+====================================================================================================
+(4) POR ANO CALENDARIO - el largo sigue al movimiento del ano?
+   Si en un ano sin tendencia el largo tambien pierde feo, el empate era el tramo
+   alcista. AVISO: empatar tampoco seria ventaja. El piso sigue siendo el piso.
+====================================================================================================
+
+   celda 5pt:20pt
+      ano  sesiones  mov. del ano  largo $/ses   error  en err  corto $/ses   error  en err     PISO
+     2016       254       +195.5pt       +35.91    52.5    +0.7       -80.13    53.2    -1.5   +13.56
+     2017       251       +424.5pt       +85.56    31.2    +2.7      -101.38    31.3    -3.2    +3.49
+     2018       253       -168.0pt      -156.32    95.5    -1.6       -89.87    86.7    -1.0  +106.03
+     2019       248       +727.0pt       +77.81    74.2    +1.0      -197.85    74.8    -2.6   +48.56
+
+   celda 20pt:10pt
+      ano  sesiones  mov. del ano  largo $/ses   error  en err  corto $/ses   error  en err     PISO
+     2016       254       +195.5pt        -3.39    53.3    -0.1      -110.02    52.9    -2.1   +59.39
+     2017       251       +424.5pt       +69.40    32.0    +2.2      -121.27    31.6    -3.8   +27.52
+     2018       253       -168.0pt      -128.13    89.9    -1.4      -101.51    89.3    -1.1  +119.97
+     2019       248       +727.0pt       +61.74    76.7    +0.8      -224.14    75.7    -3.0   +84.76
+
+   'mov. del ano' = cierre del ultimo minuto menos cierre del primero, en puntos.

@@ -1,0 +1,94 @@
+========================================================================================================
+1. LA MEDIA MEDIDA, Y QUE TAN LEJOS ESTABA EL SUPUESTO
+========================================================================================================
+   el modelo asumia 0.25pt (1 tick) de deslizamiento por operacion
+
+      stop      n    MEDIA    p50    p95  media/p95  no modelado
+       4pt    733    0.596   0.25   2.10       0.28       +0.346pt
+      10pt    449    0.722   0.25   2.50       0.29       +0.472pt
+      20pt    208    0.982   0.50   3.82       0.26       +0.732pt
+
+   La media es el 26-29% del p95 en toda la tabla. Usar el p95 para juzgar la
+   ESPERANZA sobreestimaba el dano por un factor de 3 a 4.
+
+========================================================================================================
+2. EL CRITERIO RECALCULADO CON LA MEDIA (la pregunta de la esperanza)
+========================================================================================================
+   Tradeify Growth (50K), N=10 micros. 'requerido' = acierto para esperanza POSITIVA del intento.
+
+        bracket   moneda  req (modelo)  req (media med.)  ventaja pedida    margen
+       5pt:10pt    66.7%         69.3%             70.3%           +3.6      +1.7
+      10pt:10pt    50.0%         51.6%             52.6%           +2.6      +0.7
+      20pt:10pt    33.3%         34.1%             34.9%           +1.5      +0.1
+       5pt:20pt    80.0%         80.9%             81.4%           +1.4      +0.4
+      10pt:20pt    66.7%         67.1%             67.6%           +0.9      -0.1
+
+   'ventaja pedida' = cuanto por encima de la moneda hay que acertar, ya con la
+   media medida adentro. 'margen' = lo que sobra despues de descontar el error de
+   deslizamiento que el modelo tenia. Negativo = el numero no se sostiene.
+
+========================================================================================================
+3. LA COLA (la otra pregunta: puede UNA operacion tocar el limite de perdida)
+========================================================================================================
+   drawdown de la evaluacion = $2,000. Perdida de UNA operacion con N=10 micros:
+
+      stop    nominal    con p95    con p99    con max   max / dd
+       4pt        200        305        472      1,762       88%
+      10pt        500        625        851      1,762       88%
+      20pt      1,000      1,191      1,474      1,775       89%
+
+   El peor llenado observado en 2016-2019 se come el 88-89% del drawdown ENTERO
+   en una sola operacion. No lo rompe por si solo, pero el drawdown es TRAILING:
+   despues de cualquier ganancia el piso sube y ese margen ya no existe.
+   Esta es la pregunta de supervivencia, y NO se responde con la media.
+
+========================================================================================================
+4. QUE SIGNIFICA EL 34,1% - y su reconciliacion con la vara de 1,181x
+========================================================================================================
+   bracket 20pt:10pt, N=10 micros, costo $2.50/micro
+
+   (i)  equilibrio POR OPERACION despues de costos : 35.0%
+   (ii) umbral para esperanza positiva de PASAR    : 34.1%   <- ESTE es el 34,1%
+        moneda sin ventaja                          : 33.3%
+
+   El 34,1% es (ii), NO (i). Y notar que (ii) < (i): 34.1% < 35.0%.
+   A 34.1% de acierto la operacion PIERDE $13 por vez (gana $975 / pierde $525).
+   El intento igual conviene porque es una entrada barata a un premio grande:
+   cuota $83 contra un pago de $1,350.
+   NO es 'el nivel para ser rentable operando'. Es 'el nivel para que el billete valga'.
+
+   RECONCILIACION CON LA VARA (las dos en las mismas unidades):
+     acierto por operacion : 33.3%  ->  34.1%   cociente 1.024
+     P(pasar la cadena)    : 5.156%  ->  6.151%   cociente 1.193
+     vara publicada = equilibrio / P(sin ventaja) = 6.148% / 5.156% = 1.192
+
+   No cierran porque NO estan en las mismas unidades: 1,024 es un cociente de
+   TASAS DE ACIERTO POR OPERACION y 1,181 es un cociente de PROBABILIDADES DE
+   PASAR LA CADENA. La conversion entre las dos es la elasticidad de la barrera:
+   un +1% relativo de acierto por operacion produce un +7.9% relativo de
+   probabilidad de pasar. Con esa elasticidad, 1.024 en acierto se
+   convierte en 1.193 en pasar, que es la vara. Cierra.
+
+========================================================================================================
+5. LO QUE QUEDA SIN MEDIR: LA COMISION. Cuanto mueve el requerido?
+========================================================================================================
+   c1 del modelo = comision + 0,25pt de deslizamiento ($1,25). La comision NUNCA
+   se leyo de fuente oficial: es la deuda declarada en aritmetica.py.
+
+   celda 5pt:10pt (la de mayor margen), con la media medida adentro
+     comision $/micro      c1   requerido   sobre la moneda
+                 0.00    1.25       68.6%             +2.0
+                 1.25    2.50       70.3%             +3.6  <- supuesto del modelo
+                 2.50    3.75       71.9%             +5.3
+                 3.75    5.00       73.6%             +6.9
+
+   El requerido se mueve 4.9 puntos entre comision 0 y $3,75/micro.
+
+========================================================================================================
+VEREDICTO
+========================================================================================================
+   Mejor celda por margen: 5pt:10pt -> requerido 70.3% (moneda 66.7%), margen +1.7 puntos.
+   Incertidumbre por la comision no medida: 4.9 puntos.
+   La incertidumbre de la comision es MAS GRANDE que el margen entero.
+   SIGUE SIN HABER criterio publicable. Lo que lo cierra es UN numero:
+   la comision real por micro, leida de una fuente oficial.

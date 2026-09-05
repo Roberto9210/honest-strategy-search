@@ -1,0 +1,137 @@
+====================================================================================================
+TAREA 1, PASO 1 - EL LEDGER SOPORTA LA AUDITORIA DE POTENCIA?
+NO GASTA CARTUCHO. K = 261. Dinero: $0.
+====================================================================================================
+
+   C:\Users\home\Desktop\deadman-search\factory\experiments_ledger.jsonl
+   114 filas. K acumulado declarado en el ledger: 261
+
+----------------------------------------------------------------------------------------------------
+   LAS COLUMNAS QUE PODRIAN SERVIR, con cuantas filas las tienen y que contienen
+----------------------------------------------------------------------------------------------------
+                  columna  filas   ejemplos (hasta 3, truncados)
+               prediccion      4   mm_prediccion_falsacion.md, commiteada antes  |  mm_prediccion_falsacion.md, commiteada antes  |  mm_prediccion_falsacion.md, commiteada antes
+                     stat      4   {'n': 244, 'media': 14.009836065573772, 'des  |  {'n': 1510, 'media': -0.16738410596026534, '  |  {'n': 1718, 'media': -4.2732537834691495, 'd
+         linea_decision_t      1   3.726
+         linea_decision_p      1   0.0001945525291828794
+           linea_suerte_p      1   0.003875968992248062
+                    alpha      1   0.05
+                        h      2   1.0  |  1.0
+                estrato_h      2   corto  |  corto
+       medibilidad_config      3   {'n_b_proyectado': 518, 'n_b_necesario': 342  |  {'n_b_proyectado': 589, 'n_b_necesario': 342  |  {'n_b_proyectado': 419, 'n_b_necesario': 342
+         robustness_cells      4   [{'kind': 'reversion_k_dias', 'k': 2, 'side'  |  [{'kind': 'reversion_k_dias', 'k': 1, 'side'  |  [{'kind': 'momento_k_dias', 'k': 1, 'side': 
+      margen_nocturno_mes      1   {'estado': 'AUSENTE', 'valor_usd': None, 'fu
+           margen_vigente      4   None  |  None  |  None
+
+----------------------------------------------------------------------------------------------------
+   LO QUE HAY EN result, que es lo unico presente en cantidad
+----------------------------------------------------------------------------------------------------
+   63 filas con result completo (trades, net_pnl, profit_factor, win_rate,
+   max_drawdown, per_year). NO hay desvio, ni error estandar, ni n de sesiones, ni t.
+   trades por fila: mediana 533, min 0, max 1718
+   filas con menos de 30 operaciones: 8 de 63
+
+----------------------------------------------------------------------------------------------------
+   LAS DOS COSAS QUE HARIAN FALTA, y si estan
+----------------------------------------------------------------------------------------------------
+   MAGNITUD AFIRMADA -cuanto decia el candidato que iba a dar-:
+      'prediccion' en 4 filas de 114. En ninguna otra columna hay algo que
+      diga que magnitud se esperaba. Los 'config' traen PARAMETROS (hold, target_r, k), no
+      una magnitud esperada.
+   RESOLUCION DEL TEST -el efecto mas chico que esa corrida podia ver-:
+      'linea_decision_t' / 'linea_decision_p' en 1 filas. 'stat' en 4.
+      result NO trae desvio ni error estandar, asi que la resolucion no se puede leer;
+      habria que RECALCULARLA.
+
+====================================================================================================
+   LA RESPUESTA: NO SE PUEDE DIRECTO. SE PUEDE UNA VERSION MAS DEBIL, Y DICE MENOS.
+====================================================================================================
+   DIRECTO: NO. No existe, en ninguna cantidad utilizable, una columna de MAGNITUD AFIRMADA
+   (4 filas de 114) ni una de RESOLUCION. Sin las dos, 'tenia potencia para
+   detectar lo que afirmaba' no se puede contestar fila por fila. Y las 114 filas no son las
+   261 configuraciones: una fila puede cubrir muchas.
+
+   VERSION MAS DEBIL QUE SI SE PUEDE, con lo que hay:
+      Para las 63 filas con result, se conoce 'trades'. Con el desvio por operacion
+      del ES ya medido en esta ventana se puede RECONSTRUIR la resolucion de cada corrida
+      como MDE = z * sigma_op / raiz(trades), y compararla contra el tamano de efecto
+      OBSERVADO (net_pnl / trades). Eso contesta:
+         'que fraccion de las corridas tenia resolucion peor que su propio efecto observado'
+      QUE NO CONTESTA, y es la pregunta original: que fraccion tenia potencia para detectar
+      lo que AFIRMABA. Comparar contra el efecto OBSERVADO no es comparar contra el
+      AFIRMADO: el observado ya incorpora el resultado, asi que una corrida que no encontro
+      nada tiene efecto observado ~0 y saldria 'sin potencia' por construccion. Es
+      circular en la direccion peligrosa.
+
+      Una segunda version, menos circular: comparar la resolucion reconstruida contra una
+      magnitud de REFERENCIA FIJA -por ejemplo la ventaja de referencia del juez, $72,69 por
+      sesion por mini-. Eso SI contesta algo limpio: 'cuantas corridas podian ver un efecto
+      del tamano que esta casa considera relevante'. No es lo que se afirmaba en cada una,
+      pero es una vara comun y no depende del resultado.
+
+   LO QUE NO VOY A HACER: inventar la magnitud afirmada leyendo las hipotesis a ojo. Es la
+   misma disciplina de la Pieza 2 y el motivo es el mismo: una auditoria reconstruida de
+   memoria no es una medicion, y esta seria peor que la de causas de muerte porque el numero
+   resultante parece objetivo.
+
+   RECOMENDACION: correr la SEGUNDA version (vara comun, no circular) y reportarla con su
+   nombre exacto, que no es 'cuantas tenian potencia para lo que afirmaban' sino 'cuantas
+   tenian resolucion para ver la ventaja de referencia'. Es mas chica que la pregunta
+   original y es honesta. La pregunta original muere con las columnas nombradas.
+
+====================================================================================================
+   LA VERSION DEBIL, CORRIDA. Nombre exacto: 'cuantas corridas tenian resolucion para ver
+   la ventaja de REFERENCIA de esta casa'. No es la pregunta original.
+====================================================================================================
+   sigma por operacion (derivado de C1: sd $28.11/sesion con 4.96 op/sesion): $12.62
+   ventaja de REFERENCIA por operacion (juez.REF_EDGE_OP_MINI): $14.66
+   MARCA DE FRAGILIDAD: sigma_op sale de UNA celda (5pt:20pt) y de un flujo sintetico del ES.
+   Las corridas del ledger son de otras familias, otros instrumentos y otras reglas de
+   salida. Es una vara COMUN, no la vara de cada corrida. Estimacion mia, marcada.
+
+   Con vara del juez 3,0: 58 de 63 corridas tenian MDE <= la ventaja de referencia (92%)
+   Con vara del programa 3,55: 57 de 63 corridas tenian MDE <= la ventaja de referencia (90%)
+
+   Operaciones necesarias para que la MDE baje a la ventaja de referencia: con z=3,0: 7   con z=3,552: 9
+   Mediana de operaciones en el ledger: 533
+
+
+----------------------------------------------------------------------------------------------------
+   Y LA VARA DE REFERENCIA ES ENORME, ASI QUE ESE 92% NO DISCRIMINA NADA
+----------------------------------------------------------------------------------------------------
+   ventaja de referencia / sigma por operacion = 1.16 desvios POR OPERACION.
+   Un efecto de 1,16 desvios por operacion no es una ventaja de mercado: es la ventaja que se
+   INYECTO a proposito en permutacion.py para verificar que el instrumento la recuperaba. Con
+   una vara asi, 7 operaciones alcanzan y cualquier corrida pasa. El 92% mide la vara, no las
+   corridas.
+
+   LA VERSION QUE SI DISCRIMINA: barrer el tamano de efecto en vez de fijarlo. Para cada
+   tamano plausible, cuantas corridas tenian n suficiente. No inventa nada por fila: cambia
+   una pregunta imposible ('que afirmaba cada una') por una contestable ('para que tamanos
+   habia n').
+
+     efecto (sd/op)   n necesario   corridas con n suficiente
+               1.00            13                57 de 63  ( 90%)
+               0.50            50                55 de 63  ( 87%)
+               0.20           315                36 de 63  ( 57%)
+               0.10         1,262                 2 de 63  (  3%)
+               0.05         5,047                 0 de 63  (  0%)
+               0.02        31,542                 0 de 63  (  0%)
+               0.01       126,167                 0 de 63  (  0%)
+
+   ESTO SI CONTESTA ALGO, y la lectura es dura: por debajo de 0,1 desvios por operacion -que
+   es donde vive cualquier ventaja de mercado creible- NINGUNA corrida del ledger tenia n
+   para verla. La mediana de 533 operaciones da resolucion para 0,15 desvios por operacion y
+   nada mas fino.
+   LO QUE SIGUE SIN CONTESTARSE: si las corridas AFIRMABAN efectos de ese tamano. Si
+   afirmaban efectos grandes, estaban bien dimensionadas y sus negativos valen. Si afirmaban
+   efectos chicos, sus negativos son sobre el instrumento. El ledger no lo dice y por eso la
+   Tarea 1, como esta formulada, sigue muerta.
+
+   COMO LEER ESTO, y es lo que impide sacar la conclusion grande: da que la MAYORIA de las
+   corridas con result SI tenian resolucion para la ventaja de referencia. Pero eso NO dice
+   que tuvieran potencia para lo que afirmaban, porque no sabemos que afirmaban. Una corrida
+   que buscaba un efecto diez veces mas chico que la referencia estaba ciega aunque aparezca
+   en la columna de 'si'. La pregunta de la Tarea 1 sigue sin contestar, y esta version
+   solo descarta la hipotesis mas extrema -que casi ninguna tuviera n suficiente-.
+====================================================================================================

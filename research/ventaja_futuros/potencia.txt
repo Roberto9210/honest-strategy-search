@@ -1,0 +1,169 @@
+POTENCIA POR RESOLUCION -- Ventana D, 2026-09-03. Sin datos de precios; solo los N del inventario.
+
+==============================================================================================================
+A. N REQUERIDO (una decision independiente por fila), potencia 80 %, H0 acierto = 0.50
+   n_req = ((z_a*sqrt(.25) + z_b*sqrt(p1(1-p1))) / (p1-.5))^2 ; z_b(0.80) = 0.8416
+==============================================================================================================
+  acierto real             alpha 0.05 unilateral      alpha 0.0125 (4 hipotesis)
+  0.52                            3862  (z_a=1.645)                  5938  (z_a=2.241)
+  0.55                             616  (z_a=1.645)                   948  (z_a=2.241)
+  0.58                             239  (z_a=1.645)                   369  (z_a=2.241)
+  0.60                             152  (z_a=1.645)                   235  (z_a=2.241)
+  0.65                              67  (z_a=1.645)                   103  (z_a=2.241)
+
+==============================================================================================================
+B. DIARIO  MES NT8   (pares mismo contrato)   N sesiones = 1821   [guardian f75d126, resultado-pregunta1 M3]
+==============================================================================================================
+  --- alpha 0.05 unilateral ---
+   acierto |          1 op/sesion           |  3 ops/sesion, cota INDEPENDIENTE (n=3N)   | 3 ops, cota CORRELACIONADA (n=N)
+           |  n=1821   potencia   alcanza?  |        n=5463   potencia   alcanza?        |      igual que 1 op/sesion      
+      0.52 |          0.508      NO         |                0.904      SI               |           0.508      NO         
+      0.55 |          0.995      SI         |                1.000      SI               |           0.995      SI         
+      0.58 |          1.000      SI         |                1.000      SI               |           1.000      SI         
+      0.60 |          1.000      SI         |                1.000      SI               |           1.000      SI         
+      0.65 |          1.000      SI         |                1.000      SI               |           1.000      SI         
+
+  --- alpha 0.0125 (4 hipotesis) ---
+   acierto |          1 op/sesion           |  3 ops/sesion, cota INDEPENDIENTE (n=3N)   | 3 ops, cota CORRELACIONADA (n=N)
+           |  n=1821   potencia   alcanza?  |        n=5463   potencia   alcanza?        |      igual que 1 op/sesion      
+      0.52 |          0.294      NO         |                0.762      NO               |           0.294      NO         
+      0.55 |          0.979      SI         |                1.000      SI               |           0.979      SI         
+      0.58 |          1.000      SI         |                1.000      SI               |           1.000      SI         
+      0.60 |          1.000      SI         |                1.000      SI               |           1.000      SI         
+      0.65 |          1.000      SI         |                1.000      SI               |           1.000      SI         
+
+==============================================================================================================
+B. MINUTOS MES NT8   (archivos en dia habil)   N sesiones = 12   [guardian f75d126, datos-futuros seccion 2]
+==============================================================================================================
+  --- alpha 0.05 unilateral ---
+   acierto |          1 op/sesion           |  3 ops/sesion, cota INDEPENDIENTE (n=3N)   | 3 ops, cota CORRELACIONADA (n=N)
+           |   n=12   potencia   alcanza?   |         n=36   potencia   alcanza?         |      igual que 1 op/sesion      
+      0.52 |          0.027      NO         |                0.054      NO               |           0.027      NO         
+      0.55 |          0.042      NO         |                0.107      NO               |           0.042      NO         
+      0.58 |          0.064      NO         |                0.189      NO               |           0.064      NO         
+      0.60 |          0.083      NO         |                0.262      NO               |           0.083      NO         
+      0.65 |          0.151      NO         |                0.493      NO               |           0.151      NO         
+
+  --- alpha 0.0125 (4 hipotesis) ---
+   acierto |          1 op/sesion           |  3 ops/sesion, cota INDEPENDIENTE (n=3N)   | 3 ops, cota CORRELACIONADA (n=N)
+           |   n=12   potencia   alcanza?   |         n=36   potencia   alcanza?         |      igual que 1 op/sesion      
+      0.52 |          0.005      NO         |                0.011      NO               |           0.005      NO         
+      0.55 |          0.008      NO         |                0.026      NO               |           0.008      NO         
+      0.58 |          0.014      NO         |                0.057      NO               |           0.014      NO         
+      0.60 |          0.020      NO         |                0.090      NO               |           0.020      NO         
+      0.65 |          0.042      NO         |                0.234      NO               |           0.042      NO         
+
+==============================================================================================================
+B. MINUTOS MES NT8   (LEGIBLES hoy)   N sesiones = 0   [guardian f75d126, datos-futuros seccion 3]
+==============================================================================================================
+  --- alpha 0.05 unilateral ---
+   acierto |          1 op/sesion           |  3 ops/sesion, cota INDEPENDIENTE (n=3N)   | 3 ops, cota CORRELACIONADA (n=N)
+           |   n=0   potencia   alcanza?    |         n=0   potencia   alcanza?          |      igual que 1 op/sesion      
+      0.52 |          0.000      NO         |                0.000      NO               |           0.000      NO         
+      0.55 |          0.000      NO         |                0.000      NO               |           0.000      NO         
+      0.58 |          0.000      NO         |                0.000      NO               |           0.000      NO         
+      0.60 |          0.000      NO         |                0.000      NO               |           0.000      NO         
+      0.65 |          0.000      NO         |                0.000      NO               |           0.000      NO         
+
+  --- alpha 0.0125 (4 hipotesis) ---
+   acierto |          1 op/sesion           |  3 ops/sesion, cota INDEPENDIENTE (n=3N)   | 3 ops, cota CORRELACIONADA (n=N)
+           |   n=0   potencia   alcanza?    |         n=0   potencia   alcanza?          |      igual que 1 op/sesion      
+      0.52 |          0.000      NO         |                0.000      NO               |           0.000      NO         
+      0.55 |          0.000      NO         |                0.000      NO               |           0.000      NO         
+      0.58 |          0.000      NO         |                0.000      NO               |           0.000      NO         
+      0.60 |          0.000      NO         |                0.000      NO               |           0.000      NO         
+      0.65 |          0.000      NO         |                0.000      NO               |           0.000      NO         
+
+==============================================================================================================
+B. MINUTOS ES  Databento 2016-2026 (todo)   N sesiones = 2747   [data_quality_es_1min_databento.md, tabla por anio]
+==============================================================================================================
+  --- alpha 0.05 unilateral ---
+   acierto |          1 op/sesion           |  3 ops/sesion, cota INDEPENDIENTE (n=3N)   | 3 ops, cota CORRELACIONADA (n=N)
+           |  n=2747   potencia   alcanza?  |        n=8241   potencia   alcanza?        |      igual que 1 op/sesion      
+      0.52 |          0.662      NO         |                0.976      SI               |           0.662      NO         
+      0.55 |          1.000      SI         |                1.000      SI               |           1.000      SI         
+      0.58 |          1.000      SI         |                1.000      SI               |           1.000      SI         
+      0.60 |          1.000      SI         |                1.000      SI               |           1.000      SI         
+      0.65 |          1.000      SI         |                1.000      SI               |           1.000      SI         
+
+  --- alpha 0.0125 (4 hipotesis) ---
+   acierto |          1 op/sesion           |  3 ops/sesion, cota INDEPENDIENTE (n=3N)   | 3 ops, cota CORRELACIONADA (n=N)
+           |  n=2747   potencia   alcanza?  |        n=8241   potencia   alcanza?        |      igual que 1 op/sesion      
+      0.52 |          0.438      NO         |                0.917      SI               |           0.438      NO         
+      0.55 |          0.999      SI         |                1.000      SI               |           0.999      SI         
+      0.58 |          1.000      SI         |                1.000      SI               |           1.000      SI         
+      0.60 |          1.000      SI         |                1.000      SI               |           1.000      SI         
+      0.65 |          1.000      SI         |                1.000      SI               |           1.000      SI         
+
+==============================================================================================================
+B. MINUTOS ES  Databento 2020-2026 (SELLADO busq. 1)   N sesiones = 1715   [ARTICLE.md hold-out; QC tabla por anio]
+==============================================================================================================
+  --- alpha 0.05 unilateral ---
+   acierto |          1 op/sesion           |  3 ops/sesion, cota INDEPENDIENTE (n=3N)   | 3 ops, cota CORRELACIONADA (n=N)
+           |  n=1715   potencia   alcanza?  |        n=5145   potencia   alcanza?        |      igual que 1 op/sesion      
+      0.52 |          0.487      NO         |                0.890      SI               |           0.487      NO         
+      0.55 |          0.993      SI         |                1.000      SI               |           0.993      SI         
+      0.58 |          1.000      SI         |                1.000      SI               |           1.000      SI         
+      0.60 |          1.000      SI         |                1.000      SI               |           1.000      SI         
+      0.65 |          1.000      SI         |                1.000      SI               |           1.000      SI         
+
+  --- alpha 0.0125 (4 hipotesis) ---
+   acierto |          1 op/sesion           |  3 ops/sesion, cota INDEPENDIENTE (n=3N)   | 3 ops, cota CORRELACIONADA (n=N)
+           |  n=1715   potencia   alcanza?  |        n=5145   potencia   alcanza?        |      igual que 1 op/sesion      
+      0.52 |          0.270      NO         |                0.729      NO               |           0.270      NO         
+      0.55 |          0.970      SI         |                1.000      SI               |           0.970      SI         
+      0.58 |          1.000      SI         |                1.000      SI               |           1.000      SI         
+      0.60 |          1.000      SI         |                1.000      SI               |           1.000      SI         
+      0.65 |          1.000      SI         |                1.000      SI               |           1.000      SI         
+
+==============================================================================================================
+B. MINUTOS ES  Databento 2016-2019 (ya mirado)   N sesiones = 1032   [spec v1 seccion 4 parte A; QC tabla por anio]
+==============================================================================================================
+  --- alpha 0.05 unilateral ---
+   acierto |          1 op/sesion           |  3 ops/sesion, cota INDEPENDIENTE (n=3N)   | 3 ops, cota CORRELACIONADA (n=N)
+           |  n=1032   potencia   alcanza?  |        n=3096   potencia   alcanza?        |      igual que 1 op/sesion      
+      0.52 |          0.358      NO         |                0.711      NO               |           0.358      NO         
+      0.55 |          0.942      SI         |                1.000      SI               |           0.942      SI         
+      0.58 |          1.000      SI         |                1.000      SI               |           1.000      SI         
+      0.60 |          1.000      SI         |                1.000      SI               |           1.000      SI         
+      0.65 |          1.000      SI         |                1.000      SI               |           1.000      SI         
+
+  --- alpha 0.0125 (4 hipotesis) ---
+   acierto |          1 op/sesion           |  3 ops/sesion, cota INDEPENDIENTE (n=3N)   | 3 ops, cota CORRELACIONADA (n=N)
+           |  n=1032   potencia   alcanza?  |        n=3096   potencia   alcanza?        |      igual que 1 op/sesion      
+      0.52 |          0.162      NO         |                0.492      NO               |           0.162      NO         
+      0.55 |          0.828      SI         |                1.000      SI               |           0.828      SI         
+      0.58 |          0.998      SI         |                1.000      SI               |           0.998      SI         
+      0.60 |          1.000      SI         |                1.000      SI               |           1.000      SI         
+      0.65 |          1.000      SI         |                1.000      SI               |           1.000      SI         
+
+==============================================================================================================
+C. DIARIO MES NT8 (1.821): potencia del PERIODO INTOCADO solo (1 op/sesion), que es donde se hace la unica corrida
+==============================================================================================================
+  intocado = 30% de N -> n = 546
+     alpha 0.05 unilateral        0.52:0.231   0.55:0.749   0.58:0.982*  0.60:0.999*  0.65:1.000*
+     alpha 0.0125 (4 hipotesis)   0.52:0.091   0.55:0.528   0.58:0.932*  0.60:0.993*  0.65:1.000*
+  intocado = 50% de N -> n = 910
+     alpha 0.05 unilateral        0.52:0.314   0.55:0.909*  0.58:0.999*  0.60:1.000*  0.65:1.000*
+     alpha 0.0125 (4 hipotesis)   0.52:0.140   0.55:0.768   0.58:0.995*  0.60:1.000*  0.65:1.000*
+  (* = alcanza 80 %)
+
+==============================================================================================================
+C. MINUTOS ES Databento, intocado = lo sellado 2020-2026: potencia del PERIODO INTOCADO solo (1 op/sesion), que es donde se hace la unica corrida
+==============================================================================================================
+  intocado = 30% de N -> n = 514
+     alpha 0.05 unilateral        0.52:0.208   0.55:0.709   0.58:0.973*  0.60:0.998*  0.65:1.000*
+     alpha 0.0125 (4 hipotesis)   0.52:0.089   0.55:0.508   0.58:0.918*  0.60:0.990*  0.65:1.000*
+  intocado = 50% de N -> n = 858
+     alpha 0.05 unilateral        0.52:0.308   0.55:0.897*  0.58:0.999*  0.60:1.000*  0.65:1.000*
+     alpha 0.0125 (4 hipotesis)   0.52:0.132   0.55:0.741   0.58:0.992*  0.60:1.000*  0.65:1.000*
+  (* = alcanza 80 %)
+
+Cota de sensibilidad, para leer la tabla: con N sesiones, el acierto minimo detectable al 80 % es
+aprox. 0.5 + 2.4864/(2*sqrt(N)) con alpha 0.05, y 0.5 + 3.0824/(2*sqrt(N)) con alpha 0.0125:
+  DIARIO  MES NT8   (pares mismo contrato)             N= 1821  p_min(0.05)=0.5291  p_min(0.0125)=0.5361
+  MINUTOS MES NT8   (archivos en dia habil)            N=   12  p_min(0.05)=0.8589  p_min(0.0125)=0.9450
+  MINUTOS MES NT8   (LEGIBLES hoy)                     N=    0  no hay nada que detectar
+  MINUTOS ES  Databento 2016-2026 (todo)               N= 2747  p_min(0.05)=0.5237  p_min(0.0125)=0.5294
+  MINUTOS ES  Databento 2020-2026 (SELLADO busq. 1)    N= 1715  p_min(0.05)=0.5300  p_min(0.0125)=0.5372
+  MINUTOS ES  Databento 2016-2019 (ya mirado)          N= 1032  p_min(0.05)=0.5387  p_min(0.0125)=0.5480

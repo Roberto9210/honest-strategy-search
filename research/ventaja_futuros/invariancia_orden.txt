@@ -1,0 +1,15 @@
+INVARIANCIA DEL ORDEN -- Ventana D, 2026-09-03. ES 1-min Databento 2016-2019. NO es MES. La caja no se toca.
+Ejecuta invariancia_orden_preregistro.md (01f2489). K = 262, K_D = 1, alpha = 1.9011e-04 dos colas, |z| >= 3.732
+X1 inversion: r cruza 1.00.  X2 indiferencia: exc(08:30) - exc(23:00) < 3.90 USD MES = 0.78 pts
+
+======================================================================================================================
+0. POBLACION: P-escalera 971 -> con 20 previas y sesion anterior: 951 (2016-02-02 -> 2019-12-31)
+======================================================================================================================
+  K5 - COBERTURA: sesiones perdidas 20; meses: ['2016-01', '2016-02']
+
+======================================================================================================================
+K0 - LA CONDICION ES LA CONDICION
+======================================================================================================================
+  particion ALTO = 48.3 % (459 de 951)   criterio 40-60 %: PASA
+  excursion mediana de la sesion completa: ALTO 8.75 pts   BAJO 8.75 pts   factor 1.00x   criterio ALTO > BAJO: FALLA
+  K0 FALLA -- la condicion no es lo que dice ser. El resultado no se interpreta.

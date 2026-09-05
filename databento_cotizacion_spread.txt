@@ -1,0 +1,36 @@
+C:\Users\home\Desktop\deadman-search\databento_cotizar_spread.py:80: BentoWarning: The request time range does not start at UTC midnight, which contains a synthetic snapshot of the full order book state. See: https://databento.com/docs/schemas-and-data-formats/mbo#snapshots
+  cost = client.metadata.get_cost(**kw)
+C:\Users\home\Desktop\deadman-search\databento_cotizar_spread.py:81: BentoWarning: The request time range does not start at UTC midnight, which contains a synthetic snapshot of the full order book state. See: https://databento.com/docs/schemas-and-data-formats/mbo#snapshots
+  size = client.metadata.get_billable_size(**kw)
+C:\Users\home\Desktop\deadman-search\databento_cotizar_spread.py:82: BentoWarning: The request time range does not start at UTC midnight, which contains a synthetic snapshot of the full order book state. See: https://databento.com/docs/schemas-and-data-formats/mbo#snapshots
+  n = client.metadata.get_record_count(**kw)
+COTIZACION (sin descargar) - dataset GLBX.MDP3, dia 2026-09-02
+rango disponible del dataset: {'start': '2010-06-06T00:00:00.000000000Z', 'end': '2026-09-04T15:24:28.260151000Z', 'schema': {'mbo': {'start': '2017-05-21T00:00:00.000000000Z', 'end': '2026-09-04T15:24:28.260151000Z'}, 'mbp-1': {'start': '2010-06-06T00:00:00.000000000Z', 'end': '2026-09-04T15:24:28.260151000Z'}, 'mbp-10': {'start': '2010-06-06T00:00:00.000000000Z', 'end': '2026-09-04T15:24:28.260151000Z'}, 'tbbo': {'start': '2010-06-06T00:00:00.000000000Z', 'end': '2026-09-04T15:24:28.260151000Z'}, 'trades': {'start': '2010-06-06T00:00:00.000000000Z', 'end': '2026-09-04T15:24:28.260151000Z'}, 'bbo-1s': {'start': '2010-06-06T00:00:00.000000000Z', 'end': '2026-09-04T15:24:28.260151000Z'}, 'bbo-1m': {'start': '2010-06-06T00:00:00.000000000Z', 'end': '2026-09-04T15:24:28.260151000Z'}, 'ohlcv-1s': {'start': '2010-06-06T00:00:00.000000000Z', 'end': '2026-09-04T15:24:28.260151000Z'}, 'ohlcv-1m': {'start': '2010-06-06T00:00:00.000000000Z', 'end': '2026-09-04T15:24:28.260151000Z'}, 'ohlcv-1h': {'start': '2010-06-06T00:00:00.000000000Z', 'end': '2026-09-04T15:24:28.260151000Z'}, 'ohlcv-1d': {'start': '2010-06-06T00:00:00.000000000Z', 'end': '2026-09-04T00:00:00.000000000Z'}, 'definition': {'start': '2010-06-06T00:00:00.000000000Z', 'end': '2026-09-04T15:24:28.260151000Z'}, 'statistics': {'start': '2010-06-06T00:00:00.000000000Z', 'end': '2026-09-04T15:24:28.260151000Z'}, 'status': {'start': '2010-06-06T00:00:00.000000000Z', 'end': '2026-09-04T15:24:28.260151000Z'}}}
+
+precio unitario por schema (USD por GB, segun Databento):
+   historical   mbo            1.80
+   historical   ohlcv-1m      70.00
+   historical   tbbo          28.00
+   historical-streaming mbo            1.80
+   historical-streaming ohlcv-1m      70.00
+   historical-streaming tbbo          28.00
+   live         mbo            2.16
+   live         ohlcv-1m      84.00
+   live         tbbo          33.60
+
+schema simbolo  ventana                                                 USD  MB fact.    registros
+tbbo   ESU6     sesion completa (17:00 CT ant. -> 16:00 CT, 23 h)      0.79      30.3      379,121
+tbbo   ESU6     solo RTH (08:30 -> 15:15 CT)                           0.61      23.2      290,367
+tbbo   ESU6     dia UTC 00:00 -> 24:00 (incluye el snapshot del libro para mbo)     0.79      30.4      379,529
+tbbo   ES.n.0   sesion completa (17:00 CT ant. -> 16:00 CT, 23 h)      0.79      30.3      379,121
+tbbo   ES.n.0   solo RTH (08:30 -> 15:15 CT)                           0.61      23.2      290,367
+tbbo   ES.n.0   dia UTC 00:00 -> 24:00 (incluye el snapshot del libro para mbo)     0.79      30.4      379,529
+mbo    ESU6     sesion completa (17:00 CT ant. -> 16:00 CT, 23 h)      0.90     539.7    9,637,527
+mbo    ESU6     solo RTH (08:30 -> 15:15 CT)                           0.64     384.0    6,856,767
+mbo    ESU6     dia UTC 00:00 -> 24:00 (incluye el snapshot del libro para mbo)     0.91     540.7    9,654,846
+mbo    ES.n.0   sesion completa (17:00 CT ant. -> 16:00 CT, 23 h)      0.90     539.7    9,637,527
+mbo    ES.n.0   solo RTH (08:30 -> 15:15 CT)                           0.64     384.0    6,856,767
+mbo    ES.n.0   dia UTC 00:00 -> 24:00 (incluye el snapshot del libro para mbo)     0.91     540.7    9,654,846
+
+Nada de lo anterior se factura: son endpoints de metadatos. NO se descargo nada.
+Credito declarado por Roberto: USD 107 (de 125). No se renueva.
