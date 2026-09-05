@@ -24,6 +24,12 @@ candidatas fueron clasificadas **antes** de cualquier medición.
 | **[D10](D10_trampa_de_profundidad.md)** | **para G: el ES publica diez niveles hoy y publicaba cinco en 2013-2016. Lo que ve la plataforma de Roberto se cuenta, no se busca** |
 | **[R01](R01_regla_atipicos_1987.md)** | **regla sellada antes de mirar: un evento fuera del dominio del eje de régimen se excluye por regla, y octubre de 1987 no es el mismo objeto** |
 | **[T01](T01_franjas_horarias.md)** | **ranking congelado: en qué franja vive cada sobreviviente, para aplicar el perfil en diez minutos. Los cinco viven en picos** |
+| **[T02](T02_L07_L08_medicion_que_nadie_puede_hacer.md)** | **el perfil del ES descongela tres, no cinco: L07 y L08 esperan una medición que hoy nadie puede hacer** |
+| **[R02](R02_dominio_fijo_2016_2019.md)** | **sellada: el dominio de volatilidad se fija sobre 2016-2019 por construcción y no se recalibra nunca. Marzo de 2020 sale por regla** |
+| **[D11](D11_L03_salida_contra_la_liquidacion.md)** | **la salida de L03 cae dentro de la liquidación de alta frecuencia: signo adverso, proporcional a la tasa de acierto. Costo nombrado, sin número** |
+| **[D12](D12_kirilenko_sin_cuentas.md)** | **para G: la definición de Kirilenko traducida a lo observable de la orden que nos pegó, sin cuenta. Siete características por llenado** |
+| **[F16](F16_mirar_antes_de_investigar.md)** | **antes de investigar la configuración de Roberto, pedirle que mire. Con la lista de diez hechos que hoy están en fuente secundaria** |
+| **[A05](A05_control_externo_baltussen.md)** | **el control de G sobre mi 25 pb de Baltussen: el 3,96 % es un desvío, el número queda; G midió 20,92 en el ES** |
 
 > ## ESTADO DE LAS ONCE — 2026-09-05, por la balanza ciega
 >
@@ -78,7 +84,7 @@ candidatas fueron clasificadas **antes** de cualquier medición.
 > ## ORDEN VIGENTE — 2026-09-05, tras corregir la contaminación de F7
 >
 > **L11 · L10 · L07 · L01 · L08 · L06 · L09 · L03 · L04 · L02 · L05**
-> **CONGELADO el 2026-09-05.** Los cinco márgenes de los sobrevivientes salen del escalado uniforme que `A03` marcó como equivocado. **No se recalcula, no se reordena, no se promueve ni se baja a nadie** hasta que la VENTANA G mida el perfil de volatilidad intradiaria. Ver `T01` y la pregunta 6b de `FILTROS.md`.
+> **CONGELADO el 2026-09-05.** Los cinco márgenes de los sobrevivientes salen del escalado uniforme que `A03` marcó como equivocado. **No se recalcula, no se reordena, no se promueve ni se baja a nadie** hasta que Roberto lo descongele. **El perfil del ES ya está** (G, `7461919`) **y corrige sólo a tres de cinco**: L07 y L08 esperan una medición que hoy nadie puede hacer. Ver `T01`, `T02` y la pregunta 6b de `FILTROS.md`.
 >
 > **La tabla de más abajo quedó vieja en la columna de grado y en el orden.**
 >
