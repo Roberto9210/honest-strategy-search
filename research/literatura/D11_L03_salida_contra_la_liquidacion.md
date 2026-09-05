@@ -60,6 +60,23 @@ congelado. Lo anoto como lo que es:
 | **lo agranda** | que la salida de L03 se ejecute cruzando el spread en una ventana en la que el libro está más delgado de lo normal: Fett y Haynes (Hecho 3) observan las caídas de profundidad del E-mini en episodios de volatilidad |
 | **lo que NO cambia** | que la salida de L03 es **por hora de reloj, no por reacción**: el hueco del tercer escalón de latencia (`H01`) no la toca por la entrada, pero **sí por la calidad del fill de salida**, que es esto mismo |
 
+# 4b. EL CORTE, FIJADO — ≤ 60 segundos, y el perfil adentro sigue sin medir
+
+**Roberto aceptó el criterio que salió de mi propia idea del dato:** la Tabla 8 de Haynes y Roberts
+(`H01` Hecho 6) dice que las cuentas grandes automáticas del E-mini netean el **67 % de su volumen en
+un minuto** en 2014-2016. **Eso permite fijar el corte de "liquidación" de antemano y con un número de
+nuestro instrumento y casi de nuestro período, sin usar los 10-20 s de 2010.**
+
+> ## **CORTE DECLARADO: la ventana de liquidación se fija en `[t, t + 60 s]`. Cualquier medición que G haga de este costo usa ese corte, y no otro elegido después de mirar.**
+
+**Lo que el corte NO dice, y queda escrito con él:** la Tabla 8 es **por cuenta y por día**, y no dice
+si el neteo ocurre a 5 o a 50 segundos. **Fija el techo, no el perfil.** Y `D11` vive del perfil: si
+la liquidación termina antes de `t + 5 s`, la salida de L03 no se cruza con ella y el costo es cero.
+**El perfil dentro de los 60 segundos sigue sin medir, y se dice así.**
+
+**Y la salida limpia:** si la fila 8 de `F16` mata a L03 por reglamento (`R03` rama 2), esto se cierra
+solo y no hace falta medir nada.
+
 # 5. Qué se hace con esto
 
 - **Se agrega a la ficha de L03 como costo nombrado y no incluido**, con puntero acá. Sin número.
