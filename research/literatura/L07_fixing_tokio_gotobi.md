@@ -52,31 +52,75 @@ de varios puntos básicos en pocos segundos** justo en el fixing, y **baja de 9:
 - La correlación de retornos alrededor del fixing es **negativa para todos los pares**, pero **no
   para intervalos de más de un minuto**.
 
+### MAGNITUD CERRADA — 2026-09-05
+
+**El bloqueo se levantó. El paper SÍ publica la magnitud, y publica además una estrategia operable
+completa que yo no había encontrado.** Sección 5.2, discusión de la Figura 6:
+
+> calculamos el retorno medio de la inversión que consiste en **mantener USD/JPY largo durante cinco
+> minutos y después corto durante los cinco minutos siguientes**. […] Durante 15 años de esta
+> estrategia simple, si el momento del cambio es el instante del fixing de Tokio (00:55 GMT), **el
+> retorno medio resulta 1,8 puntos básicos**. Este retorno está **apenas por encima del costo de
+> transacción del diferencial de compra y venta**. […] este retorno anormal es muy distinto del de
+> cualquier otro momento del día. **El 1 % superior e inferior de los retornos está truncado, y los
+> resultados no están impulsados por valores atípicos.** Y, como ya examinamos, hay mucha liquidez
+> disponible en ese momento. **La falta de liquidez no explica este retorno.**
+
+| | |
+|---|---|
+| **regla publicada** | **largo cinco minutos, corto los cinco siguientes, cambio en el fixing** |
+| **magnitud** | **1,8 puntos básicos** |
+| ventana total | **10 minutos**, de 00:50 a 01:00 GMT |
+| muestra | 15 años |
+| tratamiento de atípicos | 1 % superior e inferior truncados |
+
+**Y la condición de calendario, en el mismo párrafo:** *"el retorno se vuelve particularmente alto
+los días 5 y 10 —excepto los cercanos al fin de mes— y el día 31 o el fin de mes."*
+
 ### Traducción a dólares por evento por contrato 6J
 
-Con 4 puntos básicos sobre $115.000 de nocional: **≈ $46 por evento**.
+1,8 puntos básicos sobre $115.000 de nocional: **≈ $21 por evento.**
 
-**Al borde del piso de detectabilidad ($29 a $58 por operación) y sin margen para el costo.** Y hay
-que descontar el costo de una ida y vuelta en 6J, que no está medido en este proyecto.
+**Muy por debajo de lo que yo había estimado.** Mi lectura de "varios puntos básicos" como 4 daba
+$46; el número publicado es menos de la mitad. **La estimación que marqué como mía estaba mal por un
+factor de dos, y en la dirección que me favorecía.**
 
-**La cuenta de arriba es mía**, de "varios puntos básicos" a un número. Los autores no la hacen.
-Tomé 4 pb como lectura de "varios". **Si "varios" fueran 2, la candidata muere; si fueran 8, sobra.**
-Eso hay que cerrarlo con las tablas del paper antes de gastar un peso.
+## 5. Antes o después de costos — y acá se decide todo
 
-## 5. Antes o después de costos
+**Los propios autores lo dicen: el retorno de 1,8 pb está "apenas por encima del costo de transacción
+del diferencial de compra y venta".**
 
-**Antes, y con una advertencia que los propios autores dan y que es letal para la versión ingenua:**
-la correlación negativa de retornos alrededor del fixing **desaparece para intervalos de más de un
-minuto**. O sea que la reversión que se ve en el gráfico es un fenómeno de **segundos**.
+**Eso mata la versión operable y hay que decirlo sin adornos.** Con $21 brutos por evento y un costo
+que se lleva la mayor parte, L07 **no supera ningún piso de rentabilidad de este proyecto**. No es
+una candidata para operar.
 
-Ese detalle decide qué versión es operable:
+**Pero para PROBAR es otra cosa completamente distinta, y es lo más interesante de esta ficha.**
 
-- **La versión de segundos (el pico exacto del fixing) NO es operable acá.** Requiere latencia y
-  datos que este proyecto no tiene, y la VENTANA G ya midió que el tope de ES vive en 113–197 ms,
-  del orden de la latencia residencial (commit `58e4ae4`).
-- **La versión de minutos (subida de 9:53 a 9:55, bajada de 9:55 a 9:57) sí es resoluble con barras
-  de un minuto** — pero es exactamente la parte que el paper describe cualitativamente y **no
-  cuantifica en una tabla de ganancia**.
+Un efecto de 1,8 pb sobre una ventana de diez minutos tiene una razón señal-ruido **muy alta por
+evento**, porque el desvío de USD/JPY en diez minutos es del orden de 4 a 6 puntos básicos. Es el
+perfil clásico de un efecto de microestructura: **enorme estadísticamente y despreciable
+económicamente.**
+
+**Es el ejemplo más puro del principio que ya apareció con L08: las peores para operar son las
+mejores para entender.**
+
+### Consecuencia para la prueba agrupada
+
+**L07 NO debe entrar a la prueba agrupada, y el motivo es que entraría demasiado fuerte.**
+
+Con `m = 1,8 pb` y un desvío de diez minutos de 4,6 a 8 pb, su señal por evento queda entre 0,22 y
+0,39, contra 0,19 de L11 y 0,28 de L10. Y ocurre **todos los días**, no doce veces al año.
+
+| escenario | contribución de L07 | contribución de L11 + L10 |
+|---|---|---|
+| σ = 4,6 pb, 1.000 eventos | ≈ 152 | 10,2 |
+| σ = 8 pb, 1.000 eventos | ≈ 51 | 10,2 |
+
+**En los dos casos L07 aporta entre cinco y quince veces más que las otras dos juntas.** La prueba
+agrupada dejaría de ser una prueba sobre "las reglas de calendario de terceros" y pasaría a ser una
+prueba sobre L07, y el control de dejar-una-afuera de `P01` lo detectaría de inmediato.
+
+**Lo correcto no es meterla en el grupo: es correrla sola.** Ver `P05`.
 
 ## 6. Mecanismo declarado
 
