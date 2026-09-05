@@ -120,6 +120,35 @@ la firma medida. Un candidato **sin ventaja** que declare `timing` tiene rotaci�
 modos). Lo que la declaración compra es que, cuando la ventaja *sí* está y *sí* es de cuándo, no la
 mate el instrumento que no la puede ver.
 
+### Cuántas veces la firma se equivoca — medido, no argumentado
+
+La firma **sólo puede contradecir, nunca confirmar**: un candidato nulo que sea falso positivo de la
+rotación saldría con firma `timing` y se le quitaría la nula de signo justo cuando más falta hacía.
+C10 no toca ese caso (su firma es `indefinida`, aprueba por el camino fácil), así que se midió aparte
+con **20.000 candidatos nulos** (`juez_firma_falso_positivo.py`):
+
+| medida | 1.000 nulos | 20.000 nulos |
+|---|---|---|
+| `zA ≥ 3,0` (falso positivo de la rotación **sola**) | 0,20% | **0,15%** |
+| **firma `timing`** (`zA ≥ 3,0` **y** `\|zB\| < 1,0`) | 0,000% | **0,000%** — IC95 arriba **0,019%** |
+| firma `direccional` | 0,00% | 0,03% |
+| nulos que **llegarían a aprobación** declarando `timing` | 0 | **0 de 20.000** |
+
+**Por qué sale tan bajo, y la razón es estructural:** bajo la nula `zA` y `zB` están correlacionadas
+**+0,91** — miden el mismo observado contra dos nulas centradas en lo mismo. Un nulo que por azar
+queda alto contra la rotación queda alto también contra el signo, y entonces su firma es
+`direccional`, no `timing`. La firma de timing exige la combinación **rara**: alto contra una y
+neutro contra la otra.
+
+**Y hay un segundo cerrojo que nunca se abre:** la relajación quita **una** de las tres nulas. La
+**pasiva no se omite jamás**, así que un falso positivo de firma todavía tiene que batir
+`min(rotación, pasiva) ≥ 3,0`. Ninguno de los 20.000 lo hizo. El costo del arreglo, medido en falsos
+positivos, es **cero sobre 20.000**.
+
+*La tabla se hizo viable con una **tabla de desenlaces** precomputada por barra y por lado (1,02 M
+barras), verificada contra `J.resolver` en 3.000 ranuras de los dos lados antes de usarse: sin eso,
+20.000 × 200 rotaciones serían días de cómputo.*
+
 Esto vale **también en el chequeo por régimen**: dentro de cada tercil se compara contra la nula
 válida para la clase confirmada, no siempre contra la de signo. Sin eso el punto ciego volvía a entrar
 por la ventana del régimen (ver el CIERRE).
@@ -171,6 +200,15 @@ el umbral. Guarda también `clase_declarada` y `firma_medida`, para que cambiar 
 deje rastro. **Defiende contra el descuido, no contra alguien motivado:** se puede correr en otra
 copia del repo o con otro registro. Agujero conocido y marcado.
 
+**La clase declarada está DENTRO de la huella, y antes no lo estaba.** `hash_candidato` incluye ahora
+`clase_ventaja`. Lo que había antes era peor de lo que se creía: el mismo candidato reclasificado daba
+**el mismo hash**, y el bucle de hermanos saltea las filas con hash igual ("es el mismo candidato en
+otro período") — o sea que correrlo como `direccional`, ver NO SUPERA y volver como `timing` **no
+contaba como intento ni subía el umbral**. Era gratis. Con la clase adentro: la segunda corrida es un
+candidato distinto con huella de entradas idéntica → cuenta como hermano, el umbral sube, sale un
+bloque **RECLASIFICACIÓN** en el veredicto con la fecha y el veredicto anterior, y el candado de 2019
+**se re-cierra** (`ya_anotado` mira ese hash, así que reclasificar no destapa el período reservado).
+
 **El registro commiteado abre con dos líneas del ejemplo.** Son las dos corridas de `valido.json` que
 ejercitan la CLI (cruce y pasivo), candidato sintético, no un candidato real. **No se borran:** la
 cadena es de sólo-agregar desde su primera línea, y resetearla a mano sería exactamente el gesto que
@@ -196,10 +234,12 @@ en el **borde** entre modos → NO SUPERA en cruce / REQUIERE MEDICION en pasivo
 declara `timing` → NO SUPERA igual. Los diez se corren en los **dos modos**, y se verifica que el modo
 pasivo nunca devuelve SUPERA. Salida en `salida_juez_controles.txt`.
 
-Otras tres corridas, cada una con su salida commiteada:
+Otras corridas, cada una con su salida commiteada:
 `juez_verificar_prueba.py` (el candado de 2019 en las dos direcciones),
 `juez_rutas_nunca_corridas.py` (el detector de firma por `informe()` y el juez por **línea de
-comandos**, en subproceso real) y `juez_particion_potencia.py` (la partición trabajo/verificación).
+comandos**, en subproceso real), `juez_particion_potencia.py` (la partición trabajo/verificación),
+`juez_firma_falso_positivo.py` (20.000 nulos contra la firma de timing) y
+`calibrar_por_regimen.py` (el inventario de calibración por instrumento y la vara por régimen).
 
 ---
 
@@ -220,8 +260,17 @@ pendiente **que no requiera un candidato real**.
 | C6 | el ataque A1 (solo-largo 2017) | NO SUPERA | NO SUPERA |
 | C7 | ventaja sólo bajista | APUESTA AL REGIMEN | APUESTA AL REGIMEN |
 | C8 | candidato en el **borde** entre modos | NO SUPERA | **REQUIERE MEDICION** |
-| C9 | **ventaja de timing declarada bien** | **SUPERA** | **REQUIERE MEDICION** |
+| C9 | **ventaja de timing** — verifica **la nula aplicada**, no el veredicto | **SUPERA** | **REQUIERE MEDICION** |
 | C10 | **la puerta trasera**: nulo declarando `timing` | NO SUPERA | NO SUPERA |
+
+**C9 dejó de mirar sólo el veredicto, y el motivo era un agujero real.** En modo pasivo
+REQUIERE MEDICION es lo que `techo_pasivo` devuelve para *cualquier cosa que superaría*, así que el
+control pasaba **sin distinguir si la nula correcta se había aplicado**: el arreglo de timing estaba
+ejercitado en cruce solamente. Ahora C9 chequea cuatro cosas, iguales en los dos modos: (1) la firma
+confirma la clase declarada; (2) omitir la de signo **cambia el número** (`z_info > z_estricto`);
+(3) **sin** el arreglo el candidato no pasaría (`z_estricto < z_req`); (4) **con** el arreglo pasa.
+Medido: en pasivo `z_info = +22,8` contra un estricto de `+0,1` — el arreglo hace todo el trabajo, y
+ahora el control lo dice. *Falla si el veredicto es el esperado pero `z_info == z_estricto`.*
 
 **Ningún control devuelve SUPERA en modo pasivo**, y no puede: `techo_pasivo` lo convierte por
 construcción. C8 quedó recalibrado con `c8_semillas.py` (12 semillas × 3 valores de ventaja): a
@@ -302,18 +351,77 @@ ejercita en **subproceso real**, no importando el módulo, para que los códigos
 piso de detección del trabajo sube **+10%** ($20,54 → $22,55) y el de la verificación baja −4%
 ($25,84 → $24,74).
 
-**No se reparticionó, y el motivo es medido.** La MDE **no es monótona** en el número de sesiones: en
-el barrido salta de **$8,56 con 501 sesiones a $22,55 con 541** — 2,6× peor por agregar 40 sesiones —
-porque el desvío por año va de $36 (2017) a **$368** (2018), un factor 10. El corte de "igual potencia"
-cae **justo sobre el pico de febrero 2018**: el punto de máxima sensibilidad a un puñado de sesiones
-extremas. Fijar ahí la partición sería ajustarla a la cola de 2018.
+**DECISIÓN TOMADA (Roberto, 2026-09-05): NO se reparticiona. Queda 3/1** — trabajo 2016-2018,
+verificación 2019 — **y la verificación queda declarada SUBPOTENCIADA. El número se publica:**
 
-Y el intercambio no es el que suponíamos: **acortar el trabajo lo MEJORA** ($20,54 → $8,56), porque
-saca 2018. Lo que se pierde no es potencia, es **cobertura de régimen**: un trabajo de 2016-2017 no
-contiene régimen alto y la maquinaria de tres terciles se queda sin el tercil que más importa. La
-restricción que manda es la cobertura, no el conteo de sesiones. La partición por calendario
-(2016-2018 / 2019) deja la verificación gruesa, y ahora se sabe **por qué**: no le falta cantidad, le
-falta cola. Queda para que Roberto decida, con los dos números a la vista.
+> **La verificación de 2019 tiene resolución ±72% de la ventaja de referencia, contra ±33% del
+> período de trabajo: es 1,26× más gruesa (MDE $25,84 contra $20,54 por sesión). 2019 solo NO PUEDE
+> confirmar un efecto del tamaño que el juez exige en trabajo.** Cualquier lectura de un resultado de
+> verificación tiene que llevar esa cifra al lado.
+
+El motivo de no repartir es la **cobertura de régimen**: el corte de igual potencia cae en 2018-02-21,
+y un trabajo que empiece a cortarse ahí pierde el tercil alto de volatilidad, que sólo 2018 aporta. La
+restricción que manda es la cobertura, no el conteo de sesiones.
+
+**CORRECCIÓN (2026-09-05) al motivo que se publicó primero.** El hallazgo de "la MDE no es monótona"
+—salta de $8,56 con 501 sesiones a $22,55 con 541, porque el desvío por año iría de $36 a $368— es
+cierto **para la serie que usó ese script** (flujo secuencial con los dos lados **promediados**, que
+se cancelan casi enteros y dejan un residuo que la cola de 2018 domina) y **no se traslada al error
+con el que el juez decide**. Medido en `calibrar_por_regimen.py` sobre el flujo con el que se calibró
+el juez: el desvío por año va de $791 a $1.095 (factor 1,4) y **el desvío de la nula de permutación
+—que es el error que el juez usa— da $48/$42/$55/$51 por año, baja monótono en todo el barrido**. La
+recomendación de no reparticionar se sostiene, pero **por la cobertura de régimen y no por la
+no-monotonía**: el motivo bueno era el segundo.
+
+## Otros instrumentos: la calibración se separó de la maquinaria
+
+El juez aceptaba **ES y MES y nada más**, y eso resultó ser el problema equivocado de resolver
+primero: la VENTANA L trajo once candidatas y las más fuertes son de **divisas** o necesitan flujo de
+órdenes, o sea que las mejores son justo las que el juez no puede juzgar. Fue un error de **orden** —
+se construyó la herramienta antes de saber qué había que medir.
+
+Lo que se hizo es hacer explícita la frontera, en `instrumentos.py`:
+
+**MAQUINARIA — no depende del instrumento, se queda en `juez.py`:** las dos nulas y la comparación
+pasiva; la clase de ventaja y la firma; el eje de régimen por terciles y la exigencia de los tres;
+que el modo pasivo nunca apruebe; los seis veredictos; el registro encadenado y la huella; el umbral
+por multiplicidad; la caja sellada; el candado de 2019; la puerta de entrada.
+
+**CALIBRACIÓN — depende del instrumento, vive en la ficha, cada constante con su ORIGEN:**
+
+| origen | qué es | qué cuesta |
+|---|---|---|
+| **ESPEC** | valor del punto, tick, equivalencia en micros, horario de sesión | **gratis** — especificación oficial del CME |
+| **REGLA** | comisión de ida y vuelta | **gratis** — lista de precios. *Para divisas NO está leída: la página que tenemos cubre índices.* |
+| **MEDIDO** | deslizamiento de entrada por régimen (tbbo) · markout y llenado pasivos (mbo, **sólo si se usa modo pasivo**) · exceso en el stop y la constante `o` (**sólo si la regla es un bracket**) · los cortes de tercil en bps (barras diarias, casi nada) | **hay que comprar datos** |
+| **FALTA** | no está | el juez **se niega** |
+
+**Sustituir la calibración de un instrumento por la de otro está prohibido en el código.** Un
+medio-spread de ES aplicado a 6E devuelve un número con cara de veredicto. `calibracion()` levanta
+`NoCalibrado` y el juez rechaza la entrada listando exactamente qué falta y de dónde saldría. La
+única herencia permitida es MES ← ES, declarada **como herencia** en la propia ficha (mismo
+subyacente, mismo libro, mismo tick en puntos).
+
+**Y esto abarata a las candidatas de la VENTANA L:** L07 y L08 **no usan bracket** —miden el retorno
+de una ventana declarada—, así que se caen los dos ítems más caros (sobrepaso y exceso en el stop).
+Para juzgarlas en modo cruce alcanza con punto y tick (gratis), comisión (una lectura),
+medio-spread por régimen (tbbo, poco) y los cortes de tercil (barras diarias).
+
+**Qué costaría llenar las fichas de divisas** (`databento_cotizar_divisas.py`, cotizado
+2026-09-05, **sin comprar**): el paquete entero —L08 (6 símbolos × 48 fechas × 4 h, `ohlcv-1m`), L07
+plan B (6J × 286 fechas gotobi), `tbbo` de 6E en tres días (uno por tercil) y `ohlcv-1d` de los seis
+símbolos 2016-2019— sale **USD 0,87** contra los USD 98,92 de crédito. Ningún ítem se acerca al tope
+de USD 3,00. La calibración de 6E que el juez necesita para dejar de negarse cuesta **USD 0,55** de
+ese total.
+
+**Cómo calibrar sin repetir el error de 2018** (`calibrar_por_regimen.py`): el **piso** y la
+**resolución** no se comportan igual entre regímenes. El piso varía **13×** entre el tercil alto y el
+bajo (publicado en `juez_regimen_bps.py`); la **dispersión** varía **1,3×** entre terciles y 1,2×
+entre años. Conclusión: **el piso se calibra por régimen, la resolución se agrupa** — separar la
+resolución sólo tira potencia. *Esto contradijo la mitad de la hipótesis con la que se abrió ese
+archivo, y la condición de falla estaba escrita antes; queda anotada como fallada.* Y el piso del ES
+**no hay que recalcularlo** — ya está por tercil; lo que hay que corregir es **cómo se cita**: "el
+piso del ES es $X" con un solo número promedia regímenes que difieren 13×.
 
 ## Los seis veredictos
 
@@ -366,7 +474,12 @@ inverificable); **si la clase de ventaja declarada es sincera** —la firma la c
 con bandera roja, pero una firma `indefinida` no prueba nada en ninguna dirección—; la regla de
 consistencia de las firmas; el deslizamiento de entrada **pasiva por-candidato** (hoy calibrado al
 azar); una ventaja de **salida**, inexpresable por construcción; 2020+ (caja sellada); el costo de
-oportunidad del capital.
+oportunidad del capital; y **cualquier instrumento que no sea ES o MES** — hay ficha empezada para 6E
+y 6J, y el juez **se niega** con la lista de lo que falta hasta que esté completa.
+
+**Y lo que la verificación no puede hacer, publicado y no escondido:** 2019 tiene resolución **±72%**
+de la ventaja de referencia contra **±33%** del trabajo (MDE $25,84 contra $20,54). **Está
+subpotenciada por construcción** y la partición 3/1 se mantiene igual, por cobertura de régimen.
 
 **Veredictos posibles.**
 - **SUPERA** — sólo en modo cruce (o en la futura medición por-candidato). Aprobación firme.
