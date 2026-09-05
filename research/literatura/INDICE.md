@@ -24,6 +24,9 @@ candidatas fueron clasificadas **antes** de cualquier medición.
 | **[D10](D10_trampa_de_profundidad.md)** | **para G: el ES publica diez niveles hoy y publicaba cinco en 2013-2016. Lo que ve la plataforma de Roberto se cuenta, no se busca** |
 | **[R01](R01_regla_atipicos_1987.md)** | **regla sellada antes de mirar: un evento fuera del dominio del eje de régimen se excluye por regla, y octubre de 1987 no es el mismo objeto** |
 | **[T01](T01_franjas_horarias.md)** | **ranking congelado: en qué franja vive cada sobreviviente, para aplicar el perfil en diez minutos. Los cinco viven en picos** |
+| **[D14](D14_la_cuenta_de_los_anios.md)** | **trece filas × 4/8/12/16 años: una sola cruza con años que existen fuera de muestra y de la caja (L03, por 3 %). Los cuatro años explican una fila** |
+| **[D15](D15_el_instrumento_no_auditado.md)** | **dos generadores, un resultado: el instrumento no está mal calibrado (los controles lo prueban), mide rentabilidad a escala y no existencia; once pruebas sin potencia; la vara 3,0 es generosa (Bonferroni K=261 = 3,73)** |
+| **[D16](D16_L10_una_hora_decision.md)** | **L10 en una hora: (A) cartucho, (B) 30 segundos, (C) cerrar. Recomendación (C): la magnitud publicada no vive en ninguna ventana intradiaria. Inventario en cero limpio** |
 | **[D13](D13_veredictos_absolutos.md)** | **veredictos absolutos con el perfil de G: L01 CIEGA 0,57 · L03 CIEGA 0,86 · L10 publicada CIEGA 0,46 · L10 una hora 1,44 con grado de libertad nuestro. Sin orden** |
 | **[R03](R03_cierre_por_reglamento.md)** | **sellada antes de la respuesta: qué muere y qué queda según lo que diga el reglamento de la firma sobre 6J/6E, publicaciones y noche** |
 | **[A06](A06_frases_que_generalizan.md)** | **cinco frases mías que generalizan más allá de lo medido, con su condición de falla; séptima pregunta de F13** |
