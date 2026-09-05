@@ -1,0 +1,66 @@
+====================================================================================================
+VERIFICACIONES DEL PERFIL INTRADIARIO: el signo de las 972 sesiones, y apertura vs resto
+NO GASTA CARTUCHO. K = 261. Dinero: $0. La caja sellada no se toca.
+====================================================================================================
+
+----------------------------------------------------------------------------------------------------
+   A3 (1) - LA PREMISA: son mas calmas las sesiones a las que les FALTA la caja #43?
+----------------------------------------------------------------------------------------------------
+   Sesiones con la caja #43: 972   sin ella: 35
+   Se comparan usando la caja #31 (08:30), que casi todas tienen, para no comparar contra
+   una caja que justamente falta.
+      |retorno| medio en #31, sesiones SIN #43 (33):  8.97 pb
+      |retorno| medio en #31, sesiones CON #43 (972):  15.84 pb
+      cociente sin/con: 0.57x
+      desvio de la sesion entera, SIN #43: 70.2 pb   CON #43: 78.8 pb
+   PREMISA CONFIRMADA: las sesiones que no tienen la caja #43 son mas calmas (0.57x).
+
+----------------------------------------------------------------------------------------------------
+   A3 (2) - EL SIGNO, DERIVADO DESDE DONDE SE CONSUME EL NUMERO
+----------------------------------------------------------------------------------------------------
+   El desvio de una caja se consume en tres lugares y en ninguno como costo:
+     (i)   como DENOMINADOR de la senal por evento, r = magnitud / sigma  ->  sigma mas
+           grande da r mas chico, t mas chico, MENOS potencia.
+     (ii)  como ruido del umbral de deteccion, MDE = z * sigma / raiz(n)  ->  sigma mas
+           grande da MDE mas grande, mas dificil detectar.
+     (iii) como factor para escalar el desvio de sesion a la ventana  ->  factor mas grande
+           da mas ruido supuesto.
+   En los TRES, un sigma inflado hace la vara MAS EXIGENTE y los margenes MAS CHICOS.
+
+   CONCLUSION: si excluir sesiones calmas infla el sigma de la caja, eso empuja al LADO
+   DIFICIL, no al facil. Mi reporte decia lo contrario y ESTABA MAL.
+   De donde salio el error: lo trate como si fuera un COSTO -donde subestimar es 'facil'-
+   cuando es una estimacion de RUIDO, donde sobreestimar es conservador. Es el mismo tipo de
+   confusion que el error 4' del documento de signos: la pregunta correcta contestada al
+   reves por no mirar donde se consume el numero.
+
+----------------------------------------------------------------------------------------------------
+   A4 - LA APERTURA ES ESTRUCTURAL Y EL RESTO DEPENDE DEL ANO? Por SEMESTRES.
+----------------------------------------------------------------------------------------------------
+     caja                    que es  2016-S1  2016-S2  2017-S1  2017-S2  2018-S1  2018-S2  2019-S1  2019-S2    rango    disp
+      #31    08:30 apertura contado     2.06     2.04     2.28     2.26     2.31     1.90     2.11     2.67     1.40   10.7%
+      #43      14:30 cierre contado     1.39     1.35     1.97     1.79     2.39     2.29     1.84     1.76     1.77   20.2%
+      #15           00:30 madrugada     0.51     0.48     0.54     0.41     0.53     0.48     0.53     0.48     1.32    8.6%
+      #33                     09:30     1.64     1.56     1.96     1.75     1.61     1.66     1.87     1.54     1.27    8.8%
+      #42                     14:00     1.81     1.14     1.48     1.34     1.37     2.01     1.38     1.02     1.97   22.6%
+
+   #31 (apertura): rango entre semestres 1.40, dispersion 10.7%
+   #43 (cierre):   rango entre semestres 1.77, dispersion 20.2%
+
+   NO CONCLUYENTE. La apertura se mueve menos que el cierre (1.40 contra 1.77)
+   pero no lo suficiente para llamarla estructural con este corte.
+
+   Y LO QUE MATA LA FORMA DE LA IDEA no es el numero de arriba sino la fila #15: la caja mas
+   CALMA del dia -00:30, la madrugada- es la MAS ESTABLE de todas (rango 1.32, dispersion 8.6%),
+   mas que la apertura. Mi idea decia 'la apertura es estructural y el resto depende del
+   periodo', y la madrugada era justamente el 'resto' que daba por inestable. No es 'apertura
+   contra resto': hay cajas estables y cajas inestables y NO se ordenan por la forma de U. La
+   #42 (14:00) tiene dispersion 22.6% y la #33 (09:30) 8.8%, y son vecinas de la #43 y la #31.
+   LA IDEA, COMO LA ENUNCIE, QUEDA DESCARTADA. Lo que queda en pie es lo que ya estaba medido
+   y no necesita teoria: la tabla caja por caja con su rango, y usar cada caja por su numero.
+
+   AVISO DE MUESTRA, para no repetir el error que este archivo corrige: un semestre son ~125
+   sesiones, la mitad que un ano. Parte del rango que se ve aca es ruido de muestra y no
+   inestabilidad real; por eso la comparacion es ENTRE cajas del mismo corte, que comparten
+   ese ruido, y no contra el rango por anos.
+====================================================================================================
