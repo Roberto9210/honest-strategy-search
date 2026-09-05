@@ -209,6 +209,51 @@ cruzó. La intersección puede ser estructuralmente casi vacía.**
 
 ---
 
+# VEREDICTO DE LA FUENTE — 2026-09-05
+
+**Cerré el alcance buscando directamente lo único que podría pasar el filtro: una acción de
+fiscalización contra alguien que ANTICIPÓ UN FLUJO PÚBLICO Y OBLIGATORIO operando en el mercado
+abierto, sin información privada y sin manipular.**
+
+**No existe como categoría de fiscalización, y ahora sé por qué.** Las categorías que hay son tres:
+
+| categoría | por qué está excluida |
+|---|---|
+| órdenes engañosas | altera el libro. **La línea** |
+| manipulación de precios de referencia | mueve el precio a propósito. **La línea** |
+| adelantarse a órdenes del empleador o de clientes | usa información material no pública. **La línea** |
+
+> ## **Anticipar un flujo público y obligatorio no aparece en la fiscalización PORQUE NO ES ILEGAL. La fuente sólo documenta lo que cruzó la línea, y lo único que nosotros podemos usar es lo que no la cruzó. La intersección no es "casi vacía": es vacía por construcción.**
+
+**Ésa es la respuesta y es estructural, no una cuestión de haber mirado pocos casos.**
+
+## Balance final
+
+| | |
+|---|---|
+| casos examinados | **4** de los 10 del alcance |
+| candidatas producidas | **0** |
+| hechos de estructura extraídos | **1**, el retardo del flujo consolidado, **inservible** por exigir colocación |
+| **veredicto** | **FUENTE CERRADA como generadora de candidatas** |
+
+**No cierro los otros seis casos del alcance y digo por qué: el argumento que los cerraría es
+estructural y ya está probado. Leer seis casos más de las tres categorías excluidas sería trabajo
+cuyo resultado no puede cambiar el veredicto — que es lo que `F12` prohíbe.**
+
+## Lo que SÍ sobrevive de esta vía
+
+**La categoría (A), hechos de estructura de mercado, sigue viva pero NO en las acciones de
+fiscalización: vive en la investigación de los economistas del propio regulador**, que publican
+sobre los mismos mercados sin necesidad de que nadie haya delinquido.
+
+**Esa vía está abierta en [H01](H01_hechos_del_regulador.md) y ya produjo una confirmación externa de
+un número de la casa.**
+
+> **La fuente correcta no era el brazo de fiscalización: era el de investigación. Lo encontré
+> buscando en el primero.**
+
+---
+
 # 7. Costos de esta vía, separados
 
 | | |
