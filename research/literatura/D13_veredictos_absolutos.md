@@ -1,6 +1,6 @@
 # D13 — Veredictos ABSOLUTOS de L01, L03 y L10 con el perfil medido por la VENTANA G. Sin orden: el ranking sigue congelado.
 
-**VENTANA L. NO MIDE NADA. K sigue en 261.**
+**VENTANA L. NO MIDE CANDIDATAS; corre CONTROLES DEL INSTRUMENTO desde el 2026-09-05 (rol ampliado por Roberto, ver `INDICE`). K sigue en 261.**
 
 **Roberto corrigió un exceso de rigor mío:** dije que descongelar sólo el grupo A compararía
 calibraciones distintas. **Eso vale para RANKEAR, no para JUZGAR.** *"¿L03 es ciega?"* es una pregunta
